@@ -3,82 +3,8 @@
 @tailwind utilities;
 
 @layer base {
-  * {
-    box-sizing: border-box;
-  }
-
-  :root {
-    /* Figma 디자인 시스템 CSS 변수 */
-    --color-ds-main: #0c0c0c;
-    --font-family-ds: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
-    /* 본문용 타이포 */
-    --text-body-xs:   12px; --lh-body-xs:   20px;
-    --text-body-sm:   13px; --lh-body-sm:   22px;
-    --text-body-base: 14px; --lh-body-base: 24px;
-    --text-body-md:   16px; --lh-body-md:   28px;
-    --text-body-lg:   18px; --lh-body-lg:   30px;
-    --text-body-xl:   20px; --lh-body-xl:   32px;
-    /* 컴포넌트용 타이포 */
-    --text-comp-xs:   12px; --lh-comp-xs:   18px;
-    --text-comp-sm:   14px; --lh-comp-sm:   20px;
-    --text-comp-base: 16px; --lh-comp-base: 24px;
-    /* 공통 자간 */
-    --tracking-ds: -0.02em;
-  }
-
-  html {
-    /* Figma 기준: 모든 텍스트에 -0.02em 자간 적용 */
-    letter-spacing: var(--tracking-ds);
-  }
-
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
-    @apply dark:bg-gray-950 dark:text-gray-100;
-    font-family: var(--font-family-ds);
-    /* Figma 기본 본문: 14px / 24px */
-    font-size: var(--text-body-base);
-    line-height: var(--lh-body-base);
-    color: var(--color-ds-main);
-  }
-
-  /* 다크모드 텍스트 */
-  .dark body {
-    color: #f5f5f5;
-  }
-
-  ::-webkit-scrollbar       { @apply w-1.5 h-1.5; }
-  ::-webkit-scrollbar-track { @apply bg-transparent; }
-  ::-webkit-scrollbar-thumb { @apply bg-gray-300 rounded-full dark:bg-gray-600; }
-}
-
-@layer components {
-  /* ── Figma 본문용 타이포그래피 유틸리티 ── */
-  .text-body-xs   { font-size: 12px; line-height: 20px; letter-spacing: -0.24px; }
-  .text-body-sm   { font-size: 13px; line-height: 22px; letter-spacing: -0.26px; }
-  .text-body-base { font-size: 14px; line-height: 24px; letter-spacing: -0.28px; }
-  .text-body-md   { font-size: 16px; line-height: 28px; letter-spacing: -0.32px; }
-  .text-body-lg   { font-size: 18px; line-height: 30px; letter-spacing: -0.36px; }
-  .text-body-xl   { font-size: 20px; line-height: 32px; letter-spacing: -0.40px; }
-
-  /* ── Figma 컴포넌트용 타이포그래피 유틸리티 ── */
-  .text-comp-xs   { font-size: 12px; line-height: 18px; letter-spacing: -0.24px; }
-  .text-comp-sm   { font-size: 14px; line-height: 20px; letter-spacing: -0.28px; }
-  .text-comp-base { font-size: 16px; line-height: 24px; letter-spacing: -0.32px; }
-
-  /* ── 세미볼드 조합 ── */
-  .text-body-xs-semi   { font-size: 12px; line-height: 20px; letter-spacing: -0.24px; font-weight: 600; }
-  .text-body-sm-semi   { font-size: 13px; line-height: 22px; letter-spacing: -0.26px; font-weight: 600; }
-  .text-body-base-semi { font-size: 14px; line-height: 24px; letter-spacing: -0.28px; font-weight: 600; }
-  .text-body-md-semi   { font-size: 16px; line-height: 28px; letter-spacing: -0.32px; font-weight: 600; }
-  .text-body-lg-semi   { font-size: 18px; line-height: 30px; letter-spacing: -0.36px; font-weight: 600; }
-  .text-body-xl-semi   { font-size: 20px; line-height: 32px; letter-spacing: -0.40px; font-weight: 600; }
-  .text-comp-xs-semi   { font-size: 12px; line-height: 18px; letter-spacing: -0.24px; font-weight: 600; }
-  .text-comp-sm-semi   { font-size: 14px; line-height: 20px; letter-spacing: -0.28px; font-weight: 600; }
-  .text-comp-base-semi { font-size: 16px; line-height: 24px; letter-spacing: -0.32px; font-weight: 600; }
-}
-
-@layer utilities {
-  .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
+    @apply bg-white text-font-icon-5 dark:bg-gray-950 dark:text-gray-100;
+    font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
   }
 }

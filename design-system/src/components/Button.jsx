@@ -1,132 +1,98 @@
-import React from 'react';
-import { Loader2 } from 'lucide-react';
-
-/**
- * Figma: 01_buttons (node 943:36646)
- *
- * variant : 'primary' | 'line' | 'ghost'
- * color   : 'theme'(#0285ff) | 'mono'(#0c0c0c) | 'error'(#fa423e, primary only)
- * size    : '32'(h-32, font 14px) | '24'(h-24, font 12px)
- */
-
-/* ── 공통 베이스 ── */
-const base =
-  'inline-flex items-center justify-center font-["Pretendard_Variable",Pretendard,system-ui] ' +
-  'rounded-[6px] transition-colors duration-150 ' +
-  'focus:outline-none focus:ring-2 focus:ring-offset-1 ' +
-  'disabled:cursor-not-allowed select-none';
-
-/* ── 크기 ── */
-const sizeMap = {
-  '32': { wrap: 'min-h-[32px] px-[10px] py-[6px] gap-[4px] text-[14px] leading-[20px] tracking-[-0.28px]', icon: 16 },
-  '24': { wrap: 'min-h-[24px] px-[6px] py-[3px] gap-[3px] text-[12px] leading-[18px] tracking-[-0.24px]', icon: 14 },
-};
-
-/* ── variant × color 스타일 ── */
-const variantStyles = {
-  primary: {
-    theme: {
-      default:  'bg-[#0285ff] text-white focus:ring-[#0285ff]',
-      hover:    'hover:bg-[rgba(2,133,255,0.65)]',
-      active:   'active:bg-[#0285ff]',
-      disabled: 'disabled:bg-[rgba(12,12,12,0.16)] disabled:text-[rgba(12,12,12,0.16)]',
-    },
-    mono: {
-      default:  'bg-[#0c0c0c] text-white focus:ring-[#0c0c0c]',
-      hover:    'hover:bg-[rgba(12,12,12,0.65)]',
-      active:   'active:bg-[#0c0c0c]',
-      disabled: 'disabled:bg-[rgba(12,12,12,0.16)] disabled:text-[rgba(12,12,12,0.16)]',
-    },
-    error: {
-      default:  'bg-[#fa423e] text-white focus:ring-[#fa423e]',
-      hover:    'hover:bg-[rgba(250,66,62,0.81)]',
-      active:   'active:bg-[#fa423e]',
-      disabled: 'disabled:bg-[rgba(12,12,12,0.16)] disabled:text-[rgba(12,12,12,0.16)]',
-    },
-  },
-  line: {
-    theme: {
-      default:  'bg-white border border-[rgba(12,12,12,0.16)] text-[#0f85f2] focus:ring-[#0f85f2]',
-      hover:    'hover:bg-[#f6fafe] hover:border-[#0f85f2]',
-      active:   'active:bg-white active:border-[rgba(12,12,12,0.16)]',
-      disabled: 'disabled:bg-[rgba(12,12,12,0.16)] disabled:border-transparent disabled:text-[rgba(12,12,12,0.16)]',
-    },
-    mono: {
-      default:  'bg-white border border-[rgba(12,12,12,0.16)] text-[#0c0c0c] focus:ring-[#0c0c0c]',
-      hover:    'hover:bg-[#f2f2f2] hover:border-[rgba(12,12,12,0.48)]',
-      active:   'active:bg-white active:border-[#0c0c0c]',
-      disabled: 'disabled:bg-[rgba(12,12,12,0.16)] disabled:border-transparent disabled:text-[rgba(12,12,12,0.16)]',
-    },
-    error: {
-      default:  'bg-white border border-[#fa423e] text-[#fa423e] focus:ring-[#fa423e]',
-      hover:    'hover:bg-[rgba(250,66,62,0.06)] hover:border-[#fa423e]',
-      active:   'active:bg-white',
-      disabled: 'disabled:bg-[rgba(12,12,12,0.16)] disabled:border-transparent disabled:text-[rgba(12,12,12,0.16)]',
-    },
-  },
-  ghost: {
-    theme: {
-      default:  'bg-transparent text-[#0f85f2] focus:ring-[#0285ff]',
-      hover:    'hover:bg-[rgba(2,133,255,0.08)]',
-      active:   'active:bg-transparent',
-      disabled: 'disabled:text-[rgba(12,12,12,0.33)]',
-    },
-    mono: {
-      default:  'bg-transparent text-[#0c0c0c] focus:ring-[#0c0c0c]',
-      hover:    'hover:bg-[rgba(12,12,12,0.07)]',
-      active:   'active:bg-transparent',
-      disabled: 'disabled:text-[rgba(12,12,12,0.33)]',
-    },
-    error: {
-      default:  'bg-transparent text-[#fa423e] focus:ring-[#fa423e]',
-      hover:    'hover:bg-[rgba(250,66,62,0.08)]',
-      active:   'active:bg-transparent',
-      disabled: 'disabled:text-[rgba(12,12,12,0.33)]',
-    },
-  },
-};
+import { useLayoutEffect, useRef } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 export function Button({
-  variant = 'primary',
-  color = 'theme',
+  children,
   size = '32',
+  variant = 'fill',
+  leftIcon: LeftIcon = null,
+  rightIcon: RightIcon = null,
+  icon: Icon = null,
   disabled = false,
   loading = false,
-  fullWidth = false,
-  leftIcon: LeftIcon,
-  rightIcon: RightIcon,
-  children,
+  onClick,
   className = '',
   ...props
 }) {
-  const s = variantStyles[variant]?.[color] ?? variantStyles.primary.theme;
-  const sz = sizeMap[size] ?? sizeMap['32'];
-  const isDisabled = disabled || loading;
+  const inactive = disabled || loading;
+  const iconOnly = !!Icon;
+  const iconSize = size === '24' ? 14 : 16;
+  const ref = useRef(null);
+
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.width = '';
+    el.style.width = el.offsetWidth + 'px';
+  }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading]);
+
+  const base =
+    'inline-flex items-center justify-center relative font-pretendard font-normal ' +
+    'rounded-round-4 transition-colors select-none';
+
+  let sizeStyle;
+  if (iconOnly) {
+    sizeStyle =
+      size === '24'
+        ? 'min-h-[24px] min-w-[24px] p-spacing-2'
+        : 'min-h-[32px] min-w-[32px] p-spacing-3';
+  } else {
+    sizeStyle =
+      size === '24'
+        ? 'min-h-[24px] min-w-[24px] px-spacing-5 py-spacing-2 text-[12px] leading-5 tracking-[0px]'
+        : 'min-h-[32px] min-w-[32px] px-spacing-6 py-spacing-3 text-[14px] leading-6 tracking-[0px]';
+  }
+
+  let colorStyle;
+  if (variant === 'fill') {
+    colorStyle = inactive
+      ? 'bg-btn-fill-disabled-bg text-btn-fill-disabled-fg cursor-not-allowed'
+      : 'bg-btn-fill-default-bg text-btn-fill-default-fg cursor-pointer ' +
+        'hover:bg-btn-fill-hover-bg ' +
+        'active:bg-btn-fill-default-bg';
+  } else if (variant === 'line') {
+    colorStyle = inactive
+      ? 'bg-btn-line-disabled-bg text-btn-line-disabled-fg cursor-not-allowed'
+      : 'bg-btn-line-default-bg text-btn-line-default-fg ring-1 ring-inset ring-btn-line-default-line cursor-pointer ' +
+        'hover:bg-btn-line-hover-bg hover:ring-btn-line-hover-line ' +
+        'active:bg-btn-line-default-bg active:ring-btn-line-default-line';
+  } else {
+    // ghost
+    colorStyle = inactive
+      ? 'bg-btn-ghost-disabled-bg text-btn-ghost-disabled-fg cursor-not-allowed'
+      : 'bg-transparent text-btn-ghost-default-fg cursor-pointer ' +
+        'hover:bg-btn-ghost-hover-bg ' +
+        'active:bg-transparent';
+  }
 
   return (
     <button
-      disabled={isDisabled}
-      className={[
-        base,
-        sz.wrap,
-        s.default,
-        s.hover,
-        s.active,
-        s.disabled,
-        fullWidth ? 'w-full' : '',
-        className,
-      ].filter(Boolean).join(' ')}
+      ref={ref}
+      className={`${base} ${sizeStyle} ${colorStyle} ${className}`}
+      disabled={inactive}
+      onClick={!inactive ? onClick : undefined}
       {...props}
     >
-      {loading ? (
-        <Loader2 size={sz.icon} className="animate-spin" />
-      ) : LeftIcon ? (
-        <LeftIcon size={sz.icon} />
-      ) : null}
-      {children && (
-        <span className={loading ? 'opacity-0' : ''}>{children}</span>
+      {loading && (
+        <span className="absolute inset-0 flex items-center justify-center">
+          <LoaderCircle
+            size={iconSize}
+            strokeWidth={1.8}
+            className="animate-spin text-font-icon-3"
+          />
+        </span>
       )}
-      {!loading && RightIcon && <RightIcon size={sz.icon} />}
+      <span className={`inline-flex items-center gap-spacing-3 ${loading ? 'opacity-0' : ''}`}>
+        {iconOnly ? (
+          <Icon size={iconSize} strokeWidth={1.8} />
+        ) : (
+          <>
+            {LeftIcon && <LeftIcon size={iconSize} strokeWidth={1.8} />}
+            {children}
+            {RightIcon && <RightIcon size={iconSize} strokeWidth={1.8} />}
+          </>
+        )}
+      </span>
     </button>
   );
 }
