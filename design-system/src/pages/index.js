@@ -4,3 +4,8 @@ export { FontIconColorsPage } from './FontIconColorsPage';
 export { SpacingPage } from './SpacingPage';
 export { IconsPage } from './IconsPage';
 export { ButtonPage } from './ButtonPage';
+export { SearchBarPage } from './SearchBarPage';
+export { InputPage } from './InputPage';
+export { SelectPage } from './SelectPage';
+export { TagPage } from './TagPage';
+export { OptionListPage } from './OptionListPage';

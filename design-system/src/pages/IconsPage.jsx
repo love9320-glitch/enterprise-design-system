@@ -83,7 +83,7 @@ export function IconsPage() {
   return (
     <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-lg font-semibold">Icons</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4 dark:text-gray-400">
+      <p className="mb-spacing-8 text-sm text-font-icon-4">
         Lucide 아이콘(lucide-react) 기반 아이콘 시스템 — 기본 사이즈{' '}
         <code className="text-font-icon-3">{iconTokens.size}×{iconTokens.size}</code>,
         선 두께(strokeWidth){' '}
@@ -105,12 +105,12 @@ export function IconsPage() {
               return (
                 <div
                   key={name}
-                  className="flex flex-col items-center gap-spacing-4 rounded-round-4 border border-gray-200 p-spacing-6 dark:border-gray-800"
+                  className="flex flex-col items-center gap-spacing-4 rounded-round-4 border border-gray-200 p-spacing-6"
                 >
                   <Icon
                     size={iconTokens.size}
                     strokeWidth={iconTokens.strokeWidth}
-                    className="text-font-icon-5 dark:text-gray-100"
+                    className="text-font-icon-5"
                   />
                   <p className="text-xs text-font-icon-3">{name}</p>
                 </div>

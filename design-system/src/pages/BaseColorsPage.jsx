@@ -7,12 +7,16 @@ const monoColors = [
 ];
 const gray900AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('gray-900-'));
 const whiteAlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('white-'));
+const redScale = Object.entries(baseColors.base.red);
+const red400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('red-400-'));
+const blueScale = Object.entries(baseColors.base.blue);
+const blue400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('blue-400-'));
 
 function ColorSwatch({ label, hex }) {
   return (
     <div>
       <div
-        className="h-16 w-full rounded-round-4 border border-gray-200 dark:border-gray-800"
+        className="h-16 w-full rounded-round-4 border border-gray-200"
         style={{ backgroundColor: hex }}
       />
       <p className="mt-spacing-4 text-xs font-medium">{label}</p>
@@ -25,7 +29,7 @@ function AlphaColorSwatch({ label, hex }) {
   return (
     <div>
       <div
-        className="relative h-16 w-full overflow-hidden rounded-round-4 border border-gray-200 dark:border-gray-800"
+        className="relative h-16 w-full overflow-hidden rounded-round-4 border border-gray-200"
         style={{
           backgroundImage:
             'linear-gradient(45deg,#ccc 25%,transparent 25%),' +
@@ -48,9 +52,10 @@ export function BaseColorsPage() {
   return (
     <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-lg font-semibold">Base Colors</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4 dark:text-gray-400">
-        모노톤 베이스 컬러 — Figma "베이직 칼라 토큰" 토큰. 시멘틱 컬러는 이 값을
-        참조해 추후 별도로 등록합니다.
+      <p className="mb-spacing-8 text-sm text-font-icon-4">
+        베이스(프리미티브) 컬러 — Figma "베이직 칼라 토큰". 모노톤 그레이 스케일과
+        피드백용 red·blue 계열, 각 알파 시리즈로 구성됩니다. 시멘틱 컬러는 이 값을
+        참조해 등록합니다.
       </p>
 
       <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
@@ -72,6 +77,24 @@ export function BaseColorsPage() {
       </div>
 
       <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+        Red
+      </h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {redScale.map(([key, hex]) => (
+          <ColorSwatch key={key} label={`red / ${key}`} hex={hex} />
+        ))}
+      </div>
+
+      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+        Blue
+      </h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {blueScale.map(([key, hex]) => (
+          <ColorSwatch key={key} label={`blue / ${key}`} hex={hex} />
+        ))}
+      </div>
+
+      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
         Gray 900 Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -83,9 +106,27 @@ export function BaseColorsPage() {
       <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
         White Alpha
       </h3>
-      <div className="grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
         {whiteAlphaColors.map(([key, hex]) => (
           <AlphaColorSwatch key={key} label={key.replace('white-', 'white / ')} hex={hex} />
+        ))}
+      </div>
+
+      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+        Red 400 Alpha
+      </h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {red400AlphaColors.map(([key, hex]) => (
+          <AlphaColorSwatch key={key} label={key.replace('red-400-', '400 / ')} hex={hex} />
+        ))}
+      </div>
+
+      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+        Blue 400 Alpha
+      </h3>
+      <div className="grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {blue400AlphaColors.map(([key, hex]) => (
+          <AlphaColorSwatch key={key} label={key.replace('blue-400-', '400 / ')} hex={hex} />
         ))}
       </div>
     </section>

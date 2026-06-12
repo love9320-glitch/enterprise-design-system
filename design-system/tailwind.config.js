@@ -1,12 +1,12 @@
 import {
   fontFamily, fontSize,
-  baseColors, fontIconColors, buttonColors,
+  baseColors, fontIconColors, buttonColors, textFieldColors,
+  listColors, tagColors,
   spacing, radius, borderWidth,
 } from './src/tokens/index.js';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
   content: ['./index.html', './src/**/*.{js,jsx}'],
   safelist: [
     ...Object.keys(fontSize).map((size) => `text-${size}`),
@@ -21,10 +21,14 @@ export default {
         ...baseColors,
         'font-icon': fontIconColors,
         btn: buttonColors,
+        tf: textFieldColors,
+        list: listColors,
+        tag: tagColors,
       },
       spacing,
       borderRadius: radius,
       borderWidth,
+      ringWidth: borderWidth, // ring 두께도 border 토큰(border-1~4)을 그대로 사용
     },
   },
   plugins: [],

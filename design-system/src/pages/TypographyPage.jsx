@@ -8,7 +8,7 @@ export function TypographyPage() {
   return (
     <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-lg font-semibold">Typography</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4 dark:text-gray-400">
+      <p className="mb-spacing-8 text-sm text-font-icon-4">
         Pretendard · Regular(400) / SemiBold(600) — Figma "폰트 시스템" 토큰
       </p>
 

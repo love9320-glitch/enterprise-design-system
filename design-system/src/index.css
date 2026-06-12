@@ -4,7 +4,19 @@
 
 @layer base {
   body {
-    @apply bg-white text-font-icon-5 dark:bg-gray-950 dark:text-gray-100;
+    @apply bg-white text-font-icon-5 antialiased;
     font-family: 'Pretendard Variable', Pretendard, system-ui, sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@layer utilities {
+  /* 네이티브 스크롤바 숨김 — ListGroup이 콘텐츠 위에 커스텀 thumb를 오버레이로 그린다.
+     thumb 색/크기/위치는 ListGroup.jsx에서 JS로 제어(Figma scroll 토큰 기준). */
+  .hide-native-scroll {
+    scrollbar-width: none; /* Firefox */
+  }
+  .hide-native-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
   }
 }

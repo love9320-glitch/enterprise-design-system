@@ -8,7 +8,7 @@ export function SpacingPage() {
   return (
     <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-lg font-semibold">Spacing</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4 dark:text-gray-400">
+      <p className="mb-spacing-8 text-sm text-font-icon-4">
         갭·마진·패딩에 사용하는 간격 토큰 — Figma "Spacing 토큰". Tailwind 기본
         spacing 스케일과 겹치지 않도록 별도 네임스페이스로 등록했습니다 (예:{' '}
         <code className="text-font-icon-3">p-spacing-4</code>,{' '}
@@ -24,7 +24,7 @@ export function SpacingPage() {
             </div>
             <div className="flex h-6 flex-1 items-center">
               <div
-                className="h-3 rounded-round-2 bg-base-gray-800 dark:bg-gray-300"
+                className="h-3 rounded-round-2 bg-base-gray-800"
                 style={{ width: value }}
               />
             </div>
@@ -33,7 +33,7 @@ export function SpacingPage() {
       </div>
 
       <h2 className="mb-spacing-3 mt-spacing-10 text-lg font-semibold">Radius</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4 dark:text-gray-400">
+      <p className="mb-spacing-8 text-sm text-font-icon-4">
         모서리 둥글기 토큰 — Figma "Round 토큰" (예:{' '}
         <code className="text-font-icon-3">rounded-round-7</code>,{' '}
         <code className="text-font-icon-3">rounded-round-00</code>). "round-00"은
@@ -44,7 +44,7 @@ export function SpacingPage() {
         {radiusScale.map(([key, value]) => (
           <div key={key} className="flex flex-col items-center gap-spacing-4">
             <div
-              className="h-14 w-14 border-2 border-base-gray-800 dark:border-gray-300"
+              className="h-14 w-14 border-2 border-base-gray-800"
               style={{ borderRadius: value }}
             />
             <p className="text-xs font-medium">{key}</p>
@@ -54,7 +54,7 @@ export function SpacingPage() {
       </div>
 
       <h2 className="mb-spacing-3 mt-spacing-10 text-lg font-semibold">Border</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4 dark:text-gray-400">
+      <p className="mb-spacing-8 text-sm text-font-icon-4">
         테두리 두께 토큰 — Figma "border 토큰" (예:{' '}
         <code className="text-font-icon-3">border-2</code>,{' '}
         <code className="text-font-icon-3">border-4</code>).
@@ -64,7 +64,7 @@ export function SpacingPage() {
         {borderScale.map(([key, value]) => (
           <div key={key} className="flex flex-col items-center gap-spacing-4">
             <div
-              className={`h-14 w-14 rounded-round-4 border-${key} border-base-gray-800 dark:border-gray-300`}
+              className={`h-14 w-14 rounded-round-4 border-${key} border-base-gray-800`}
             />
             <p className="text-xs font-medium">border-{key}</p>
             <p className="text-xs text-font-icon-3">{value}</p>

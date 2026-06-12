@@ -95,6 +95,17 @@ const sizeStyle = SIZE_STYLES[size];
 | 컴포넌트 | 파일 | 주요 옵션 | 데모 페이지 |
 |----------|------|-----------|-------------|
 | Button | `components/Button.jsx` | variant(fill/line/ghost) · size(32/24) · leftIcon/rightIcon/icon · disabled · loading | `pages/ButtonPage.jsx` |
+| SearchBar | `components/SearchBar.jsx` | value/onChange · onSubmit · disabled · width — 좌측 검색 아이콘, hover/focus는 ring | `pages/SearchBarPage.jsx` |
+| Input | `components/Input.jsx` | value/onChange · disabled · readOnly · error+errorMessage(툴팁) · width | `pages/InputPage.jsx` |
+| Select | `components/Select.jsx` | options · value/onChange · placeholder · disabled · readOnly · error+errorMessage(툴팁) · width(px/CSS/`'hug'`) · maxWidth · menuWidth · placement(auto/수동) · searchable — 커스텀 PopoverMenu 드롭다운(키보드 ↑↓/Enter/Esc, 외부클릭 닫기, 검색 필터, 너비 커스텀 + 위/아래·좌/우 자동 정렬) | `pages/SelectPage.jsx` |
+| Tooltip | `components/Tooltip.jsx` | variant(error) · beak(top/bottom/none) — absolute 오버레이 전용(호출부에서 위치 지정) | (Input 내부 사용) |
+| Tag | `components/Tag.jsx` | type(blue, 추후 확장) · children — tag-* 토큰 | `pages/TagPage.jsx` |
+| List | `components/List.jsx` | title · tag · rightButton · endIcon · selected · disabled · onClick · onButtonClick — 옵션 목록 한 행(5상태) | `pages/OptionListPage.jsx` |
+| ListGroup | `components/ListGroup.jsx` | children · maxVisible(기본 6) — 내부 스크롤(.scrollbar-custom) | `pages/OptionListPage.jsx` |
+| ListEmpty | `components/ListEmpty.jsx` | message — 목록 빈 상태 | `pages/OptionListPage.jsx` |
+| PopoverMenu | `components/PopoverMenu.jsx` | children · searchable · searchValue · onSearchChange · width — 옵션 목록 컨테이너(검색바 옵션, SearchBar 재사용) | `pages/OptionListPage.jsx` |
+
+> **오버레이 패턴 참고:** 필드 아래 메시지(에러 등)는 레이아웃 공간을 차지하지 않도록, 래퍼를 `relative`로 두고 메시지를 `absolute top-full`로 띄운다. `Input`의 에러 툴팁이 이 방식이다.
 
 > **예외:** 특정 컴포넌트가 공통 규칙으로 안 덮이는 **고유의 복잡한 규약**(예: 데이터 테이블의 정렬·페이지네이션·가상 스크롤)을 가질 때만, 그 컴포넌트 하나를 위한 별도 MD를 추가한다. 그 외에는 이 카탈로그 한 줄로 충분하다.
 

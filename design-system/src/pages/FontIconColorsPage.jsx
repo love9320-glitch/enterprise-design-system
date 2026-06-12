@@ -6,7 +6,7 @@ export function FontIconColorsPage() {
   return (
     <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-lg font-semibold">Font / Icon Colors</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4 dark:text-gray-400">
+      <p className="mb-spacing-8 text-sm text-font-icon-4">
         폰트·아이콘용 시멘틱 컬러 — Figma "폰트 아이콘 칼라" 토큰. 베이스 그레이
         스케일을 의미에 맞게 재참조했습니다 (5번이 디폴트 적용 컬러).
       </p>
@@ -15,10 +15,10 @@ export function FontIconColorsPage() {
         {fontIconScale.map(([key, hex]) => (
           <div
             key={key}
-            className="flex items-center gap-spacing-6 rounded-round-4 border border-gray-200 p-spacing-6 dark:border-gray-800"
+            className="flex items-center gap-spacing-6 rounded-round-4 border border-gray-200 p-spacing-6"
           >
             <div
-              className="h-10 w-10 shrink-0 rounded-round-4 border border-gray-200 dark:border-gray-800"
+              className="h-10 w-10 shrink-0 rounded-round-4 border border-gray-200"
               style={{ backgroundColor: hex }}
             />
             <div className="w-40 shrink-0">
