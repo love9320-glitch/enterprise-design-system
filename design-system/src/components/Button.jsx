@@ -28,7 +28,7 @@ export function Button({
 
   const base =
     'inline-flex items-center justify-center relative font-pretendard font-normal ' +
-    'rounded-round-4 transition-colors select-none';
+    'whitespace-nowrap rounded-round-4 transition-colors select-none';
 
   let sizeStyle;
   if (iconOnly) {

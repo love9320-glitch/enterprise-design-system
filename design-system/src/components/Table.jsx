@@ -172,7 +172,7 @@ export function Table({
                 }`}
               >
                 {selectable && (
-                  <td className={`${cellLine(false)} ${rowLine} p-spacing-6`}>
+                  <td className={`${cellLine(false)} ${rowLine} h-[49px] px-spacing-6 py-spacing-5 align-middle`}>
                     <div className="flex items-center justify-center">
                       <Checkbox
                         checked={selectedSet.has(key)}
@@ -183,7 +183,7 @@ export function Table({
                   </td>
                 )}
                 {columns.map((c, ci) => (
-                  <td key={c.key} className={`${cellLine(ci === columns.length - 1)} ${rowLine} p-spacing-6`}>
+                  <td key={c.key} className={`${cellLine(ci === columns.length - 1)} ${rowLine} h-[49px] px-spacing-6 py-spacing-5 align-middle`}>
                     <div className={`flex items-center ${ALIGN_STYLE[c.align] ?? ALIGN_STYLE.left} min-w-0 text-14 text-font-icon-5`}>
                       {/* wrap=false면 말줄임(행이 세로로 안 늘어남), wrap=true면 줄바꿈으로 늘어남. */}
                       {c.render ? (

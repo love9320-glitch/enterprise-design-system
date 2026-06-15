@@ -1,5 +1,6 @@
 import { Table } from '../components/Table';
 import { Tag } from '../components/Tag';
+import { Button } from '../components/Button';
 
 // Figma table 가이드(node 7257:1925) 예시 데이터 — 채용 공고 목록
 const COLUMNS = [
@@ -17,6 +18,13 @@ const ROWS = [
   { id: 4, title: '2026 경력직 수시채용',  period: '26.06.10 (10:00) ~ 26.06.24 (10:00)', apply: '1개', eval: '1개' },
   { id: 5, title: '2026 디자이너 채용',   period: '26.06.10 (10:00) ~ 26.06.24 (10:00)', apply: '1개', eval: '1개' },
 ];
+
+// Scroll — Horizontal 전용 — '지원서' 셀을 고스트 Button(size 32)으로 렌더(값이 버튼 텍스트).
+const H_SCROLL_COLUMNS = COLUMNS.map((c) =>
+  c.key === 'apply'
+    ? { ...c, render: (row) => <Button variant="ghost" size="32">{row.apply}</Button> }
+    : c,
+);
 
 // wrap 옵션 비교용 — 공고명 컬럼을 고정 폭(200)으로 좁혀, 긴 텍스트가 그 안에서 잘리거나 줄바꿈되게 한다.
 const WRAP_COLUMNS = [
@@ -87,7 +95,7 @@ export function TablePage() {
         desc="minWidth(테이블 최소 너비)만 지정하면 컨테이너(560px)보다 좁아질 때 가로 스크롤이 자동으로 생깁니다. 세로·가로 모두 오버레이 스크롤바(ScrollArea)."
       >
         <div className="max-w-[560px]">
-          <Table columns={COLUMNS} rows={ROWS} selectable bordered maxHeight={200} minWidth={960} />
+          <Table columns={H_SCROLL_COLUMNS} rows={ROWS} selectable bordered maxHeight={200} minWidth={960} />
         </div>
       </Block>
 
