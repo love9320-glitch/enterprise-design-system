@@ -34,7 +34,9 @@ export const textFieldColors = {
   'readonly-line': b['gray-900-00'],
   'readonly-text': b.gray[900],     // #0d0d0d (읽기는 진하게)
   'readonly-icon': b.gray[150],
-  // error tooltip
-  'error-tooltip-bg':   b.red[400], // #e74a4a
-  'error-tooltip-text': b.white,    // #ffffff
+  // tooltip — error(빨강) / normal(검정)
+  'error-tooltip-bg':    b.red[400],  // #e74a4a
+  'error-tooltip-text':  b.white,     // #ffffff
+  'normal-tooltip-bg':   b.gray[900], // #0d0d0d
+  'normal-tooltip-text': b.white,     // #ffffff
 };

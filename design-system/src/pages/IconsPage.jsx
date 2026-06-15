@@ -6,6 +6,7 @@ const ICON_CATEGORIES = [
     label: 'Navigation',
     names: [
       'Home', 'Menu', 'ChevronDown', 'ChevronUp', 'ChevronLeft', 'ChevronRight',
+      'ChevronsLeft', 'ChevronsRight',
       'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown',
       'MoreHorizontal', 'MoreVertical', 'ExternalLink', 'CornerDownRight',
     ],

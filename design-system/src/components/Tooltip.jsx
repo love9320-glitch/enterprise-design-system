@@ -1,37 +1,42 @@
 // Tooltip — 오버레이 말풍선
-// Figma 02_textfield의 에러 툴팁(node 7202:8647)을 컴포넌트화.
-// 레이아웃 흐름에 영향을 주지 않도록, 띄울 위치 지정은 호출부에서 absolute 래퍼로 처리하고
-// 이 컴포넌트는 "말풍선 박스 + 꼬리(beak)"만 그린다.
+// Figma 02_textfield의 툴팁(error / normal 타입)을 컴포넌트화.
+// 위치 지정은 호출부에서 처리하고, 이 컴포넌트는 "말풍선 박스 + 꼬리(beak)"만 그린다.
+//   - error: 빨강 배경 + beak (필수 입력 등)
+//   - normal: 검정 배경, beak 없이 사용 (말줄임 전체 텍스트 등)
+import { textFieldColors } from '../tokens';
 
-// variant별 색상 — 시멘틱 토큰 클래스만 사용 (규칙 1)
-const VARIANT_STYLE = {
-  error: 'bg-tf-error-tooltip-bg text-tf-error-tooltip-text',
+// variant별 색상 — 시멘틱 토큰값을 인라인으로 적용
+// (Tailwind 클래스 'tf-normal-tooltip-*'의 -bg/-text 모호성 회피)
+const VARIANT_COLOR = {
+  error: { bg: textFieldColors['error-tooltip-bg'], fg: textFieldColors['error-tooltip-text'] },
+  normal: { bg: textFieldColors['normal-tooltip-bg'], fg: textFieldColors['normal-tooltip-text'] },
 };
 
-// 꼬리(beak) 위치 — 말풍선이 대상의 어느 쪽에 붙는지
-// 'top' = 말풍선이 대상 아래에 있고 꼬리가 위를 가리킴
+// 꼬리(beak) 위치 — 'top' = 말풍선이 대상 아래, 꼬리가 위를 가리킴
 const BEAK_STYLE = {
-  top: '-top-spacing-2 left-spacing-5',     // 위쪽 가장자리, 좌측
+  top: '-top-spacing-2 left-spacing-5',
   bottom: '-bottom-spacing-2 left-spacing-5',
 };
 
 export function Tooltip({
   children,
-  variant = 'error',     // 'error'
-  beak = 'top',          // 'top' | 'bottom' | 'none'
+  variant = 'error', // 'error' | 'normal'
+  beak = 'top',      // 'top' | 'bottom' | 'none'
   className = '',
 }) {
-  const color = VARIANT_STYLE[variant] ?? VARIANT_STYLE.error;
+  const c = VARIANT_COLOR[variant] ?? VARIANT_COLOR.error;
 
   return (
     <div
       role="tooltip"
-      className={`relative inline-flex items-center rounded-round-4 px-spacing-5 py-spacing-2 drop-shadow-[0px_2px_2px_rgba(0,0,0,0.12)] ${color} ${className}`}
+      style={{ backgroundColor: c.bg, color: c.fg }}
+      className={`relative inline-flex items-center rounded-round-4 px-spacing-5 py-spacing-2 drop-shadow-[0px_2px_2px_rgba(13,13,13,0.12)] ${className}`}
     >
       {beak !== 'none' && (
         <span
           aria-hidden="true"
-          className={`absolute h-spacing-5 w-spacing-5 rotate-45 rounded-[1px] ${color} ${BEAK_STYLE[beak] ?? BEAK_STYLE.top}`}
+          style={{ backgroundColor: c.bg }}
+          className={`absolute h-spacing-5 w-spacing-5 rotate-45 rounded-[1px] ${BEAK_STYLE[beak] ?? BEAK_STYLE.top}`}
         />
       )}
       <p className="relative whitespace-nowrap text-12">{children}</p>

@@ -18,6 +18,15 @@
 4. 최종 `className`은 `` `${base} ${sizeStyle} ${colorStyle} ${className}` `` 형태로 합성
 5. 나머지 속성은 `...props`로 전달, `onClick` 등 핸들러는 비활성 상태 가드
 
+## 규칙 5 — 말줄임(truncate) 텍스트는 hover 툴팁 필수
+
+영역이 좁아 텍스트가 잘릴 수 있는 곳(목록 항목명, 셀렉트 값, 칩, 표 셀 등)은 **`TruncatingText` 컴포넌트로 감싼다.** 단순히 `truncate` 클래스만 쓰지 말 것.
+
+- 실제로 잘렸을 때만(`scrollWidth > clientWidth`) hover 시 **normal Tooltip**으로 전체 텍스트를 보여준다.
+- 툴팁은 **portal(document.body) + fixed**로 부모의 `overflow`를 벗어나고, viewport 경계에서 **위→아래·오른쪽→왼쪽 자동 반전**한다.
+- **Why:** 좁은 영역의 말줄임은 정보 손실이다. 전체 값을 확인할 수단을 일관되게 제공한다.
+- **How to apply:** `<TruncatingText className="min-w-0 flex-1 text-14 ...">{text}</TruncatingText>` 형태로 사용(내부에서 `truncate` 적용). 레퍼런스: `components/List.jsx`의 옵션 제목.
+
 ## 모범 예제 — 패턴 견본 (Button 구조를 표준으로 삼는다)
 
 > 이 예제는 **"이렇게 짜라"는 구조 견본 1개**다. 컴포넌트마다 전체 예제를 이 파일에 복붙하지 않는다(코드와 이중 관리되어 낡는다).
@@ -98,12 +107,17 @@ const sizeStyle = SIZE_STYLES[size];
 | SearchBar | `components/SearchBar.jsx` | value/onChange · onSubmit · disabled · width — 좌측 검색 아이콘, hover/focus는 ring | `pages/SearchBarPage.jsx` |
 | Input | `components/Input.jsx` | value/onChange · disabled · readOnly · error+errorMessage(툴팁) · width | `pages/InputPage.jsx` |
 | Select | `components/Select.jsx` | options · value/onChange · placeholder · disabled · readOnly · error+errorMessage(툴팁) · width(px/CSS/`'hug'`) · maxWidth · menuWidth · placement(auto/수동) · searchable — 커스텀 PopoverMenu 드롭다운(키보드 ↑↓/Enter/Esc, 외부클릭 닫기, 검색 필터, 너비 커스텀 + 위/아래·좌/우 자동 정렬) | `pages/SelectPage.jsx` |
-| Tooltip | `components/Tooltip.jsx` | variant(error) · beak(top/bottom/none) — absolute 오버레이 전용(호출부에서 위치 지정) | (Input 내부 사용) |
-| Tag | `components/Tag.jsx` | type(blue, 추후 확장) · children — tag-* 토큰 | `pages/TagPage.jsx` |
+| Tooltip | `components/Tooltip.jsx` | variant(error/normal) · beak(top/bottom/none) — 색은 토큰값 인라인 적용 | `pages/TagPage.jsx` (Input·List 내부 사용) |
+| TruncatingText | `components/TruncatingText.jsx` | children · as · className — 말줄임 시 hover로 전체 텍스트 normal 툴팁(portal+자동반전) | `components/List.jsx` |
+| Tag | `components/Tag.jsx` | type(blue/red/gray) · width(hug/fill) · children — tag-* 토큰 | `pages/TagPage.jsx` |
+| Checkbox | `components/Checkbox.jsx` | checked/onChange · defaultChecked · disabled · label — 6상태(unselected/selected×default/hover/disabled), checkbox-* 토큰 | `pages/CheckboxPage.jsx` |
 | List | `components/List.jsx` | title · tag · rightButton · endIcon · selected · disabled · onClick · onButtonClick — 옵션 목록 한 행(5상태) | `pages/OptionListPage.jsx` |
-| ListGroup | `components/ListGroup.jsx` | children · maxVisible(기본 6) — 내부 스크롤(.scrollbar-custom) | `pages/OptionListPage.jsx` |
+| ScrollArea | `components/ScrollArea.jsx` | children · maxHeight · horizontal(가로 오버레이 스크롤바 추가) · contentClassName — 커스텀 오버레이 스크롤바(공용, 세로+가로). 스크롤 생기는 모든 곳에 사용 | `pages/TagPage.jsx` |
+| ListGroup | `components/ListGroup.jsx` | children · maxVisible(기본 6) — 내부 스크롤(ScrollArea 사용) | `pages/OptionListPage.jsx` |
 | ListEmpty | `components/ListEmpty.jsx` | message — 목록 빈 상태 | `pages/OptionListPage.jsx` |
 | PopoverMenu | `components/PopoverMenu.jsx` | children · searchable · searchValue · onSearchChange · width — 옵션 목록 컨테이너(검색바 옵션, SearchBar 재사용) | `pages/OptionListPage.jsx` |
+| Table | `components/Table.jsx` | columns(key/label/width/align/render) · rows · rowKey · selectable+selectedIds/onSelectChange(전체선택) · bordered · wrap(본문 줄바꿈: false 말줄임+행고정 / true 늘어남) · maxHeight(세로 스크롤+헤더 고정) · minWidth(테이블 최소 너비; 실제 최소=max(minWidth, 컬럼최소폭합), fill 컬럼은 40px 유지, 좁아지면 가로 스크롤 자동) · scrollX(가로 스크롤 수동) — 세로·가로 모두 ScrollArea 오버레이 스크롤바 · loading · emptyMessage · onRowClick — table-* 토큰 | `pages/TablePage.jsx` |
+| Pagination | `components/Pagination.jsx` | page/onChange(controlled) · defaultPage · totalCount/totalPages · pageSize/onPageSizeChange · pageSizeOptions(기본 10/20/40/80) · maxButtons(번호 윈도우, 기본 10) · showTotal · showPageSize — « ‹ 번호 › » + 총 N개 + 페이지 행 Select, 현재페이지 ghost-select 토큰 | `pages/PaginationPage.jsx` |
 
 > **오버레이 패턴 참고:** 필드 아래 메시지(에러 등)는 레이아웃 공간을 차지하지 않도록, 래퍼를 `relative`로 두고 메시지를 `absolute top-full`로 띄운다. `Input`의 에러 툴팁이 이 방식이다.
 

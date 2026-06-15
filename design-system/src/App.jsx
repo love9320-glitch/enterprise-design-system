@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage,
-  SearchBarPage, InputPage, SelectPage, TagPage, OptionListPage,
+  SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, OptionListPage,
+  PaginationPage, TablePage,
 } from './pages/index';
 
 const NAV_GROUPS = [
@@ -23,8 +24,11 @@ const NAV_GROUPS = [
       { id: 'search-bar', label: 'Search Bar', Page: SearchBarPage },
       { id: 'input',      label: 'Input',      Page: InputPage },
       { id: 'select',      label: 'Select',      Page: SelectPage },
-      { id: 'tag',         label: 'Tag',         Page: TagPage },
+      { id: 'tag',         label: 'Tag / Tooltip / Scrollbar', Page: TagPage },
+      { id: 'checkbox',    label: 'Checkbox',    Page: CheckboxPage },
       { id: 'option-list', label: 'Option List', Page: OptionListPage },
+      { id: 'pagination',  label: 'Pagination',  Page: PaginationPage },
+      { id: 'table',       label: 'Table',       Page: TablePage },
     ],
   },
 ];
@@ -90,7 +94,9 @@ export default function App() {
 
       <div className="flex flex-1">
         <Sidebar active={activeId} onSelect={navigate} />
-        <main className="flex-1">{Page && <Page />}</main>
+        {/* min-w-0: flex 아이템 기본 min-width:auto 때문에 콘텐츠(테이블)보다 좁아지지 못하는 것을 풀어,
+            ScrollArea가 컨테이너 폭에 맞춰 줄고 가로 스크롤이 정상 동작하게 한다. */}
+        <main className="min-w-0 flex-1">{Page && <Page />}</main>
       </div>
     </div>
   );

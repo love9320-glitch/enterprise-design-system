@@ -8,4 +8,7 @@ export { SearchBarPage } from './SearchBarPage';
 export { InputPage } from './InputPage';
 export { SelectPage } from './SelectPage';
 export { TagPage } from './TagPage';
+export { CheckboxPage } from './CheckboxPage';
 export { OptionListPage } from './OptionListPage';
+export { PaginationPage } from './PaginationPage';
+export { TablePage } from './TablePage';

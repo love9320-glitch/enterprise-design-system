@@ -6,6 +6,7 @@
 // 색은 list-* 시멘틱 토큰만 사용.
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Tag } from './Tag';
+import { TruncatingText } from './TruncatingText';
 
 export function List({
   title = 'list',
@@ -52,10 +53,12 @@ export function List({
       className={`flex min-h-[32px] w-full items-center justify-between px-spacing-6 py-spacing-3 transition-colors ${rowBg} ${className}`}
       {...props}
     >
-      {/* left: tag + title */}
+      {/* left: tag + title (말줄임 시 hover 툴팁 — TruncatingText) */}
       <div className="flex min-w-0 flex-1 items-center gap-spacing-4">
         {tag && <Tag>{tagText}</Tag>}
-        <p className={`min-w-0 flex-1 truncate text-14 ${titleColor}`}>{title}</p>
+        <TruncatingText className={`min-w-0 flex-1 text-14 ${titleColor}`}>
+          {title}
+        </TruncatingText>
       </div>
 
       {/* right: 고스트 ⋯ 버튼 + chevron */}

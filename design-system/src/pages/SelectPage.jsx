@@ -18,7 +18,7 @@ const ROWS = [
 ];
 
 const SEARCH_OPTIONS = [
-  '사과', '바나나', '체리', '두리안', '포도', '키위',
+  '사과', '바나나', '아주 길어서 반드시 잘리는 스무 글자짜리 과일', '두리안', '포도', '키위',
   '레몬', '망고', '오렌지', '복숭아', '딸기', '수박',
 ].map((name, i) => ({ value: `f${i}`, label: name }));
 
@@ -121,6 +121,7 @@ export function SelectPage() {
               width="hug"
               maxWidth={140}
               menuWidth={280}
+              defaultValue="f2"
             />
           </div>
         </div>
