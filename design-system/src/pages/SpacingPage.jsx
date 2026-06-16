@@ -6,10 +6,10 @@ const borderScale = Object.entries(borderWidth);
 
 export function SpacingPage() {
   return (
-    <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
-      <h2 className="mb-spacing-3 text-lg font-semibold">Spacing</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4">
-        갭·마진·패딩에 사용하는 간격 토큰 — Figma "Spacing 토큰". Tailwind 기본
+    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+      <h2 className="mb-spacing-3 text-20 font-semibold">Spacing</h2>
+      <p className="mb-spacing-8 text-14 text-font-icon-4">
+        갭·마진·패딩에 사용하는 간격 토큰 — Figma "Spacing 토큰".<br />Tailwind 기본
         spacing 스케일과 겹치지 않도록 별도 네임스페이스로 등록했습니다 (예:{' '}
         <code className="text-font-icon-3">p-spacing-4</code>,{' '}
         <code className="text-font-icon-3">gap-spacing-6</code>).
@@ -32,11 +32,11 @@ export function SpacingPage() {
         ))}
       </div>
 
-      <h2 className="mb-spacing-3 mt-spacing-10 text-lg font-semibold">Radius</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4">
+      <h2 className="mb-spacing-3 mt-spacing-10 border-t border-base-gray-100 pt-spacing-8 text-20 font-semibold">Radius</h2>
+      <p className="mb-spacing-8 text-14 text-font-icon-4">
         모서리 둥글기 토큰 — Figma "Round 토큰" (예:{' '}
         <code className="text-font-icon-3">rounded-round-7</code>,{' '}
-        <code className="text-font-icon-3">rounded-round-00</code>). "round-00"은
+        <code className="text-font-icon-3">rounded-round-00</code>).<br />"round-00"은
         원·필 형태에 사용하는 999px 값입니다.
       </p>
 
@@ -53,8 +53,8 @@ export function SpacingPage() {
         ))}
       </div>
 
-      <h2 className="mb-spacing-3 mt-spacing-10 text-lg font-semibold">Border</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4">
+      <h2 className="mb-spacing-3 mt-spacing-10 border-t border-base-gray-100 pt-spacing-8 text-20 font-semibold">Border</h2>
+      <p className="mb-spacing-8 text-14 text-font-icon-4">
         테두리 두께 토큰 — Figma "border 토큰" (예:{' '}
         <code className="text-font-icon-3">border-2</code>,{' '}
         <code className="text-font-icon-3">border-4</code>).

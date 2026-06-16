@@ -12,3 +12,4 @@ export { CheckboxPage } from './CheckboxPage';
 export { OptionListPage } from './OptionListPage';
 export { PaginationPage } from './PaginationPage';
 export { TablePage } from './TablePage';
+export { TableTemplatePage } from './TableTemplatePage';

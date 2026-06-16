@@ -1,6 +1,7 @@
 // Table — 데이터 테이블 (Figma table, node 7257:1925)
 // 컬럼 정의(columns)와 데이터(rows)를 받아 렌더하는 완전 옵션형 테이블.
-//   - columns: [{ key, label, width?, align?, render? }]  width 없으면 가변(fill). fill 컬럼은 최소 40px 유지
+//   - columns: [{ key, label, width?, align?, render?, renderHeader? }]  width 없으면 가변(fill). fill 컬럼은 최소 40px 유지
+//     renderHeader: () => ReactNode — 헤더 셀을 직접 렌더(예: 헤더에 인라인 텍스트형 Select 필터). 없으면 label을 말줄임 텍스트로 표시
 //   - selectable: 체크박스 선택 컬럼(전체선택 헤더 포함). selectedIds/onSelectChange로 controlled, 미지정 시 내부 상태
 //   - bordered: 외곽선 + 라운드(true) / 외곽선 없는 라운드 헤더(false)
 //   - wrap: 본문 셀 텍스트 줄바꿈 여부. false(기본)=말줄임+행 높이 고정(잘리면 hover 툴팁) / true=줄바꿈으로 행이 세로로 늘어남
@@ -86,10 +87,13 @@ export function Table({
   // empty/loading 행: noneline은 데이터 행처럼 하단 구분선, bordered는 외곽선이 처리하므로 생략.
   const stateLine = bordered ? '' : 'border-b border-table-cell-line';
 
-  // 헤더 행 하단 구분선 — bordered(스크롤 테이블 스타일) 또는 sticky 헤더일 때.
+  // 헤더 행 하단 구분선 — bordered 타입에만 적용한다.
+  // noneline(외곽선 없음)은 가이드상 둥근 회색 바만 있고 헤더 언더라인이 없어야 하므로,
+  // 세로 스크롤(sticky 헤더)이어도 구분선을 긋지 않는다(회색 바 배경으로 본문과 구분).
   // border-collapse 환경에서 스크롤 시 사라지는 버그를 피하려 box-shadow로 안정적으로 그린다.
-  const headDivider =
-    bordered || hasVScroll ? { boxShadow: `inset 0 -1px 0 ${tableColors['cell-line']}` } : undefined;
+  const headDivider = bordered
+    ? { boxShadow: `inset 0 -1px 0 ${tableColors['cell-line']}` }
+    : undefined;
 
   // noneline(외곽선 없음) 테이블은 헤더가 위·아래 모두 둥근 회색 바 → 헤더 바깥 셀에 좌/우 라운드.
   // bordered는 래퍼 overflow-clip이 코너를 처리하므로 셀 라운드를 주지 않는다.
@@ -104,11 +108,16 @@ export function Table({
 
   const headCell = (c, isFirst, isLast) => (
     <th key={c.key} {...headCellProps(isFirst, isLast, c.width)}>
-      {/* 헤더 라벨은 말줄임 처리 — 컬럼이 좁아도 줄바꿈으로 세로로 늘어나지 않게. 잘리면 hover 툴팁. */}
+      {/* renderHeader가 있으면 그대로 렌더(헤더 필터용 Select 등), 없으면 라벨을 말줄임 처리
+          — 컬럼이 좁아도 줄바꿈으로 세로로 늘어나지 않게. 잘리면 hover 툴팁. */}
       <div className={`flex items-center ${ALIGN_STYLE[c.align] ?? ALIGN_STYLE.left}`}>
-        <TruncatingText as="span" className="min-w-0 text-12 font-normal text-font-icon-5">
-          {c.label}
-        </TruncatingText>
+        {c.renderHeader ? (
+          c.renderHeader()
+        ) : (
+          <TruncatingText as="span" className="min-w-0 text-12 font-normal text-font-icon-5">
+            {c.label}
+          </TruncatingText>
+        )}
       </div>
     </th>
   );
@@ -161,8 +170,10 @@ export function Table({
             const key = getKey(row, ri);
             const isLastRow = ri === rows.length - 1;
             // 행 구분선은 td에 적용한다(border-separate에선 tr 보더가 렌더되지 않음).
-            // 스크롤 테이블은 마지막 행 구분선을 빼 외곽선과 이중선이 되지 않게 한다.
-            const rowLine = hasVScroll && isLastRow ? '' : 'border-b border-table-cell-line';
+            // 바닥이 이미 닫히는 경우(bordered=외곽선 / noneline+세로스크롤=컨테이너 하단선)엔
+            // 마지막 행 구분선을 빼 이중선(2px)이 되지 않게 한다.
+            const bottomClosed = bordered || hasVScroll;
+            const rowLine = bottomClosed && isLastRow ? '' : 'border-b border-table-cell-line';
             return (
               <tr
                 key={key}
@@ -206,10 +217,15 @@ export function Table({
     </table>
   );
 
-  // 외곽: bordered → 외곽선+라운드+클립(코너 처리) / noneline → 외곽 없음(헤더 셀이 직접 라운드)
+  // 외곽: bordered → 외곽선+라운드+클립(코너 처리)
+  //       noneline → 외곽 없음(헤더 셀이 직접 라운드). 단, 세로 스크롤이 생기면 하단에
+  //       구분선을 그어 스크롤 영역의 끝을 표시한다. (마지막 행 구분선은 위 rowLine에서 제거되고,
+  //       그 선은 스크롤돼야만 보이므로, 스크롤 위치와 무관하게 항상 보이도록 컨테이너에 고정 underline을 둔다.)
   const shell = bordered
     ? 'overflow-clip rounded-round-4 border border-table-outline'
-    : '';
+    : hasVScroll
+      ? 'border-b border-table-cell-line'
+      : '';
 
   // 스크롤 래핑 — 세로·가로 모두 ScrollArea 오버레이 스크롤바로 처리
   const body = needsScroll ? (

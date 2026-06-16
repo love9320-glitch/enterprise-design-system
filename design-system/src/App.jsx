@@ -3,8 +3,9 @@ import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, OptionListPage,
-  PaginationPage, TablePage,
+  PaginationPage, TablePage, TableTemplatePage,
 } from './pages/index';
+import { ScrollArea } from './components/ScrollArea';
 
 const NAV_GROUPS = [
   {
@@ -31,13 +32,20 @@ const NAV_GROUPS = [
       { id: 'table',       label: 'Table',       Page: TablePage },
     ],
   },
+  {
+    label: '템플릿',
+    items: [
+      { id: 'table-template', label: 'Table Template', Page: TableTemplatePage },
+    ],
+  },
 ];
 
 const ALL_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
 
 function Sidebar({ active, onSelect }) {
   return (
-    <nav className="w-56 shrink-0 border-r border-gray-200 px-spacing-6 py-spacing-7">
+    <aside className="relative w-56 shrink-0 border-r border-gray-200">
+      <ScrollArea className="absolute inset-0" contentClassName="h-full px-spacing-6 py-spacing-7">
       {NAV_GROUPS.map((group) => (
         <div key={group.label} className="mb-spacing-7">
           <p className="mb-spacing-4 px-spacing-4 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
@@ -61,7 +69,8 @@ function Sidebar({ active, onSelect }) {
           </ul>
         </div>
       ))}
-    </nav>
+      </ScrollArea>
+    </aside>
   );
 }
 
@@ -87,16 +96,27 @@ export default function App() {
   const { Page } = ALL_ITEMS.find((item) => item.id === activeId) ?? {};
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex items-center border-b border-gray-200 px-spacing-7 py-spacing-6">
+    <div className="flex h-screen flex-col overflow-hidden">
+      <header className="flex shrink-0 items-center border-b border-gray-200 px-spacing-7 py-spacing-6">
         <h1 className="text-lg font-semibold">Design System</h1>
       </header>
 
-      <div className="flex flex-1">
+      {/* min-h-0: 헤더 아래 영역이 남은 높이만큼만 차지하고, 그 안에서 LNB·본문이 각각 스크롤되도록 한다. */}
+      <div className="flex min-h-0 flex-1">
         <Sidebar active={activeId} onSelect={navigate} />
-        {/* min-w-0: flex 아이템 기본 min-width:auto 때문에 콘텐츠(테이블)보다 좁아지지 못하는 것을 풀어,
-            ScrollArea가 컨테이너 폭에 맞춰 줄고 가로 스크롤이 정상 동작하게 한다. */}
-        <main className="min-w-0 flex-1">{Page && <Page />}</main>
+        {/* min-w-0 / min-h-0: flex 아이템 기본 min-width/height:auto 때문에 콘텐츠(테이블)보다
+            작아지지 못하는 것을 풀어, ScrollArea가 컨테이너 크기에 맞춰 줄고 가로·세로 스크롤이
+            ScrollArea 안에서만 일어나게 한다. min-h-0가 없으면 긴 콘텐츠가 main을 밀어 올려
+            root(h-screen)를 넘치고, 내부 focusable 요소로 포커스가 갈 때 전체 화면이 위로 밀린다. */}
+        {/* relative + ScrollArea를 absolute inset-0로: flex로 stretch된 main은 CSS상 height가 auto라
+            자식 h-full이 콘텐츠만큼 늘어나 root(h-screen)를 넘치고, 내부 focusable로 포커스가 갈 때
+            전체 화면이 위로 밀린다. ScrollArea를 main 박스(inset-0)에 절대 고정해 explicit height를
+            주면 내부 스크롤이 ScrollArea 안에서만 일어난다. */}
+        <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+          <ScrollArea className="absolute inset-0" contentClassName="h-full">
+            {Page && <Page />}
+          </ScrollArea>
+        </main>
       </div>
     </div>
   );

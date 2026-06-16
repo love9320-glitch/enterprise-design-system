@@ -82,22 +82,25 @@ const ICON_CATEGORIES = [
 
 export function IconsPage() {
   return (
-    <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
-      <h2 className="mb-spacing-3 text-lg font-semibold">Icons</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4">
+    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+      <h2 className="mb-spacing-3 text-20 font-semibold">Icons</h2>
+      <p className="mb-spacing-8 text-14 text-font-icon-4">
         Lucide 아이콘(lucide-react) 기반 아이콘 시스템 — 기본 사이즈{' '}
         <code className="text-font-icon-3">{iconTokens.size}×{iconTokens.size}</code>,
         선 두께(strokeWidth){' '}
         <code className="text-font-icon-3">{iconTokens.strokeWidth}</code>의 윤곽선(stroke)
-        형태로 표시하며, 기본 색상은 폰트 기본 색상과 동일한 시멘틱 토큰{' '}
+        형태로 표시하며,<br />기본 색상은 폰트 기본 색상과 동일한 시멘틱 토큰{' '}
         <code className="text-font-icon-3">font / icon color 5</code> (
-        <code className="text-font-icon-3">{iconTokens.color}</code>)를 그대로 참조합니다.
+        <code className="text-font-icon-3">{iconTokens.color}</code>)를 그대로 참조합니다. <br/>
         자주 사용하는 아이콘을 의미별 카테고리로 분류했습니다.
       </p>
 
-      {ICON_CATEGORIES.map((category) => (
-        <div key={category.label} className="mb-spacing-9">
-          <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      {ICON_CATEGORIES.map((category, i) => (
+        <div
+          key={category.label}
+          className={i === 0 ? 'mb-spacing-9' : 'mt-spacing-9 border-t border-base-gray-100 pt-spacing-8'}
+        >
+          <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
             {category.label}
           </h3>
           <div className="grid grid-cols-3 gap-spacing-7 sm:grid-cols-6">

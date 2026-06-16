@@ -104,20 +104,23 @@ const sizeStyle = SIZE_STYLES[size];
 | 컴포넌트 | 파일 | 주요 옵션 | 데모 페이지 |
 |----------|------|-----------|-------------|
 | Button | `components/Button.jsx` | variant(fill/line/ghost) · size(32/24) · leftIcon/rightIcon/icon · disabled · loading | `pages/ButtonPage.jsx` |
+| ButtonGroup | `components/ButtonGroup.jsx` | children · direction(horizontal/vertical) · gap(spacing 토큰 키, 기본 '5'=8px) — 버튼들을 일정 간격으로 묶는 flex 컨테이너. **자식에 Select가 섞이면 Select를 버튼보다 앞(선두)에 자동 배치** | `pages/ButtonPage.jsx` |
 | SearchBar | `components/SearchBar.jsx` | value/onChange · onSubmit · disabled · width — 좌측 검색 아이콘, hover/focus는 ring | `pages/SearchBarPage.jsx` |
 | Input | `components/Input.jsx` | value/onChange · disabled · readOnly · error+errorMessage(툴팁) · width | `pages/InputPage.jsx` |
-| Select | `components/Select.jsx` | options · value/onChange · placeholder · disabled · readOnly · error+errorMessage(툴팁) · width(px/CSS/`'hug'`) · maxWidth · menuWidth · placement(auto/수동) · searchable — 커스텀 PopoverMenu 드롭다운(키보드 ↑↓/Enter/Esc, 외부클릭 닫기, 검색 필터, 너비 커스텀 + 위/아래·좌/우 자동 정렬) | `pages/SelectPage.jsx` |
+| Select | `components/Select.jsx` | variant(box/text) · size(24/20, text 전용) · options · value/onChange · placeholder · disabled · readOnly · error+errorMessage(툴팁) · width(px/CSS/`'hug'`) · maxWidth · menuWidth · placement(auto/수동) · searchable — 커스텀 PopoverMenu 드롭다운(키보드 ↑↓/Enter/Esc, 외부클릭 닫기, 검색 필터, 너비 커스텀 + 위/아래·좌/우 자동 정렬). **variant="text"** = 박스 없는 인라인 텍스트형(필터·테이블 바디/헤더·문단 사이·폼용, hug+maxWidth만, 드롭다운 기본 너비 120px, hover 밑줄, disabled/readOnly/error 모두 지원) | `pages/SelectPage.jsx` |
 | Tooltip | `components/Tooltip.jsx` | variant(error/normal) · beak(top/bottom/none) — 색은 토큰값 인라인 적용 | `pages/TagPage.jsx` (Input·List 내부 사용) |
 | TruncatingText | `components/TruncatingText.jsx` | children · as · className — 말줄임 시 hover로 전체 텍스트 normal 툴팁(portal+자동반전) | `components/List.jsx` |
 | Tag | `components/Tag.jsx` | type(blue/red/gray) · width(hug/fill) · children — tag-* 토큰 | `pages/TagPage.jsx` |
 | Checkbox | `components/Checkbox.jsx` | checked/onChange · defaultChecked · disabled · label — 6상태(unselected/selected×default/hover/disabled), checkbox-* 토큰 | `pages/CheckboxPage.jsx` |
 | List | `components/List.jsx` | title · tag · rightButton · endIcon · selected · disabled · onClick · onButtonClick — 옵션 목록 한 행(5상태) | `pages/OptionListPage.jsx` |
 | ScrollArea | `components/ScrollArea.jsx` | children · maxHeight · horizontal(가로 오버레이 스크롤바 추가) · contentClassName — 커스텀 오버레이 스크롤바(공용, 세로+가로). 스크롤 생기는 모든 곳에 사용 | `pages/TagPage.jsx` |
-| ListGroup | `components/ListGroup.jsx` | children · maxVisible(기본 6) — 내부 스크롤(ScrollArea 사용) | `pages/OptionListPage.jsx` |
-| ListEmpty | `components/ListEmpty.jsx` | message — 목록 빈 상태 | `pages/OptionListPage.jsx` |
+| ListGroup | `components/ListGroup.jsx` | children · maxVisible(기본 6) · empty · emptyMessage — 내부 스크롤(ScrollArea 사용). 자식 0개 또는 empty=true면 그룹 안(스크롤 영역 내부)에 ListEmpty를 렌더해 빈 상태도 그룹의 패딩·배경을 따른다 | `pages/OptionListPage.jsx` |
+| ListEmpty | `components/ListEmpty.jsx` | message — 목록 빈 상태. **ListGroup이 빈 상태일 때 내부에서 렌더**(단독 사용도 가능) | `pages/OptionListPage.jsx` |
 | PopoverMenu | `components/PopoverMenu.jsx` | children · searchable · searchValue · onSearchChange · width — 옵션 목록 컨테이너(검색바 옵션, SearchBar 재사용) | `pages/OptionListPage.jsx` |
-| Table | `components/Table.jsx` | columns(key/label/width/align/render) · rows · rowKey · selectable+selectedIds/onSelectChange(전체선택) · bordered · wrap(본문 줄바꿈: false 말줄임+행고정 / true 늘어남) · maxHeight(세로 스크롤+헤더 고정) · minWidth(테이블 최소 너비; 실제 최소=max(minWidth, 컬럼최소폭합), fill 컬럼은 40px 유지, 좁아지면 가로 스크롤 자동) · scrollX(가로 스크롤 수동) — 세로·가로 모두 ScrollArea 오버레이 스크롤바 · loading · emptyMessage · onRowClick — table-* 토큰 | `pages/TablePage.jsx` |
-| Pagination | `components/Pagination.jsx` | page/onChange(controlled) · defaultPage · totalCount/totalPages · pageSize/onPageSizeChange · pageSizeOptions(기본 10/20/40/80) · maxButtons(번호 윈도우, 기본 10) · showTotal · showPageSize — « ‹ 번호 › » + 총 N개 + 페이지 행 Select, 현재페이지 ghost-select 토큰 | `pages/PaginationPage.jsx` |
+| Table | `components/Table.jsx` | columns(key/label/width/align/render/renderHeader) · rows · rowKey · selectable+selectedIds/onSelectChange(전체선택) · bordered · wrap(본문 줄바꿈: false 말줄임+행고정 / true 늘어남) · maxHeight(세로 스크롤+헤더 고정) · minWidth(테이블 최소 너비; 실제 최소=max(minWidth, 컬럼최소폭합), fill 컬럼은 40px 유지, 좁아지면 가로 스크롤 자동) · scrollX(가로 스크롤 수동) — 세로·가로 모두 ScrollArea 오버레이 스크롤바 · loading · emptyMessage · onRowClick — table-* 토큰 | `pages/TablePage.jsx` |
+| UsageExample | `components/UsageExample.jsx` | code(문자열) · title · note · props(`{name,type,default,desc}[]` 전체 옵션 표) — 데모 페이지 상단 "사용 예시 코드 + 전체 옵션 설명표" 블록(복사 버튼 포함). **문서용 헬퍼**(제품 컴포넌트 아님) | 각 컴포넌트 데모 페이지 상단 |
+| TableTemplate | `components/TableTemplate.jsx` | columns/rows · actions(ReactNode/`(ctx)=>` — null이면 버튼그룹 숨김) · searchable · pagination · bordered · selectable · selectedIds/onSelectChange · searchKeys/searchPlaceholder · 페이지네이션 세부 제어(page/onPageChange · defaultPageSize/pageSize/onPageSizeChange/pageSizeOptions · showTotal · showPageSize · maxButtons · paginationClassName) · minWidth/maxHeight(페이지네이션 없을 때 표 높이) · emptyMessage — 버튼그룹+검색바+Table+Pagination을 묶은 목록 페이지 템플릿. 각 요소 on/off, 검색·페이지네이션·행 수·선택 내부 동작 | `pages/TableTemplatePage.jsx` |
+| Pagination | `components/Pagination.jsx` | page/onChange(controlled) · defaultPage · totalCount/totalPages · pageSize/onPageSizeChange · pageSizeOptions(기본 5/10/20/50) · maxButtons(번호 윈도우, 기본 10) · showTotal · showPageSize — « ‹ 번호 › » + 총 N개 + 페이지 행 Select, 현재페이지 ghost-select 토큰 | `pages/PaginationPage.jsx` |
 
 > **오버레이 패턴 참고:** 필드 아래 메시지(에러 등)는 레이아웃 공간을 차지하지 않도록, 래퍼를 `relative`로 두고 메시지를 `absolute top-full`로 띄운다. `Input`의 에러 툴팁이 이 방식이다.
 

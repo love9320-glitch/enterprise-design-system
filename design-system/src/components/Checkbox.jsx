@@ -54,7 +54,7 @@ export function Checkbox({
 
   return (
     <label
-      className={`group inline-flex items-center gap-spacing-4 ${
+      className={`group relative inline-flex items-center gap-spacing-4 ${
         disabled ? 'cursor-not-allowed' : 'cursor-pointer'
       } ${className}`}
     >

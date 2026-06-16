@@ -1,33 +1,82 @@
 import { useState } from 'react';
 import { List } from '../components/List';
 import { ListGroup } from '../components/ListGroup';
-import { ListEmpty } from '../components/ListEmpty';
 import { PopoverMenu } from '../components/PopoverMenu';
+import { UsageExample } from '../components/UsageExample';
+
+const USAGE = `import { PopoverMenu } from '../components/PopoverMenu';
+import { ListGroup } from '../components/ListGroup';
+import { List } from '../components/List';
+
+// List 한 행 — 요소(tag·rightButton·endIcon)는 props로 on/off
+<List title="옵션 이름" tag endIcon rightButton onClick={select} />
+<List title="선택됨" selected />
+<List title="비활성" disabled />
+
+// ListGroup — maxVisible(기본 6) 초과 시 내부 스크롤.
+// 항목이 없으면 그룹 안에서 빈 상태(ListEmpty)를 자동 표시 — empty로 명시도 가능.
+<ListGroup maxVisible={6}>
+  {items.map((it) => <List key={it.id} title={it.label} />)}
+</ListGroup>
+<ListGroup empty emptyMessage="검색 결과가 없습니다" />
+
+// PopoverMenu — searchable로 상단 검색바. 목록은 항상 ListGroup(빈 상태는 내부 처리)
+const [q, setQ] = useState('');
+<PopoverMenu searchable searchValue={q} onSearchChange={(e) => setQ(e.target.value)}>
+  <ListGroup>{filtered.map((it) => <List key={it.id} title={it.label} />)}</ListGroup>
+</PopoverMenu>`;
+
+const USAGE_PROPS = [
+  // List
+  { name: 'List · title', type: 'string', default: "'list'", desc: '행 제목' },
+  { name: 'List · tag', type: 'boolean', default: 'false', desc: '왼쪽 태그 표시 여부' },
+  { name: 'List · tagText', type: 'string', default: "'태그'", desc: '태그 텍스트' },
+  { name: 'List · rightButton', type: 'boolean', default: 'false', desc: '오른쪽 고스트 ⋯ 버튼 표시' },
+  { name: 'List · endIcon', type: 'boolean', default: 'false', desc: '오른쪽 chevron(>) 표시' },
+  { name: 'List · selected', type: 'boolean', default: 'false', desc: '선택 상태 (chevron 파랑)' },
+  { name: 'List · highlighted', type: 'boolean', default: 'false', desc: '키보드 내비게이션 강조(hover 색)' },
+  { name: 'List · disabled', type: 'boolean', default: 'false', desc: '비활성 (회색·클릭 차단)' },
+  { name: 'List · onClick', type: '() => void', default: '—', desc: '행 클릭 핸들러' },
+  { name: 'List · onButtonClick', type: '() => void', default: '—', desc: '⋯ 버튼 클릭 핸들러' },
+  { name: 'List · className', type: 'string', default: "''", desc: '추가 클래스' },
+  // ListGroup
+  { name: 'ListGroup · children', type: 'ReactNode', default: '—', desc: '내부 List들 (0개면 빈 상태 자동)' },
+  { name: 'ListGroup · maxVisible', type: 'number', default: '6', desc: '이 개수 초과 시 내부 스크롤' },
+  { name: 'ListGroup · empty', type: 'boolean', default: 'false', desc: '빈 상태 강제 표시 (그룹 안에 ListEmpty 렌더)' },
+  { name: 'ListGroup · emptyMessage', type: 'string', default: "'검색 결과가 없습니다.'", desc: '빈 상태 문구' },
+  { name: 'ListGroup · className', type: 'string', default: "''", desc: '추가 클래스' },
+  // (빈 상태 ListEmpty는 ListGroup이 내부에서 렌더 — empty/emptyMessage로 제어)
+  // PopoverMenu
+  { name: 'PopoverMenu · children', type: 'ReactNode', default: '—', desc: '내부 목록(ListGroup)' },
+  { name: 'PopoverMenu · searchable', type: 'boolean', default: 'false', desc: '상단 검색바 표시' },
+  { name: 'PopoverMenu · searchValue', type: 'string', default: '—', desc: '검색값 (제어)' },
+  { name: 'PopoverMenu · onSearchChange', type: '(e) => void', default: '—', desc: '검색 변경 (e.target.value)' },
+  { name: 'PopoverMenu · searchPlaceholder', type: 'string', default: "'검색어를 입력하세요'", desc: '검색바 플레이스홀더' },
+  { name: 'PopoverMenu · searchInputProps', type: 'object', default: '{}', desc: '검색 input 속성(autoFocus 등)' },
+  { name: 'PopoverMenu · width', type: 'number | string', default: '304', desc: '팝오버 너비' },
+  { name: 'PopoverMenu · className', type: 'string', default: "''", desc: '추가 클래스' },
+];
 
 const SAMPLE = Array.from({ length: 12 }, (_, i) => `옵션 ${i + 1}`);
 
-// 검색 가능한 팝오버 — 검색어로 필터, 결과 없으면 ListEmpty
+// 검색 가능한 팝오버 — 검색어로 필터. 결과가 없으면 ListGroup이 내부에서 빈 상태 표시.
 function SearchablePopover() {
   const [q, setQ] = useState('');
   const filtered = SAMPLE.filter((s) => s.includes(q.trim()));
   return (
     <PopoverMenu searchable searchValue={q} onSearchChange={(e) => setQ(e.target.value)}>
-      {filtered.length > 0 ? (
-        <ListGroup>
-          {filtered.map((s) => (
-            <List key={s} title={s} tag endIcon rightButton />
-          ))}
-        </ListGroup>
-      ) : (
-        <ListEmpty />
-      )}
+      <ListGroup>
+        {filtered.map((s) => (
+          <List key={s} title={s} tag endIcon rightButton />
+        ))}
+      </ListGroup>
     </PopoverMenu>
   );
 }
 
 function SectionTitle({ children }) {
   return (
-    <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+    <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
       {children}
     </h3>
   );
@@ -35,13 +84,15 @@ function SectionTitle({ children }) {
 
 export function OptionListPage() {
   return (
-    <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
-      <h2 className="mb-spacing-3 text-18 font-semibold text-font-icon-5">Option List</h2>
+    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+      <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Option List</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
-        드롭다운 옵션 목록 시스템 — List · ListGroup · ListEmpty · PopoverMenu.
+        드롭다운 옵션 목록 시스템 — List · ListGroup · PopoverMenu (빈 상태 ListEmpty는 ListGroup 내장).<br />
         색상은 모두 list 시멘틱 토큰(base 경유)을 사용합니다. 현재는 컴포넌트 단위이며,
         Select와의 연결은 다음 단계입니다. (Tag는 별도 페이지)
       </p>
+
+      <UsageExample code={USAGE} props={USAGE_PROPS} note="이 페이지의 세 컴포넌트(List · ListGroup · PopoverMenu)의 전체 옵션을 한 표에 모았습니다. 빈 상태(ListEmpty)는 ListGroup 내부에서 처리됩니다." />
 
       {/* List 상태 & 요소 */}
       <div className="mb-spacing-9">
@@ -60,28 +111,36 @@ export function OptionListPage() {
         </div>
       </div>
 
-      {/* ListGroup */}
-      <div className="mb-spacing-9">
-        <SectionTitle>ListGroup (최대 6개, 초과 시 내부 스크롤)</SectionTitle>
-        <div className="w-[304px] overflow-hidden rounded-round-4 border border-list-popover-outline">
-          <ListGroup>
-            {SAMPLE.map((s) => (
-              <List key={s} title={s} tag rightButton endIcon />
-            ))}
-          </ListGroup>
-        </div>
-      </div>
-
-      {/* ListEmpty */}
-      <div className="mb-spacing-9">
-        <SectionTitle>List Empty</SectionTitle>
-        <div className="w-[304px] overflow-hidden rounded-round-4 border border-list-popover-outline">
-          <ListEmpty />
+      {/* ListGroup — 기본 / 빈 상태 */}
+      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <SectionTitle>ListGroup — 기본 / 빈 상태</SectionTitle>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">maxVisible</code>(기본 6) 초과 시 내부 스크롤합니다.
+          항목이 없으면 빈 상태(ListEmpty)를 그룹 안에서 렌더해 패딩·배경을 그대로 따르며,
+          자식이 없으면 자동 · <code className="text-font-icon-5">empty</code>로 강제할 수 있습니다.
+        </p>
+        <div className="flex flex-wrap items-start gap-spacing-9">
+          <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">기본 (6개 초과 → 내부 스크롤)</p>
+            <div className="w-[304px] overflow-hidden rounded-round-4 border border-list-popover-outline">
+              <ListGroup>
+                {SAMPLE.map((s) => (
+                  <List key={s} title={s} tag rightButton endIcon />
+                ))}
+              </ListGroup>
+            </div>
+          </div>
+          <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">빈 상태 (empty)</p>
+            <div className="w-[304px] overflow-hidden rounded-round-4 border border-list-popover-outline">
+              <ListGroup empty />
+            </div>
+          </div>
         </div>
       </div>
 
       {/* PopoverMenu — 검색바 없음 / 있음 */}
-      <div className="mb-spacing-9">
+      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
         <SectionTitle>PopoverMenu — 검색바 없음 / 있음</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">searchable</code> 옵션으로 상단 검색바를 켜고 끕니다.
@@ -105,7 +164,7 @@ export function OptionListPage() {
           <div>
             <p className="mb-spacing-4 text-12 text-font-icon-3">검색바 있음 — 결과 없음</p>
             <PopoverMenu searchable searchValue="없는 옵션" onSearchChange={() => {}}>
-              <ListEmpty />
+              <ListGroup empty />
             </PopoverMenu>
           </div>
         </div>

@@ -6,15 +6,15 @@ const sample =
 
 export function TypographyPage() {
   return (
-    <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
-      <h2 className="mb-spacing-3 text-lg font-semibold">Typography</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4">
+    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+      <h2 className="mb-spacing-3 text-20 font-semibold">Typography</h2>
+      <p className="mb-spacing-8 text-14 text-font-icon-4">
         Pretendard · Regular(400) / SemiBold(600) — Figma "폰트 시스템" 토큰
       </p>
 
       <div className="grid grid-cols-1 gap-spacing-9 sm:grid-cols-2">
         <div className="space-y-spacing-7">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+          <h3 className="text-15 font-semibold text-font-icon-5">
             Regular
           </h3>
           {sizes.map((size) => (
@@ -26,7 +26,7 @@ export function TypographyPage() {
         </div>
 
         <div className="space-y-spacing-7">
-          <h3 className="text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+          <h3 className="text-15 font-semibold text-font-icon-5">
             SemiBold
           </h3>
           {sizes.map((size) => (

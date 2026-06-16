@@ -133,8 +133,11 @@ export function ScrollArea({
     window.addEventListener('mouseup', onUp);
   };
 
+  // 기본은 relative(thumb의 기준). 단 className에 position 유틸(absolute 등)을 주면 그걸 따른다
+  // — 부모 박스를 explicit height로 채워(예: absolute inset-0) 내부 h-full 스크롤이 확실히 동작하게.
+  const hasPosition = /(^|\s)(absolute|fixed|relative|sticky)(\s|$)/.test(className);
   return (
-    <div className={`relative ${className}`} {...props}>
+    <div className={`${hasPosition ? '' : 'relative'} ${className}`} {...props}>
       <div
         ref={scrollRef}
         onScroll={updateThumbs}

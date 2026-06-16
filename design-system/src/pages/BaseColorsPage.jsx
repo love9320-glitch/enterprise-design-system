@@ -50,15 +50,15 @@ function AlphaColorSwatch({ label, hex }) {
 
 export function BaseColorsPage() {
   return (
-    <section className="mx-auto max-w-3xl px-spacing-7 py-spacing-10 text-left">
-      <h2 className="mb-spacing-3 text-lg font-semibold">Base Colors</h2>
-      <p className="mb-spacing-8 text-sm text-font-icon-4">
+    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+      <h2 className="mb-spacing-3 text-20 font-semibold">Base Colors</h2>
+      <p className="mb-spacing-8 text-14 text-font-icon-4">
         베이스(프리미티브) 컬러 — Figma "베이직 칼라 토큰". 모노톤 그레이 스케일과
-        피드백용 red·blue 계열, 각 알파 시리즈로 구성됩니다. 시멘틱 컬러는 이 값을
+        피드백용 red·blue 계열, 각 알파 시리즈로 구성됩니다.<br />시멘틱 컬러는 이 값을
         참조해 등록합니다.
       </p>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Gray
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -67,7 +67,7 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
         Black & White
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -76,7 +76,7 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
         Red
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -85,7 +85,7 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
         Blue
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -94,7 +94,7 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
         Gray 900 Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -103,7 +103,7 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
         White Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -112,7 +112,7 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
         Red 400 Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -121,7 +121,7 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
+      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
         Blue 400 Alpha
       </h3>
       <div className="grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">

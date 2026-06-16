@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-r
 import { iconTokens } from '../tokens';
 import { Select } from './Select';
 
-const DEFAULT_PAGE_SIZE_OPTIONS = [10, 20, 40, 80];
+const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
 // 공통 버튼 박스 — 최소 24px 정사각(min-w/min-h) + 좌우 패딩.
 // 라운드는 모든 상태에서 round-10(24px)로 통일 → 1~2자리는 원형, 3자리(100~)부터
@@ -79,7 +79,7 @@ export function Pagination({
   totalCount = 0,                    // 총 항목 수 — totalPages 미지정 시 페이지 수 계산에 사용
   totalPages,                        // 총 페이지 수(지정 시 totalCount/pageSize보다 우선)
   pageSize,                          // 페이지당 행 수 — controlled
-  defaultPageSize = DEFAULT_PAGE_SIZE_OPTIONS[0],
+  defaultPageSize = 10,              // 페이지당 행 수 초기값(옵션 5/10/20/50 중 기본 10)
   onPageSizeChange,                  // (size: number) => void
   pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS,
   maxButtons = 10,                   // 번호 노출 개수(윈도우) — 보통 10 또는 5
@@ -125,7 +125,9 @@ export function Pagination({
 
   return (
     <div
-      className={`grid grid-cols-3 items-center gap-spacing-9 ${className}`}
+      // min-h-[32px]: '페이지 행' Select(32px)가 숨겨져도(showPageSize=false) 행 높이가
+      // 번호 버튼(24px) 기준으로 줄지 않도록 고정한다.
+      className={`grid min-h-[32px] grid-cols-3 items-center gap-spacing-9 ${className}`}
       {...props}
     >
       {/* 좌: 총 개수 */}

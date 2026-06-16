@@ -28,6 +28,8 @@ export function Select({
   defaultValue = '',
   onChange,
   options = [],            // [{ value, label }]
+  variant = 'box',         // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 필터·문단 사이용)
+  size = '24',             // text variant 전용: '24'(14px) | '20'(12px) — box는 항상 14px
   placeholder = '선택하세요',
   disabled = false,
   readOnly = false,
@@ -59,9 +61,15 @@ export function Select({
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
 
+  // text variant: 박스/보더 없는 인라인 텍스트형. 항상 hug(콘텐츠 맞춤) + maxWidth만 받는다.
+  // disabled/readOnly/error는 box와 동일하게 지원(테이블 바디·폼용). 드롭다운·키보드·검색 동작도 동일.
+  const isText = variant === 'text';
+  // text variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
+  const effectiveMenuWidth = menuWidth ?? (isText ? 120 : undefined);
   const selectedOption = options.find((o) => o.value === current);
   const isPlaceholder = !selectedOption;
   const interactive = !disabled && !readOnly;
+  // box variant 트리거 너비(text variant는 콘텐츠 hug라 style을 주지 않는다)
   const widthStyle =
     width === 'hug' ? 'fit-content' : typeof width === 'number' ? `${width}px` : width;
   const maxWidthStyle =
@@ -89,7 +97,7 @@ export function Select({
   // hug(fit-content)는 트리거가 콘텐츠를 따라가므로 max-width를 주면 무한 축소 순환이 생긴다 → 제외.
   useLayoutEffect(() => {
     const trigger = triggerRef.current;
-    if (!trigger || width === 'hug') {
+    if (!trigger || isText || width === 'hug') {
       setTextMaxW(undefined);
       return;
     }
@@ -106,7 +114,7 @@ export function Select({
     const ro = new ResizeObserver(update);
     ro.observe(trigger);
     return () => ro.disconnect();
-  }, [width]);
+  }, [width, isText]);
 
   // 외부 클릭 닫기 (트리거·드롭다운 둘 다 바깥일 때 — 드롭다운은 portal)
   useEffect(() => {
@@ -150,13 +158,15 @@ export function Select({
       const gap = MENU_GAP;
       // 드롭다운 너비(숫자) — 위치 계산용. 숫자/미지정은 즉시 알 수 있고, 문자열만 측정 fallback.
       const w =
-        menuWidth == null
+        effectiveMenuWidth == null
           ? tr.width
-          : typeof menuWidth === 'number'
-            ? menuWidth
+          : typeof effectiveMenuWidth === 'number'
+            ? effectiveMenuWidth
             : (menu?.offsetWidth ?? tr.width);
       const widthCss =
-        menuWidth != null && typeof menuWidth !== 'number' ? menuWidth : `${w}px`;
+        effectiveMenuWidth != null && typeof effectiveMenuWidth !== 'number'
+          ? effectiveMenuWidth
+          : `${w}px`;
 
       let vertical;
       let horizontal;
@@ -180,7 +190,7 @@ export function Select({
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', measure, true);
     };
-  }, [open, filtered.length, query, placement, menuWidth]);
+  }, [open, filtered.length, query, placement, effectiveMenuWidth]);
 
   // 목록 키보드 네비게이션 — 트리거/검색바 공용, filtered 기준
   const handleListNav = (e) => {
@@ -232,20 +242,44 @@ export function Select({
     }
   };
 
-  const textColor = disabled
-    ? 'text-tf-disabled-text'
-    : readOnly
-      ? 'text-tf-readonly-text'
-      : isPlaceholder
-        ? 'text-tf-default-text'
-        : 'text-tf-filled-text';
+  // text variant: disabled=흐림(font-icon-2) / readOnly=진함 / 열림=회색(font-icon-3) /
+  // 그 외 placeholder·filled 모두 진함(font-icon-5). hover 밑줄은 상호작용 가능할 때만(아래 className).
+  // box variant: 기존 tf-* 시멘틱 토큰.
+  const textColor = isText
+    ? disabled
+      ? 'text-font-icon-2'
+      : readOnly
+        ? 'text-font-icon-5'
+        : open
+          ? 'text-font-icon-3'
+          : 'text-font-icon-5'
+    : disabled
+      ? 'text-tf-disabled-text'
+      : readOnly
+        ? 'text-tf-readonly-text'
+        : isPlaceholder
+          ? 'text-tf-default-text'
+          : 'text-tf-filled-text';
 
-  const iconColor = disabled
-    ? 'text-tf-disabled-icon'
-    : 'text-tf-default-text group-focus-within:text-tf-filled-text';
+  // text variant 화살표: disabled·readOnly는 흐림(font-icon-2), 그 외 진함(font-icon-5)
+  const iconColor = isText
+    ? disabled || readOnly
+      ? 'text-font-icon-2'
+      : 'text-font-icon-5'
+    : disabled
+      ? 'text-tf-disabled-icon'
+      : 'text-tf-default-text group-focus-within:text-tf-filled-text';
+
+  // text variant 글자 크기 — size 토큰(24=14px / 20=12px)
+  const sizeTextClass = isText && size === '20' ? 'text-12' : 'text-14';
 
   return (
-    <div ref={rootRef} className={`relative ${className}`} style={{ width: widthStyle, maxWidth: maxWidthStyle }} {...props}>
+    <div
+      ref={rootRef}
+      className={`relative ${isText ? 'inline-flex max-w-full align-middle' : ''} ${className}`}
+      style={isText ? undefined : { width: widthStyle, maxWidth: maxWidthStyle }}
+      {...props}
+    >
       {/* 트리거 */}
       <div
         ref={triggerRef}
@@ -257,21 +291,39 @@ export function Select({
         tabIndex={interactive ? 0 : -1}
         onClick={() => interactive && setOpen((o) => !o)}
         onKeyDown={onTriggerKeyDown}
-        className={`group relative grid min-h-[32px] grid-cols-[minmax(0,1fr)_auto] items-center gap-spacing-4 rounded-round-4 bg-tf-default-bg py-spacing-3 pl-spacing-6 pr-spacing-6 transition-shadow focus:outline-none ${
-          interactive ? `cursor-pointer ${RING}` : 'cursor-not-allowed'
-        }`}
+        className={
+          isText
+            ? `group inline-flex min-w-0 select-none items-center gap-spacing-3 focus:outline-none ${
+                interactive ? 'cursor-pointer' : disabled ? 'cursor-not-allowed' : 'cursor-default'
+              }`
+            : `group relative grid min-h-[32px] grid-cols-[minmax(0,1fr)_auto] items-center gap-spacing-4 rounded-round-4 bg-tf-default-bg py-spacing-3 pl-spacing-6 pr-spacing-6 transition-shadow focus:outline-none ${
+                interactive ? `cursor-pointer ${RING}` : 'cursor-not-allowed'
+              }`
+        }
       >
-        {/* grid 컬럼 minmax(0,1fr) + JS max-width(트리거폭−chevron−gap) — 크롬 truncate 보강 */}
+        {/* box: grid minmax(0,1fr) + JS max-width 보강 / text: maxWidth를 텍스트에 직접(콘텐츠 hug, 넘으면 말줄임) */}
         <TruncatingText
-          style={textMaxW != null ? { maxWidth: `${textMaxW}px` } : undefined}
-          className={`text-14 ${textColor}`}
+          style={
+            isText
+              ? maxWidthStyle
+                ? { maxWidth: maxWidthStyle }
+                : undefined
+              : textMaxW != null
+                ? { maxWidth: `${textMaxW}px` }
+                : undefined
+          }
+          className={
+            isText
+              ? `min-w-0 font-normal ${sizeTextClass} ${textColor} ${interactive ? 'group-hover:underline' : ''}`
+              : `text-14 font-normal ${textColor}`
+          }
         >
           {selectedOption ? selectedOption.label : placeholder}
         </TruncatingText>
         <ChevronDown
           size={16}
           strokeWidth={1.8}
-          className={`pointer-events-none transition-transform ${iconColor} ${
+          className={`pointer-events-none shrink-0 transition-transform ${iconColor} ${
             open ? 'rotate-180' : ''
           }`}
         />
@@ -318,7 +370,7 @@ export function Select({
           document.body,
         )}
 
-      {/* 에러 툴팁 — 닫혔을 때 인풋 아래 오버레이 */}
+      {/* 에러 툴팁 — 닫혔을 때 필드 아래 오버레이 (box·text 공통) */}
       {error && errorMessage && !open && (
         <div className="absolute left-0 top-full z-10 mt-spacing-2">
           <Tooltip variant="error" beak="top">

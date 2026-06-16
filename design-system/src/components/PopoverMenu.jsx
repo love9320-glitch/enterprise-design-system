@@ -1,5 +1,5 @@
 // PopoverMenu — 옵션 목록을 감싸는 팝오버 (Figma option list / popover menu)
-// 내부에 ListGroup(또는 ListEmpty)을 담는다. searchable 옵션을 켜면 상단에
+// 내부에 ListGroup을 담는다(빈 상태는 ListGroup이 내부에서 ListEmpty로 처리). searchable 옵션을 켜면 상단에
 // 검색바(기존 SearchBar 재사용)가 추가되어 목록을 검색할 수 있다.
 // 추후 다양한 옵션이 추가될 예정이라 확장 가능한 구조로 둔다.
 // 컨테이너 색은 list-popover-* 시멘틱 토큰(bg gray100 / outline gray200).

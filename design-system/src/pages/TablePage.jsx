@@ -1,6 +1,49 @@
 import { Table } from '../components/Table';
 import { Tag } from '../components/Tag';
 import { Button } from '../components/Button';
+import { UsageExample } from '../components/UsageExample';
+
+const USAGE = `import { Table } from '../components/Table';
+
+// columns: width 없으면 가변(fill), render로 셀 커스텀
+const columns = [
+  { key: 'type', label: '구분', width: 80, render: () => <Tag type="blue">태그</Tag> },
+  { key: 'title', label: '공고명' },                 // 가변 폭
+  { key: 'period', label: '접수 기간', width: 280, align: 'center' },
+];
+const rows = [{ id: 1, title: '2026 상반기 통합채용', period: '...' }];
+
+// 기본
+<Table columns={columns} rows={rows} rowKey="id" />
+
+// 선택(체크박스) — selectedIds/onSelectChange로 controlled
+const [ids, setIds] = useState([]);
+<Table columns={columns} rows={rows} selectable selectedIds={ids} onSelectChange={setIds} />
+
+// 외곽선 · 세로 스크롤(헤더 고정) · 가로 스크롤 · 행 클릭
+<Table columns={columns} rows={rows} bordered maxHeight={400} minWidth={800} onRowClick={open} />
+
+// 본문 줄바꿈 · 로딩 · 빈 상태
+<Table columns={columns} rows={rows} wrap loading emptyMessage="데이터가 없습니다" />`;
+
+const USAGE_PROPS = [
+  { name: 'columns', type: '{ key, label, width?, align?, render? }[]', default: '[]', desc: '컬럼 정의. width 없으면 가변(fill), render로 셀 커스텀' },
+  { name: 'rows', type: 'object[]', default: '[]', desc: '데이터 배열. 각 컬럼 key로 값 매칭' },
+  { name: 'rowKey', type: 'string', default: "'id'", desc: 'row를 구분할 고유 키 필드명' },
+  { name: 'selectable', type: 'boolean', default: 'false', desc: '체크박스 선택 컬럼(전체선택 헤더 포함)' },
+  { name: 'selectedIds', type: 'array', default: '—', desc: '선택된 row 키 목록 — 제어로 쓸 때' },
+  { name: 'onSelectChange', type: '(ids) => void', default: '—', desc: '선택 변경 핸들러' },
+  { name: 'bordered', type: 'boolean', default: 'false', desc: '외곽선 + 라운드(true) / 외곽선 없는 헤더(false)' },
+  { name: 'wrap', type: 'boolean', default: 'false', desc: '본문 줄바꿈 — false=말줄임+행 고정, true=줄바꿈으로 늘어남' },
+  { name: 'maxHeight', type: 'number', default: '—', desc: '지정 시 본문 세로 스크롤 + 헤더 고정(px)' },
+  { name: 'minWidth', type: 'number', default: '—', desc: '테이블 최소 너비. 좁아지면 가로 스크롤 자동' },
+  { name: 'scrollX', type: 'boolean', default: 'false', desc: 'minWidth 없이 가로 스크롤을 수동으로 켬' },
+  { name: 'loading', type: 'boolean', default: 'false', desc: '로딩 상태 표시' },
+  { name: 'loadingMessage', type: 'string', default: "'불러오는 중…'", desc: '로딩 중 문구' },
+  { name: 'emptyMessage', type: 'string', default: "'데이터가 없습니다.'", desc: 'rows가 비었을 때 문구' },
+  { name: 'onRowClick', type: '(row) => void', default: '—', desc: '행 클릭 핸들러' },
+  { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+];
 
 // Figma table 가이드(node 7257:1925) 예시 데이터 — 채용 공고 목록
 const COLUMNS = [
@@ -38,10 +81,11 @@ const ROWS_LONG = [
   { id: 2, title: '2026 신입 개발자 공개채용 — 프론트엔드/백엔드/모바일 전 직군',  apply: '5개' },
 ];
 
-function Block({ title, desc, children }) {
+// first=true(첫 블록)는 구분선 없이 flush, 이후 블록은 상단 구분선으로 단락을 나눈다.
+function Block({ title, desc, first = false, children }) {
   return (
-    <div className="mb-spacing-10">
-      <h3 className="mb-spacing-3 text-xs font-semibold uppercase tracking-wide text-font-icon-3">{title}</h3>
+    <div className={first ? '' : 'mt-spacing-9 border-t border-base-gray-100 pt-spacing-8'}>
+      <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">{title}</h3>
       {desc && <p className="mb-spacing-5 text-12 text-font-icon-4">{desc}</p>}
       {children}
     </div>
@@ -51,13 +95,15 @@ function Block({ title, desc, children }) {
 export function TablePage() {
   return (
     <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
-      <h2 className="mb-spacing-3 text-18 font-semibold text-font-icon-5">Table</h2>
+      <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Table</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
-        데이터 테이블 — 컬럼 정의(columns)와 데이터(rows)를 받아 렌더합니다. 선택(체크박스)·세로 스크롤(헤더 고정)·가로
+        데이터 테이블 — 컬럼 정의(columns)와 데이터(rows)를 받아 렌더합니다.<br />선택(체크박스)·세로 스크롤(헤더 고정)·가로
         스크롤·빈 상태·로딩을 props로 옵션화했고, 색·간격·보더는 table 시멘틱 토큰(base 경유)만 사용합니다.
       </p>
 
-      <Block title="Default" desc="기본 테이블 — 외곽선 없는 라운드 헤더(noneline). 구분 컬럼은 Tag로 렌더.">
+      <UsageExample code={USAGE} props={USAGE_PROPS} note="columns의 render로 셀을 자유롭게 렌더하고, key는 row 데이터의 필드명과 매칭됩니다." />
+
+      <Block first title="Default" desc="기본 테이블 — 외곽선 없는 라운드 헤더(noneline). 구분 컬럼은 Tag로 렌더.">
         <Table columns={COLUMNS} rows={ROWS} minWidth={420} />
       </Block>
 
