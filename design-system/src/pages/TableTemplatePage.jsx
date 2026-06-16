@@ -96,7 +96,12 @@ const COLUMNS = [
     renderHeader: () => <Select variant="text" size="20" options={STATUS_OPTIONS} placeholder="상태" />,
     render: (row) => <Tag type={STATUS_TAG[row.status]}>{row.status}</Tag>,
   },
-  { key: 'title',  label: '공고명' },
+  {
+    key: 'title', label: '공고명',
+    render: (row) => (
+      <Button variant="underline" truncate onClick={(e) => e.stopPropagation()}>{row.title}</Button>
+    ),
+  },
   { key: 'period', label: '접수 기간', width: 280 },
   {
     key: 'apply', label: '지원서', width: 110,

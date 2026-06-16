@@ -1,15 +1,17 @@
 import { useLayoutEffect, useRef } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import { TruncatingText } from './TruncatingText';
 
 export function Button({
   children,
   size = '32',
-  variant = 'fill',
+  variant = 'fill',       // 'fill' | 'line' | 'ghost' | 'underline'(밑줄 텍스트 버튼)
   leftIcon: LeftIcon = null,
   rightIcon: RightIcon = null,
   icon: Icon = null,
   disabled = false,
   loading = false,
+  truncate = false,       // 라벨이 부모 폭을 넘으면 말줄임(테이블 셀 등 좁은 영역용)
   onClick,
   className = '',
   ...props
@@ -21,17 +23,26 @@ export function Button({
 
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    // truncate면 셀 폭을 따라가야 하므로 콘텐츠 기준 너비 고정을 하지 않는다.
+    if (!el || truncate) return;
     el.style.width = '';
     el.style.width = el.offsetWidth + 'px';
-  }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading]);
+  }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading, truncate]);
 
   const base =
     'inline-flex items-center justify-center relative font-pretendard font-normal ' +
     'whitespace-nowrap rounded-round-4 transition-colors select-none';
+  // truncate: 버튼이 부모 폭 안에서 줄어들고(min-w-0/max-w-full) 라벨이 말줄임되게 한다.
+  const truncStyle = truncate ? 'min-w-0 max-w-full' : '';
 
   let sizeStyle;
-  if (iconOnly) {
+  if (variant === 'underline') {
+    // 밑줄 텍스트 버튼 — 배경/패딩 없이 텍스트(+아이콘)만. 높이만 맞춘다.
+    sizeStyle =
+      size === '24'
+        ? 'min-h-[24px] text-[12px] leading-5 tracking-[0px]'
+        : 'min-h-[32px] text-[14px] leading-6 tracking-[0px]';
+  } else if (iconOnly) {
     sizeStyle =
       size === '24'
         ? 'min-h-[24px] min-w-[24px] p-spacing-2'
@@ -56,6 +67,12 @@ export function Button({
       : 'bg-btn-line-default-bg text-btn-line-default-fg ring-1 ring-inset ring-btn-line-default-line cursor-pointer ' +
         'hover:bg-btn-line-hover-bg hover:ring-btn-line-hover-line ' +
         'active:bg-btn-line-default-bg active:ring-btn-line-default-line';
+  } else if (variant === 'underline') {
+    // 밑줄 텍스트 버튼 — 배경 없이 ghost 텍스트색 재사용, hover 시 밑줄만(active=눌렸을 땐 밑줄 제거)
+    colorStyle = inactive
+      ? 'bg-transparent text-btn-ghost-disabled-fg cursor-not-allowed'
+      : 'bg-transparent text-btn-ghost-default-fg cursor-pointer ' +
+        'hover:underline active:no-underline';
   } else {
     // ghost
     colorStyle = inactive
@@ -68,7 +85,7 @@ export function Button({
   return (
     <button
       ref={ref}
-      className={`${base} ${sizeStyle} ${colorStyle} ${className}`}
+      className={`${base} ${sizeStyle} ${colorStyle} ${truncStyle} ${className}`}
       disabled={inactive}
       onClick={!inactive ? onClick : undefined}
       {...props}
@@ -82,14 +99,18 @@ export function Button({
           />
         </span>
       )}
-      <span className={`inline-flex items-center gap-spacing-3 ${loading ? 'opacity-0' : ''}`}>
+      <span className={`inline-flex items-center gap-spacing-3 ${truncate ? 'min-w-0' : ''} ${loading ? 'opacity-0' : ''}`}>
         {iconOnly ? (
           <Icon size={iconSize} strokeWidth={1.8} />
         ) : (
           <>
-            {LeftIcon && <LeftIcon size={iconSize} strokeWidth={1.8} />}
-            {children}
-            {RightIcon && <RightIcon size={iconSize} strokeWidth={1.8} />}
+            {LeftIcon && <LeftIcon size={iconSize} strokeWidth={1.8} className="shrink-0" />}
+            {truncate ? (
+              <TruncatingText as="span" className="min-w-0">{children}</TruncatingText>
+            ) : (
+              children
+            )}
+            {RightIcon && <RightIcon size={iconSize} strokeWidth={1.8} className="shrink-0" />}
           </>
         )}
       </span>

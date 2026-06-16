@@ -16,12 +16,10 @@ import { PopoverMenu } from './PopoverMenu';
 import { ListGroup } from './ListGroup';
 import { List } from './List';
 import { ListEmpty } from './ListEmpty';
-import { spacing } from '../tokens';
+import { usePopoverPosition } from './usePopoverPosition';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰).
 const RING = 'ring-inset ring-tf-hover-line hover:ring-2 focus:ring-2 focus:ring-tf-focused-line';
-// 트리거 ↔ 드롭다운 간격 — spacing-3(4px) 토큰
-const MENU_GAP = parseInt(spacing['spacing-3'], 10);
 
 export function Select({
   value,
@@ -52,8 +50,6 @@ export function Select({
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(-1);
   const [query, setQuery] = useState('');
-  // 드롭다운 fixed 위치/너비 — 트리거 rect와 placement로 계산 (portal로 띄움)
-  const [menuStyle, setMenuStyle] = useState(null);
   // 트리거 텍스트 최대 너비(px) — 크롬 flex/grid truncate 보강용으로 명시 지정
   const [textMaxW, setTextMaxW] = useState(undefined);
 
@@ -143,54 +139,15 @@ export function Select({
     el?.scrollIntoView({ block: 'nearest' });
   }, [highlight, open]);
 
-  // 드롭다운 fixed 위치 계산 — 트리거 rect 기준, placement(auto/수동) 반영
-  useLayoutEffect(() => {
-    if (!open) {
-      setMenuStyle(null);
-      return;
-    }
-    const measure = () => {
-      const trigger = triggerRef.current;
-      if (!trigger) return;
-      const tr = trigger.getBoundingClientRect();
-      const menu = menuRef.current;
-      const menuH = menu?.offsetHeight ?? 0; // 높이는 세로 스택이라 측정 OK
-      const gap = MENU_GAP;
-      // 드롭다운 너비(숫자) — 위치 계산용. 숫자/미지정은 즉시 알 수 있고, 문자열만 측정 fallback.
-      const w =
-        effectiveMenuWidth == null
-          ? tr.width
-          : typeof effectiveMenuWidth === 'number'
-            ? effectiveMenuWidth
-            : (menu?.offsetWidth ?? tr.width);
-      const widthCss =
-        effectiveMenuWidth != null && typeof effectiveMenuWidth !== 'number'
-          ? effectiveMenuWidth
-          : `${w}px`;
-
-      let vertical;
-      let horizontal;
-      if (placement === 'auto') {
-        const spaceBelow = window.innerHeight - tr.bottom;
-        const spaceAbove = tr.top;
-        vertical = spaceBelow < menuH + gap && spaceAbove > spaceBelow ? 'top' : 'bottom';
-        horizontal = tr.left + w > window.innerWidth ? 'right' : 'left';
-      } else {
-        [vertical, horizontal] = placement.split('-');
-      }
-
-      const top = vertical === 'top' ? tr.top - gap - menuH : tr.bottom + gap;
-      const left = horizontal === 'right' ? tr.right - w : tr.left;
-      setMenuStyle({ position: 'fixed', top, left, width: widthCss });
-    };
-    measure();
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, true);
-    return () => {
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure, true);
-    };
-  }, [open, filtered.length, query, placement, effectiveMenuWidth]);
+  // 드롭다운 fixed 위치 계산 — Popover와 공유하는 공용 훅 (검색으로 목록 높이가 바뀌면 재계산)
+  const menuStyle = usePopoverPosition({
+    open,
+    anchorRef: triggerRef,
+    menuRef,
+    placement,
+    menuWidth: effectiveMenuWidth,
+    deps: [filtered.length, query],
+  });
 
   // 목록 키보드 네비게이션 — 트리거/검색바 공용, filtered 기준
   const handleListNav = (e) => {
@@ -272,6 +229,8 @@ export function Select({
 
   // text variant 글자 크기 — size 토큰(24=14px / 20=12px)
   const sizeTextClass = isText && size === '20' ? 'text-12' : 'text-14';
+  // text variant 화살표 크기 — size 20은 14×14, 그 외(box·size24)는 16×16
+  const chevronSize = isText && size === '20' ? 14 : 16;
 
   return (
     <div
@@ -321,7 +280,7 @@ export function Select({
           {selectedOption ? selectedOption.label : placeholder}
         </TruncatingText>
         <ChevronDown
-          size={16}
+          size={chevronSize}
           strokeWidth={1.8}
           className={`pointer-events-none shrink-0 transition-transform ${iconColor} ${
             open ? 'rotate-180' : ''
