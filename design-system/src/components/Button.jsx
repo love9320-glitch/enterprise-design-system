@@ -12,6 +12,7 @@ export function Button({
   disabled = false,
   loading = false,
   truncate = false,       // 라벨이 부모 폭을 넘으면 말줄임(테이블 셀 등 좁은 영역용)
+  width = 'hug',          // 'hug'(콘텐츠 폭) | 'fill'(부모 전체 폭) — underline 변형엔 미적용
   onClick,
   className = '',
   ...props
@@ -19,21 +20,28 @@ export function Button({
   const inactive = disabled || loading;
   const iconOnly = !!Icon;
   const iconSize = size === '24' ? 14 : 16;
+  // fill: 부모 폭을 100% 채운다(밑줄 텍스트 버튼은 박스가 없어 제외).
+  const isFill = width === 'fill' && variant !== 'underline';
   const ref = useRef(null);
 
   useLayoutEffect(() => {
     const el = ref.current;
-    // truncate면 셀 폭을 따라가야 하므로 콘텐츠 기준 너비 고정을 하지 않는다.
-    if (!el || truncate) return;
+    // truncate(셀 폭 추종)·fill(부모 폭 100%)이면 콘텐츠 기준 너비 고정을 하지 않는다.
+    if (!el || truncate || isFill) {
+      if (el && isFill) el.style.width = '';
+      return;
+    }
     el.style.width = '';
     el.style.width = el.offsetWidth + 'px';
-  }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading, truncate]);
+  }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading, truncate, isFill]);
 
   const base =
     'inline-flex items-center justify-center relative font-pretendard font-normal ' +
     'whitespace-nowrap rounded-round-4 transition-colors select-none';
   // truncate: 버튼이 부모 폭 안에서 줄어들고(min-w-0/max-w-full) 라벨이 말줄임되게 한다.
   const truncStyle = truncate ? 'min-w-0 max-w-full' : '';
+  // fill: 부모 전체 폭(inline-flex라도 width:100% 적용됨).
+  const widthStyle = isFill ? 'w-full' : '';
 
   let sizeStyle;
   if (variant === 'underline') {
@@ -85,7 +93,7 @@ export function Button({
   return (
     <button
       ref={ref}
-      className={`${base} ${sizeStyle} ${colorStyle} ${truncStyle} ${className}`}
+      className={`${base} ${sizeStyle} ${colorStyle} ${truncStyle} ${widthStyle} ${className}`}
       disabled={inactive}
       onClick={!inactive ? onClick : undefined}
       {...props}

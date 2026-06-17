@@ -138,8 +138,8 @@ export function ModalPage() {
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         오버레이 다이얼로그 — ModalBox(size 너비) 안에 Header/Body/Footer 3영역. 1px gap이
         구분선으로 비치고, 본문이 길면 <span className="text-font-icon-5">70vh</span>를 넘는 만큼
-        내부 스크롤됩니다. 딤 클릭·ESC·X 버튼으로 닫힙니다.<br />
-        색은 modal 시멘틱 토큰(base 경유), 버튼은 공통 Button을 사용합니다.
+        내부 스크롤됩니다.<br />
+        딤 클릭·ESC·X 버튼으로 닫힙니다. 색은 modal 시멘틱 토큰(base 경유), 버튼은 공통 Button을 사용합니다.
       </p>
 
       <UsageExample code={USAGE} props={USAGE_PROPS} />

@@ -24,12 +24,19 @@ import { Button } from '../components/Button';
 <ButtonGroup direction="vertical">
   <Button>위</Button>
   <Button>아래</Button>
+</ButtonGroup>
+
+// 부모 전체 폭 — 버튼들이 균등 분할 (width="fill")
+<ButtonGroup width="fill">
+  <Button variant="line">취소</Button>
+  <Button>확인</Button>
 </ButtonGroup>`;
 
 const GROUP_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: '묶을 Button들' },
   { name: 'direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '버튼 배치 방향' },
   { name: 'gap', type: "'3' | '4' | '5' | '6' | '7'", default: "'5'", desc: "버튼 간격 토큰 — '5'=8px(기본), '7'=16px 등" },
+  { name: 'width', type: "'hug' | 'fill'", default: "'hug'", desc: 'fill=부모 전체 폭, Button 자식들 균등 분할' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
 ];
 
@@ -95,6 +102,7 @@ const USAGE_PROPS = [
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 흐림 처리 + 클릭 차단' },
   { name: 'loading', type: 'boolean', default: 'false', desc: '로딩 상태 — 클릭 차단' },
   { name: 'truncate', type: 'boolean', default: 'false', desc: '라벨이 부모 폭을 넘으면 말줄임 + hover 시 전체 텍스트 툴팁(좁은 셀용)' },
+  { name: 'width', type: "'hug' | 'fill'", default: "'hug'", desc: "fill=부모 전체 폭(width:100%). underline 변형엔 미적용" },
   { name: 'onClick', type: '(e) => void', default: '—', desc: '클릭 핸들러 (비활성/로딩 시 차단)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스 (나머지 속성은 ...props로 전달)' },
 ];
@@ -175,6 +183,29 @@ export function ButtonPage() {
       <VariantBlock variant="ghost" label="Ghost (Third Button)" tinted />
       {/* Underline — 배경 없이 밑줄(hover) 텍스트 버튼. 아이콘 전용은 의미가 없어 제외 */}
       <VariantBlock variant="underline" label="Underline (Text Button)" rows={BUTTON_ROWS.slice(0, 3)} />
+
+      {/* Width fill — 부모 전체 폭 (underline 제외) */}
+      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Width: fill</h3>
+        <p className="mb-spacing-7 text-14 text-font-icon-4">
+          <code className="text-font-icon-3">width="fill"</code>이면 버튼이 부모 너비를 100% 채웁니다(밑줄 텍스트 버튼은 제외).
+        </p>
+        <div className="max-w-[360px] space-y-spacing-5">
+          <Button variant="fill" width="fill">저장</Button>
+          <Button variant="line" width="fill">취소</Button>
+          <Button variant="ghost" width="fill">더 보기</Button>
+        </div>
+
+        <p className="mb-spacing-5 mt-spacing-8 text-14 text-font-icon-4">
+          <code className="text-font-icon-3">ButtonGroup width="fill"</code>이면 버튼들이 부모 폭을 균등 분할합니다.
+        </p>
+        <div className="max-w-[360px]">
+          <ButtonGroup width="fill">
+            <Button variant="line">취소</Button>
+            <Button variant="fill">확인</Button>
+          </ButtonGroup>
+        </div>
+      </div>
 
       {/* Button Group — 버튼들을 8px 간격으로 묶음 */}
       <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">

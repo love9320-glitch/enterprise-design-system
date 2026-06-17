@@ -135,7 +135,8 @@ export function Modal({
           lockedTopRef.current = Math.round(Math.min(MAX_TOP, Math.max(BOTTOM, top)));
         }
         const top = lockedTopRef.current;
-        const bodyMax = Math.max(0, vh - top - BOTTOM - hh - fh);
+        // -2: header↔body, body↔footer 사이 gap-spacing-1(각 1px 구분선) 공간 확보
+        const bodyMax = Math.max(0, vh - top - BOTTOM - hh - fh - 2);
         setLayout({ top, bodyMax });
       } else {
         const bodyMax = Math.max(0, Math.min(designCap, vh - 32 - hh - fh));
