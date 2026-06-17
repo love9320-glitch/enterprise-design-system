@@ -7,6 +7,7 @@ export { listColors } from './listColors.js';
 export { tagColors } from './tagColors.js';
 export { checkboxColors } from './checkboxColors.js';
 export { tableColors } from './tableColors.js';
+export { modalColors } from './modalColors.js';
 export { spacing } from './spacing.js';
 export { radius } from './radius.js';
 export { borderWidth } from './border.js';

@@ -133,7 +133,7 @@ export function Pagination({
       {/* 좌: 총 개수 */}
       <div className="justify-self-start">
         {showTotal && (
-          <p className="text-12 text-font-icon-5">총 {totalCount}개</p>
+          <p className="text-14 text-font-icon-5">총 {totalCount}개</p>
         )}
       </div>
 
@@ -154,12 +154,15 @@ export function Pagination({
       <div className="flex items-center gap-spacing-5 justify-self-end">
         {showPageSize && (
           <>
-            <span className="whitespace-nowrap text-12 text-font-icon-5">페이지 행</span>
+            <span className="whitespace-nowrap text-14 text-font-icon-5">페이지 행</span>
             <Select
+              variant="text"
+              size="24"
+              placement="auto-right"
+              menuWidth={80}
               options={sizeSelectOptions}
               value={size}
               onChange={handleSizeChange}
-              width={80}
             />
           </>
         )}

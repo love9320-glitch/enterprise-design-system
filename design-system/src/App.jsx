@@ -3,7 +3,7 @@ import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, OptionListPage,
-  PaginationPage, TablePage, TableTemplatePage,
+  PaginationPage, TablePage, TableTemplatePage, ModalPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
 
@@ -30,6 +30,7 @@ const NAV_GROUPS = [
       { id: 'option-list', label: 'Option List', Page: OptionListPage },
       { id: 'pagination',  label: 'Pagination',  Page: PaginationPage },
       { id: 'table',       label: 'Table',       Page: TablePage },
+      { id: 'modal',       label: 'Modal',       Page: ModalPage },
     ],
   },
   {
@@ -74,16 +75,25 @@ function Sidebar({ active, onSelect }) {
   );
 }
 
-function getHashId() {
+function isValidId(id) {
+  return ALL_ITEMS.some((item) => item.id === id);
+}
+
+function getInitialId() {
   const id = window.location.hash.replace('#', '');
-  return ALL_ITEMS.some((item) => item.id === id) ? id : 'typography';
+  return isValidId(id) ? id : 'typography';
 }
 
 export default function App() {
-  const [activeId, setActiveId] = useState(getHashId);
+  const [activeId, setActiveId] = useState(getInitialId);
 
   useEffect(() => {
-    const onHashChange = () => setActiveId(getHashId());
+    // 해시가 바뀌면 따라가되, 알 수 없는 해시면 현재 위치를 유지한다.
+    // (typography로 강제 복귀시키면, 방금 navigate로 옮긴 페이지를 덮어쓰는 race가 생긴다)
+    const onHashChange = () => {
+      const id = window.location.hash.replace('#', '');
+      setActiveId((prev) => (isValidId(id) ? id : prev));
+    };
     window.addEventListener('hashchange', onHashChange);
     return () => window.removeEventListener('hashchange', onHashChange);
   }, []);
