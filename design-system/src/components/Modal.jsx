@@ -12,13 +12,19 @@
 //   ModalBox 배경은 modal-inline(gray-100) + gap 1px → 헤더/바디/푸터(white) 사이가
 //   1px 구분선으로 비친다. 외곽선은 modal-outline 1px ring, round-6(10px), 그림자.
 //
-// 변형(아래 export): AlertModal(확인 1개) · ConfirmModal(취소/확인) · FormModal(취소/저장 + form).
+// 변형(아래 export):
+//   - FormModal(취소/저장 + form) — 기본 Modal 구조(헤더 + 자유 본문 + 푸터) 그대로.
+//   - AlertModal(확인 1개) · ConfirmModal(취소/확인) — 헤더 없이 본문에 고정 슬롯
+//       [타이틀 → 설명 → 2뎁스 상세(회색 박스) → 체크박스(Confirm 전용)]만 둔다.
+//       슬롯 종류는 고정(텍스트만 자유 수정), 푸터 버튼은 전체 폭 균등 분할.
+//       체크박스는 삭제 등 위험 액션의 재확인 요소(ConfirmModal에서만 사용).
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import { ScrollArea } from './ScrollArea';
+import { Checkbox } from './Checkbox';
 
 // ModalBox width 규격 — sm:360 md:480 lg:600 xl:720 2xl:840 3xl:960 4xl:1260
 //  fill = 브라우저 너비에서 좌우 16px씩 뺀 값(calc(100vw-32px)), 단 최소 너비 1260px
@@ -54,9 +60,12 @@ export function Modal({
   confirmDisabled = false,
   confirmLoading = false,
   showCancel = true,              // 취소(보조) 버튼 노출 여부
+  footerFullWidth = false,        // 푸터 버튼을 전체 폭으로 균등 분할(footerStart 없는 단순 액션용 — Alert/Confirm)
   closeOnOverlayClick = true,
   closeOnEsc = true,
   bodyMaxHeight = '70vh',         // 본문 최대 높이(초과 시 내부 스크롤)
+  bodyPadding = 'p-spacing-7',    // 본문 패딩(토큰 클래스). Alert/Confirm은 p-spacing-8
+  footerPadding = 'px-spacing-7 py-spacing-6', // 푸터 패딩(토큰 클래스). Alert/Confirm은 px-spacing-8 py-spacing-7
   bodyClassName = '',
   onSubmit,                       // 주면 본문+푸터를 <form>으로 감싸고 주동작 버튼 type=submit
   className = '',
@@ -156,9 +165,9 @@ export function Modal({
 
   if (!open) return null;
 
-  // 푸터 버튼 그룹(footer 미지정 시)
+  // 푸터 버튼 그룹(footer 미지정 시) — footerFullWidth면 전체 폭 균등 분할
   const defaultFooterEnd = (
-    <ButtonGroup>
+    <ButtonGroup width={footerFullWidth ? 'fill' : 'hug'}>
       {showCancel && (
         <Button variant="line" onClick={onCancel ?? onClose}>
           {cancelText}
@@ -232,7 +241,7 @@ export function Modal({
               footer를 절대 가리지 않는다. 초과 시 ScrollArea 내부 스크롤. */}
           <div className="min-h-0 bg-modal-panel-bg">
             <ScrollArea maxHeight={layout.bodyMax ?? bodyMaxHeight}>
-              <div ref={contentRef} className={`p-spacing-7 text-14 text-font-icon-4 ${bodyClassName}`}>
+              <div ref={contentRef} className={`${bodyPadding} text-14 text-font-icon-4 ${bodyClassName}`}>
                 {children}
               </div>
             </ScrollArea>
@@ -240,8 +249,11 @@ export function Modal({
 
           {/* Footer */}
           {showFooter && (footer || footerStart || confirmText) && (
-            <footer ref={footerRef} className="flex shrink-0 items-center justify-between bg-modal-panel-bg px-spacing-7 py-spacing-6">
-              <div className="min-w-0 flex-1 text-14 text-font-icon-5">{footerStart}</div>
+            <footer
+              ref={footerRef}
+              className={`flex shrink-0 items-center bg-modal-panel-bg ${footerPadding} ${footerFullWidth ? '' : 'justify-between'}`}
+            >
+              {!footerFullWidth && <div className="min-w-0 flex-1 text-14 text-font-icon-5">{footerStart}</div>}
               {footer ?? defaultFooterEnd}
             </footer>
           )}
@@ -252,49 +264,139 @@ export function Modal({
   );
 }
 
-// AlertModal — 확인 버튼 하나, 단순 알림
+// ConfirmAlertBody — Alert/Confirm 전용 고정 본문 슬롯.
+// 헤더 없이 본문 안에 [타이틀 → 설명 → 2뎁스 상세(회색 박스) → 체크박스(Confirm 전용)] 순으로 배치한다.
+// 슬롯 종류는 고정이며 텍스트만 자유롭게 바꾼다. 비워둔 슬롯은 렌더하지 않는다.
+function ConfirmAlertBody({ title, description, descriptionDetail, checkbox }) {
+  const hasContent = description != null || descriptionDetail != null || checkbox != null;
+  return (
+    <div className="flex flex-col gap-spacing-6">
+      {title != null && (
+        <h2 className="text-20 font-semibold text-font-icon-5">{title}</h2>
+      )}
+      {hasContent && (
+        <div className="flex flex-col gap-spacing-5">
+          {description != null && (
+            <div className="whitespace-pre-line text-14 text-font-icon-5">{description}</div>
+          )}
+          {descriptionDetail != null && (
+            <div className="whitespace-pre-line rounded-round-4 bg-modal-description-bg p-spacing-6 text-14 text-font-icon-5">
+              {descriptionDetail}
+            </div>
+          )}
+          {checkbox}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// AlertModal — 확인 버튼 하나, 단순 알림. 헤더 없이 본문 고정 슬롯(타이틀/설명/2뎁스 상세).
 export function AlertModal({
+  title,
+  description,                     // 설명글(여러 줄은 \n)
+  descriptionDetail,              // 2뎁스 상세 설명(회색 박스)
   confirmText = '확인',
   onConfirm,
   onClose,
+  size = 'sm',                     // Alert/Confirm 기본 360px
   placement = 'center',           // 알럿은 중앙 기본(필요 시 override)
   ...props
 }) {
   return (
     <Modal
       {...props}
+      title={title}
+      size={size}
       placement={placement}
       onClose={onClose}
+      showHeader={false}
       showCancel={false}
+      footerFullWidth
+      bodyPadding="p-spacing-8"
+      footerPadding="px-spacing-8 py-spacing-7"
       confirmText={confirmText}
       onConfirm={onConfirm ?? onClose}
-    />
+    >
+      <ConfirmAlertBody title={title} description={description} descriptionDetail={descriptionDetail} />
+    </Modal>
   );
 }
 
-// ConfirmModal — 취소/확인, 의사결정 요구
+// ConfirmModal — 취소/확인, 의사결정 요구. 헤더 없이 본문 고정 슬롯(타이틀/설명/2뎁스 상세/체크박스).
+// 체크박스는 삭제 등 위험 액션의 재확인 요소 — checkboxLabel을 주면 본문에 노출되고,
+// requireCheck(기본 true)면 체크해야 확인 버튼이 활성화된다.
 export function ConfirmModal({
+  title,
+  description,                     // 설명글(여러 줄은 \n)
+  descriptionDetail,              // 2뎁스 상세 설명(회색 박스)
+  checkboxLabel,                  // 주면 본문에 재확인 체크박스 노출
+  checked,                        // controlled 체크 상태(미지정 시 내부 상태로 동작)
+  onCheckChange,                  // (checked, event) — 체크 변경 콜백
+  requireCheck = true,            // checkboxLabel 있을 때 체크해야 확인 활성화
   confirmText = '확인',
   cancelText = '취소',
   onConfirm,
   onCancel,
   onClose,
   confirmVariant = 'fill',
+  confirmDisabled = false,
+  open,
+  size = 'sm',                     // Alert/Confirm 기본 360px
   placement = 'center',           // 컨펌은 중앙 기본(필요 시 override)
   ...props
 }) {
+  const hasCheck = checkboxLabel != null;
+  const isControlled = checked !== undefined;
+  const [internalChecked, setInternalChecked] = useState(false);
+  const isChecked = isControlled ? checked : internalChecked;
+
+  // 열림 상태가 바뀌는 순간(렌더 중) 내부 체크 상태 초기화 — 닫았다 다시 열면 해제된 상태로 시작.
+  // effect 대신 prop 변화 감지 패턴을 써서 cascading render를 피한다.
+  const [prevOpen, setPrevOpen] = useState(open);
+  if (open !== prevOpen) {
+    setPrevOpen(open);
+    if (open && !isControlled) setInternalChecked(false);
+  }
+
+  const handleCheck = (e) => {
+    if (!isControlled) setInternalChecked(e.target.checked);
+    onCheckChange?.(e.target.checked, e);
+  };
+
+  const gated = hasCheck && requireCheck && !isChecked;
+
   return (
     <Modal
       {...props}
+      title={title}
+      open={open}
+      size={size}
       placement={placement}
       onClose={onClose}
+      showHeader={false}
       showCancel
+      footerFullWidth
+      bodyPadding="p-spacing-8"
+      footerPadding="px-spacing-8 py-spacing-7"
       confirmText={confirmText}
       cancelText={cancelText}
       onConfirm={onConfirm}
       onCancel={onCancel ?? onClose}
       confirmVariant={confirmVariant}
-    />
+      confirmDisabled={confirmDisabled || gated}
+    >
+      <ConfirmAlertBody
+        title={title}
+        description={description}
+        descriptionDetail={descriptionDetail}
+        checkbox={
+          hasCheck ? (
+            <Checkbox checked={isChecked} onChange={handleCheck} label={checkboxLabel} />
+          ) : null
+        }
+      />
+    </Modal>
   );
 }
 
