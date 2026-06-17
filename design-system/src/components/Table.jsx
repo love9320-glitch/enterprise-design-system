@@ -1,7 +1,15 @@
 // Table — 데이터 테이블 (Figma table, node 7257:1925)
 // 컬럼 정의(columns)와 데이터(rows)를 받아 렌더하는 완전 옵션형 테이블.
-//   - columns: [{ key, label, width?, align?, render?, renderHeader? }]  width 없으면 가변(fill). fill 컬럼은 최소 40px 유지
-//     renderHeader: () => ReactNode — 헤더 셀을 직접 렌더(예: 헤더에 인라인 텍스트형 Select 필터). 없으면 label을 말줄임 텍스트로 표시
+//   - columns: [{ key, label, width?, align?, render?, renderHeader?, filter?, headerMenu? }]  width 없으면 가변(fill). fill 컬럼은 최소 40px 유지
+//     renderHeader: () => ReactNode — 헤더 셀(라벨 영역)을 직접 렌더(가장 우선). 없으면 filter → label 순으로 처리
+//     filter: { options:[{value,label}], allLabel?, placeholder? } — 헤더 라벨 자리에 인라인 텍스트형 Select(size 20)를
+//       넣고, 선택값으로 그 컬럼(row[key])을 기준으로 행을 거른다. 옵션 맨 앞에 전체 옵션(value '')이 자동 추가되고
+//       그걸 고르면 필터가 해제된다. 전체 옵션 라벨은 allLabel(기본 '{컬럼명} 전체')로 정한다.
+//       필터 상태는 filters/onFilterChange로 controlled, 미지정 시 내부 상태.
+//     headerMenu: { sortable?, items?, icon?, width? } — 헤더 우측에 ghost 아이콘 버튼(size 24)을 두고, 클릭 시 Popover 메뉴를 연다.
+//       sortable=true면 '오름차순/내림차순 정렬' 항목이 자동 추가되고 그 컬럼(row[key]) 기준으로 Table이 내부 정렬한다(현재 정렬은 항목에 selected 표시).
+//       items=[{ key?, label, icon?, onClick(column) }] 로 임의 기능을 더 넣을 수 있다. 정렬 상태는 sort/onSortChange로 controlled, 미지정 시 내부 상태.
+//       sortable도 items도 없으면(빈 메뉴) 버튼을 렌더하지 않는다.
 //   - selectable: 체크박스 선택 컬럼(전체선택 헤더 포함). selectedIds/onSelectChange로 controlled, 미지정 시 내부 상태
 //   - bordered: 외곽선 + 라운드(true) / 외곽선 없는 라운드 헤더(false)
 //   - wrap: 본문 셀 텍스트 줄바꿈 여부. false(기본)=말줄임+행 높이 고정(잘리면 hover 툴팁) / true=줄바꿈으로 행이 세로로 늘어남
@@ -15,10 +23,17 @@
 // sticky 헤더의 하단 구분선은 border-collapse 환경에서 스크롤 시 사라지는 브라우저 버그를 피하려
 // box-shadow(토큰 색 인라인)로 그린다. — Tooltip/ScrollArea의 토큰값 인라인 적용과 동일한 예외.
 import { useState } from 'react';
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle, MoreVertical } from 'lucide-react';
 import { Checkbox } from './Checkbox';
 import { ScrollArea } from './ScrollArea';
 import { TruncatingText } from './TruncatingText';
+import { Select } from './Select';
+import { Button } from './Button';
+import { Popover } from './Popover';
+import { PopoverMenu } from './PopoverMenu';
+import { ListGroup } from './ListGroup';
+import { List } from './List';
+import { applyColumnFilters, applySort } from './tableView';
 import { tableColors } from '../tokens';
 
 const ALIGN_STYLE = {
@@ -30,6 +45,59 @@ const ALIGN_STYLE = {
 const CHECKBOX_COL_WIDTH = 44;
 const COL_MIN_WIDTH = 40; // 가변(fill) 컬럼이 표가 좁아져도 유지하는 최소 너비(px)
 
+// HeaderMenu — 헤더 우측 ghost 아이콘 버튼(size 24) + Popover 메뉴.
+// sortable면 오름차순/내림차순 정렬 항목을 자동 제공(현재 정렬은 selected로 표시), items로 임의 기능 추가.
+function HeaderMenu({ column, sort, onSort }) {
+  const menu = column.headerMenu;
+  const TriggerIcon = menu.icon ?? MoreVertical;
+  const sortDir = sort?.key === column.key ? sort.dir : null;
+  const items = menu.items ?? [];
+  return (
+    <Popover
+      placement="bottom-right"
+      menuWidth={menu.width ?? 120}
+      trigger={<Button variant="ghost" size="24" icon={TriggerIcon} aria-label={`${column.label ?? ''} 컬럼 메뉴`} />}
+    >
+      {(close) => (
+        <PopoverMenu width="100%">
+          <ListGroup>
+            {menu.sortable && [
+              <List
+                key="__asc"
+                title="오름차순 정렬"
+                selected={sortDir === 'asc'}
+                onClick={() => {
+                  onSort({ key: column.key, dir: 'asc' });
+                  close();
+                }}
+              />,
+              <List
+                key="__desc"
+                title="내림차순 정렬"
+                selected={sortDir === 'desc'}
+                onClick={() => {
+                  onSort({ key: column.key, dir: 'desc' });
+                  close();
+                }}
+              />,
+            ]}
+            {items.map((it, i) => (
+              <List
+                key={it.key ?? i}
+                title={it.label}
+                onClick={() => {
+                  it.onClick?.(column);
+                  close();
+                }}
+              />
+            ))}
+          </ListGroup>
+        </PopoverMenu>
+      )}
+    </Popover>
+  );
+}
+
 export function Table({
   columns = [],
   rows = [],
@@ -37,6 +105,10 @@ export function Table({
   selectable = false,
   selectedIds,
   onSelectChange,
+  filters,
+  onFilterChange,
+  sort,
+  onSortChange,
   bordered = false,
   wrap = false,
   maxHeight,
@@ -49,6 +121,29 @@ export function Table({
   className = '',
   ...props
 }) {
+  // 헤더 필터 상태 — controlled(filters+onFilterChange) 또는 내부 상태. { [colKey]: value }, ''=전체(해제)
+  const filtersControlled = filters !== undefined;
+  const [internalFilters, setInternalFilters] = useState({});
+  const activeFilters = filtersControlled ? filters : internalFilters;
+  const setFilter = (key, val) => {
+    const next = { ...activeFilters, [key]: val };
+    if (!filtersControlled) setInternalFilters(next);
+    onFilterChange?.(next);
+  };
+  // 활성 필터를 적용해 행을 거른다(공유 헬퍼).
+  const filteredRows = applyColumnFilters(rows, columns, activeFilters);
+
+  // 정렬 상태 — controlled(sort+onSortChange) 또는 내부 상태. { key, dir:'asc'|'desc' } | null
+  const sortControlled = sort !== undefined;
+  const [internalSort, setInternalSort] = useState(null);
+  const activeSort = sortControlled ? sort : internalSort;
+  const setSort = (next) => {
+    if (!sortControlled) setInternalSort(next);
+    onSortChange?.(next);
+  };
+  // 정렬 적용(필터 뒤, 공유 헬퍼) — 헤더 메뉴 항목 기준(row[key]).
+  const displayRows = applySort(filteredRows, activeSort);
+
   // 선택 상태 — controlled(selectedIds+onSelectChange) 또는 내부 상태
   const isControlled = selectedIds !== undefined;
   const [internalSel, setInternalSel] = useState([]);
@@ -60,8 +155,9 @@ export function Table({
     if (!isControlled) setInternalSel(next);
     onSelectChange?.(next);
   };
-  const allKeys = rows.map(getKey);
-  const allChecked = rows.length > 0 && allKeys.every((k) => selectedSet.has(k));
+  // 전체선택은 현재 보이는(필터·정렬된) 행 기준
+  const allKeys = displayRows.map(getKey);
+  const allChecked = displayRows.length > 0 && allKeys.every((k) => selectedSet.has(k));
   const toggleAll = () => emit(allChecked ? [] : allKeys);
   const toggleRow = (key) =>
     emit(selectedSet.has(key) ? selected.filter((k) => k !== key) : [...selected, key]);
@@ -101,22 +197,47 @@ export function Table({
     bordered ? '' : `${isFirst ? 'rounded-l-round-4' : ''} ${isLast ? 'rounded-r-round-4' : ''}`;
 
   // 헤더 셀(<th>) 공통 — 구분선·코너·패딩·하단 구분선(box-shadow). 체크박스/라벨 셀이 함께 사용.
+  // 오른쪽 패딩은 상하 패딩과 같은 spacing-5(8px) — 헤더 우측 메뉴 버튼이 가장자리에 너무 떨어지지 않게.
   const headCellProps = (isFirst, isLast, width) => ({
-    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} px-spacing-6 py-spacing-5 align-middle`,
+    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-6 pr-spacing-5 py-spacing-5 align-middle`,
     style: { ...(width ? { width } : null), ...headDivider },
   });
 
   const headCell = (c, isFirst, isLast) => (
     <th key={c.key} {...headCellProps(isFirst, isLast, c.width)}>
-      {/* renderHeader가 있으면 그대로 렌더(헤더 필터용 Select 등), 없으면 라벨을 말줄임 처리
-          — 컬럼이 좁아도 줄바꿈으로 세로로 늘어나지 않게. 잘리면 hover 툴팁. */}
-      <div className={`flex items-center ${ALIGN_STYLE[c.align] ?? ALIGN_STYLE.left}`}>
+      {/* 좌: 라벨 영역(renderHeader → filter → label) / 우: headerMenu(ghost 아이콘 버튼 + Popover). */}
+      <div className="flex items-center gap-spacing-3">
+      <div className={`flex min-w-0 flex-1 items-center ${ALIGN_STYLE[c.align] ?? ALIGN_STYLE.left}`}>
+        {/* 우선순위: renderHeader(직접 렌더) → filter(인라인 텍스트형 Select, size 20) → label(말줄임).
+            컬럼이 좁아도 줄바꿈으로 세로로 늘어나지 않게. 잘리면 hover 툴팁. */}
         {c.renderHeader ? (
           c.renderHeader()
+        ) : c.filter ? (
+          (() => {
+            // 전체(필터 해제) 옵션 라벨 — allLabel이 있으면 그대로, 없으면 '{컬럼명} 전체'(label 없으면 '전체')
+            const allLabel = c.filter.allLabel ?? (c.label ? `${c.label} 전체` : '전체');
+            return (
+              <Select
+                variant="text"
+                size="20"
+                value={activeFilters[c.key] ?? ''}
+                onChange={(e) => setFilter(c.key, e.target.value)}
+                options={[{ value: '', label: allLabel }, ...c.filter.options]}
+                placeholder={c.filter.placeholder ?? allLabel}
+              />
+            );
+          })()
         ) : (
           <TruncatingText as="span" className="min-w-0 text-12 font-normal text-font-icon-5">
             {c.label}
           </TruncatingText>
+        )}
+      </div>
+        {/* headerMenu는 정렬(sortable)이나 항목(items)이 하나라도 있을 때만 버튼을 렌더(빈 메뉴 방지) */}
+        {c.headerMenu && (c.headerMenu.sortable || c.headerMenu.items?.length > 0) && (
+          <div className="shrink-0">
+            <HeaderMenu column={c} sort={activeSort} onSort={setSort} />
+          </div>
         )}
       </div>
     </th>
@@ -159,16 +280,16 @@ export function Table({
               </div>
             </td>
           </tr>
-        ) : rows.length === 0 ? (
+        ) : displayRows.length === 0 ? (
           <tr className="bg-table-row-bg">
             <td colSpan={totalCols} className={`${stateLine} px-spacing-6 py-spacing-12 text-center text-14 text-font-icon-3`}>
               {emptyMessage}
             </td>
           </tr>
         ) : (
-          rows.map((row, ri) => {
+          displayRows.map((row, ri) => {
             const key = getKey(row, ri);
-            const isLastRow = ri === rows.length - 1;
+            const isLastRow = ri === displayRows.length - 1;
             // 행 구분선은 td에 적용한다(border-separate에선 tr 보더가 렌더되지 않음).
             // 바닥이 이미 닫히는 경우(bordered=외곽선 / noneline+세로스크롤=컨테이너 하단선)엔
             // 마지막 행 구분선을 빼 이중선(2px)이 되지 않게 한다.
