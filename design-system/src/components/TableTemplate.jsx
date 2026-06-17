@@ -11,6 +11,7 @@
 // 색·간격·보더는 하위 컴포넌트(Table/Pagination 등)의 토큰을 그대로 따른다.
 import { useMemo, useState } from 'react';
 import { Table } from './Table';
+import { applyColumnFilters, applySort } from './tableView';
 import { Pagination } from './Pagination';
 import { SearchBar } from './SearchBar';
 import { ButtonGroup } from './ButtonGroup';
@@ -56,6 +57,11 @@ export function TableTemplate({
 }) {
   const [query, setQuery] = useState('');
 
+  // 헤더 필터(filter 컬럼)·정렬(headerMenu sortable) 상태 — 템플릿이 보유.
+  // 페이지네이션 전에 전체 행에 적용해야 하므로 여기서 처리하고, 같은 상태를 Table에 controlled로 넘겨 헤더 UI를 동기화한다.
+  const [colFilters, setColFilters] = useState({});
+  const [sort, setSort] = useState(null);
+
   // 현재 페이지 — controlled(pageProp) 또는 내부 상태.
   const pageControlled = pageProp !== undefined;
   const [internalPage, setInternalPage] = useState(1);
@@ -91,11 +97,27 @@ export function TableTemplate({
   );
 
   // 검색 필터(searchable일 때만)
-  const filtered = useMemo(() => {
+  const searched = useMemo(() => {
     if (!searchable || !query) return rows;
     const q = query.toLowerCase();
     return rows.filter((r) => keys.some((k) => String(r[k] ?? '').toLowerCase().includes(q)));
   }, [rows, query, searchable, keys]);
+
+  // 헤더 필터 → 정렬을 전체(검색 후) 행에 적용한 뒤에 페이지를 자른다(헤더 요소가 현재 페이지 안에서만 동작하지 않게).
+  const filtered = useMemo(
+    () => applySort(applyColumnFilters(searched, columns, colFilters), sort),
+    [searched, columns, colFilters, sort],
+  );
+
+  // 헤더 필터/정렬 변경 — 상태 갱신 + 1페이지로 리셋(보이는 범위가 바뀌므로).
+  const handleFilterChange = (next) => {
+    setColFilters(next);
+    goToPage(1);
+  };
+  const handleSortChange = (next) => {
+    setSort(next);
+    goToPage(1);
+  };
 
   // 페이지네이션이 꺼지면 전체 행을 그대로 노출. 켜지면 현재 페이지 슬라이스만.
   const totalCount = filtered.length;
@@ -139,6 +161,10 @@ export function TableTemplate({
         selectable={selectable}
         selectedIds={selectable ? selectedIds : undefined}
         onSelectChange={selectable ? setSelectedIds : undefined}
+        filters={colFilters}
+        onFilterChange={handleFilterChange}
+        sort={sort}
+        onSortChange={handleSortChange}
         wrap={wrap}
         minWidth={minWidth}
         maxHeight={maxHeight}

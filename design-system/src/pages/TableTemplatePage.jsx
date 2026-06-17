@@ -17,8 +17,10 @@ const USAGE = `import { TableTemplate } from '../components/TableTemplate';
 
 const columns = [
   { key: 'type', label: '구분', width: 80, render: () => <Tag type="blue">태그</Tag> },
-  { key: 'title', label: '공고명' },
-  { key: 'period', label: '접수 기간', width: 280 },
+  // 헤더 요소: filter=헤더 인라인 Select로 그 컬럼 필터, headerMenu=헤더 ⋮ 메뉴(오름/내림차순 정렬 등)
+  { key: 'status', label: '상태', width: 120, filter: { options: STATUS_OPTIONS } },
+  { key: 'title', label: '공고명', headerMenu: { sortable: true } },
+  { key: 'period', label: '접수 기간', width: 280, headerMenu: { sortable: true } },
 ];
 
 // 모든 요소 ON (기본)
@@ -46,7 +48,7 @@ const columns = [
 />`;
 
 const USAGE_PROPS = [
-  { name: 'columns', type: '{ key, label, width?, align?, render?, renderHeader? }[]', default: '[]', desc: 'Table 컬럼 정의 (renderHeader로 헤더 셀 커스텀 — 예: 헤더 필터 Select)' },
+  { name: 'columns', type: '{ key, label, width?, align?, render?, renderHeader?, filter?, headerMenu? }[]', default: '[]', desc: 'Table 컬럼 정의. filter=헤더 필터 Select, headerMenu=헤더 정렬/기능 메뉴 — 검색·페이지네이션과 함께 전체 행에 적용됨' },
   { name: 'rows', type: 'object[]', default: '[]', desc: '데이터 배열(전체) — 검색/페이지네이션은 내부에서 처리' },
   { name: 'rowKey', type: 'string', default: "'id'", desc: 'row 고유 키 필드명' },
   { name: 'actions', type: 'ReactNode | (ctx) => ReactNode', default: 'null', desc: '버튼그룹 내용. null이면 버튼그룹 숨김. 함수면 ctx={selectedIds, clearSelection, visibleRows, query} 전달' },
@@ -74,42 +76,36 @@ const USAGE_PROPS = [
 const STATUS_TAG = { 진행: 'blue', 마감: 'gray', 예정: 'red' };
 const STATUSES = ['진행', '마감', '예정'];
 
-// 상태 필터 셀렉트 옵션(버튼그룹에 넣는 데모용)
-const STATUS_FILTER_OPTIONS = [
-  { value: 'all', label: '전체 상태' },
-  { value: '진행', label: '진행중' },
-  { value: '마감', label: '마감' },
-  { value: '예정', label: '예정' },
-];
-
 // 인라인 텍스트형 Select 옵션 — 헤더 상태 필터 / 바디 지원서·평가
 const STATUS_OPTIONS = STATUSES.map((s) => ({ value: s, label: s }));
 const APPLY_OPTIONS = [1, 2, 3, 4, 5].map((n) => ({ value: `${n}개`, label: `${n}개` }));
 const EVAL_OPTIONS = [1, 2, 3].map((n) => ({ value: `${n}개`, label: `${n}개` }));
 
 // 컬럼 정의 — 규칙 4(상수 배열). 구분은 Tag, 공고명은 가변(fill) 폭.
-// 상태 컬럼은 헤더를 인라인 텍스트형 Select(필터)로, 지원서·평가는 본문 셀을 인라인 텍스트형 Select로 렌더.
+// 헤더 요소(Table 내장): 상태 컬럼은 filter(헤더 인라인 Select, 실제 행 필터), 공고명·접수 기간은 headerMenu(정렬 메뉴 버튼).
+// 본문: 지원서·평가는 인라인 텍스트형 Select로 렌더.
 const COLUMNS = [
   { key: 'type',   label: '구분',     width: 80,  render: () => <Tag type="blue">태그</Tag> },
   {
-    key: 'status', label: '상태', width: 110,
-    renderHeader: () => <Select variant="text" size="20" options={STATUS_OPTIONS} placeholder="상태" />,
+    key: 'status', label: '상태', width: 120,
+    filter: { options: STATUS_OPTIONS }, // 헤더 인라인 Select(size 20) + 실제 필터('상태 전체'=해제)
     render: (row) => <Tag type={STATUS_TAG[row.status]}>{row.status}</Tag>,
   },
   {
     key: 'title', label: '공고명',
+    headerMenu: { sortable: true }, // 헤더 우측 ⋮ 메뉴 — 오름/내림차순 정렬
     render: (row) => (
       <Button variant="underline" truncate onClick={(e) => e.stopPropagation()}>{row.title}</Button>
     ),
   },
-  { key: 'period', label: '접수 기간', width: 280 },
+  { key: 'period', label: '접수 기간', width: 280, headerMenu: { sortable: true } },
   {
     key: 'apply', label: '지원서', width: 110,
-    render: (row) => <Select variant="text" size="24" options={APPLY_OPTIONS} defaultValue={row.apply} />,
+    render: (row) => <Select variant="text" size="24" menuWidth={80} options={APPLY_OPTIONS} defaultValue={row.apply} />,
   },
   {
     key: 'eval', label: '평가', width: 110,
-    render: (row) => <Select variant="text" size="24" options={EVAL_OPTIONS} defaultValue={row.eval} />,
+    render: (row) => <Select variant="text" size="24" menuWidth={80} options={EVAL_OPTIONS} defaultValue={row.eval} />,
   },
 ];
 
@@ -138,14 +134,9 @@ let nextId = ALL_ROWS.length + 1;
 // (추가/삭제는 앱 로직이라 템플릿이 아닌 사용처에서 구현한다 — actions 슬롯의 의도)
 // actionSet='rich'이면 버튼그룹에 여러 버튼(추가/가져오기/내보내기 + 선택 시 삭제)을 보여준다.
 function DemoTemplate({ withActions = true, actionSet = 'default', ...templateProps }) {
-  const [rows, setRows] = useState(templateProps.initialRows ?? ALL_ROWS);
-  const [statusFilter, setStatusFilter] = useState('all'); // 버튼그룹의 상태 필터 셀렉트(rich)
   const { initialRows, selectable, ...rest } = templateProps;
+  const [rows, setRows] = useState(initialRows ?? ALL_ROWS);
   const rich = actionSet === 'rich';
-
-  // 셀렉트 필터는 사용처에서 rows를 직접 걸러 템플릿에 넘긴다(템플릿은 검색/페이지네이션만 처리).
-  const visibleData =
-    rich && statusFilter !== 'all' ? rows.filter((r) => r.status === statusFilter) : rows;
 
   const addRow = () => {
     const id = nextId++;
@@ -164,13 +155,6 @@ function DemoTemplate({ withActions = true, actionSet = 'default', ...templatePr
             <>
               <Button variant="line" leftIcon={Upload}>가져오기</Button>
               <Button variant="line" leftIcon={Download}>내보내기</Button>
-              {/* 버튼 위치에 셀렉트도 넣을 수 있다 — 상태로 rows를 필터링 */}
-              <Select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                options={STATUS_FILTER_OPTIONS}
-                width={120}
-              />
             </>
           )}
           {selectable && (
@@ -190,7 +174,7 @@ function DemoTemplate({ withActions = true, actionSet = 'default', ...templatePr
         </>
       );
 
-  return <TableTemplate columns={COLUMNS} rows={visibleData} actions={actions} selectable={selectable} {...rest} />;
+  return <TableTemplate columns={COLUMNS} rows={rows} actions={actions} selectable={selectable} {...rest} />;
 }
 
 // 페이지네이션 없이일 때 고를 수 있는 표 높이 옵션
@@ -327,7 +311,7 @@ export function TableTemplatePage() {
         desc={
           <>
             체크박스로 버튼그룹·검색바·페이지네이션·외곽선·선택을 실시간 토글해 보세요.<br />
-            버튼그룹에는 추가·가져오기·내보내기(+선택 시 삭제) 여러 버튼과 상태 필터 셀렉트를 미리 넣어 두었습니다(셀렉트로 상태를 고르면 실제로 행이 필터링됩니다).
+            버튼그룹에는 추가·가져오기·내보내기(+선택 시 삭제) 버튼을 넣어 두었고, 테이블 헤더에는 상태 필터 Select와 공고명·접수 기간 정렬 메뉴(⋮)를 달아 두었습니다(필터·정렬은 검색·페이지네이션과 함께 전체 행에 적용됩니다).
           </>
         }
       >
