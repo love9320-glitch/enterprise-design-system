@@ -59,25 +59,32 @@ function PropsTable({ rows }) {
         Props (전체 옵션)
       </p>
       <div className="overflow-x-auto px-spacing-6 pb-spacing-6 pt-spacing-4">
-        <table className="w-full border-collapse text-left text-12">
+        {/* 컬럼 비율 옵션:타입:기본값:설명 = 1:1:1:2, min-w-[500px]로 각 컬럼 최소 100px 보장 */}
+        <table className="w-full min-w-[500px] table-fixed border-collapse text-left text-12">
+          <colgroup>
+            <col className="w-[20%]" />
+            <col className="w-[20%]" />
+            <col className="w-[20%]" />
+            <col className="w-[40%]" />
+          </colgroup>
           <thead>
             <tr className="border-b border-base-gray-100 text-font-icon-3">
-              <th className="whitespace-nowrap py-spacing-3 pr-spacing-6 font-semibold">옵션</th>
-              <th className="whitespace-nowrap py-spacing-3 pr-spacing-6 font-semibold">타입 / 값</th>
-              <th className="whitespace-nowrap py-spacing-3 pr-spacing-6 font-semibold">기본값</th>
+              <th className="py-spacing-3 pr-spacing-6 font-semibold">옵션</th>
+              <th className="py-spacing-3 pr-spacing-6 font-semibold">타입 / 값</th>
+              <th className="py-spacing-3 pr-spacing-6 font-semibold">기본값</th>
               <th className="py-spacing-3 font-semibold">설명</th>
             </tr>
           </thead>
           <tbody>
             {rows.map((r) => (
               <tr key={r.name} className="border-b border-base-gray-50 align-top last:border-b-0">
-                <td className="whitespace-nowrap py-spacing-3 pr-spacing-6 font-mono text-font-icon-5">
+                <td className="break-words py-spacing-3 pr-spacing-6 font-mono text-font-icon-5">
                   {r.name}
                 </td>
-                <td className="whitespace-pre-wrap py-spacing-3 pr-spacing-6 font-mono text-font-icon-4">
+                <td className="whitespace-pre-wrap break-words py-spacing-3 pr-spacing-6 font-mono text-font-icon-4">
                   {r.type ?? '—'}
                 </td>
-                <td className="whitespace-nowrap py-spacing-3 pr-spacing-6 font-mono text-font-icon-4">
+                <td className="break-words py-spacing-3 pr-spacing-6 font-mono text-font-icon-4">
                   {r.default ?? '—'}
                 </td>
                 <td className="py-spacing-3 text-font-icon-4">{r.desc}</td>

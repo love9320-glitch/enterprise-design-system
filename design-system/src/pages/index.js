@@ -13,3 +13,4 @@ export { OptionListPage } from './OptionListPage';
 export { PaginationPage } from './PaginationPage';
 export { TablePage } from './TablePage';
 export { TableTemplatePage } from './TableTemplatePage';
+export { ModalPage } from './ModalPage';
