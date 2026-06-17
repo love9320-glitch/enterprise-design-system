@@ -8,44 +8,119 @@ import { Tag } from '../components/Tag';
 import { TableTemplate } from '../components/TableTemplate';
 import { UsageExample } from '../components/UsageExample';
 
-const USAGE = `import { Modal, AlertModal, ConfirmModal, FormModal } from '../components/Modal';
+// ───────────── 기본 Modal ─────────────
+const MODAL_NOTE = '요소 구성 — Header[타이틀 · 닫기(X)] + Body[자유 주입 children] + Footer[footerStart(좌측 영역) · 취소/확인 버튼]';
+const MODAL_USAGE = `import { Modal } from '../components/Modal';
 
-// 기본 Modal — 완전 제어(open/onClose)
 const [open, setOpen] = useState(false);
 <Button onClick={() => setOpen(true)}>열기</Button>
 <Modal
   open={open}
   onClose={() => setOpen(false)}
   title="모달 타이틀"
-  size="md"
+  size="md"                    // sm~4xl · fill
+  placement="top"              // top | center
+  footerStart="좌측 영역"      // 선택(안내글·버튼·유효성 메시지)
+  confirmText="확인"
   onConfirm={() => setOpen(false)}
 >
-  컴포넌트 또는 텍스트 영역
-</Modal>
-
-// 변형 — AlertModal(확인 1개) · ConfirmModal(취소/확인) · FormModal(취소/저장 + form)
-<AlertModal open={a} onClose={() => setA(false)} title="알림">저장되었습니다.</AlertModal>
-<ConfirmModal open={c} onClose={() => setC(false)} title="삭제할까요?"
-  confirmText="삭제" onConfirm={remove}>되돌릴 수 없습니다.</ConfirmModal>
-<FormModal open={f} onClose={() => setF(false)} title="회원 등록"
-  submitText="등록" onSubmit={save}>...form...</FormModal>`;
-
-const USAGE_PROPS = [
+  본문에 컴포넌트·텍스트를 자유롭게 주입합니다.
+</Modal>`;
+const MODAL_PROPS = [
   { name: 'open / onClose', type: 'boolean / () => void', default: '—', desc: '열림 상태와 닫기 핸들러(딤 클릭·ESC·X 버튼이 모두 호출)' },
   { name: 'title', type: 'ReactNode', default: '—', desc: '헤더 타이틀' },
-  { name: 'size', type: "'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'|'fill'", default: "'md'", desc: 'ModalBox 너비 360/480/600/720/840/960/1260, fill=좌우 16씩 제외(calc(100vw-32px), 최소 1260)' },
-  { name: 'placement', type: "'center'|'top'", default: "'top' (Alert/Confirm은 'center')", desc: '상단 정렬(여백은 팝업 높이에 반비례해 16 ~ 화면높이/2−150 가변) / 브라우저 중앙 정렬. 일반 팝업·FormModal은 top 기본, Alert/Confirm은 center 기본. 언제든 override 가능' },
   { name: 'children', type: 'ReactNode', default: '—', desc: 'ModalBody 내용(외부 주입). 길면 내부 스크롤' },
+  { name: 'size', type: "'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'|'fill'", default: "'md'", desc: 'ModalBox 너비 360/480/600/720/840/960/1260, fill=좌우 16씩 제외(최소 1260)' },
+  { name: 'placement', type: "'center'|'top'", default: "'top'", desc: '상단 정렬(여백 16 ~ 화면½−150 가변) / 브라우저 중앙' },
   { name: 'confirmText / onConfirm', type: 'string / () => void', default: "'확인'", desc: '주동작 버튼 라벨·핸들러' },
   { name: 'cancelText / onCancel', type: 'string / () => void', default: "'취소'", desc: '보조 버튼 라벨·핸들러(미지정 시 onClose)' },
-  { name: 'confirmVariant', type: "'fill'|'line'|'ghost'", default: "'fill'", desc: '주동작 버튼 variant' },
-  { name: 'confirmDisabled / confirmLoading', type: 'boolean', default: 'false', desc: '주동작 버튼 비활성/로딩' },
-  { name: 'showCancel / showClose', type: 'boolean', default: 'true', desc: '취소 버튼 / 헤더 X 버튼 노출' },
-  { name: 'showHeader / showFooter', type: 'boolean', default: 'true', desc: '헤더 / 푸터 영역 노출' },
-  { name: 'footer / footerStart', type: 'ReactNode', default: '—', desc: '푸터 우측 전체 커스텀 / 좌측 영역(새로고침·불러오기 버튼, 안내글, 유효성 메시지 등)' },
+  { name: 'footer / footerStart', type: 'ReactNode', default: '—', desc: '푸터 우측 전체 커스텀 / 좌측 영역(버튼·안내글·유효성 메시지)' },
+  { name: 'showHeader / showClose / showFooter / showCancel', type: 'boolean', default: 'true', desc: '헤더 / X 버튼 / 푸터 / 취소 버튼 노출' },
   { name: 'closeOnOverlayClick / closeOnEsc', type: 'boolean', default: 'true', desc: '딤 클릭 / ESC로 닫기 허용' },
   { name: 'bodyMaxHeight', type: 'number | string', default: "'70vh'", desc: '본문 최대 높이(초과 시 ScrollArea 내부 스크롤)' },
-  { name: 'onSubmit', type: '(e) => void', default: '—', desc: '주면 본문+푸터를 <form>으로 감싸고 주동작 버튼 type=submit (FormModal)' },
+];
+
+// ───────────── FormModal ─────────────
+const FORM_NOTE = '요소 구성 — 기본 Modal과 동일(Header + Body + Footer) + 본문 <form> 래핑 · Footer[취소 · 저장(submit)]';
+const FORM_USAGE = `import { FormModal } from '../components/Modal';
+
+const [open, setOpen] = useState(false);
+const [name, setName] = useState('');
+<FormModal
+  open={open}
+  onClose={() => setOpen(false)}
+  title="회원 등록"
+  submitText="등록"
+  submitDisabled={!name.trim()}   // 유효성: 비면 저장 비활성
+  onSubmit={save}                 // form submit(엔터 제출)
+>
+  <label>이름</label>
+  <Input value={name} onChange={(e) => setName(e.target.value)} />
+</FormModal>`;
+const FORM_PROPS = [
+  { name: 'open / onClose', type: 'boolean / () => void', default: '—', desc: '열림 상태와 닫기 핸들러' },
+  { name: 'title', type: 'ReactNode', default: '—', desc: '헤더 타이틀' },
+  { name: 'children', type: 'ReactNode', default: '—', desc: '폼 본문(입력 필드 등)' },
+  { name: 'onSubmit', type: '(e) => void', default: '—', desc: '본문+푸터를 <form>으로 감싸고 저장 버튼 type=submit' },
+  { name: 'submitText', type: 'string', default: "'저장'", desc: '주동작 버튼 라벨(저장·등록 등)' },
+  { name: 'submitDisabled / loading', type: 'boolean', default: 'false', desc: '저장 버튼 비활성(유효성) / 로딩' },
+  { name: 'cancelText / onCancel', type: 'string / () => void', default: "'취소'", desc: '보조 버튼 라벨·핸들러(미지정 시 onClose)' },
+  { name: 'size / placement', type: "size · 'center'|'top'", default: "'md' / 'top'", desc: '기본 Modal과 동일' },
+];
+
+// ───────────── AlertModal ─────────────
+const ALERT_NOTE = '요소 구성 — Header 없음 · Body[타이틀 → 설명(description) → 2뎁스 상세(descriptionDetail, 회색 박스·선택)] · Footer[확인 1개·전체 폭]';
+const ALERT_USAGE = `import { AlertModal } from '../components/Modal';
+
+const [open, setOpen] = useState(false);
+<AlertModal
+  open={open}
+  onClose={() => setOpen(false)}
+  title="알럿 확인"
+  description={'설명글입니다.\\n여러 줄은 \\\\n으로 구분합니다.'}
+  descriptionDetail="2뎁스 상세 설명(회색 박스, 선택)"
+  confirmText="확인"
+  onConfirm={() => setOpen(false)}
+/>`;
+const ALERT_PROPS = [
+  { name: 'open / onClose', type: 'boolean / () => void', default: '—', desc: '열림 상태와 닫기 핸들러(딤 클릭·ESC도 호출)' },
+  { name: 'title', type: 'ReactNode', default: '—', desc: '본문 첫 줄 타이틀(헤더 없음)' },
+  { name: 'description', type: 'ReactNode', default: '—', desc: '설명글(여러 줄은 \\n). 고정 슬롯' },
+  { name: 'descriptionDetail', type: 'ReactNode', default: '—', desc: '2뎁스 상세 설명(회색 박스). 고정 슬롯·선택' },
+  { name: 'confirmText / onConfirm', type: 'string / () => void', default: "'확인'", desc: '확인 버튼 라벨·핸들러(미지정 시 onClose)' },
+  { name: 'size', type: "'sm'~'fill'", default: "'sm'", desc: '기본 360px' },
+  { name: 'placement', type: "'center'|'top'", default: "'center'", desc: '기본 중앙 정렬' },
+];
+
+// ───────────── ConfirmModal ─────────────
+const CONFIRM_NOTE = '요소 구성 — Header 없음 · Body[타이틀 → 설명 → 2뎁스 상세 → 체크박스(checkboxLabel·선택)] · Footer[취소 · 확인·전체 폭]';
+const CONFIRM_USAGE = `import { ConfirmModal } from '../components/Modal';
+
+const [open, setOpen] = useState(false);
+<ConfirmModal
+  open={open}
+  onClose={() => setOpen(false)}
+  title="삭제 확인"
+  description="삭제한 항목은 되돌릴 수 없습니다."
+  descriptionDetail="영향 범위 등 상세(회색 박스, 선택)"
+  checkboxLabel="경고! 복구할 수 없음을 확인했습니다."  // 재확인(선택)
+  requireCheck                  // 체크해야 확인 활성화(기본 true)
+  confirmText="삭제"
+  confirmVariant="fill"
+  onConfirm={remove}
+/>`;
+const CONFIRM_PROPS = [
+  { name: 'open / onClose', type: 'boolean / () => void', default: '—', desc: '열림 상태와 닫기 핸들러(딤 클릭·ESC도 호출)' },
+  { name: 'title', type: 'ReactNode', default: '—', desc: '본문 첫 줄 타이틀(헤더 없음)' },
+  { name: 'description', type: 'ReactNode', default: '—', desc: '설명글(여러 줄은 \\n). 고정 슬롯' },
+  { name: 'descriptionDetail', type: 'ReactNode', default: '—', desc: '2뎁스 상세 설명(회색 박스). 고정 슬롯·선택' },
+  { name: 'checkboxLabel', type: 'ReactNode', default: '—', desc: '주면 본문에 재확인 체크박스 노출(삭제 등 위험 액션용)' },
+  { name: 'requireCheck', type: 'boolean', default: 'true', desc: 'checkboxLabel 있을 때 체크해야 확인 버튼 활성화' },
+  { name: 'checked / onCheckChange', type: 'boolean / (checked, e) => void', default: '—', desc: '체크 상태 controlled 제어(미지정 시 내부 상태)' },
+  { name: 'confirmText / onConfirm', type: 'string / () => void', default: "'확인'", desc: '확인 버튼 라벨·핸들러' },
+  { name: 'cancelText / onCancel', type: 'string / () => void', default: "'취소'", desc: '취소 버튼 라벨·핸들러(미지정 시 onClose)' },
+  { name: 'confirmVariant', type: "'fill'|'line'|'ghost'", default: "'fill'", desc: '확인 버튼 variant' },
+  { name: 'size / placement', type: "size · 'center'|'top'", default: "'sm' / 'center'", desc: '기본 360px·중앙 정렬' },
 ];
 
 const SIZES = ['sm', 'md', 'lg', 'xl', '2xl', '3xl', '4xl', 'fill'];
@@ -120,51 +195,64 @@ function TableInModalDemo({ open, onClose }) {
   );
 }
 
+// 섹션 헤더 — 변형별 제목 + 설명
+function SectionHeader({ title, children, first = false }) {
+  return (
+    <div className={`mb-spacing-6 ${first ? '' : 'border-t border-base-gray-100 pt-spacing-9'}`}>
+      <h3 className="mb-spacing-3 text-18 font-semibold text-font-icon-5">{title}</h3>
+      <p className="text-14 text-font-icon-4">{children}</p>
+    </div>
+  );
+}
+
 export function ModalPage() {
+  // 기본 Modal
   const [base, setBase] = useState(false);
-  const [alertOpen, setAlertOpen] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
-  const [formOpen, setFormOpen] = useState(false);
   const [scrollOpen, setScrollOpen] = useState(false);
   const [footerStartOpen, setFooterStartOpen] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
   const [placeOpen, setPlaceOpen] = useState(null); // 'center' | 'top'
   const [sizeOpen, setSizeOpen] = useState(null); // 현재 열린 사이즈 키
+  // FormModal
+  const [formOpen, setFormOpen] = useState(false);
   const [name, setName] = useState('');
+  // AlertModal
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertDetailOpen, setAlertDetailOpen] = useState(false);
+  // ConfirmModal
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmCheckOpen, setConfirmCheckOpen] = useState(false);
 
   return (
     <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Modal</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
-        오버레이 다이얼로그 — ModalBox(size 너비) 안에 Header/Body/Footer 3영역. 1px gap이
-        구분선으로 비치고, 본문이 길면 <span className="text-font-icon-5">70vh</span>를 넘는 만큼
-        내부 스크롤됩니다.<br />
-        딤 클릭·ESC·X 버튼으로 닫힙니다. 색은 modal 시멘틱 토큰(base 경유), 버튼은 공통 Button을 사용합니다.
+        오버레이 다이얼로그. 기본 <span className="text-font-icon-5">Modal</span>·
+        <span className="text-font-icon-5">FormModal</span>은 Header/Body/Footer 3영역 구조이고,<br />
+        <span className="text-font-icon-5">AlertModal</span>·
+        <span className="text-font-icon-5">ConfirmModal</span>은 헤더 없이 본문 고정 슬롯
+        (타이틀·설명·2뎁스 상세·체크박스)만 둡니다.<br />
+        딤 클릭·ESC로 닫히고, 색은 modal 시멘틱 토큰(base 경유), 버튼은 공통 Button을 사용합니다.
       </p>
 
-      <UsageExample code={USAGE} props={USAGE_PROPS} />
-
-      {/* 변형 */}
-      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">변형 (Variants)</h3>
-      <div className="mb-spacing-9 flex flex-wrap gap-spacing-5">
+      {/* ───────────── 기본 Modal ───────────── */}
+      <SectionHeader title="기본 Modal" first>
+        Header(타이틀·X) + Body(자유 주입) + Footer(좌측 영역 + 버튼) 3영역. 본문이 70vh를 넘으면
+        내부 스크롤됩니다. 사이즈·정렬·긴 본문·푸터 좌측·테이블 인 모달을 지원합니다.
+      </SectionHeader>
+      <UsageExample title="기본 Modal 사용 예시" note={MODAL_NOTE} code={MODAL_USAGE} props={MODAL_PROPS} />
+      <div className="mb-spacing-7 flex flex-wrap gap-spacing-5">
         <Button variant="line" onClick={() => setBase(true)}>기본 Modal</Button>
-        <Button variant="line" onClick={() => setAlertOpen(true)}>AlertModal</Button>
-        <Button variant="line" onClick={() => setConfirmOpen(true)}>ConfirmModal</Button>
-        <Button variant="line" onClick={() => setFormOpen(true)}>FormModal</Button>
         <Button variant="line" onClick={() => setScrollOpen(true)}>긴 본문(스크롤)</Button>
         <Button variant="line" onClick={() => setFooterStartOpen(true)}>푸터 좌측 영역</Button>
         <Button variant="line" onClick={() => setTableOpen(true)}>테이블 템플릿 (상단 정렬)</Button>
       </div>
-
-      {/* 정렬 */}
-      <h3 className="mb-spacing-5 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">Placement</h3>
-      <div className="mb-spacing-9 flex flex-wrap gap-spacing-5">
+      <h4 className="mb-spacing-4 text-14 font-semibold text-font-icon-5">Placement</h4>
+      <div className="mb-spacing-7 flex flex-wrap gap-spacing-5">
         <Button variant="line" onClick={() => setPlaceOpen('center')}>center (중앙)</Button>
         <Button variant="line" onClick={() => setPlaceOpen('top')}>top (상단 16 ~ 화면½−150 가변)</Button>
       </div>
-
-      {/* 사이즈 */}
-      <h3 className="mb-spacing-5 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">Sizes</h3>
+      <h4 className="mb-spacing-4 text-14 font-semibold text-font-icon-5">Sizes</h4>
       <div className="mb-spacing-9 flex flex-wrap gap-spacing-5">
         {SIZES.map((s) => (
           <Button key={s} variant="line" onClick={() => setSizeOpen(s)}>
@@ -173,7 +261,40 @@ export function ModalPage() {
         ))}
       </div>
 
-      {/* ── 모달 인스턴스들 ── */}
+      {/* ───────────── FormModal ───────────── */}
+      <SectionHeader title="FormModal">
+        기본 Modal 구조에 <span className="text-font-icon-5">form</span> 래핑 + 유효성 검사를 더한
+        변형. 취소/저장(또는 등록) 버튼이며, 입력이 비면 저장이 비활성화됩니다.
+      </SectionHeader>
+      <UsageExample title="FormModal 사용 예시" note={FORM_NOTE} code={FORM_USAGE} props={FORM_PROPS} />
+      <div className="mb-spacing-9 flex flex-wrap gap-spacing-5">
+        <Button variant="line" onClick={() => setFormOpen(true)}>회원 등록 (FormModal)</Button>
+      </div>
+
+      {/* ───────────── AlertModal ───────────── */}
+      <SectionHeader title="AlertModal">
+        헤더 없이 본문 고정 슬롯(타이틀 → 설명 → 2뎁스 상세 박스)만 두는 단순 알림. 확인 버튼
+        1개(전체 폭), 기본 너비 360px.
+      </SectionHeader>
+      <UsageExample title="AlertModal 사용 예시" note={ALERT_NOTE} code={ALERT_USAGE} props={ALERT_PROPS} />
+      <div className="mb-spacing-9 flex flex-wrap gap-spacing-5">
+        <Button variant="line" onClick={() => setAlertOpen(true)}>기본 (설명만)</Button>
+        <Button variant="line" onClick={() => setAlertDetailOpen(true)}>2뎁스 상세 포함</Button>
+      </div>
+
+      {/* ───────────── ConfirmModal ───────────── */}
+      <SectionHeader title="ConfirmModal">
+        헤더 없이 본문 고정 슬롯(타이틀 → 설명 → 2뎁스 상세 → 체크박스)만 두는 의사결정 모달.<br />
+        취소/확인 버튼(전체 폭). 체크박스는 삭제 등 위험 액션의 재확인 요소로,
+        <span className="text-font-icon-5"> requireCheck</span>(기본 true)면 체크해야 확인이 활성화됩니다.
+      </SectionHeader>
+      <UsageExample title="ConfirmModal 사용 예시" note={CONFIRM_NOTE} code={CONFIRM_USAGE} props={CONFIRM_PROPS} />
+      <div className="mb-spacing-9 flex flex-wrap gap-spacing-5">
+        <Button variant="line" onClick={() => setConfirmOpen(true)}>기본 (취소/확인)</Button>
+        <Button variant="line" onClick={() => setConfirmCheckOpen(true)}>체크박스 재확인 (삭제)</Button>
+      </div>
+
+      {/* ── 기본 Modal 인스턴스 ── */}
       <Modal
         open={base}
         onClose={() => setBase(false)}
@@ -184,43 +305,6 @@ export function ModalPage() {
       >
         ModalBody 영역입니다. 외부에서 주입한 컴포넌트나 텍스트가 이 자리에 들어갑니다.
       </Modal>
-
-      <AlertModal
-        open={alertOpen}
-        onClose={() => setAlertOpen(false)}
-        title="알림"
-      >
-        변경 사항이 저장되었습니다.
-      </AlertModal>
-
-      <ConfirmModal
-        open={confirmOpen}
-        onClose={() => setConfirmOpen(false)}
-        title="정말 삭제할까요?"
-        confirmText="삭제"
-        confirmVariant="fill"
-        onConfirm={() => setConfirmOpen(false)}
-      >
-        삭제한 항목은 되돌릴 수 없습니다. 계속하시겠습니까?
-      </ConfirmModal>
-
-      <FormModal
-        open={formOpen}
-        onClose={() => {
-          setFormOpen(false);
-          setName('');
-        }}
-        title="회원 등록"
-        submitText="등록"
-        submitDisabled={!name.trim()}
-        onSubmit={() => {
-          setFormOpen(false);
-          setName('');
-        }}
-      >
-        <label className="mb-spacing-4 block text-13 font-semibold text-font-icon-5">이름</label>
-        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="이름을 입력하세요" />
-      </FormModal>
 
       <Modal
         open={scrollOpen}
@@ -289,6 +373,63 @@ export function ModalPage() {
           ModalBox 너비는 {SIZE_LABEL[s]}이고, 내부 요소는 width 100%로 채웁니다.
         </Modal>
       ))}
+
+      {/* ── FormModal 인스턴스 ── */}
+      <FormModal
+        open={formOpen}
+        onClose={() => {
+          setFormOpen(false);
+          setName('');
+        }}
+        title="회원 등록"
+        submitText="등록"
+        submitDisabled={!name.trim()}
+        onSubmit={() => {
+          setFormOpen(false);
+          setName('');
+        }}
+      >
+        <label className="mb-spacing-4 block text-13 font-semibold text-font-icon-5">이름</label>
+        <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="이름을 입력하세요" />
+      </FormModal>
+
+      {/* ── AlertModal 인스턴스 ── */}
+      <AlertModal
+        open={alertOpen}
+        onClose={() => setAlertOpen(false)}
+        title="알럿 확인"
+        description={'설정된 리마인드 메시지를 발송합니다.\n발송에 사용되는 이메일, SMS 포인트가 차감됩니다.'}
+      />
+
+      <AlertModal
+        open={alertDetailOpen}
+        onClose={() => setAlertDetailOpen(false)}
+        title="알럿 확인"
+        description={'설정된 리마인드 메시지를 발송합니다.\n발송에 사용되는 이메일, SMS 포인트가 차감됩니다.'}
+        descriptionDetail={'정보제공 동의를 다시 받는 방법은 아래와 같습니다.\n- 지원서 작성 마지막 단계에서 최종제출 버튼 클릭\n- 채용사이트 마이페이지 접속 시도'}
+      />
+
+      {/* ── ConfirmModal 인스턴스 ── */}
+      <ConfirmModal
+        open={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        title="발송 확인"
+        description={'설정된 리마인드 메시지를 발송합니다.\n발송에 사용되는 이메일, SMS 포인트가 차감됩니다.'}
+        confirmText="발송"
+        onConfirm={() => setConfirmOpen(false)}
+      />
+
+      <ConfirmModal
+        open={confirmCheckOpen}
+        onClose={() => setConfirmCheckOpen(false)}
+        title="삭제 확인"
+        description={'설정된 리마인드 메시지를 발송합니다.\n발송에 사용되는 이메일, SMS 포인트가 차감됩니다.'}
+        descriptionDetail={'정보제공 동의를 다시 받는 방법은 아래와 같습니다.\n- 지원서 작성 마지막 단계에서 최종제출 버튼 클릭\n- 채용사이트 마이페이지 접속 시도\n- 채용사이트 지원서 수정 접속 시도'}
+        checkboxLabel="경고! 삭제 시 복구할 수 없음을 확인했습니다."
+        confirmText="삭제"
+        confirmVariant="fill"
+        onConfirm={() => setConfirmCheckOpen(false)}
+      />
     </section>
   );
 }
