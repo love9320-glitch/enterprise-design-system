@@ -17,7 +17,8 @@ import { ScrollArea } from '../components/ScrollArea';
 
 // ScrollArea — 스크롤이 생기는 곳을 감싸 오버레이 스크롤바로 표시
 <ScrollArea maxHeight={200}>{/* 긴 콘텐츠 */}</ScrollArea>
-<ScrollArea maxHeight={200} horizontal>{/* 세로+가로 */}</ScrollArea>`;
+<ScrollArea maxHeight={200} horizontal>{/* 세로+가로 */}</ScrollArea>
+<ScrollArea maxHeight={200} variant="light">{/* 어두운 배경 위 흰색 thumb */}</ScrollArea>`;
 
 const USAGE_PROPS = [
   // Tag
@@ -34,6 +35,7 @@ const USAGE_PROPS = [
   { name: 'ScrollArea · children', type: 'ReactNode', default: '—', desc: '스크롤 대상 콘텐츠' },
   { name: 'ScrollArea · maxHeight', type: 'number', default: '—', desc: '이 높이(px)를 넘으면 세로 스크롤' },
   { name: 'ScrollArea · horizontal', type: 'boolean', default: 'false', desc: '가로 스크롤도 오버레이 스크롤바로 표시' },
+  { name: 'ScrollArea · variant', type: "'default' | 'light'", default: "'default'", desc: 'light=어두운 배경 위 흰색 thumb(scroll-bar-light* 토큰)' },
   { name: 'ScrollArea · contentClassName', type: 'string', default: "''", desc: '내부 콘텐츠 래퍼 클래스(패딩 등)' },
   { name: 'ScrollArea · className', type: 'string', default: "''", desc: '외부 컨테이너 클래스' },
 ];
@@ -109,11 +111,42 @@ export function TagPage() {
           <span className="text-font-icon-5"> hover·드래그</span> 시 색이 진해집니다(gray-900-50 → 75).
           ListGroup·Select 드롭다운 등도 내부적으로 이 컴포넌트를 사용합니다.
         </p>
-        <div className="w-full overflow-hidden rounded-round-4 border border-list-popover-outline bg-list-group-bg">
+        <p className="mb-spacing-4 text-12 text-font-icon-3">세로 (maxHeight)</p>
+        <div className="mb-spacing-8 w-full overflow-hidden rounded-round-4 border border-list-popover-outline bg-list-group-bg">
           <ScrollArea maxHeight={200} contentClassName="space-y-spacing-3 p-spacing-5">
             {Array.from({ length: 14 }, (_, i) => (
               <p key={i} className="text-14 text-font-icon-5">
                 스크롤 콘텐츠 줄 {i + 1}
+              </p>
+            ))}
+          </ScrollArea>
+        </div>
+
+        {/* 가로 + 세로 */}
+        <p className="mb-spacing-4 text-12 text-font-icon-3">
+          세로 + 가로 (<code className="text-font-icon-5">horizontal</code>)
+        </p>
+        <div className="mb-spacing-8 w-full overflow-hidden rounded-round-4 border border-list-popover-outline bg-list-group-bg">
+          <ScrollArea maxHeight={200} horizontal contentClassName="p-spacing-5">
+            <div className="w-[1200px] space-y-spacing-3">
+              {Array.from({ length: 14 }, (_, i) => (
+                <p key={i} className="whitespace-nowrap text-14 text-font-icon-5">
+                  가로로도 넘치는 긴 콘텐츠 줄 {i + 1} — 좌우로 스크롤하면 하단 오버레이 스크롤바가 함께 표시됩니다.
+                </p>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* light 변형 — 어두운 배경 */}
+        <p className="mb-spacing-4 text-12 text-font-icon-3">
+          어두운 배경 위 흰색 thumb (<code className="text-font-icon-5">variant="light"</code>)
+        </p>
+        <div className="w-full overflow-hidden rounded-round-4 bg-editor-source-bg">
+          <ScrollArea maxHeight={200} variant="light" contentClassName="space-y-spacing-3 p-spacing-5">
+            {Array.from({ length: 14 }, (_, i) => (
+              <p key={i} className="font-mono text-13 text-editor-source-text">
+                어두운 배경 스크롤 콘텐츠 줄 {i + 1}
               </p>
             ))}
           </ScrollArea>

@@ -2,6 +2,7 @@ import {
   fontFamily, fontSize,
   baseColors, fontIconColors, buttonColors, textFieldColors,
   listColors, tagColors, checkboxColors, tableColors, modalColors,
+  editorColors,
   spacing, radius, borderWidth,
 } from './src/tokens/index.js';
 
@@ -27,6 +28,7 @@ export default {
         checkbox: checkboxColors,
         table: tableColors,
         modal: modalColors,
+        editor: editorColors,
       },
       spacing,
       borderRadius: radius,

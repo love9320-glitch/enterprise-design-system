@@ -20,3 +20,96 @@
     display: none; /* Chrome/Safari */
   }
 }
+
+@layer components {
+  /* 텍스트 에디터 본문/미리보기 prose 스타일.
+     Tiptap(EditorContent)이 생성하는 시맨틱 HTML(h1·ul·table 등)과 미리보기 렌더 결과 모두
+     .tiptap-prose 안에서 동일한 토큰 스타일을 받는다. 모든 색·간격은 @apply로 토큰 유틸만 사용. */
+  .tiptap-prose {
+    @apply text-14 text-font-icon-5;
+  }
+  /* contentEditable 루트 — 포커스 외곽선 제거(컨테이너가 ring으로 처리), 높이 채움 */
+  .tiptap-prose .tiptap {
+    @apply outline-none;
+  }
+  .tiptap-prose :where(p) {
+    @apply my-spacing-4;
+  }
+  .tiptap-prose :where(h1) {
+    @apply mb-spacing-4 mt-spacing-7 text-20 font-semibold;
+  }
+  .tiptap-prose :where(h2) {
+    @apply mb-spacing-4 mt-spacing-7 text-18 font-semibold;
+  }
+  .tiptap-prose :where(h3) {
+    @apply mb-spacing-3 mt-spacing-6 text-16 font-semibold;
+  }
+  .tiptap-prose :where(strong) {
+    @apply font-semibold;
+  }
+  .tiptap-prose :where(a) {
+    @apply text-editor-link underline;
+  }
+  .tiptap-prose :where(ul) {
+    @apply my-spacing-4 list-disc pl-spacing-8;
+  }
+  .tiptap-prose :where(ol) {
+    @apply my-spacing-4 list-decimal pl-spacing-8;
+  }
+  .tiptap-prose :where(li) {
+    @apply my-spacing-2;
+  }
+  .tiptap-prose :where(blockquote) {
+    @apply my-spacing-5 border-l-2 border-editor-divider bg-editor-block-bg py-spacing-3 pl-spacing-6 text-font-icon-4;
+  }
+  .tiptap-prose :where(hr) {
+    @apply my-spacing-7 border-t border-editor-divider;
+  }
+  .tiptap-prose :where(code) {
+    @apply rounded-round-3 bg-editor-code-bg px-spacing-3 py-spacing-1 font-mono text-13 text-editor-code-text;
+  }
+  .tiptap-prose :where(pre) {
+    @apply my-spacing-5 overflow-x-auto rounded-round-4 bg-editor-block-bg p-spacing-6 font-mono text-13;
+  }
+  /* 코드블록 안의 코드는 배경/패딩 중복 제거 */
+  .tiptap-prose :where(pre) code {
+    @apply bg-transparent p-spacing-none text-font-icon-5;
+  }
+  .tiptap-prose :where(img) {
+    @apply my-spacing-5 h-auto max-w-full rounded-round-4;
+  }
+  /* 표 — 토큰 보더(table-cell-line)·헤더 배경(table-header-bg) 재사용.
+     모서리 라운드(round-4=6px): border-collapse 대신 separate + 외곽 border + overflow-hidden으로 깎는다.
+     셀은 우/하단 보더만 두고, 마지막 열/행은 제거해 외곽 1px과 겹치지 않게 한다. */
+  .tiptap-prose :where(table) {
+    @apply my-spacing-5 w-full overflow-hidden rounded-round-4 border border-table-cell-line border-separate border-spacing-0;
+  }
+  .tiptap-prose :where(th),
+  .tiptap-prose :where(td) {
+    @apply border-b border-r border-table-cell-line px-spacing-6 py-spacing-3 text-left align-top;
+  }
+  .tiptap-prose :where(th:last-child),
+  .tiptap-prose :where(td:last-child) {
+    @apply border-r-0;
+  }
+  .tiptap-prose :where(tr:last-child) :where(th),
+  .tiptap-prose :where(tr:last-child) :where(td) {
+    @apply border-b-0;
+  }
+  .tiptap-prose :where(th) {
+    @apply bg-table-header-bg font-semibold;
+  }
+  /* 표 셀 선택 하이라이트(Tiptap 선택 상태) */
+  .tiptap-prose .selectedCell {
+    @apply bg-table-row-hover-bg;
+  }
+  /* 본문 첫/끝 요소의 바깥 여백 제거(컨테이너 패딩과 이중되지 않게) */
+  .tiptap-prose > .tiptap > :first-child,
+  .tiptap-prose > :first-child {
+    @apply mt-spacing-none;
+  }
+  .tiptap-prose > .tiptap > :last-child,
+  .tiptap-prose > :last-child {
+    @apply mb-spacing-none;
+  }
+}
