@@ -21,7 +21,7 @@ export function PopoverMenu({
   return (
     <div
       style={{ width: widthStyle }}
-      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 border border-list-popover-outline bg-list-popover-bg shadow-[0px_2px_4px_0px_rgba(13,13,13,0.12)] ${className}`}
+      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 outline outline-1 outline-list-popover-outline bg-list-popover-bg shadow-[0px_2px_4px_0px_rgba(13,13,13,0.12)] ${className}`}
       {...props}
     >
       {/* search area — 흰 배경. popover(gray100)와 gap-spacing-1(1px) 틈이 구분선이 된다. */}

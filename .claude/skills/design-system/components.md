@@ -104,6 +104,7 @@ const sizeStyle = SIZE_STYLES[size];
 | 컴포넌트 | 파일 | 주요 옵션 | 데모 페이지 |
 |----------|------|-----------|-------------|
 | Button | `components/Button.jsx` | variant(fill/line/ghost/underline) · size(32/24) · width(hug/fill — fill=부모 전체 폭, underline 제외) · leftIcon/rightIcon/icon · disabled · loading. **underline**=배경 없는 밑줄 텍스트 버튼(hover 시 밑줄, ghost 텍스트색 재사용) | `pages/ButtonPage.jsx` |
+| SegmentControl | `components/SegmentControl.jsx` | **SegmentControlButton**: children · size(32/24) · selected · disabled · leftIcon/rightIcon/icon — ghost 기반 토글 버튼(미선택=font-icon-3 회색 텍스트, 선택/hover=btn-ghost-hover-bg+font-icon-5). **SegmentControlGroup**: items(`{value,label,leftIcon?,rightIcon?,icon?,disabled?,ariaLabel?}[]`) · value/defaultValue/onChange(controlled·uncontrolled 단일선택) · size(32/24) · gap(spacing 토큰 키, 기본 '5'=8px) · disabled(그룹 전체) — 버튼들을 묶어 단일 선택 관리 | `pages/SegmentControlPage.jsx` |
 | ButtonGroup | `components/ButtonGroup.jsx` | children · direction(horizontal/vertical) · gap(spacing 토큰 키, 기본 '5'=8px) · width(hug/fill — fill=부모 전체 폭, Button 자식들 균등 분할) — 버튼들을 일정 간격으로 묶는 flex 컨테이너. **자식에 Select가 섞이면 Select를 버튼보다 앞(선두)에 자동 배치** | `pages/ButtonPage.jsx` |
 | SearchBar | `components/SearchBar.jsx` | value/onChange · onSubmit · disabled · width — 좌측 검색 아이콘, hover/focus는 ring | `pages/SearchBarPage.jsx` |
 | Input | `components/Input.jsx` | value/onChange · disabled · readOnly · error+errorMessage(툴팁) · width | `pages/InputPage.jsx` |
@@ -113,7 +114,7 @@ const sizeStyle = SIZE_STYLES[size];
 | Tag | `components/Tag.jsx` | type(blue/red/gray) · width(hug/fill) · children — tag-* 토큰 | `pages/TagPage.jsx` |
 | Checkbox | `components/Checkbox.jsx` | checked/onChange · defaultChecked · disabled · label — 6상태(unselected/selected×default/hover/disabled), checkbox-* 토큰 | `pages/CheckboxPage.jsx` |
 | List | `components/List.jsx` | title · tag · rightButton · endIcon · selected · disabled · onClick · onButtonClick — 옵션 목록 한 행(5상태) | `pages/OptionListPage.jsx` |
-| ScrollArea | `components/ScrollArea.jsx` | children · maxHeight · horizontal(가로 오버레이 스크롤바 추가) · contentClassName — 커스텀 오버레이 스크롤바(공용, 세로+가로). 스크롤 생기는 모든 곳에 사용 | `pages/TagPage.jsx` |
+| ScrollArea | `components/ScrollArea.jsx` | children · maxHeight · horizontal(가로 오버레이 스크롤바 추가) · variant(default/light — light=어두운 배경 위 흰색 thumb, scroll-bar-light* 토큰) · contentClassName — 커스텀 오버레이 스크롤바(공용, 세로+가로). 스크롤 생기는 모든 곳에 사용 | `pages/TagPage.jsx` |
 | ListGroup | `components/ListGroup.jsx` | children · maxVisible(기본 6) · empty · emptyMessage — 내부 스크롤(ScrollArea 사용). 자식 0개 또는 empty=true면 그룹 안(스크롤 영역 내부)에 ListEmpty를 렌더해 빈 상태도 그룹의 패딩·배경을 따른다 | `pages/OptionListPage.jsx` |
 | ListEmpty | `components/ListEmpty.jsx` | message — 목록 빈 상태. **ListGroup이 빈 상태일 때 내부에서 렌더**(단독 사용도 가능) | `pages/OptionListPage.jsx` |
 | PopoverMenu | `components/PopoverMenu.jsx` | children · searchable · searchValue · onSearchChange · width — 옵션 목록 컨테이너(검색바 옵션, SearchBar 재사용) | `pages/OptionListPage.jsx` |
@@ -122,6 +123,7 @@ const sizeStyle = SIZE_STYLES[size];
 | UsageExample | `components/UsageExample.jsx` | code(문자열) · title · note · props(`{name,type,default,desc}[]` 전체 옵션 표) — 데모 페이지 상단 "사용 예시 코드 + 전체 옵션 설명표" 블록(복사 버튼 포함). **문서용 헬퍼**(제품 컴포넌트 아님) | 각 컴포넌트 데모 페이지 상단 |
 | TableTemplate | `components/TableTemplate.jsx` | columns/rows · actions(ReactNode/`(ctx)=>` — null이면 버튼그룹 숨김) · searchable · pagination · bordered · selectable · selectedIds/onSelectChange · searchKeys/searchPlaceholder · 페이지네이션 세부 제어(page/onPageChange · defaultPageSize/pageSize/onPageSizeChange/pageSizeOptions · showTotal · showPageSize · maxButtons · paginationClassName) · minWidth/maxHeight(페이지네이션 없을 때 표 높이) · emptyMessage — 버튼그룹+검색바+Table+Pagination을 묶은 목록 페이지 템플릿. 각 요소 on/off, 검색·페이지네이션·행 수·선택 내부 동작. **컬럼 filter/headerMenu(정렬)는 템플릿이 검색 후 전체 행에 먼저 적용한 뒤 페이지를 자른다**(현재 페이지 안에서만 동작하지 않게). 필터·정렬 공유 헬퍼는 `components/tableView.js` | `pages/TableTemplatePage.jsx` |
 | Modal | `components/Modal.jsx` | open/onClose · title · size(sm/md/lg/xl/2xl/3xl/4xl=360~1260 · fill=좌우16제외) · placement(top=상단정렬·여백16~화면½−150가변/center; 일반·Form 기본 top, Alert/Confirm 기본 center) · children(ModalBody, 70vh 초과 시 ScrollArea 내부 스크롤) · confirmText/onConfirm · cancelText/onCancel · confirmVariant · confirmDisabled/confirmLoading · showCancel/showClose/showHeader/showFooter · footer/footerStart(푸터 우측 커스텀/좌측 영역) · closeOnOverlayClick/closeOnEsc · bodyMaxHeight · onSubmit(주면 form 래핑+주동작 submit). ModalBox=modal-inline 배경+1px gap 구분선+modal-outline ring, 딤=modal-overlay. **변형**: FormModal(취소/저장, form+유효성)=기본 구조 그대로 · **AlertModal/ConfirmModal**=헤더 없이 본문 고정 슬롯 `title→description→descriptionDetail(회색 박스, modal-description-bg)→checkboxLabel(Confirm 전용 재확인 체크박스)`만 사용(슬롯 고정·텍스트만 자유), 푸터 버튼 전체폭(footerFullWidth), Confirm은 `requireCheck`(기본 true)로 체크해야 확인 활성화·`checked`/`onCheckChange` controlled 지원. base Modal에 `bodyPadding`/`footerPadding`/`footerFullWidth` 옵션. 푸터 버튼은 ButtonGroup, portal+body스크롤잠금+ESC/딤 닫기 — modal-* 토큰 | `pages/ModalPage.jsx` |
+| Editor | `components/Editor.jsx` (+ `components/EditorToolbar.jsx`) | value/defaultValue/onChange(HTML 문자열) · mode(edit/source/preview)/onModeChange · toolbar(노출 서식 키 배열) · readOnly · allowSourceEdit · placeholder · minHeight/maxHeight · width(fill 기본/px/CSS) · className — **Tiptap v3 기반** 리치 텍스트 에디터(엔진은 내부 격리). 편집(WYSIWYG)/HTML 소스/미리보기 3모드. 풀 툴바: 블록(본문·H1~3)·강조(굵게/기울임/밑줄/취소선)·글자색/형광(토큰 팔레트)·목록/인용·정렬·링크·표·이미지(URL)·구분선·코드. 본문/미리보기 스타일은 `index.css`의 `.tiptap-prose`(@apply 토큰)·색은 `editor-*` 토큰. StarterKit에 link/underline 포함되어 별도 등록 안 함 | `pages/EditorPage.jsx` |
 | Pagination | `components/Pagination.jsx` | page/onChange(controlled) · defaultPage · totalCount/totalPages · pageSize/onPageSizeChange · pageSizeOptions(기본 5/10/20/50) · maxButtons(번호 윈도우, 기본 10) · showTotal · showPageSize — « ‹ 번호 › » + 총 N개 + 페이지 행 Select, 현재페이지 ghost-select 토큰 | `pages/PaginationPage.jsx` |
 
 > **오버레이 패턴 참고:** 필드 아래 메시지(에러 등)는 레이아웃 공간을 차지하지 않도록, 래퍼를 `relative`로 두고 메시지를 `absolute top-full`로 띄운다. `Input`의 에러 툴팁이 이 방식이다.
@@ -135,6 +137,15 @@ const sizeStyle = SIZE_STYLES[size];
 2. `src/pages/index.js`에 export
 3. `App.jsx`의 `NAV_GROUPS` '컴포넌트' 그룹에 항목 추가
 
+### 규칙 — 섹션 사이에는 구분선을 넣는다
+
+페이지를 여러 섹션(`<h3>` 단위 블록)으로 구성할 때, **첫 섹션을 제외한 각 섹션 위에 구분선**을 둬 시각적으로 분리한다.
+
+- 표준 클래스: `mt-spacing-9 border-t border-base-gray-100 pt-spacing-8` (섹션 래퍼 `<div>`에 부여)
+- 첫 섹션(보통 `UsageExample` 바로 다음)은 구분선 없이 시작한다.
+- **Why:** 항목이 여백만으로 나열되면 경계가 모호하다. 모든 데모/쇼케이스 페이지가 동일한 구분 규약을 따라 일관성을 유지한다.
+- 레퍼런스: `ButtonPage.jsx` · `TagPage.jsx` · `EditorPage.jsx`.
+
 ## 컴포넌트 완료 체크리스트
 
 - [ ] 모든 시각 옵션(variant/size/state 등)이 props로 노출되고 기본값이 있는가
@@ -145,3 +156,4 @@ const sizeStyle = SIZE_STYLES[size];
 - [ ] 아이콘은 lucide-react 컴포넌트를 props로 받는가 (`<Icon/>`이 아닌 `Icon`)
 - [ ] 다크모드 클래스(`dark:`)를 적절히 처리했는가
 - [ ] 데모 페이지를 추가/갱신했는가
+- [ ] 데모 페이지의 섹션 사이에 구분선(`border-t border-base-gray-100 pt-spacing-8`)을 넣었는가 (첫 섹션 제외)

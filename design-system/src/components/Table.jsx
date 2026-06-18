@@ -258,7 +258,11 @@ export function Table({
       <thead className={hasVScroll ? 'sticky top-0 z-10' : ''} data-scroll-sticky-top={hasVScroll ? '' : undefined}>
         <tr className="bg-table-header-bg">
           {selectable && (
-            <th {...headCellProps(true, false, CHECKBOX_COL_WIDTH)}>
+            // 체크박스 컬럼 헤더만 상하좌우 패딩을 8px(spacing-5)로 통일 — 공통 headCellProps의 좌(spacing-6) 패딩 대신.
+            <th
+              className={`${cellLine(false)} ${headCorner(true, false)} p-spacing-5 align-middle`}
+              style={{ width: CHECKBOX_COL_WIDTH, ...headDivider }}
+            >
               <div className="flex items-center justify-center">
                 <Checkbox checked={allChecked} onChange={toggleAll} />
               </div>

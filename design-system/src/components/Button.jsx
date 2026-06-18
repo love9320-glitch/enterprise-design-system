@@ -77,14 +77,15 @@ export function Button({
         'active:bg-btn-line-default-bg active:ring-btn-line-default-line';
   } else if (variant === 'underline') {
     // 밑줄 텍스트 버튼 — 배경 없이 ghost 텍스트색 재사용, hover 시 밑줄만(active=눌렸을 땐 밑줄 제거)
+    // 비활성은 세그먼트 컨트롤·ghost와 동일(font-icon-2 텍스트)
     colorStyle = inactive
-      ? 'bg-transparent text-btn-ghost-disabled-fg cursor-not-allowed'
+      ? 'bg-transparent text-font-icon-2 cursor-not-allowed'
       : 'bg-transparent text-btn-ghost-default-fg cursor-pointer ' +
         'hover:underline active:no-underline';
   } else {
-    // ghost
+    // ghost — 비활성은 세그먼트 컨트롤과 동일(투명 배경 + font-icon-2 텍스트)
     colorStyle = inactive
-      ? 'bg-btn-ghost-disabled-bg text-btn-ghost-disabled-fg cursor-not-allowed'
+      ? 'bg-transparent text-font-icon-2 cursor-not-allowed'
       : 'bg-transparent text-btn-ghost-default-fg cursor-pointer ' +
         'hover:bg-btn-ghost-hover-bg ' +
         'active:bg-transparent';

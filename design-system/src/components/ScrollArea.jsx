@@ -22,8 +22,14 @@ function verticalTrack(el, horizontal) {
   return { topInset, trackH: el.clientHeight - topInset - bottomInset - TRACK_PAD * 2 };
 }
 
+// thumb 색 변형 — default(밝은 배경)·light(어두운 배경 위 흰색)
+const THUMB_COLORS = {
+  default: { base: listColors['scroll-bar'], active: listColors['scroll-bar-hover'] },
+  light:   { base: listColors['scroll-bar-light'], active: listColors['scroll-bar-light-hover'] },
+};
+
 // 오버레이 thumb — 세로/가로 공용(축만 다름).
-function Thumb({ orientation, thumb, active, onDown, onEnter, onLeave }) {
+function Thumb({ orientation, thumb, active, colors, onDown, onEnter, onLeave }) {
   const vertical = orientation === 'vertical';
   const placement = vertical ? 'right-spacing-3 w-spacing-5' : 'bottom-spacing-3 h-spacing-5';
   const extent = vertical
@@ -39,7 +45,7 @@ function Thumb({ orientation, thumb, active, onDown, onEnter, onLeave }) {
         ...extent,
         opacity: thumb.visible ? 1 : 0,
         pointerEvents: thumb.visible ? 'auto' : 'none',
-        backgroundColor: active ? listColors['scroll-bar-hover'] : listColors['scroll-bar'],
+        backgroundColor: active ? colors.active : colors.base,
       }}
     />
   );
@@ -49,10 +55,12 @@ export function ScrollArea({
   children,
   maxHeight,
   horizontal = false,
+  variant = 'default', // 'default'(밝은 배경) | 'light'(어두운 배경 위 흰색 thumb)
   className = '',
   contentClassName = '',
   ...props
 }) {
+  const thumbColors = THUMB_COLORS[variant] ?? THUMB_COLORS.default;
   const scrollRef = useRef(null);
   const vDragRef = useRef(false);
   const hDragRef = useRef(false);
@@ -152,6 +160,7 @@ export function ScrollArea({
         orientation="vertical"
         thumb={vThumb}
         active={vActive}
+        colors={thumbColors}
         onDown={(e) => startThumbDrag(e, 'vertical')}
         onEnter={() => setVActive(true)}
         onLeave={() => {
@@ -165,6 +174,7 @@ export function ScrollArea({
           orientation="horizontal"
           thumb={hThumb}
           active={hActive}
+          colors={thumbColors}
           onDown={(e) => startThumbDrag(e, 'horizontal')}
           onEnter={() => setHActive(true)}
           onLeave={() => {

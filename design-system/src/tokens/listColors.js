@@ -24,8 +24,11 @@ export const listColors = {
   'empty-text': b.gray[300],    // #878787
   // popover menu
   'popover-bg':      b.gray[100], // #e3e3e3
-  'popover-outline': b.gray[200], // #b0b0b0
+  'popover-outline': b['gray-900-75'], // #0d0d0d54 (gray.900 알파 75)
   // scroll thumb (default / hover)
   'scroll-bar':       b['gray-900-50'], // #0d0d0d29
   'scroll-bar-hover': b['gray-900-75'], // #0d0d0d54
+  // scroll thumb — light(어두운 배경 위) 변형
+  'scroll-bar-light':       b['white-75'], // #ffffff54
+  'scroll-bar-light-hover': b['white-100'], // #ffffff7a
 };

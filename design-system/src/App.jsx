@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
-  SpacingPage, IconsPage, ButtonPage,
+  SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, OptionListPage,
-  PaginationPage, TablePage, TableTemplatePage, ModalPage,
+  PaginationPage, TablePage, TableTemplatePage, ModalPage, EditorPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
 
@@ -22,6 +22,7 @@ const NAV_GROUPS = [
     label: '컴포넌트',
     items: [
       { id: 'button',     label: 'Button',     Page: ButtonPage },
+      { id: 'segment-control', label: 'Segment Control', Page: SegmentControlPage },
       { id: 'search-bar', label: 'Search Bar', Page: SearchBarPage },
       { id: 'input',      label: 'Input',      Page: InputPage },
       { id: 'select',      label: 'Select',      Page: SelectPage },
@@ -31,6 +32,7 @@ const NAV_GROUPS = [
       { id: 'pagination',  label: 'Pagination',  Page: PaginationPage },
       { id: 'table',       label: 'Table',       Page: TablePage },
       { id: 'modal',       label: 'Modal',       Page: ModalPage },
+      { id: 'editor',      label: 'Editor',      Page: EditorPage },
     ],
   },
   {
