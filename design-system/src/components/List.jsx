@@ -1,17 +1,28 @@
-// List — 옵션 목록의 한 행 (Figma option list / list)
+// List — 옵션 목록의 한 행 (Figma option list / list, node 7206:9327)
 // 상태: default / hover / pressed / selected / disabled
 //   - hover/pressed는 CSS(:hover/:active), selected·disabled는 props
-//   - selected 시 chevron이 파란색(list-select-icon)
-// 요소(필요에 따라 on/off, 추후 추가 예정): tag · title · rightButton(고스트 ⋯) · endIcon(chevron)
-// 색은 list-* 시멘틱 토큰만 사용.
+//   - selected 시 chevron·아이콘이 파란색(list-select-icon)
+// 요소(필요에 따라 on/off):
+//   left  : tag · checkbox · icon(lucide) · title
+//   right : switch · rightButton(고스트 ⋯) · endIcon(chevron)
+// 색은 list-* 시멘틱 토큰만 사용. checkbox/switch는 공용 컴포넌트 재사용(행 클릭과 분리: stopPropagation).
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Tag } from './Tag';
+import { Checkbox } from './Checkbox';
+import { Switch } from './Switch';
 import { TruncatingText } from './TruncatingText';
 
 export function List({
   title = 'list',
   tag = false,            // 태그 표시 여부
   tagText = '태그',
+  icon: Icon = null,      // 왼쪽 lucide 아이콘 (예: User)
+  checkbox = false,       // 왼쪽 체크박스 표시
+  checked = false,        // 체크박스 상태
+  onCheckChange,          // (e) => void — 체크박스 변경
+  showSwitch = false,     // 오른쪽 스위치 표시
+  switchChecked = false,  // 스위치 상태
+  onSwitchChange,         // (e) => void — 스위치 변경
   rightButton = false,    // 고스트 ⋯ 버튼
   endIcon = false,        // chevron-right
   selected = false,
@@ -38,11 +49,15 @@ export function List({
       ? 'text-list-select-text'
       : 'text-list-default-text';
   const ellipsisColor = disabled ? 'text-list-disabled-icon' : 'text-list-default-icon';
-  const chevronColor = disabled
+  // 아이콘(왼쪽 lucide · 오른쪽 chevron) 공통 색: disabled→회색, selected→파랑, 그 외 기본
+  const iconColor = disabled
     ? 'text-list-disabled-icon'
     : selected
       ? 'text-list-select-icon'
       : 'text-list-default-icon';
+
+  // 체크박스·스위치는 행 onClick과 분리한다
+  const stop = (e) => e.stopPropagation();
 
   return (
     <div
@@ -53,17 +68,28 @@ export function List({
       className={`flex min-h-[32px] w-full items-center justify-between px-spacing-6 py-spacing-3 transition-colors ${rowBg} ${className}`}
       {...props}
     >
-      {/* left: tag + title (말줄임 시 hover 툴팁 — TruncatingText) */}
+      {/* left: tag · checkbox · icon · title (말줄임 시 hover 툴팁 — TruncatingText) */}
       <div className="flex min-w-0 flex-1 items-center gap-spacing-4">
         {tag && <Tag>{tagText}</Tag>}
+        {checkbox && (
+          <span className="flex shrink-0 items-center" onClick={stop}>
+            <Checkbox checked={checked} onChange={onCheckChange} disabled={disabled} />
+          </span>
+        )}
+        {Icon && <Icon size={16} strokeWidth={1.8} className={`shrink-0 ${iconColor}`} />}
         <TruncatingText className={`min-w-0 flex-1 text-14 ${titleColor}`}>
           {title}
         </TruncatingText>
       </div>
 
-      {/* right: 고스트 ⋯ 버튼 + chevron */}
-      {(rightButton || endIcon) && (
+      {/* right: switch · 고스트 ⋯ 버튼 · chevron */}
+      {(showSwitch || rightButton || endIcon) && (
         <div className="flex shrink-0 items-center gap-spacing-2">
+          {showSwitch && (
+            <span className="flex shrink-0 items-center" onClick={stop}>
+              <Switch checked={switchChecked} onChange={onSwitchChange} disabled={disabled} />
+            </span>
+          )}
           {rightButton && (
             <button
               type="button"
@@ -78,7 +104,7 @@ export function List({
               <MoreHorizontal size={14} strokeWidth={1.8} className={ellipsisColor} />
             </button>
           )}
-          {endIcon && <ChevronRight size={16} strokeWidth={1.8} className={chevronColor} />}
+          {endIcon && <ChevronRight size={16} strokeWidth={1.8} className={iconColor} />}
         </div>
       )}
     </div>

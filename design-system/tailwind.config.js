@@ -1,7 +1,7 @@
 import {
   fontFamily, fontSize,
   baseColors, fontIconColors, buttonColors, textFieldColors,
-  listColors, tagColors, checkboxColors, tableColors, modalColors,
+  listColors, tagColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors,
   spacing, radius, borderWidth,
 } from './src/tokens/index.js';
@@ -26,6 +26,9 @@ export default {
         list: listColors,
         tag: tagColors,
         checkbox: checkboxColors,
+        radio: radioColors,
+        switch: switchColors,
+        tab: tabColors,
         table: tableColors,
         modal: modalColors,
         editor: editorColors,

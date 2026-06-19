@@ -4,7 +4,18 @@
 //   - hover: 바깥 ring(checkbox-*-hover-outline) / disabled: 연하게
 // 체크 아이콘은 Figma check_small SVG(node 7257:2464)를 인라인으로 사용(fill=currentColor).
 // 색은 checkbox-* 시멘틱 토큰(base 경유)만 사용. controlled/uncontrolled 모두 지원.
+// - Checkbox      : 단일 체크박스 1개
+// - CheckboxGroup : 여러 항목의 다중 선택(선택값 배열)을 관리하는 컨테이너
 import { useState } from 'react';
+
+// gap 토큰 키 → gap 클래스 (Tailwind purge 안전하게 정적 매핑) — Radio/SegmentControl과 동일 규약
+const GAP_STYLE = {
+  '3': 'gap-spacing-3', // 4px
+  '4': 'gap-spacing-4', // 6px
+  '5': 'gap-spacing-5', // 8px
+  '6': 'gap-spacing-6', // 12px
+  '7': 'gap-spacing-7', // 16px (기본 — 체크박스 항목 간격)
+};
 
 // Figma check_small SVG — fill을 currentColor로 바꿔 텍스트 색 토큰을 따르게 함
 function CheckMark({ className }) {
@@ -74,5 +85,50 @@ export function Checkbox({
       </span>
       {label != null && <span className={`text-14 ${textColor}`}>{label}</span>}
     </label>
+  );
+}
+
+export function CheckboxGroup({
+  items = [],             // [{ value, label, disabled }]
+  value,                  // controlled 선택값 배열
+  defaultValue = [],      // uncontrolled 초기 선택값 배열
+  onChange,               // (nextValues, { value, checked }) => void
+  direction = 'vertical', // 'vertical' | 'horizontal'
+  gap = '7',              // 간격 토큰 키 — 기본 '7'(16px)
+  disabled = false,       // 그룹 전체 비활성
+  className = '',
+  ...props
+}) {
+  const isControlled = value !== undefined;
+  const [internal, setInternal] = useState(defaultValue);
+  const selected = isControlled ? value : internal;
+
+  const handleToggle = (val, checked) => {
+    const next = checked
+      ? [...selected, val]
+      : selected.filter((v) => v !== val);
+    if (!isControlled) setInternal(next);
+    onChange?.(next, { value: val, checked });
+  };
+
+  const gapStyle = GAP_STYLE[gap] ?? GAP_STYLE['7'];
+  const dirStyle = direction === 'horizontal' ? 'flex-row items-center' : 'flex-col items-start';
+
+  return (
+    <div
+      role="group"
+      className={`inline-flex ${dirStyle} ${gapStyle} ${className}`}
+      {...props}
+    >
+      {items.map((item) => (
+        <Checkbox
+          key={item.value}
+          label={item.label}
+          checked={selected.includes(item.value)}
+          disabled={disabled || item.disabled}
+          onChange={(e) => handleToggle(item.value, e.target.checked)}
+        />
+      ))}
+    </div>
   );
 }

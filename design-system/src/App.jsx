@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
-  SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, OptionListPage,
+  SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
   PaginationPage, TablePage, TableTemplatePage, ModalPage, EditorPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
@@ -28,6 +28,9 @@ const NAV_GROUPS = [
       { id: 'select',      label: 'Select',      Page: SelectPage },
       { id: 'tag',         label: 'Tag / Tooltip / Scrollbar', Page: TagPage },
       { id: 'checkbox',    label: 'Checkbox',    Page: CheckboxPage },
+      { id: 'radio',       label: 'Radio',       Page: RadioPage },
+      { id: 'switch',      label: 'Switch',      Page: SwitchPage },
+      { id: 'tabs',        label: 'Tabs',        Page: TabsPage },
       { id: 'option-list', label: 'Option List', Page: OptionListPage },
       { id: 'pagination',  label: 'Pagination',  Page: PaginationPage },
       { id: 'table',       label: 'Table',       Page: TablePage },
