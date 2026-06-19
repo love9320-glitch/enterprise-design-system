@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Checkbox } from '../components/Checkbox';
+import { Checkbox, CheckboxGroup } from '../components/Checkbox';
 import { UsageExample } from '../components/UsageExample';
 
 const USAGE = `import { Checkbox } from '../components/Checkbox';
@@ -22,6 +22,17 @@ const USAGE_PROPS = [
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
 ];
 
+const GROUP_PROPS = [
+  { name: 'items', type: '{value,label,disabled?}[]', default: '[]', desc: '체크박스 항목 목록' },
+  { name: 'value', type: 'string[]', default: '—', desc: '선택값 배열 (제어 컴포넌트)' },
+  { name: 'defaultValue', type: 'string[]', default: '[]', desc: '초기 선택값 배열 (비제어)' },
+  { name: 'onChange', type: '(values, {value,checked}) => void', default: '—', desc: '선택 변경 핸들러 (다음 선택값 배열)' },
+  { name: 'direction', type: "'vertical' | 'horizontal'", default: "'vertical'", desc: '배치 방향' },
+  { name: 'gap', type: 'spacing 토큰 키', default: "'7'", desc: '항목 간격 (기본 16px)' },
+  { name: 'disabled', type: 'boolean', default: 'false', desc: '그룹 전체 비활성' },
+  { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+];
+
 const ROWS = [
   { label: 'Unselected',          props: {} },
   { label: 'Selected',            props: { defaultChecked: true } },
@@ -29,11 +40,23 @@ const ROWS = [
   { label: 'Selected disabled',   props: { disabled: true, defaultChecked: true } },
 ];
 
-// 인터랙티브 — 클릭으로 토글
-function InteractiveDemo() {
-  const [checked, setChecked] = useState(false);
+// 인터랙티브 — 그룹 다중 선택
+function InteractiveGroup() {
+  const [values, setValues] = useState(['apple']);
   return (
-    <Checkbox checked={checked} onChange={(e) => setChecked(e.target.checked)} label="클릭해서 토글" />
+    <div className="space-y-spacing-5">
+      <CheckboxGroup
+        value={values}
+        onChange={setValues}
+        items={[
+          { value: 'apple', label: '사과' },
+          { value: 'banana', label: '바나나' },
+          { value: 'cherry', label: '체리' },
+          { value: 'durian', label: '두리안 (품절)', disabled: true },
+        ]}
+      />
+      <p className="text-12 text-font-icon-3">선택됨: {values.length ? values.join(', ') : '없음'}</p>
+    </div>
   );
 }
 
@@ -60,12 +83,28 @@ export function CheckboxPage() {
         ))}
       </div>
 
-      {/* 인터랙티브 */}
+      {/* CheckboxGroup — 다중 선택 */}
       <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
         <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
-          Interactive
+          CheckboxGroup (다중 선택)
         </h3>
-        <InteractiveDemo />
+        <UsageExample
+          code={`<CheckboxGroup value={values} onChange={setValues} items={items} />`}
+          props={GROUP_PROPS}
+        />
+        <h4 className="mb-spacing-5 text-13 text-font-icon-4">세로 배치 (direction="vertical", 기본)</h4>
+        <InteractiveGroup />
+
+        <h4 className="mb-spacing-5 mt-spacing-8 text-13 text-font-icon-4">가로 배치 (direction="horizontal")</h4>
+        <CheckboxGroup
+          direction="horizontal"
+          defaultValue={['m']}
+          items={[
+            { value: 's', label: 'S' },
+            { value: 'm', label: 'M' },
+            { value: 'l', label: 'L' },
+          ]}
+        />
       </div>
 
       {/* 라벨 없는 체크박스 */}

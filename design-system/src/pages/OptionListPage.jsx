@@ -1,15 +1,20 @@
 import { useState } from 'react';
+import { User } from 'lucide-react';
 import { List } from '../components/List';
 import { ListGroup } from '../components/ListGroup';
 import { PopoverMenu } from '../components/PopoverMenu';
+import { Checkbox } from '../components/Checkbox';
 import { UsageExample } from '../components/UsageExample';
 
 const USAGE = `import { PopoverMenu } from '../components/PopoverMenu';
 import { ListGroup } from '../components/ListGroup';
 import { List } from '../components/List';
 
-// List 한 행 — 요소(tag·rightButton·endIcon)는 props로 on/off
+// List 한 행 — 요소(tag·icon·checkbox·switch·rightButton·endIcon)는 props로 on/off
 <List title="옵션 이름" tag endIcon rightButton onClick={select} />
+// left: 아이콘 · 체크박스 / right: 스위치
+<List title="알림" icon={User} checkbox checked={c} onCheckChange={...}
+      showSwitch switchChecked={s} onSwitchChange={...} />
 <List title="선택됨" selected />
 <List title="비활성" disabled />
 
@@ -31,6 +36,13 @@ const USAGE_PROPS = [
   { name: 'List · title', type: 'string', default: "'list'", desc: '행 제목' },
   { name: 'List · tag', type: 'boolean', default: 'false', desc: '왼쪽 태그 표시 여부' },
   { name: 'List · tagText', type: 'string', default: "'태그'", desc: '태그 텍스트' },
+  { name: 'List · icon', type: 'LucideIcon', default: 'null', desc: '왼쪽 아이콘 컴포넌트 (예: User)' },
+  { name: 'List · checkbox', type: 'boolean', default: 'false', desc: '왼쪽 체크박스 표시' },
+  { name: 'List · checked', type: 'boolean', default: 'false', desc: '체크박스 상태' },
+  { name: 'List · onCheckChange', type: '(e) => void', default: '—', desc: '체크박스 변경 핸들러' },
+  { name: 'List · showSwitch', type: 'boolean', default: 'false', desc: '오른쪽 스위치 표시' },
+  { name: 'List · switchChecked', type: 'boolean', default: 'false', desc: '스위치 상태' },
+  { name: 'List · onSwitchChange', type: '(e) => void', default: '—', desc: '스위치 변경 핸들러' },
   { name: 'List · rightButton', type: 'boolean', default: 'false', desc: '오른쪽 고스트 ⋯ 버튼 표시' },
   { name: 'List · endIcon', type: 'boolean', default: 'false', desc: '오른쪽 chevron(>) 표시' },
   { name: 'List · selected', type: 'boolean', default: 'false', desc: '선택 상태 (chevron 파랑)' },
@@ -74,6 +86,72 @@ function SearchablePopover() {
   );
 }
 
+// 실시간 옵션 토글 플레이그라운드 — 각 요소(슬롯)와 행 상태를 체크박스로 끄고 켠다.
+// (TableTemplate 페이지의 Playground와 동일한 패턴)
+const PLAYGROUND_ROWS = [
+  { id: 'r1', title: '알림 받기' },
+  { id: 'r2', title: '마케팅 수신 동의' },
+  { id: 'r3', title: '위치 정보 사용' },
+];
+
+function Playground() {
+  const [opts, setOpts] = useState({
+    // left 슬롯
+    tag: false, icon: true, checkbox: true,
+    // right 슬롯
+    showSwitch: true, rightButton: true, endIcon: false,
+    // 행 상태
+    selected: false, disabled: false,
+  });
+  const toggle = (k) => setOpts((o) => ({ ...o, [k]: !o[k] }));
+
+  // 행별 체크박스/스위치 상태(controlled)
+  const [checks, setChecks] = useState({ r1: true, r2: false, r3: false });
+  const [switches, setSwitches] = useState({ r1: true, r2: false, r3: false });
+
+  return (
+    <div>
+      <div className="mb-spacing-7 rounded-round-4 border border-base-gray-100 px-spacing-7 py-spacing-6">
+        {/* 슬롯(요소) + 행 상태 — 한 줄 */}
+        <div className="flex min-h-[32px] flex-nowrap items-center gap-x-spacing-7 whitespace-nowrap">
+          <Checkbox checked={opts.tag}         onChange={() => toggle('tag')}         label="태그" />
+          <Checkbox checked={opts.icon}        onChange={() => toggle('icon')}        label="아이콘" />
+          <Checkbox checked={opts.checkbox}    onChange={() => toggle('checkbox')}    label="체크박스" />
+          <Checkbox checked={opts.showSwitch}  onChange={() => toggle('showSwitch')}  label="스위치" />
+          <Checkbox checked={opts.rightButton} onChange={() => toggle('rightButton')} label="더보기(⋯)" />
+          <Checkbox checked={opts.endIcon}     onChange={() => toggle('endIcon')}     label="chevron(>)" />
+          <Checkbox checked={opts.selected}    onChange={() => toggle('selected')}    label="selected" />
+          <Checkbox checked={opts.disabled}    onChange={() => toggle('disabled')}    label="disabled" />
+        </div>
+      </div>
+
+      {/* 결과 목록 */}
+      <div>
+        <div className="w-[304px] overflow-hidden rounded-round-4 border border-list-popover-outline">
+          {PLAYGROUND_ROWS.map((r) => (
+            <List
+              key={r.id}
+              title={r.title}
+              tag={opts.tag}
+              icon={opts.icon ? User : null}
+              checkbox={opts.checkbox}
+              checked={checks[r.id]}
+              onCheckChange={(e) => setChecks((s) => ({ ...s, [r.id]: e.target.checked }))}
+              showSwitch={opts.showSwitch}
+              switchChecked={switches[r.id]}
+              onSwitchChange={(e) => setSwitches((s) => ({ ...s, [r.id]: e.target.checked }))}
+              rightButton={opts.rightButton}
+              endIcon={opts.endIcon}
+              selected={opts.selected}
+              disabled={opts.disabled}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function SectionTitle({ children }) {
   return (
     <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
@@ -94,21 +172,16 @@ export function OptionListPage() {
 
       <UsageExample code={USAGE} props={USAGE_PROPS} note="이 페이지의 세 컴포넌트(List · ListGroup · PopoverMenu)의 전체 옵션을 한 표에 모았습니다. 빈 상태(ListEmpty)는 ListGroup 내부에서 처리됩니다." />
 
-      {/* List 상태 & 요소 */}
+      {/* List — Playground: 요소 끄고 켜기 */}
       <div className="mb-spacing-9">
-        <SectionTitle>List — 상태 &amp; 요소</SectionTitle>
+        <SectionTitle>List — Playground (요소 끄고 켜기)</SectionTitle>
         <p className="mb-spacing-5 text-12 text-font-icon-4">
-          <span className="text-font-icon-5">Hover·Pressed</span>는 마우스로 직접 확인하세요.
-          Selected는 chevron이 파란색, Disabled는 회색 처리됩니다. 요소(tag·고스트버튼·chevron)는
-          props로 켜고 끌 수 있습니다.
+          체크박스로 각 슬롯(left: <code className="text-font-icon-5">태그·아이콘·체크박스</code> / right:{' '}
+          <code className="text-font-icon-5">스위치·더보기·chevron</code>)과 행 상태(selected·disabled)를
+          실시간으로 토글해 보세요. 모두 개별 props라 자유롭게 조합됩니다. 행의 체크박스·스위치는 행 클릭과
+          분리되어(클릭 전파 차단) 각자 토글되고, disabled 행은 전체가 비활성화됩니다.
         </p>
-        <div className="w-[304px] overflow-hidden rounded-round-4 border border-list-popover-outline">
-          <List title="default (전체 요소)" tag rightButton endIcon />
-          <List title="selected" tag rightButton endIcon selected />
-          <List title="disabled" tag rightButton endIcon disabled />
-          <List title="텍스트만" />
-          <List title="태그 + 텍스트" tag />
-        </div>
+        <Playground />
       </div>
 
       {/* ListGroup — 기본 / 빈 상태 */}

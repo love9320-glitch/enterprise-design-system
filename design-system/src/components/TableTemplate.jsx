@@ -2,6 +2,7 @@
 // 버튼그룹·검색바·테이블·페이지네이션을 한 덩어리로 묶은 완전 옵션형 템플릿(규칙 4).
 // 각 요소를 props로 끄고 켤 수 있다:
 //   - actions      : 버튼그룹 내용(ReactNode 또는 (ctx) => ReactNode). null이면 버튼그룹 자체를 숨김
+//   - title        : 테이블 타이틀. 있으면 헤더 좌측(버튼그룹 왼쪽)에 표시(버튼그룹/검색바와 함께 가능)
 //   - searchable   : 검색바 on/off (false면 숨김)
 //   - pagination   : 페이지네이션 on/off (false면 전체 행을 한 번에 표시)
 //   - bordered     : 테이블 외곽선/라운드 타입
@@ -22,6 +23,7 @@ export function TableTemplate({
   rowKey = 'id',
   // 요소 on/off
   actions = null,                 // 버튼그룹 내용 — null이면 버튼그룹 숨김
+  title = null,                   // 테이블 타이틀 — 있으면 헤더 좌측(버튼그룹 왼쪽)에 표시
   searchable = true,              // 검색바
   pagination = true,              // 페이지네이션
   bordered = false,               // 테이블 외곽선 타입
@@ -130,14 +132,17 @@ export function TableTemplate({
   // actions가 함수면 현재 컨텍스트를 넘겨준다(선택 항목으로 삭제 등 구현 가능).
   const ctx = { selectedIds, clearSelection: () => setSelectedIds([]), visibleRows, query };
   const resolvedActions = typeof actions === 'function' ? actions(ctx) : actions;
-  const showToolbar = !!resolvedActions || searchable;
+  const showHeader = !!resolvedActions || searchable || !!title; // 타이틀/버튼그룹/검색바 중 하나라도 있으면 헤더 렌더
 
   return (
     <div className={`flex flex-col gap-spacing-6 ${className}`} {...props}>
-      {showToolbar && (
+      {showHeader && (
         <div className="flex items-center justify-between gap-spacing-6">
-          {/* 좌: 버튼그룹(없으면 빈 자리로 검색바를 우측에 고정) */}
-          {resolvedActions ? <ButtonGroup gap={buttonGroupGap}>{resolvedActions}</ButtonGroup> : <span />}
+          {/* 좌: 타이틀 + 버튼그룹 (타이틀이 버튼그룹 왼쪽). 둘 다 없으면 빈 자리로 검색바를 우측 고정 */}
+          <div className="flex items-center gap-spacing-6">
+            {title && <h3 className="flex h-[32px] items-center text-15 font-semibold text-font-icon-5">{title}</h3>}
+            {resolvedActions && <ButtonGroup gap={buttonGroupGap}>{resolvedActions}</ButtonGroup>}
+          </div>
           {/* 우: 검색바 */}
           {searchable && (
             <SearchBar

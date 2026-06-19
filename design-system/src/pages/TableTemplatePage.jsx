@@ -52,6 +52,7 @@ const USAGE_PROPS = [
   { name: 'rows', type: 'object[]', default: '[]', desc: '데이터 배열(전체) — 검색/페이지네이션은 내부에서 처리' },
   { name: 'rowKey', type: 'string', default: "'id'", desc: 'row 고유 키 필드명' },
   { name: 'actions', type: 'ReactNode | (ctx) => ReactNode', default: 'null', desc: '버튼그룹 내용. null이면 버튼그룹 숨김. 함수면 ctx={selectedIds, clearSelection, visibleRows, query} 전달' },
+  { name: 'title', type: 'ReactNode', default: 'null', desc: '테이블 타이틀 — 있으면 헤더 좌측(버튼그룹 왼쪽)에 표시(버튼그룹/검색바와 함께 표시 가능)' },
   { name: 'searchable', type: 'boolean', default: 'true', desc: '검색바 on/off' },
   { name: 'pagination', type: 'boolean', default: 'true', desc: '페이지네이션 on/off (false면 전체 행 표시)' },
   { name: 'bordered', type: 'boolean', default: 'false', desc: '테이블 외곽선/라운드 타입' },
@@ -202,7 +203,7 @@ const MAX_BUTTONS_OPTIONS = [
 // 실시간 옵션 토글 플레이그라운드 — 각 요소를 체크박스로 끄고 켜본다.
 function Playground() {
   const [opts, setOpts] = useState({
-    actions: true, search: true, pagination: true, bordered: false, selectable: false,
+    title: false, actions: true, search: true, pagination: true, bordered: false, selectable: false,
     showTotal: true, showPageSize: true, // 페이지네이션 세부 요소
   });
   const [maxHeight, setMaxHeight] = useState(320); // 페이지네이션 없이일 때 표 높이(px), 0=제한 없음
@@ -215,6 +216,7 @@ function Playground() {
       <div className="mb-spacing-7 rounded-round-4 border border-base-gray-100 px-spacing-7 py-spacing-6">
         {/* 1행: 요소 on/off 토글 */}
         <div className="flex min-h-[32px] flex-wrap items-center gap-x-spacing-9 gap-y-spacing-5">
+          <Checkbox checked={opts.title}      onChange={() => toggle('title')}      label="타이틀" />
           <Checkbox checked={opts.actions}    onChange={() => toggle('actions')}    label="버튼그룹" />
           <Checkbox checked={opts.search}     onChange={() => toggle('search')}     label="검색바" />
           <Checkbox checked={opts.pagination} onChange={() => toggle('pagination')} label="페이지네이션" />
@@ -266,6 +268,7 @@ function Playground() {
         <DemoTemplate
           actionSet="rich"
           withActions={opts.actions}
+          title={opts.title ? '공고 목록' : null}
           searchable={opts.search}
           pagination={opts.pagination}
           bordered={opts.bordered}
@@ -311,7 +314,8 @@ export function TableTemplatePage() {
         desc={
           <>
             체크박스로 버튼그룹·검색바·페이지네이션·외곽선·선택을 실시간 토글해 보세요.<br />
-            버튼그룹에는 추가·가져오기·내보내기(+선택 시 삭제) 버튼을 넣어 두었고, 테이블 헤더에는 상태 필터 Select와 공고명·접수 기간 정렬 메뉴(⋮)를 달아 두었습니다(필터·정렬은 검색·페이지네이션과 함께 전체 행에 적용됩니다).
+            버튼그룹에는 추가·가져오기·내보내기(+선택 시 삭제) 버튼을 넣어 두었고, 테이블 헤더에는 상태 필터 Select와 공고명·접수 기간 정렬 메뉴(⋮)를 달아 두었습니다(필터·정렬은 검색·페이지네이션과 함께 전체 행에 적용됩니다).<br />
+            <code className="text-font-icon-5">title</code>을 켜면 <strong className="font-semibold text-font-icon-5">버튼그룹 왼쪽</strong>에 "공고 목록"이 함께 표시됩니다.
           </>
         }
       >
