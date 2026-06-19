@@ -298,7 +298,7 @@ export function Select({
           >
             <PopoverMenu
               width="100%"
-              searchable={searchable}
+              topArea={searchable ? 'search' : 'none'}
               searchValue={query}
               onSearchChange={(e) => {
                 setQuery(e.target.value);

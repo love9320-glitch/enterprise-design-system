@@ -5,7 +5,8 @@
 //   키: block · bold · italic · underline · strike · color · highlight ·
 //       bulletList · orderedList · blockquote · align · link · table · image · hr · code · codeBlock
 // 색·간격은 editor-*/font-icon-*/spacing-*/round-* 토큰만 사용. 재사용 컴포넌트(Popover/PopoverMenu/
-// ListGroup/List/Input/Button/ButtonGroup)를 그대로 활용한다.
+// ListGroup/List/Button)를 그대로 활용한다. 링크·이미지 입력은 PopoverMenu의 input 타입(topArea="input"
+// + footer footerButtonsFill)으로 대체했다.
 import { Fragment, useState } from 'react';
 import {
   Undo2, Redo2,
@@ -17,9 +18,7 @@ import { Popover } from './Popover';
 import { PopoverMenu } from './PopoverMenu';
 import { ListGroup } from './ListGroup';
 import { List } from './List';
-import { Input } from './Input';
 import { Button } from './Button';
-import { ButtonGroup } from './ButtonGroup';
 import { editorTextPalette, editorHighlightPalette } from '../tokens';
 
 // 셀렉션 유지를 위해 mousedown 기본동작(포커스 이동)을 막는다 — 마크/색이 선택 영역에 적용되도록.
@@ -113,7 +112,7 @@ function ColorPanel({ palette, current, onPick }) {
   );
 }
 
-// 링크 입력 폼(URL 적용/해제).
+// 링크 입력 폼(URL 적용/해제) — PopoverMenu input 타입(상단 입력 + fill 버튼 그룹).
 function LinkForm({ editor, close }) {
   const [url, setUrl] = useState(editor.getAttributes('link').href ?? '');
   const apply = () => {
@@ -127,33 +126,32 @@ function LinkForm({ editor, close }) {
     close();
   };
   return (
-    <PopoverMenu width={300}>
-      <div className="flex flex-col gap-spacing-4 bg-list-group-bg p-spacing-5">
-        <Input
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://example.com"
-          width="100%"
-          inputProps={{
-            autoFocus: true,
-            onKeyDown: (e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                apply();
-              }
-            },
-          }}
-        />
-        <ButtonGroup width="fill">
-          <Button variant="line" size="24" onClick={remove}>해제</Button>
-          <Button variant="fill" size="24" onClick={apply}>적용</Button>
-        </ButtonGroup>
-      </div>
-    </PopoverMenu>
+    <PopoverMenu
+      width={300}
+      topArea="input"
+      inputValue={url}
+      onInputChange={(e) => setUrl(e.target.value)}
+      inputPlaceholder="https://example.com"
+      inputProps={{
+        autoFocus: true,
+        onKeyDown: (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            apply();
+          }
+        },
+      }}
+      footer
+      footerButtonsFill
+      cancelText="해제"
+      onCancel={remove}
+      confirmText="적용"
+      onConfirm={apply}
+    />
   );
 }
 
-// 이미지 URL 입력 폼.
+// 이미지 URL 입력 폼 — PopoverMenu input 타입(상단 입력 + 삽입 단일 fill 버튼).
 function ImageForm({ editor, close }) {
   const [url, setUrl] = useState('');
   const insert = () => {
@@ -161,28 +159,27 @@ function ImageForm({ editor, close }) {
     close();
   };
   return (
-    <PopoverMenu width={300}>
-      <div className="flex flex-col gap-spacing-4 bg-list-group-bg p-spacing-5">
-        <Input
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="이미지 주소(URL)"
-          width="100%"
-          inputProps={{
-            autoFocus: true,
-            onKeyDown: (e) => {
-              if (e.key === 'Enter') {
-                e.preventDefault();
-                insert();
-              }
-            },
-          }}
-        />
-        <ButtonGroup width="fill">
-          <Button variant="fill" size="24" onClick={insert}>삽입</Button>
-        </ButtonGroup>
-      </div>
-    </PopoverMenu>
+    <PopoverMenu
+      width={300}
+      topArea="input"
+      inputValue={url}
+      onInputChange={(e) => setUrl(e.target.value)}
+      inputPlaceholder="이미지 주소(URL)"
+      inputProps={{
+        autoFocus: true,
+        onKeyDown: (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            insert();
+          }
+        },
+      }}
+      footer
+      footerButtonsFill
+      showCancel={false}
+      confirmText="삽입"
+      onConfirm={insert}
+    />
   );
 }
 

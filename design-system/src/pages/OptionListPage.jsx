@@ -25,11 +25,28 @@ import { List } from '../components/List';
 </ListGroup>
 <ListGroup empty emptyMessage="검색 결과가 없습니다" />
 
-// PopoverMenu — searchable로 상단 검색바. 목록은 항상 ListGroup(빈 상태는 내부 처리)
+// PopoverMenu — topArea로 상단 영역 선택('none'|'search'|'input'). 목록은 항상 ListGroup(빈 상태 내부 처리)
 const [q, setQ] = useState('');
-<PopoverMenu searchable searchValue={q} onSearchChange={(e) => setQ(e.target.value)}>
+<PopoverMenu topArea="search" searchValue={q} onSearchChange={(e) => setQ(e.target.value)}>
   <ListGroup>{filtered.map((it) => <List key={it.id} title={it.label} />)}</ListGroup>
-</PopoverMenu>`;
+</PopoverMenu>
+
+// footer — 좌측 기능은 전용 props, 우측은 취소/확인 버튼
+<PopoverMenu footer footerText="10개 선택됨" onCancel={close} onConfirm={apply}>
+  <ListGroup>{...}</ListGroup>
+</PopoverMenu>
+<PopoverMenu footer footerCheckbox footerChecked={all} onFooterCheckChange={...}>...</PopoverMenu>
+<PopoverMenu footer footerReset onFooterReset={...}>...</PopoverMenu>
+// 그 외 커스텀은 footerStart 범용 슬롯에 임의 노드를 넣는다
+<PopoverMenu footer footerStart={<커스텀 />}>...</PopoverMenu>
+
+// topArea="input" — 검색 대신 일반 입력 영역 + fill 버튼(목록 없이도 사용)
+const [url, setUrl] = useState('');
+<PopoverMenu topArea="input" inputValue={url} onInputChange={(e) => setUrl(e.target.value)}
+  inputPlaceholder="http://example.com"
+  footer footerButtonsFill cancelText="해제" confirmText="저장" onConfirm={save} />
+// 저장 단일 버튼만
+<PopoverMenu topArea="input" footer footerButtonsFill showCancel={false} confirmText="저장" />`;
 
 const USAGE_PROPS = [
   // List
@@ -60,11 +77,36 @@ const USAGE_PROPS = [
   // (빈 상태 ListEmpty는 ListGroup이 내부에서 렌더 — empty/emptyMessage로 제어)
   // PopoverMenu
   { name: 'PopoverMenu · children', type: 'ReactNode', default: '—', desc: '내부 목록(ListGroup)' },
-  { name: 'PopoverMenu · searchable', type: 'boolean', default: 'false', desc: '상단 검색바 표시' },
-  { name: 'PopoverMenu · searchValue', type: 'string', default: '—', desc: '검색값 (제어)' },
+  { name: 'PopoverMenu · topArea', type: "'none' | 'search' | 'input'", default: "'none'", desc: '상단 영역 선택(없음/검색바/일반 입력 — 셋 중 하나)' },
+  { name: 'PopoverMenu · searchValue', type: 'string', default: '—', desc: "검색값 (제어, topArea='search')" },
   { name: 'PopoverMenu · onSearchChange', type: '(e) => void', default: '—', desc: '검색 변경 (e.target.value)' },
   { name: 'PopoverMenu · searchPlaceholder', type: 'string', default: "'검색어를 입력하세요'", desc: '검색바 플레이스홀더' },
   { name: 'PopoverMenu · searchInputProps', type: 'object', default: '{}', desc: '검색 input 속성(autoFocus 등)' },
+  { name: 'PopoverMenu · inputValue', type: 'string', default: '—', desc: "입력값 (제어, topArea='input')" },
+  { name: 'PopoverMenu · onInputChange', type: '(e) => void', default: '—', desc: '입력 변경 (e.target.value)' },
+  { name: 'PopoverMenu · inputPlaceholder', type: 'string', default: "'텍스트를 입력하세요'", desc: '입력 영역 플레이스홀더' },
+  { name: 'PopoverMenu · inputProps', type: 'object', default: '{}', desc: '입력 input 속성(autoFocus 등)' },
+  { name: 'PopoverMenu · footer', type: 'boolean', default: 'false', desc: '하단 푸터 영역 표시' },
+  { name: 'PopoverMenu · footerButtonsFill', type: 'boolean', default: 'false', desc: '푸터 버튼을 fill(균등 분할 전체폭)로 — 좌측 슬롯 없음' },
+  { name: 'PopoverMenu · footerText', type: 'string', default: 'null', desc: '좌측 텍스트(선택 개수·가이드 문구)' },
+  { name: 'PopoverMenu · footerCheckbox', type: 'boolean', default: 'false', desc: '좌측 전체 선택 체크박스' },
+  { name: 'PopoverMenu · footerChecked', type: 'boolean', default: 'false', desc: '체크박스 상태' },
+  { name: 'PopoverMenu · onFooterCheckChange', type: '(e) => void', default: '—', desc: '체크박스 변경' },
+  { name: 'PopoverMenu · footerCheckLabel', type: 'string', default: "'전체 선택'", desc: '체크박스 라벨' },
+  { name: 'PopoverMenu · footerReset', type: 'boolean', default: 'false', desc: '좌측 초기화 언더라인 버튼' },
+  { name: 'PopoverMenu · onFooterReset', type: '() => void', default: '—', desc: '초기화 버튼 클릭' },
+  { name: 'PopoverMenu · footerResetLabel', type: 'string', default: "'초기화'", desc: '초기화 버튼 라벨' },
+  { name: 'PopoverMenu · footerResetIcon', type: 'LucideIcon', default: 'RotateCcw', desc: '초기화 버튼 아이콘' },
+  { name: 'PopoverMenu · footerStart', type: 'string | ReactNode', default: 'null', desc: '좌측 범용 슬롯(전용 props로 안 되는 커스텀용, 최우선)' },
+  { name: 'PopoverMenu · cancelText', type: 'string', default: "'취소'", desc: '취소 버튼 텍스트' },
+  { name: 'PopoverMenu · onCancel', type: '() => void', default: '—', desc: '취소 버튼 클릭' },
+  { name: 'PopoverMenu · confirmText', type: 'string', default: "'확인'", desc: '확인 버튼 텍스트' },
+  { name: 'PopoverMenu · onConfirm', type: '() => void', default: '—', desc: '확인 버튼 클릭' },
+  { name: 'PopoverMenu · confirmVariant', type: "'fill' | 'line' | 'ghost'", default: "'fill'", desc: '확인 버튼 variant' },
+  { name: 'PopoverMenu · confirmDisabled', type: 'boolean', default: 'false', desc: '확인 버튼 비활성' },
+  { name: 'PopoverMenu · confirmLoading', type: 'boolean', default: 'false', desc: '확인 버튼 로딩' },
+  { name: 'PopoverMenu · showCancel', type: 'boolean', default: 'true', desc: '취소 버튼 표시' },
+  { name: 'PopoverMenu · showConfirm', type: 'boolean', default: 'true', desc: '확인 버튼 표시' },
   { name: 'PopoverMenu · width', type: 'number | string', default: '304', desc: '팝오버 너비' },
   { name: 'PopoverMenu · className', type: 'string', default: "''", desc: '추가 클래스' },
 ];
@@ -76,7 +118,7 @@ function SearchablePopover() {
   const [q, setQ] = useState('');
   const filtered = SAMPLE.filter((s) => s.includes(q.trim()));
   return (
-    <PopoverMenu searchable searchValue={q} onSearchChange={(e) => setQ(e.target.value)}>
+    <PopoverMenu topArea="search" searchValue={q} onSearchChange={(e) => setQ(e.target.value)}>
       <ListGroup>
         {filtered.map((s) => (
           <List key={s} title={s} tag endIcon rightButton />
@@ -152,6 +194,104 @@ function Playground() {
   );
 }
 
+// 푸터 데모 한 칸 — 목록 체크박스를 controlled로 묶어 좌측 기능이 실제 동작하게 한다.
+// variant: 'count'(선택 개수 텍스트) | 'guide'(가이드 문구) | 'checkbox'(전체 선택) | 'reset'(초기화)
+function FooterDemo({ variant, label }) {
+  const rows = SAMPLE.slice(0, 6);
+  const [checked, setChecked] = useState({});
+  const selectedCount = rows.filter((r) => checked[r]).length;
+  const allSelected = selectedCount === rows.length;
+
+  const toggleRow = (r, val) => setChecked((c) => ({ ...c, [r]: val }));
+  const selectAll = (val) =>
+    setChecked(val ? Object.fromEntries(rows.map((r) => [r, true])) : {});
+  const reset = () => setChecked({});
+
+  const footerProps = {
+    count: { footerText: `${selectedCount}개 선택됨` },
+    guide: { footerText: '가이드 문구가 들어갑니다.' },
+    checkbox: {
+      footerCheckbox: true,
+      footerChecked: allSelected,
+      onFooterCheckChange: (e) => selectAll(e.target.checked),
+    },
+    reset: { footerReset: true, onFooterReset: reset },
+  }[variant];
+
+  return (
+    <div>
+      <p className="mb-spacing-4 text-12 text-font-icon-3">{label}</p>
+      <PopoverMenu topArea="search" onSearchChange={() => {}} footer {...footerProps}>
+        <ListGroup maxVisible={6}>
+          {rows.map((r) => (
+            <List
+              key={r}
+              title={r}
+              tag
+              checkbox
+              checked={!!checked[r]}
+              onCheckChange={(e) => toggleRow(r, e.target.checked)}
+            />
+          ))}
+        </ListGroup>
+      </PopoverMenu>
+    </div>
+  );
+}
+
+// 입력 영역 + fill 버튼 팝오버 — 목록 없이 input area + 전체폭 버튼 그룹(Figma input button1·input button2).
+function InputPopovers() {
+  const [url, setUrl] = useState('');
+  const [img, setImg] = useState('');
+  return (
+    <div className="flex flex-wrap items-start gap-spacing-9">
+      <div>
+        <p className="mb-spacing-4 text-12 text-font-icon-3">input button1 — 입력 + 해제/저장 (fill)</p>
+        <PopoverMenu
+          topArea="input"
+          inputValue={url}
+          onInputChange={(e) => setUrl(e.target.value)}
+          inputPlaceholder="http://example.com"
+          footer
+          footerButtonsFill
+          cancelText="해제"
+          confirmText="저장"
+          onCancel={() => setUrl('')}
+        >
+          {null}
+        </PopoverMenu>
+      </div>
+      <div>
+        <p className="mb-spacing-4 text-12 text-font-icon-3">input button2 — 입력 + 저장 단일 버튼 (fill)</p>
+        <PopoverMenu
+          topArea="input"
+          inputValue={img}
+          onInputChange={(e) => setImg(e.target.value)}
+          inputPlaceholder="이미지 링크를 입력하세요"
+          footer
+          footerButtonsFill
+          showCancel={false}
+          confirmText="저장"
+        >
+          {null}
+        </PopoverMenu>
+      </div>
+    </div>
+  );
+}
+
+// 푸터가 있는 팝오버 — Figma의 4가지 좌측 슬롯(개수 텍스트·가이드 텍스트·전체 선택 체크박스·초기화 버튼).
+function FooterPopovers() {
+  return (
+    <div className="flex flex-wrap items-start gap-spacing-9">
+      <FooterDemo variant="count" label="좌측: 선택 개수 텍스트 (footerText)" />
+      <FooterDemo variant="guide" label="좌측: 가이드 문구 (footerText)" />
+      <FooterDemo variant="checkbox" label="좌측: 전체 선택 체크박스 (footerCheckbox)" />
+      <FooterDemo variant="reset" label="좌측: 초기화 버튼 (footerReset)" />
+    </div>
+  );
+}
+
 function SectionTitle({ children }) {
   return (
     <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
@@ -216,7 +356,7 @@ export function OptionListPage() {
       <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
         <SectionTitle>PopoverMenu — 검색바 없음 / 있음</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
-          <code className="text-font-icon-5">searchable</code> 옵션으로 상단 검색바를 켜고 끕니다.
+          <code className="text-font-icon-5">topArea="search"</code>로 상단 검색바를 켭니다(기본 <code className="text-font-icon-5">'none'</code>).
           검색바가 있으면 입력으로 목록을 필터링하고, 결과가 없으면 List Empty가 표시됩니다.
         </p>
         <div className="flex flex-wrap items-start gap-spacing-9">
@@ -236,11 +376,37 @@ export function OptionListPage() {
           </div>
           <div>
             <p className="mb-spacing-4 text-12 text-font-icon-3">검색바 있음 — 결과 없음</p>
-            <PopoverMenu searchable searchValue="없는 옵션" onSearchChange={() => {}}>
+            <PopoverMenu topArea="search" searchValue="없는 옵션" onSearchChange={() => {}}>
               <ListGroup empty />
             </PopoverMenu>
           </div>
         </div>
+      </div>
+
+      {/* PopoverMenu — 푸터 영역 */}
+      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <SectionTitle>PopoverMenu — 푸터 영역</SectionTitle>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">footer</code> 옵션으로 하단 푸터를 켭니다. 좌측{' '}
+          <code className="text-font-icon-5">footerStart</code> 슬롯에는 선택 개수·가이드 문구(문자열)나
+          체크박스·언더라인 버튼 같은 임의 노드를 넣을 수 있고, 우측에는 취소/확인 버튼이 들어갑니다
+          (<code className="text-font-icon-5">showCancel·showConfirm</code>으로 개별 on/off,{' '}
+          <code className="text-font-icon-5">confirmDisabled·confirmLoading</code> 지원).
+        </p>
+        <FooterPopovers />
+      </div>
+
+      {/* PopoverMenu — 입력 영역 + fill 버튼 */}
+      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <SectionTitle>PopoverMenu — 입력 영역 + fill 버튼</SectionTitle>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">topArea="input"</code>은 검색 아이콘 없는 일반 텍스트 입력 영역을
+          상단에 둡니다(<code className="text-font-icon-5">'search'</code> 대신). 푸터의{' '}
+          <code className="text-font-icon-5">footerButtonsFill</code>은 좌측 슬롯 없이 취소/확인 버튼을
+          fill(균등 분할 전체폭)로 채웁니다. <code className="text-font-icon-5">showCancel={'{false}'}</code>로
+          저장 단일 버튼만 둘 수도 있습니다(링크·이미지 URL 입력 등).
+        </p>
+        <InputPopovers />
       </div>
     </section>
   );
