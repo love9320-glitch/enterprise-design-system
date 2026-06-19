@@ -15,7 +15,8 @@ export function usePopoverPosition({ open, anchorRef, menuRef, placement = 'auto
 
   useLayoutEffect(() => {
     if (!open) {
-      setMenuStyle(null);
+      // 닫힐 때 위치 스타일 리셋 — 의도된 effect 내 setState
+      setMenuStyle(null); // eslint-disable-line react-hooks/set-state-in-effect
       return;
     }
     const measure = () => {

@@ -111,7 +111,8 @@ export function Editor({
   // 읽기 전용으로 바뀌면 편집 모드(탭이 사라짐)에 머물지 않고 미리보기로 이동(uncontrolled).
   useEffect(() => {
     if (readOnly && !modeControlled && internalMode === 'edit') {
-      setInternalMode('preview');
+      // readOnly 전환 시 편집 모드 → 미리보기로 1회 이동 — 의도된 effect 내 setState
+      setInternalMode('preview'); // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [readOnly, modeControlled, internalMode]);
 

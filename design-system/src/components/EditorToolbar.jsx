@@ -112,12 +112,43 @@ function ColorPanel({ palette, current, onPick }) {
   );
 }
 
-// 링크 입력 폼(URL 적용/해제) — PopoverMenu input 타입(상단 입력 + fill 버튼 그룹).
+// URL 입력 팝오버 폼 — PopoverMenu input 타입(상단 입력 + fill 버튼) 공통 폼.
+// 링크/이미지 등에서 재사용. onRemove가 있으면 좌측 '해제' 버튼이 함께 노출된다(없으면 단일 버튼).
+function UrlInputForm({ initialUrl = '', placeholder, submitLabel, onSubmit, onRemove, removeLabel = '해제' }) {
+  const [url, setUrl] = useState(initialUrl);
+  const submit = () => onSubmit(url.trim());
+  return (
+    <PopoverMenu
+      width={300}
+      topArea="input"
+      inputValue={url}
+      onInputChange={(e) => setUrl(e.target.value)}
+      inputPlaceholder={placeholder}
+      inputProps={{
+        autoFocus: true,
+        onKeyDown: (e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            submit();
+          }
+        },
+      }}
+      footer
+      footerButtonsFill
+      showCancel={!!onRemove}
+      cancelText={removeLabel}
+      onCancel={onRemove}
+      confirmText={submitLabel}
+      onConfirm={submit}
+    />
+  );
+}
+
+// 링크 입력 폼(URL 적용/해제).
 function LinkForm({ editor, close }) {
-  const [url, setUrl] = useState(editor.getAttributes('link').href ?? '');
-  const apply = () => {
+  const apply = (url) => {
     const chain = editor.chain().focus().extendMarkRange('link');
-    if (url.trim()) chain.setLink({ href: url.trim() }).run();
+    if (url) chain.setLink({ href: url }).run();
     else chain.unsetLink().run();
     close();
   };
@@ -126,60 +157,24 @@ function LinkForm({ editor, close }) {
     close();
   };
   return (
-    <PopoverMenu
-      width={300}
-      topArea="input"
-      inputValue={url}
-      onInputChange={(e) => setUrl(e.target.value)}
-      inputPlaceholder="https://example.com"
-      inputProps={{
-        autoFocus: true,
-        onKeyDown: (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            apply();
-          }
-        },
-      }}
-      footer
-      footerButtonsFill
-      cancelText="해제"
-      onCancel={remove}
-      confirmText="적용"
-      onConfirm={apply}
+    <UrlInputForm
+      initialUrl={editor.getAttributes('link').href ?? ''}
+      placeholder="https://example.com"
+      submitLabel="적용"
+      onSubmit={apply}
+      onRemove={remove}
     />
   );
 }
 
-// 이미지 URL 입력 폼 — PopoverMenu input 타입(상단 입력 + 삽입 단일 fill 버튼).
+// 이미지 URL 입력 폼(삽입 단일 버튼).
 function ImageForm({ editor, close }) {
-  const [url, setUrl] = useState('');
-  const insert = () => {
-    if (url.trim()) editor.chain().focus().setImage({ src: url.trim() }).run();
+  const insert = (url) => {
+    if (url) editor.chain().focus().setImage({ src: url }).run();
     close();
   };
   return (
-    <PopoverMenu
-      width={300}
-      topArea="input"
-      inputValue={url}
-      onInputChange={(e) => setUrl(e.target.value)}
-      inputPlaceholder="이미지 주소(URL)"
-      inputProps={{
-        autoFocus: true,
-        onKeyDown: (e) => {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            insert();
-          }
-        },
-      }}
-      footer
-      footerButtonsFill
-      showCancel={false}
-      confirmText="삽입"
-      onConfirm={insert}
-    />
+    <UrlInputForm placeholder="이미지 주소(URL)" submitLabel="삽입" onSubmit={insert} />
   );
 }
 
