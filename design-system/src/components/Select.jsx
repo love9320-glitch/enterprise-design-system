@@ -127,7 +127,8 @@ export function Select({
   // 열릴 때: 검색어 초기화 + 현재 선택 항목을 강조 시작점으로
   useEffect(() => {
     if (!open) return;
-    setQuery('');
+    // 열릴 때 1회 리셋 — 의도된 effect 내 setState
+    setQuery(''); // eslint-disable-line react-hooks/set-state-in-effect
     const idx = options.findIndex((o) => o.value === current);
     setHighlight(idx >= 0 ? idx : 0);
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
