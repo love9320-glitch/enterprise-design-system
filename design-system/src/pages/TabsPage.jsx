@@ -5,6 +5,7 @@ import { Popover } from '../components/Popover';
 import { PopoverMenu } from '../components/PopoverMenu';
 import { ListGroup } from '../components/ListGroup';
 import { List } from '../components/List';
+import { Checkbox } from '../components/Checkbox';
 import { UsageExample } from '../components/UsageExample';
 
 const USAGE = `import { Tabs } from '../components/Tabs';
@@ -137,6 +138,103 @@ function TabsControlDemo() {
   );
 }
 
+// 실시간 옵션 토글 플레이그라운드 — 탭 요소·옵션을 체크박스로 끄고 켠다.
+// (OptionList/TableTemplate 페이지의 Playground와 동일한 패턴)
+const PLAYGROUND_BASE = [
+  { value: 'profile', label: '프로필', icon: User },
+  { value: 'account', label: '계정', icon: Settings },
+  { value: 'billing', label: '결제', icon: CreditCard },
+  { value: 'notice', label: '알림', icon: Bell },
+];
+
+function Playground() {
+  const [opts, setOpts] = useState({
+    icon: true, tag: false, fill: false, rightSlot: true,
+  });
+  const toggle = (k) => setOpts((o) => ({ ...o, [k]: !o[k] }));
+  const [tab, setTab] = useState('profile');
+  const [disabledSet, setDisabledSet] = useState(() => new Set());
+
+  const items = PLAYGROUND_BASE.map((t) => ({
+    value: t.value,
+    label: t.label,
+    icon: opts.icon ? t.icon : undefined,
+    tag: opts.tag,
+    tagText: 'N',
+    disabled: disabledSet.has(t.value),
+  }));
+
+  // 우측 팝오버의 스위치로 각 탭을 활성/비활성 토글
+  const toggleEnabled = (value, enabled) => {
+    setDisabledSet((prev) => {
+      const next = new Set(prev);
+      if (enabled) next.delete(value);
+      else next.add(value);
+      return next;
+    });
+    // 보고 있는 탭을 비활성화하면 선택을 첫 활성 탭으로 옮긴다
+    if (!enabled && value === tab) {
+      const firstEnabled = PLAYGROUND_BASE.find((t) => t.value !== value && !disabledSet.has(t.value));
+      if (firstEnabled) setTab(firstEnabled.value);
+    }
+  };
+
+  const rightSlot = opts.rightSlot ? (
+    <Popover
+      placement="auto-right"
+      menuWidth={200}
+      trigger={
+        <button type="button" className="inline-flex items-center gap-spacing-3 text-14 text-font-icon-5">
+          설정
+          <ChevronDown size={16} strokeWidth={1.8} className="text-font-icon-3" />
+        </button>
+      }
+    >
+      <PopoverMenu width="100%">
+        <ListGroup>
+          {PLAYGROUND_BASE.map((t) => (
+            <List
+              key={t.value}
+              title={t.label}
+              showSwitch
+              switchChecked={!disabledSet.has(t.value)}
+              onSwitchChange={(e) => toggleEnabled(t.value, e.target.checked)}
+            />
+          ))}
+        </ListGroup>
+      </PopoverMenu>
+    </Popover>
+  ) : null;
+
+  const label = PLAYGROUND_BASE.find((t) => t.value === tab)?.label;
+
+  return (
+    <div>
+      <div className="mb-spacing-7 rounded-round-4 border border-base-gray-100 px-spacing-7 py-spacing-6">
+        <div className="flex min-h-[32px] flex-nowrap items-center gap-x-spacing-7 whitespace-nowrap">
+          <Checkbox checked={opts.icon}      onChange={() => toggle('icon')}      label="아이콘" />
+          <Checkbox checked={opts.tag}       onChange={() => toggle('tag')}       label="태그" />
+          <Checkbox checked={opts.fill}      onChange={() => toggle('fill')}      label="fill (균등 분할)" />
+          <Checkbox checked={opts.rightSlot} onChange={() => toggle('rightSlot')} label="rightSlot (설정 팝오버로 탭 비활성)" />
+        </div>
+      </div>
+
+      <div>
+        <Tabs
+          items={items}
+          value={tab}
+          onChange={setTab}
+          variant={opts.fill ? 'fill' : 'hug'}
+          rightSlot={rightSlot}
+        />
+        <div className="px-spacing-5 py-spacing-7 text-14 text-font-icon-4">
+          <span className="text-font-icon-5">{label}</span> 탭의 내용 영역입니다.
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // 콘텐츠 전환 인터랙티브
 function InteractiveTabs() {
   const [tab, setTab] = useState('profile');
@@ -173,7 +271,11 @@ export function TabsPage() {
 
       <UsageExample code={USAGE} props={USAGE_PROPS} />
 
-      <Block first title="기본 (hug) + 콘텐츠 전환">
+      <Block first title="Playground — 요소 끄고 켜기" desc="체크박스로 탭 요소(아이콘·태그)와 옵션(fill·rightSlot)을 실시간 토글해 보세요. rightSlot을 켜면 우측 '설정 ▾' 팝오버의 스위치로 각 탭을 활성/비활성할 수 있습니다(보고 있는 탭을 끄면 첫 활성 탭으로 이동).">
+        <Playground />
+      </Block>
+
+      <Block title="기본 (hug) + 콘텐츠 전환">
         <InteractiveTabs />
       </Block>
 
