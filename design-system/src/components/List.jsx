@@ -5,7 +5,8 @@
 // 요소(필요에 따라 on/off):
 //   left  : tag · checkbox · icon(lucide) · title
 //   right : switch · rightButton(고스트 ⋯) · endIcon(chevron)
-// 색은 list-* 시멘틱 토큰만 사용. checkbox/switch는 공용 컴포넌트 재사용(행 클릭과 분리: stopPropagation).
+// 색은 list-* 시멘틱 토큰만 사용. checkbox/switch는 공용 컴포넌트 재사용.
+// checkbox가 있으면 행 전체가 체크박스 클릭 영역이 된다(행 어디를 눌러도 토글). switch는 행 클릭과 분리(stopPropagation).
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Tag } from './Tag';
 import { Checkbox } from './Checkbox';
@@ -56,15 +57,23 @@ export function List({
       ? 'text-list-select-icon'
       : 'text-list-default-icon';
 
-  // 체크박스·스위치는 행 onClick과 분리한다
+  // 체크박스·스위치는 행 onClick과 분리한다(직접 클릭 시 각자 onChange만 발화 → 행 핸들러로 전파 차단)
   const stop = (e) => e.stopPropagation();
+
+  // 체크박스가 있으면 행 전체를 체크박스 클릭 영역으로 — 행 어디를 눌러도 토글된다.
+  // (체크박스를 직접 누른 경우는 stop으로 전파가 막혀 여기로 오지 않으므로 이중 토글이 없다.)
+  const handleRowClick = (e) => {
+    if (!interactive) return;
+    if (checkbox) onCheckChange?.({ target: { checked: !checked } });
+    onClick?.(e);
+  };
 
   return (
     <div
       role="option"
       aria-selected={selected || undefined}
       aria-disabled={disabled || undefined}
-      onClick={interactive ? onClick : undefined}
+      onClick={interactive ? handleRowClick : undefined}
       className={`flex min-h-[32px] w-full items-center justify-between px-spacing-6 py-spacing-3 transition-colors ${rowBg} ${className}`}
       {...props}
     >
