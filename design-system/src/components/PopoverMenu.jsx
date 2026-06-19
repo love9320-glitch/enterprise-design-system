@@ -117,8 +117,8 @@ export function PopoverMenu({
           footerButtonsFill: 좌측 슬롯 없이 버튼 그룹을 fill(균등 분할 전체폭)로. */}
       {footer && (
         <div
-          className={`flex w-full items-center bg-list-group-bg pl-spacing-6 pr-spacing-5 py-spacing-5 ${
-            footerButtonsFill ? '' : 'justify-between'
+          className={`flex w-full items-center bg-list-group-bg py-spacing-5 ${
+            footerButtonsFill ? 'px-spacing-5' : 'justify-between pl-spacing-6 pr-spacing-5'
           }`}
         >
           {!footerButtonsFill && <div className="flex min-w-0 items-center">{footerStartNode}</div>}
