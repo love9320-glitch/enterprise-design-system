@@ -14,6 +14,7 @@ export { RadioPage } from './RadioPage';
 export { SwitchPage } from './SwitchPage';
 export { TabsPage } from './TabsPage';
 export { OptionListPage } from './OptionListPage';
+export { DatePickerPage } from './DatePickerPage';
 export { PaginationPage } from './PaginationPage';
 export { TablePage } from './TablePage';
 export { TableTemplatePage } from './TableTemplatePage';

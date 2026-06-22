@@ -74,6 +74,21 @@ Tailwind 기본 spacing(`p-4`, `gap-2`)·임의값(`p-[12px]`) **금지**.
 | text-18 | 18 / 30 |
 | text-20 | 20 / 32 |
 
+## 날짜·시간 표기 규칙 (`src/utils/datetime.js`)
+
+날짜·시간 표기는 형식을 항상 통일한다. 화면마다 제각각 포맷하지 말 것. 연·월·일·시·분 모두 **2자리 0 패딩**(연도는 뒤 2자리).
+
+| 상황 | 형식 | 예 |
+|------|------|-----|
+| 날짜+시간 1건 | `YY.MM.DD (HH:MM)` | `25.05.20 (12:00)` |
+| 날짜만 | `YY.MM.DD` | `25.05.20` |
+| 범위(둘 다) | `YY.MM.DD (HH:MM)~YY.MM.DD (HH:MM)` (틸드 양옆 공백 없음) | `25.05.20 (12:00)~25.05.20 (12:00)` |
+| 범위(시작만) | `YY.MM.DD (HH:MM) ~ 마감일 없음` | `25.05.20 (12:00) ~ 마감일 없음` |
+| 범위(마감만) | `시작일 없음 ~ YY.MM.DD (HH:MM)` | `시작일 없음 ~ 25.05.20 (12:00)` |
+
+- **Why:** 같은 의미의 값이 화면마다 다르게 보이면 일관성이 깨진다. 표기는 한 곳에서 통일한다.
+- **How to apply:** 직접 문자열을 조립하지 말고 `import { formatDate, formatDateTime, formatDateTimeRange } from '../utils/datetime'`를 사용한다. (`formatDateTime(date, time)` — 시간 생략 시 날짜만 / `formatDateTimeRange(start, sTime, end, eTime)` — 한쪽만 있으면 "마감일 없음/시작일 없음" 자동, 라벨은 옵션으로 변경 가능)
+
 ## 아이콘 (`icon.js` → `iconTokens`)
 
 - 라이브러리: **lucide-react** (stroke 기반, fill 미사용)

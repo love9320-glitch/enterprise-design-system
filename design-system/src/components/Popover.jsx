@@ -16,6 +16,11 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { usePopoverPosition } from './usePopoverPosition';
 
+// 열려 있는 popover 패널들(menuRef)을 연 순서대로 보관 — 중첩 popover 외부클릭 판정에 사용.
+// 패널은 각자 portal이라 DOM이 분리되므로, "나보다 나중에 열린(위) 패널 안 클릭"은 바깥으로 보지 않는다
+// (예: DatePicker 팝오버 안에서 연/월·시간 선택 팝오버를 열어 클릭해도 바깥 팝오버가 닫히지 않게).
+const openPopoverPanels = [];
+
 export function Popover({
   trigger,                 // 트리거 ReactNode (예: <Button>) — 클릭 시 패널 토글
   children,                // 패널 내용: ReactNode 또는 (close) => ReactNode
@@ -43,13 +48,26 @@ export function Popover({
   );
   const close = useCallback(() => setOpen(false), [setOpen]);
 
-  // 외부 클릭 닫기 (트리거·패널 둘 다 바깥일 때 — 패널은 portal)
+  // 열린 동안 패널을 스택에 등록(연 순서 유지) — open 전환에만 의존해 재정렬 방지.
   useEffect(() => {
-    if (!open) return;
+    if (!open) return undefined;
+    openPopoverPanels.push(menuRef);
+    return () => {
+      const i = openPopoverPanels.indexOf(menuRef);
+      if (i >= 0) openPopoverPanels.splice(i, 1);
+    };
+  }, [open]);
+
+  // 외부 클릭 닫기 (트리거·패널 둘 다 바깥일 때 — 패널은 portal).
+  // 중첩 대응: 외부 클릭은 "맨 위(가장 나중에 열린) 팝오버" 하나만 닫는다.
+  //   → 시간/연월 선택 팝오버가 위에 있으면 그것부터 닫히고, 다음 외부 클릭에 DatePicker가 닫힌다.
+  //   (이 패널/트리거 안 클릭은 당연히 안 닫음.)
+  useEffect(() => {
+    if (!open) return undefined;
     const onDown = (e) => {
-      const inAnchor = anchorRef.current?.contains(e.target);
-      const inMenu = menuRef.current?.contains(e.target);
-      if (!inAnchor && !inMenu) close();
+      if (anchorRef.current?.contains(e.target) || menuRef.current?.contains(e.target)) return;
+      if (openPopoverPanels[openPopoverPanels.length - 1] !== menuRef) return; // 맨 위가 아니면 닫지 않음
+      close();
     };
     document.addEventListener('mousedown', onDown);
     return () => document.removeEventListener('mousedown', onDown);
