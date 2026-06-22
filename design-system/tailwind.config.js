@@ -2,7 +2,7 @@ import {
   fontFamily, fontSize,
   baseColors, fontIconColors, buttonColors, textFieldColors,
   listColors, tagColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
-  editorColors,
+  editorColors, calendarColors,
   spacing, radius, borderWidth,
 } from './src/tokens/index.js';
 
@@ -32,6 +32,7 @@ export default {
         table: tableColors,
         modal: modalColors,
         editor: editorColors,
+        cal: calendarColors,
       },
       spacing,
       borderRadius: radius,

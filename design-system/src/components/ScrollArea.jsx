@@ -56,12 +56,22 @@ export function ScrollArea({
   maxHeight,
   horizontal = false,
   variant = 'default', // 'default'(밝은 배경) | 'light'(어두운 배경 위 흰색 thumb)
+  onViewport,          // (선택) 내부 스크롤 요소를 넘겨받는 콜백 — 부모가 scrollTop 등을 직접 제어할 때
+  onScroll,            // (선택) 스크롤 이벤트 패스스루(내부 thumb 갱신과 함께 호출)
   className = '',
   contentClassName = '',
   ...props
 }) {
   const thumbColors = THUMB_COLORS[variant] ?? THUMB_COLORS.default;
   const scrollRef = useRef(null);
+  // 내부 scrollRef를 채우면서 외부로 스크롤 요소를 전달하는 콜백 ref
+  const setViewport = useCallback(
+    (el) => {
+      scrollRef.current = el;
+      onViewport?.(el);
+    },
+    [onViewport],
+  );
   const vDragRef = useRef(false);
   const hDragRef = useRef(false);
   const [vThumb, setVThumb] = useState({ pos: 0, size: 0, visible: false });
@@ -147,8 +157,11 @@ export function ScrollArea({
   return (
     <div className={`${hasPosition ? '' : 'relative'} ${className}`} {...props}>
       <div
-        ref={scrollRef}
-        onScroll={updateThumbs}
+        ref={setViewport}
+        onScroll={(e) => {
+          updateThumbs();
+          onScroll?.(e);
+        }}
         className={`hide-native-scroll ${horizontal ? 'overflow-auto' : 'overflow-y-auto'} ${contentClassName}`}
         style={{ maxHeight: maxHeightStyle }}
       >

@@ -3,7 +3,7 @@ import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
-  PaginationPage, TablePage, TableTemplatePage, ModalPage, EditorPage,
+  PaginationPage, TablePage, TableTemplatePage, ModalPage, EditorPage, DatePickerPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
 
@@ -32,6 +32,7 @@ const NAV_GROUPS = [
       { id: 'switch',      label: 'Switch',      Page: SwitchPage },
       { id: 'tabs',        label: 'Tabs',        Page: TabsPage },
       { id: 'option-list', label: 'Option List', Page: OptionListPage },
+      { id: 'date-picker', label: 'Date Picker', Page: DatePickerPage },
       { id: 'pagination',  label: 'Pagination',  Page: PaginationPage },
       { id: 'table',       label: 'Table',       Page: TablePage },
       { id: 'modal',       label: 'Modal',       Page: ModalPage },

@@ -12,7 +12,7 @@ export const textFieldColors = {
   // default — 값 없음, 인터랙션 없음
   'default-bg':   b['gray-900-25'], // #0d0d0d12
   'default-line': b['gray-900-00'], // #0d0d0d00 (투명)
-  'default-text': b.gray[300],      // #878787 — placeholder
+  'default-text': b.gray[300],      // #878787 — placeholder (값 없을 때 아이콘색도 이 값 사용)
   // hover
   'hover-bg':   b['gray-900-25'],
   'hover-line': b['gray-900-200'],  // #0d0d0da6

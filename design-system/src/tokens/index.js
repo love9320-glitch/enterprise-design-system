@@ -11,6 +11,7 @@ export { switchColors } from './switchColors.js';
 export { tabColors } from './tabColors.js';
 export { tableColors } from './tableColors.js';
 export { modalColors } from './modalColors.js';
+export { calendarColors } from './calendarColors.js';
 export { editorColors, editorTextPalette, editorHighlightPalette } from './editorColors.js';
 export { spacing } from './spacing.js';
 export { radius } from './radius.js';
