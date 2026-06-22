@@ -144,6 +144,7 @@ export function DateField({
   className = '',
   // DatePicker 패스스루
   disablePast,
+  disableFuture,
   minDate,
   maxDate,
   disabledDate,
@@ -379,6 +380,7 @@ export function DateField({
           endTime={curEt}
           onEndTimeChange={setEt}
           disablePast={disablePast}
+          disableFuture={disableFuture}
           minDate={minDate}
           maxDate={maxDate}
           disabledDate={disabledDate}

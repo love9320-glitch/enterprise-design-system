@@ -3,6 +3,7 @@ import { DatePicker } from '../components/DatePicker';
 import { CalendarDayButton } from '../components/CalendarDayButton';
 import { TwoDepthList } from '../components/TwoDepthList';
 import { DateField } from '../components/DateField';
+import { TimeField } from '../components/TimeField';
 import { Checkbox } from '../components/Checkbox';
 import { UsageExample } from '../components/UsageExample';
 import { formatDateTimeRange } from '../utils/datetime';
@@ -80,6 +81,7 @@ const USAGE_PROPS = [
   { name: 'DatePicker · defaultValue', type: 'Date | {start,end}', default: '—', desc: 'uncontrolled 초기 선택값' },
   { name: 'DatePicker · onChange', type: '(next) => void', default: '—', desc: '선택 변경(next=Date 또는 {start,end})' },
   { name: 'DatePicker · disablePast', type: 'boolean', default: 'false', desc: '오늘 이전(지나간) 날짜 선택 불가(오늘은 선택 가능)' },
+  { name: 'DatePicker · disableFuture', type: 'boolean', default: 'false', desc: '오늘 이후(미래) 날짜 선택 불가(오늘은 선택 가능)' },
   { name: 'DatePicker · minDate / maxDate', type: 'Date', default: '—', desc: '이 날짜 이전/이후 비활성' },
   { name: 'DatePicker · disabledDate', type: '(date) => boolean', default: '—', desc: '커스텀 비활성 판정(주말 차단 등)' },
   { name: 'DatePicker · month', type: 'Date', default: '—', desc: '표시 월(controlled)' },
@@ -214,12 +216,44 @@ function DateFieldDemo() {
   );
 }
 
+function TimeFieldDemo() {
+  const [t1, setT1] = useState(null);
+  const [t2, setT2] = useState('09:00');
+  const [errTime, setErrTime] = useState(null); // 값 없을 때만 에러 → 선택 시 사라짐
+  return (
+    <div className="flex flex-wrap items-start gap-spacing-9">
+      <div>
+        <p className="mb-spacing-4 text-12 text-font-icon-3">기본 (비어있음)</p>
+        <TimeField value={t1} onChange={setT1} />
+        <p className="mt-spacing-4 text-13 text-font-icon-4">값: <span className="text-font-icon-5">{t1 || '—'}</span></p>
+      </div>
+      <div>
+        <p className="mb-spacing-4 text-12 text-font-icon-3">값 있음</p>
+        <TimeField value={t2} onChange={setT2} />
+      </div>
+      <div>
+        <p className="mb-spacing-4 text-12 text-font-icon-3">disabled</p>
+        <TimeField disabled />
+      </div>
+      <div>
+        <p className="mb-spacing-4 text-12 text-font-icon-3">readOnly</p>
+        <TimeField readOnly defaultValue="14:30" />
+      </div>
+      <div>
+        <p className="mb-spacing-4 text-12 text-font-icon-3">error (선택 시 사라짐)</p>
+        <TimeField value={errTime} onChange={setErrTime} error={!errTime} errorMessage="시간을 선택하세요" />
+      </div>
+    </div>
+  );
+}
+
 // DatePicker Playground — 체크박스로 팝오버 옵션(요소)을 끄고 켜며 실시간 확인.
 function DatePickerPlayground() {
   const [opts, setOpts] = useState({
     range: true, // 범위 선택(off면 단일)
     showTime: true, // 하단 시간 영역
     disablePast: false, // 지난날 비활성
+    disableFuture: false, // 미래일 비활성
     scrollNavigate: true, // 무한 스크롤
     rangeTooltip: true, // 시작/마감 hover 툴팁(range 전용)
   });
@@ -244,7 +278,8 @@ function DatePickerPlayground() {
         <div className="flex min-h-[32px] flex-wrap items-center gap-x-spacing-7 gap-y-spacing-4 whitespace-nowrap">
           <Checkbox checked={opts.range} onChange={() => toggle('range')} label="범위 선택(range)" />
           <Checkbox checked={opts.showTime} onChange={() => toggle('showTime')} label="시간 포함(showTime)" />
-          <Checkbox checked={opts.disablePast} onChange={() => toggle('disablePast')} label="지난날 비활성(disablePast)" />
+          <Checkbox checked={opts.disablePast} onChange={() => toggle('disablePast')} label="과거 비활성(disablePast)" />
+          <Checkbox checked={opts.disableFuture} onChange={() => toggle('disableFuture')} label="미래 비활성(disableFuture)" />
           <Checkbox checked={opts.scrollNavigate} onChange={() => toggle('scrollNavigate')} label="무한 스크롤(scrollNavigate)" />
           <Checkbox
             checked={opts.rangeTooltip}
@@ -265,6 +300,7 @@ function DatePickerPlayground() {
           endTime={e}
           onEndTimeChange={setE}
           disablePast={opts.disablePast}
+          disableFuture={opts.disableFuture}
           scrollNavigate={opts.scrollNavigate}
           rangeTooltip={opts.rangeTooltip}
         />
@@ -276,11 +312,12 @@ function DatePickerPlayground() {
   );
 }
 
-function YearMonthDemo() {
+function YearMonthDemo({ showInput = true }) {
   const [y, setY] = useState('2026');
   const [m, setM] = useState('7');
   return (
     <TwoDepthList
+      showInput={showInput}
       inputValue={`${y}.${String(m).padStart(2, '0')}`}
       inputPlaceholder="YYYY.MM"
       errorMessage="YYYY.MM 형식으로 입력하세요 (예: 25.3 · 2505)"
@@ -310,11 +347,12 @@ function YearMonthDemo() {
   );
 }
 
-function TimeListDemo() {
+function TimeListDemo({ showInput = true }) {
   const [h, setH] = useState('01');
   const [min, setMin] = useState('23');
   return (
     <TwoDepthList
+      showInput={showInput}
       inputValue={`${h}:${min}`}
       inputPlaceholder="HH:MM"
       errorMessage="HH:MM 형식으로 입력하세요 (예: 1:1 · 0105)"
@@ -367,6 +405,17 @@ export function DatePickerPage() {
         <DateFieldDemo />
       </div>
 
+      {/* TimeField — 시간 트리거 필드 */}
+      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <SectionTitle>TimeField — 시간 트리거 필드</SectionTitle>
+        <p className="mb-spacing-5 text-12 text-font-icon-4">
+          DateField와 같은 형식의 시간 버전. 누르면 <strong>인풋 영역 없는</strong> 시/분 2depth 목록이 열립니다.
+          입력칸에 <code className="text-font-icon-5">12:34</code>·<code className="text-font-icon-5">1230</code>·<code className="text-font-icon-5">011</code>처럼
+          직접 타이핑 후 Enter/포커스 아웃하면 <code className="text-font-icon-5">HH:MM</code>으로 정규화됩니다(숫자·콜론만 입력).
+        </p>
+        <TimeFieldDemo />
+      </div>
+
       {/* DatePicker — Playground */}
       <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
         <SectionTitle>DatePicker — Playground (요소 끄고 켜기)</SectionTitle>
@@ -399,6 +448,7 @@ export function DatePickerPage() {
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           상단 입력 영역(현재 값) + 좌/우 2개 컬럼 목록. 같은 구조로 연/월(year_month), 시/분(time)에 공용으로 씁니다.
           선택 행은 파란 텍스트로 표시되고, 열릴 때 선택값으로 자동 스크롤됩니다.
+          <code className="text-font-icon-5">showInput={'{false}'}</code>로 상단 입력 영역을 빼고 컬럼만 둘 수도 있습니다(트리거가 따로 입력을 가질 때).
           상단 input에 <code className="text-font-icon-5">직접 입력</code>도 가능합니다 — 연.월은 <code className="text-font-icon-5">2025.05</code>·<code className="text-font-icon-5">25.3</code>·<code className="text-font-icon-5">2505</code>·<code className="text-font-icon-5">202505</code>,
           시간은 <code className="text-font-icon-5">12:34</code>·<code className="text-font-icon-5">1:1</code>·<code className="text-font-icon-5">0105</code>·<code className="text-font-icon-5">1250</code>처럼 (구분자 없이도) 입력하면 컬럼 선택에 반영됩니다.
           입력은 <code className="text-font-icon-5">숫자와 구분자</code>만 받습니다(그 외 문자는 무시).
@@ -411,8 +461,16 @@ export function DatePickerPage() {
             <YearMonthDemo />
           </div>
           <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">year_month — 입력 영역 없음</p>
+            <YearMonthDemo showInput={false} />
+          </div>
+          <div>
             <p className="mb-spacing-4 text-12 text-font-icon-3">time — 시/분</p>
             <TimeListDemo />
+          </div>
+          <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">time — 입력 영역 없음</p>
+            <TimeListDemo showInput={false} />
           </div>
         </div>
       </div>
