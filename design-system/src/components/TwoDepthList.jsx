@@ -39,6 +39,7 @@ function Column({ options, value, onChange, maxVisible }) {
 export function TwoDepthList({
   // 상단 입력 영역 — 현재 선택을 보여주며, 기본적으로 직접 입력(타이핑)도 가능하다.
   inputValue = '',
+  showInput = true,      // 상단 입력 영역 표시 여부(false면 좌/우 컬럼만 — 트리거가 따로 입력을 가질 때)
   editable = true,       // 상단 input 직접 입력 허용(false면 readOnly로 값만 표시)
   onInputChange,         // (e) => void — 입력 변경(raw 이벤트)
   // (text) => string | null — 입력 텍스트로 좌/우 값을 적용하고 "정규화된 표시 문자열"을 반환.
@@ -139,23 +140,25 @@ export function TwoDepthList({
     >
       {/* input area — 흰 배경. popover(gray100)와 gap-spacing-1(1px) 틈이 구분선이 된다.
           에러 툴팁은 Input 내장(absolute)을 쓰면 팝오버 overflow-hidden에 잘리므로,
-          여기선 끄고 아래에서 포털(fixed)로 직접 띄운다. */}
-      <div className="w-full bg-list-group-bg p-spacing-5">
-        <div ref={inputBoxRef}>
-          <Input
-            value={editable ? text : inputValue}
-            onChange={editable ? handleChange : undefined}
-            readOnly={!editable}
-            placeholder={inputPlaceholder}
-            width="100%"
-            inputProps={
-              editable
-                ? { ...inputProps, onFocus: handleFocus, onBlur: handleBlur, onKeyDown: handleKeyDown }
-                : inputProps
-            }
-          />
+          여기선 끄고 아래에서 포털(fixed)로 직접 띄운다. showInput=false면 영역 자체를 숨긴다. */}
+      {showInput && (
+        <div className="w-full bg-list-group-bg p-spacing-5">
+          <div ref={inputBoxRef}>
+            <Input
+              value={editable ? text : inputValue}
+              onChange={editable ? handleChange : undefined}
+              readOnly={!editable}
+              placeholder={inputPlaceholder}
+              width="100%"
+              inputProps={
+                editable
+                  ? { ...inputProps, onFocus: handleFocus, onBlur: handleBlur, onKeyDown: handleKeyDown }
+                  : inputProps
+              }
+            />
+          </div>
         </div>
-      </div>
+      )}
       {/* 2 컬럼 목록 — 1px 틈(gap-spacing-1)이 두 컬럼 사이 구분선이 된다. */}
       <div className="flex w-full gap-spacing-1">
         <Column options={leftOptions} value={leftValue} onChange={onLeftChange} maxVisible={maxVisible} />
@@ -163,7 +166,8 @@ export function TwoDepthList({
       </div>
 
       {/* 에러 툴팁 — 포털(fixed)로 input 박스 아래에 띄워 overflow-hidden에 잘리지 않게 한다. */}
-      {error &&
+      {showInput &&
+        error &&
         errorMessage &&
         errorRect &&
         createPortal(

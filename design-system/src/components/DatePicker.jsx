@@ -257,8 +257,9 @@ export function DatePicker({
   value,
   defaultValue,
   onChange,
-  // 선택 제한 — 지나간 날짜/범위 밖 날짜를 선택 불가(비활성)로
+  // 선택 제한 — 지나간 날짜/미래 날짜/범위 밖 날짜를 선택 불가(비활성)로
   disablePast = false, // 오늘 이전 날짜 선택 불가(오늘은 선택 가능)
+  disableFuture = false, // 오늘 이후 날짜 선택 불가(오늘은 선택 가능)
   minDate,             // 이 날짜 이전은 비활성 (Date)
   maxDate,             // 이 날짜 이후는 비활성 (Date)
   disabledDate,        // (date) => boolean — 커스텀 비활성 판정
@@ -319,6 +320,7 @@ export function DatePicker({
   const isDayDisabled = (date) => {
     const d = startOfDay(date);
     if (disablePast && d < today) return true;
+    if (disableFuture && d > today) return true;
     if (minDate && d < startOfDay(minDate)) return true;
     if (maxDate && d > startOfDay(maxDate)) return true;
     return !!disabledDate && !!disabledDate(d);
