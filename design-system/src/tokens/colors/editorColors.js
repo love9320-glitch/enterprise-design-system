@@ -6,9 +6,9 @@
 //     (Tiptap이 style 속성에 색을 인라인으로 박으므로 값 자체가 토큰에서 나와야 규칙을 지킨다 —
 //      Tooltip/ScrollArea/Table의 "토큰값 인라인" 예외와 동일.)
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 import { tableColors } from './tableColors.js';
-import { fontIconColors } from './semanticColors.js';
+import { fontIconColors } from '../fontIconColors.js';
 
 const b = baseColors.base;
 

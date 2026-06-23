@@ -28,7 +28,7 @@ export function TabMenu({
   if (disabled) {
     colorStyle = 'text-tab-disabled-text border-transparent cursor-not-allowed';
   } else if (selected) {
-    colorStyle = 'text-tab-select-text border-tab-select-underline cursor-pointer';
+    colorStyle = 'text-tab-selected-text border-tab-selected-underline cursor-pointer';
   } else {
     colorStyle =
       'text-tab-default-text border-transparent cursor-pointer ' +

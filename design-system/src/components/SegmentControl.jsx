@@ -58,12 +58,12 @@ export function SegmentControlButton({
   if (disabled) {
     colorStyle = 'bg-transparent text-font-icon-2 cursor-not-allowed';
   } else if (selected) {
-    colorStyle = 'bg-btn-ghost-hover-bg text-font-icon-5 cursor-pointer';
+    colorStyle = 'bg-button-ghost-hover-bg text-font-icon-5 cursor-pointer';
   } else {
     // 미선택 — 회색 텍스트, hover 시 ghost 배경 + 진한 텍스트(active=눌렀을 땐 배경 제거)
     colorStyle =
       'bg-transparent text-font-icon-3 cursor-pointer ' +
-      'hover:bg-btn-ghost-hover-bg hover:text-font-icon-5 active:bg-transparent';
+      'hover:bg-button-ghost-hover-bg hover:text-font-icon-5 active:bg-transparent';
   }
 
   return (

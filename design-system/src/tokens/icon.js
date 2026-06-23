@@ -2,7 +2,7 @@
 // Lucide는 윤곽선(stroke) 기반 아이콘이므로 fill은 사용하지 않고
 // stroke 색상·두께만 지정합니다.
 
-import { fontIconColors } from './semanticColors';
+import { fontIconColors } from './fontIconColors';
 
 export const iconTokens = {
   size: 16,

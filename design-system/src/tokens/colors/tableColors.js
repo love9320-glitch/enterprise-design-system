@@ -4,7 +4,7 @@
 //   baseColors 경유로 정의. 텍스트는 font-icon-5(메인), 스크롤 thumb는 ScrollArea(listColors) 재사용.
 //   row-hover-bg는 Figma "table body hover row" 상태값으로, list-page 규칙(gray-25)과 동일 톤.
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 

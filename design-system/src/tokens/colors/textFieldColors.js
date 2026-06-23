@@ -4,7 +4,7 @@
 //   에러 툴팁 변수(errer tooltip *)를 baseColors를 경유해 정의한다.
 // 상태별 테두리는 컴포넌트에서 ring으로 구현하므로 line 토큰은 ring 색으로 사용.
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 

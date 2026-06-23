@@ -5,7 +5,7 @@
 import { Search } from 'lucide-react';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰). 색은 시멘틱 토큰.
-const RING = 'ring-inset ring-tf-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-tf-focused-line';
+const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-text-field-focused-line';
 
 export function SearchBar({
   value,
@@ -23,7 +23,7 @@ export function SearchBar({
   return (
     <div
       style={{ width: widthStyle }}
-      className={`group relative flex min-h-[32px] items-center gap-spacing-3 rounded-round-4 bg-tf-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
+      className={`group relative flex min-h-[32px] items-center gap-spacing-3 rounded-round-4 bg-text-field-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
         disabled ? 'cursor-not-allowed' : RING
       } ${className}`}
       {...props}
@@ -33,8 +33,8 @@ export function SearchBar({
         strokeWidth={1.8}
         className={`shrink-0 ${
           disabled
-            ? 'text-tf-disabled-icon'
-            : 'text-tf-default-text group-focus-within:text-tf-filled-text'
+            ? 'text-text-field-disabled-icon'
+            : 'text-text-field-default-text group-focus-within:text-text-field-filled-text'
         }`}
       />
       <input
@@ -47,7 +47,7 @@ export function SearchBar({
         onKeyDown={(e) => {
           if (e.key === 'Enter' && onSubmit) onSubmit(e.currentTarget.value);
         }}
-        className="min-w-0 flex-1 bg-transparent text-14 text-tf-filled-text outline-none placeholder:text-tf-default-text disabled:cursor-not-allowed disabled:text-tf-disabled-text [&::-webkit-search-cancel-button]:appearance-none"
+        className="min-w-0 flex-1 bg-transparent text-14 text-text-field-filled-text outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed disabled:text-text-field-disabled-text [&::-webkit-search-cancel-button]:appearance-none"
         {...inputProps}
       />
     </div>

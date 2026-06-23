@@ -447,7 +447,7 @@ export function DatePicker({
       <div className="flex w-full flex-col gap-spacing-5 bg-list-group-bg p-spacing-6">
         {/* navigation */}
         <div className="flex h-[32px] items-center justify-between pl-spacing-5">
-          {/* 연.월 선택 (캘린더 아이콘 + select-text → 연/월 2depth 목록) */}
+          {/* 연.월 선택 (캘린더 아이콘 + selected-text → 연/월 2depth 목록) */}
           <DualSelectField
             icon={CalendarIcon}
             placement="bottom-left"

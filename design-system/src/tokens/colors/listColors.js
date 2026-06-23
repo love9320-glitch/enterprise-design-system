@@ -2,7 +2,7 @@
 // Figma file: h9jZFkEHfcHUGok1TZjjlP — option list (node 7207:1652)
 //   list/* , empty/* , popover-menu/* , scroll(default-bar) 변수를 baseColors 경유로 정의.
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 
@@ -13,8 +13,8 @@ export const listColors = {
   'default-icon': b.gray[900],  // #0d0d0d
   'hover-bg':     b.gray[50],   // #f2f2f2
   'pressed-bg':   b.white,      // #ffffff (default와 동일 — 눌림은 순간 효과)
-  'select-text':  b.blue[400],  // #0f85f2 (선택 시 텍스트 파란색)
-  'select-icon':  b.blue[400],  // #0f85f2 (선택 시 chevron 파란색)
+  'selected-text':  b.blue[400],  // #0f85f2 (선택 시 텍스트 파란색)
+  'selected-icon':  b.blue[400],  // #0f85f2 (선택 시 chevron 파란색)
   'disabled-text': b.gray[150], // #c9c9c9
   'disabled-icon': b.gray[150], // #c9c9c9
   // list group

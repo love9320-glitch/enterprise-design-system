@@ -20,7 +20,7 @@ import { ListEmpty } from './ListEmpty';
 import { usePopoverPosition } from './usePopoverPosition';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰).
-const RING = 'ring-inset ring-tf-hover-line hover:ring-2 focus:ring-2 focus:ring-tf-focused-line';
+const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus:ring-2 focus:ring-text-field-focused-line';
 
 export function Select({
   value,
@@ -203,16 +203,16 @@ export function Select({
 
   // box variant 색 — tf-* 시멘틱 토큰. (text variant의 색·크기는 InlineFieldTrigger가 담당)
   const textColor = disabled
-    ? 'text-tf-disabled-text'
+    ? 'text-text-field-disabled-text'
     : readOnly
-      ? 'text-tf-readonly-text'
+      ? 'text-text-field-readonly-text'
       : isPlaceholder
-        ? 'text-tf-default-text'
-        : 'text-tf-filled-text';
+        ? 'text-text-field-default-text'
+        : 'text-text-field-filled-text';
 
   const iconColor = disabled
-    ? 'text-tf-disabled-icon'
-    : 'text-tf-default-text group-focus-within:text-tf-filled-text';
+    ? 'text-text-field-disabled-icon'
+    : 'text-text-field-default-text group-focus-within:text-text-field-filled-text';
 
   // box variant 화살표 크기는 항상 16
   const chevronSize = 16;
@@ -257,7 +257,7 @@ export function Select({
           tabIndex={interactive ? 0 : -1}
           onClick={() => interactive && setOpen((o) => !o)}
           onKeyDown={onTriggerKeyDown}
-          className={`group relative grid min-h-[32px] grid-cols-[minmax(0,1fr)_auto] items-center gap-spacing-4 rounded-round-4 bg-tf-default-bg py-spacing-3 pl-spacing-6 pr-spacing-6 transition-shadow focus:outline-none ${
+          className={`group relative grid min-h-[32px] grid-cols-[minmax(0,1fr)_auto] items-center gap-spacing-4 rounded-round-4 bg-text-field-default-bg py-spacing-3 pl-spacing-6 pr-spacing-6 transition-shadow focus:outline-none ${
             interactive ? `cursor-pointer ${RING}` : 'cursor-not-allowed'
           }`}
         >

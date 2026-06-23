@@ -4,7 +4,7 @@
 //   Ghost → node 7060:6712  (변수명: ghost/gray-*)
 //   Line  → node 7057:6711  (변수명: line/gray-*)
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 
@@ -21,8 +21,8 @@ export const buttonColors = {
     'hover-bg':    b['gray-900-25'],    // ghost/gray hover bg     → #0d0d0d12
     'disabled-bg': b['gray-900-50'],    // ghost/gray disableld bg → #0d0d0d29
     'disabled-fg': b.gray[300],         // ghost/gray disabled text → #878787
-    'select-bg':   b.gray[400],         // ghost/gray select bg    → #6a6a6a (선택/현재 항목)
-    'select-text': b.white,             // ghost/gray select text  → #ffffff
+    'selected-bg':   b.gray[400],         // ghost/gray select bg    → #6a6a6a (선택/현재 항목)
+    'selected-text': b.white,             // ghost/gray select text  → #ffffff
     'pagination-fg': b.gray[300],       // ghost/gray default text (pagination) → #878787
                                         // 페이지네이션 번호 기본색(연함) — hover/pressed 시 default-fg로 진해짐
   },

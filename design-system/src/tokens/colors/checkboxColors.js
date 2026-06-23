@@ -3,7 +3,7 @@
 //   unselected: 회색 채움 / selected: blue 채움 + 흰 체크
 //   hover: 바깥 ring 색 표시 / disabled: 연하게
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 

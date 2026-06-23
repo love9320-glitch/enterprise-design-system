@@ -18,7 +18,7 @@
 - white 알파: `white-00 ~ white-300`
 - `black`(#000000), `white`(#ffffff)
 
-### Semantic — 폰트/아이콘 컬러 (`semanticColors.js` → `fontIconColors`)
+### Semantic — 폰트/아이콘 컬러 (`fontIconColors.js` → `fontIconColors`)
 Tailwind 클래스: `text-font-icon-{1~5}` / `bg-font-icon-{1~5}`
 
 | 토큰 | 값 | 용도 |
@@ -29,13 +29,14 @@ Tailwind 클래스: `text-font-icon-{1~5}` / `bg-font-icon-{1~5}`
 | `font-icon-2` | gray.150 (#c9c9c9) | 비활성 |
 | `font-icon-1` | white (#ffffff) | 반전(어두운 배경 위) |
 
-### Semantic — 버튼 컬러 (`buttonColors.js` → `buttonColors`)
-Tailwind 클래스: `bg-btn-{variant}-{state}-{bg|fg|line}`
+### Semantic — 버튼 컬러 (`colors/buttonColors.js` → `buttonColors`)
+Tailwind 클래스: `bg-button-{variant}-{state}-{bg|fg|line}`
 variant = `fill` | `ghost` | `line`, state = `default` | `hover` | `disabled`
 
-예: `bg-btn-fill-default-bg`, `text-btn-fill-default-fg`, `ring-btn-line-default-line`
+예: `bg-button-fill-default-bg`, `text-button-fill-default-fg`, `ring-button-line-default-line`
 
-> 새 컴포넌트에 컬러가 필요하면 `semanticColors.js` 또는 별도 `xxxColors.js`에 **시멘틱 토큰을 먼저 추가**한 뒤 사용한다.
+> **컴포넌트별 시멘틱 컬러 파일은 `tokens/colors/` 폴더에 모은다**(`buttonColors.js`·`tableColors.js`·`switchColors.js` 등). base `colors.js`·`fontIconColors.js`(폰트/아이콘)는 기반 토큰이라 `tokens/` 루트에 둔다.
+> 새 컴포넌트에 컬러가 필요하면 `fontIconColors.js` 또는 `colors/xxxColors.js`에 **시멘틱 토큰을 먼저 추가**한 뒤 `tokens/index.js`에 export하고 사용한다. (컴포넌트 컬러 파일은 base를 `'../colors.js'`로 참조)
 
 ## 규칙 2 — 간격·라운드·스트로크는 등록 토큰만
 

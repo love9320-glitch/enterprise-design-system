@@ -9,7 +9,7 @@ import { Popover } from './Popover';
 import { TwoDepthList } from './TwoDepthList';
 import { Tooltip } from './Tooltip';
 
-const RING = 'ring-inset ring-tf-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-tf-focused-line';
+const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-text-field-focused-line';
 const pad2 = (n) => String(n).padStart(2, '0');
 const ALLOWED_CHARS = /[\d:]/;
 const HOURS = Array.from({ length: 24 }, (_, i) => ({ value: pad2(i), label: `${pad2(i)}시` }));
@@ -78,16 +78,16 @@ export function TimeField({
   };
 
   const textColor = disabled
-    ? 'text-tf-disabled-text'
+    ? 'text-text-field-disabled-text'
     : readOnly
-      ? 'text-tf-readonly-text'
-      : 'text-tf-filled-text';
+      ? 'text-text-field-readonly-text'
+      : 'text-text-field-filled-text';
   const iconColor = disabled
-    ? 'text-tf-disabled-icon'
+    ? 'text-text-field-disabled-icon'
     : readOnly
-      ? 'text-tf-readonly-icon'
+      ? 'text-text-field-readonly-icon'
       : isEmpty
-        ? 'text-tf-default-text'
+        ? 'text-text-field-default-text'
         : 'text-font-icon-5';
 
   const showErr = error || parseError;
@@ -107,7 +107,7 @@ export function TimeField({
       style={fixedWidth ? { width: fixedWidth } : undefined}
     >
       <div
-        className={`group flex min-h-[32px] ${isHug ? 'w-fit' : 'w-full'} items-center gap-spacing-3 rounded-round-4 bg-tf-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
+        className={`group flex min-h-[32px] ${isHug ? 'w-fit' : 'w-full'} items-center gap-spacing-3 rounded-round-4 bg-text-field-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
           interactive ? `cursor-text ${RING}` : disabled ? 'cursor-not-allowed' : 'cursor-default'
         }`}
       >
@@ -160,7 +160,7 @@ export function TimeField({
               e.currentTarget.blur();
             }
           }}
-          className={`bg-transparent text-14 outline-none placeholder:text-tf-default-text disabled:cursor-not-allowed read-only:cursor-pointer ${textColor} ${
+          className={`bg-transparent text-14 outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed read-only:cursor-pointer ${textColor} ${
             isHug ? 'w-auto' : 'min-w-0 flex-1 text-ellipsis'
           }`}
         />

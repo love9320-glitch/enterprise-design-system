@@ -5,7 +5,7 @@
 //   disabled: off=연한 회색 track + 진회색 thumb / on=연한 blue track + blue thumb (둘 다 그림자 없음)
 // 값은 Radio/Checkbox와 동일한 check/* 토큰을 공유하지만, 컴포넌트별 컬러 파일 관례를 따라 별도 정의한다.
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 

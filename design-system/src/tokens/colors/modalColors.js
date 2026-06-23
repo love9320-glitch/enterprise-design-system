@@ -3,9 +3,9 @@
 //   overlay-bg(딤 배경) / inline(헤더·바디·푸터 사이 1px 구분선) / outline(ModalBox 외곽선) /
 //   panel-bg(헤더·바디·푸터 배경)을 baseColors 경유로 정의한다.
 //   description-bg(Confirm/AlertModal의 2뎁스 상세 설명 박스 배경)도 여기서 정의한다.
-//   타이틀·본문 텍스트는 font-icon(semanticColors), 푸터 버튼은 Button(buttonColors) 재사용.
+//   타이틀·본문 텍스트는 font-icon(fontIconColors), 푸터 버튼은 Button(buttonColors) 재사용.
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 
