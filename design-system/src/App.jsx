@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
@@ -92,6 +92,17 @@ function getInitialId() {
 
 export default function App() {
   const [activeId, setActiveId] = useState(getInitialId);
+  // 본문 스크롤 영역(ScrollArea 내부 뷰포트) — 페이지 전환 시 스크롤을 최상단으로 되돌리기 위해 참조
+  const viewportRef = useRef(null);
+
+  // 페이지가 바뀌면 본문 스크롤을 최상단으로 리셋(이전 페이지의 스크롤 위치가 남는 문제 방지)
+  useEffect(() => {
+    const el = viewportRef.current;
+    if (el) {
+      el.scrollTop = 0;
+      el.scrollLeft = 0;
+    }
+  }, [activeId]);
 
   useEffect(() => {
     // 해시가 바뀌면 따라가되, 알 수 없는 해시면 현재 위치를 유지한다.
@@ -129,7 +140,13 @@ export default function App() {
             전체 화면이 위로 밀린다. ScrollArea를 main 박스(inset-0)에 절대 고정해 explicit height를
             주면 내부 스크롤이 ScrollArea 안에서만 일어난다. */}
         <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
-          <ScrollArea className="absolute inset-0" contentClassName="h-full">
+          <ScrollArea
+            className="absolute inset-0"
+            contentClassName="h-full"
+            onViewport={(el) => {
+              viewportRef.current = el;
+            }}
+          >
             {Page && <Page />}
           </ScrollArea>
         </main>
