@@ -197,9 +197,10 @@ export function Table({
     bordered ? '' : `${isFirst ? 'rounded-l-round-4' : ''} ${isLast ? 'rounded-r-round-4' : ''}`;
 
   // 헤더 셀(<th>) 공통 — 구분선·코너·패딩·하단 구분선(box-shadow). 체크박스/라벨 셀이 함께 사용.
-  // 오른쪽 패딩은 상하 패딩과 같은 spacing-5(8px) — 헤더 우측 메뉴 버튼이 가장자리에 너무 떨어지지 않게.
+  // 오른쪽 패딩은 spacing-5(8px) — 헤더 우측 메뉴 버튼이 가장자리에 너무 떨어지지 않게.
+  // 높이는 spacing-12(36px)로 고정(상하 패딩 없음).
   const headCellProps = (isFirst, isLast, width) => ({
-    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-6 pr-spacing-5 py-spacing-5 align-middle`,
+    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-6 pr-spacing-5 h-spacing-12 align-middle`,
     style: { ...(width ? { width } : null), ...headDivider },
   });
 
