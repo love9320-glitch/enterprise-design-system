@@ -21,7 +21,7 @@ const BTN_BASE =
 
 // hover = ghost-hover-bg, pressed(active) = 투명. 색은 기존 ghost 버튼 시멘틱 토큰 재사용.
 const BTN_INTERACTIVE =
-  'cursor-pointer hover:bg-btn-ghost-hover-bg active:bg-transparent';
+  'cursor-pointer hover:bg-button-ghost-hover-bg active:bg-transparent';
 
 // 현재 페이지가 속한 '블록'의 번호 목록 계산.
 // maxButtons 단위로 페이지를 고정 그룹핑한다(슬라이딩 X) — 같은 블록 안의 번호를
@@ -38,15 +38,15 @@ function getPageWindow(current, total, maxButtons) {
 //  selected: 현재 페이지 — 회색 원형 + 흰 텍스트(고정)
 //  disabled: 경계 아이콘 — 흐림 + 클릭 불가
 const STATE_STYLES = {
-  selected: 'cursor-default bg-btn-ghost-select-bg text-btn-ghost-select-text',
-  disabled: 'cursor-not-allowed text-btn-ghost-disabled-fg',
+  selected: 'cursor-default bg-button-ghost-selected-bg text-button-ghost-selected-text',
+  disabled: 'cursor-not-allowed text-button-ghost-disabled-fg',
 };
 
 // default 상태 텍스트색 — 번호는 pagination 토큰(연함)에서 hover/pressed 시 default-fg로 진해지고,
 // 아이콘은 항상 default-fg(진함). (Figma: ghost/gray default text (pagination) = gray.300)
 const DEFAULT_TEXT = {
-  number: 'text-btn-ghost-pagination-fg hover:text-btn-ghost-default-fg active:text-btn-ghost-default-fg',
-  icon: 'text-btn-ghost-default-fg',
+  number: 'text-button-ghost-pagination-fg hover:text-button-ghost-default-fg active:text-button-ghost-default-fg',
+  icon: 'text-button-ghost-default-fg',
 };
 
 // 페이지네이션 버튼 — number/icon 타입 × state(default/selected/disabled)

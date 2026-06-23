@@ -8,7 +8,7 @@
 import { Tooltip } from './Tooltip';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰). 색은 시멘틱 토큰.
-const RING = 'ring-inset ring-tf-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-tf-focused-line';
+const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-text-field-focused-line';
 
 export function Input({
   value,
@@ -28,15 +28,15 @@ export function Input({
   const widthStyle = typeof width === 'number' ? `${width}px` : width;
 
   const textColor = disabled
-    ? 'text-tf-disabled-text'
+    ? 'text-text-field-disabled-text'
     : readOnly
-      ? 'text-tf-readonly-text'
-      : 'text-tf-filled-text';
+      ? 'text-text-field-readonly-text'
+      : 'text-text-field-filled-text';
 
   return (
     <div
       style={{ width: widthStyle }}
-      className={`relative flex min-h-[32px] items-center gap-spacing-3 rounded-round-4 bg-tf-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
+      className={`relative flex min-h-[32px] items-center gap-spacing-3 rounded-round-4 bg-text-field-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
         interactive ? RING : 'cursor-not-allowed'
       } ${className}`}
       {...props}
@@ -49,7 +49,7 @@ export function Input({
         disabled={disabled}
         readOnly={readOnly}
         aria-invalid={error || undefined}
-        className={`min-w-0 flex-1 bg-transparent text-14 outline-none placeholder:text-tf-default-text disabled:cursor-not-allowed read-only:cursor-default ${textColor}`}
+        className={`min-w-0 flex-1 bg-transparent text-14 outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed read-only:cursor-default ${textColor}`}
         {...inputProps}
       />
 

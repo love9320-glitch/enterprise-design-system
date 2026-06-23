@@ -1,7 +1,7 @@
 // List — 옵션 목록의 한 행 (Figma option list / list, node 7206:9327)
 // 상태: default / hover / pressed / selected / disabled
 //   - hover/pressed는 CSS(:hover/:active), selected·disabled는 props
-//   - selected 시 chevron·아이콘이 파란색(list-select-icon)
+//   - selected 시 chevron·아이콘이 파란색(list-selected-icon)
 // 요소(필요에 따라 on/off):
 //   left  : tag · checkbox · icon(lucide) · title
 //   right : switch · rightButton(고스트 ⋯) · endIcon(chevron)
@@ -47,14 +47,14 @@ export function List({
   const titleColor = disabled
     ? 'text-list-disabled-text'
     : selected
-      ? 'text-list-select-text'
+      ? 'text-list-selected-text'
       : 'text-list-default-text';
   const ellipsisColor = disabled ? 'text-list-disabled-icon' : 'text-list-default-icon';
   // 아이콘(왼쪽 lucide · 오른쪽 chevron) 공통 색: disabled→회색, selected→파랑, 그 외 기본
   const iconColor = disabled
     ? 'text-list-disabled-icon'
     : selected
-      ? 'text-list-select-icon'
+      ? 'text-list-selected-icon'
       : 'text-list-default-icon';
 
   // 체크박스·스위치는 행 onClick과 분리한다(직접 클릭 시 각자 onChange만 발화 → 행 핸들러로 전파 차단)
@@ -107,7 +107,7 @@ export function List({
                 e.stopPropagation();
                 onButtonClick?.(e);
               }}
-              className="flex min-h-[24px] min-w-[24px] items-center justify-center rounded-round-4 p-spacing-2 opacity-80 transition-colors hover:bg-btn-ghost-hover-bg disabled:cursor-not-allowed"
+              className="flex min-h-[24px] min-w-[24px] items-center justify-center rounded-round-4 p-spacing-2 opacity-80 transition-colors hover:bg-button-ghost-hover-bg disabled:cursor-not-allowed"
               aria-label="더보기"
             >
               <MoreHorizontal size={14} strokeWidth={1.8} className={ellipsisColor} />

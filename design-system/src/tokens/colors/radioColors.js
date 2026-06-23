@@ -4,7 +4,7 @@
 //   hover: 바깥 ring 색 표시 / disabled: 연하게(selected disabled는 연한 blue + blue 점)
 // 값은 Checkbox와 동일한 check/* 토큰을 공유하지만, 컴포넌트별 컬러 파일 관례를 따라 별도 정의한다.
 
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 

@@ -14,24 +14,24 @@
 
 // 좌/우 반쪽 배경 — 범위 연속 칠을 위한 lookup. (range-bg를 칠할지 day-bg(투명)로 둘지)
 const HALF_FILL = {
-  'default':     { left: 'bg-cal-day-bg', right: 'bg-cal-day-bg' },
-  'muted':       { left: 'bg-cal-day-bg', right: 'bg-cal-day-bg' },
-  'today':       { left: 'bg-cal-day-bg', right: 'bg-cal-day-bg' },
-  'selected':    { left: 'bg-cal-day-bg', right: 'bg-cal-day-bg' },
-  'range-start': { left: 'bg-cal-day-bg', right: 'bg-cal-range-bg' },
-  'range-end':   { left: 'bg-cal-range-bg', right: 'bg-cal-day-bg' },
-  'in-range':    { left: 'bg-cal-range-bg', right: 'bg-cal-range-bg' },
+  'default':     { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
+  'muted':       { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
+  'today':       { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
+  'selected':    { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
+  'range-start': { left: 'bg-calendar-day-bg', right: 'bg-calendar-range-bg' },
+  'range-end':   { left: 'bg-calendar-range-bg', right: 'bg-calendar-day-bg' },
+  'in-range':    { left: 'bg-calendar-range-bg', right: 'bg-calendar-range-bg' },
 };
 
 // 중앙 원형 배경 + 텍스트 색 lookup.
 const CIRCLE_STYLE = {
-  'default':     { circle: 'bg-cal-day-bg', text: 'text-cal-day-text' },
-  'muted':       { circle: 'bg-transparent', text: 'text-cal-muted-text' },
-  'today':       { circle: 'bg-cal-today-bg', text: 'text-cal-today-text' },
-  'selected':    { circle: 'bg-cal-select-bg', text: 'text-cal-select-text' },
-  'range-start': { circle: 'bg-cal-select-bg', text: 'text-cal-select-text' },
-  'range-end':   { circle: 'bg-cal-select-bg', text: 'text-cal-select-text' },
-  'in-range':    { circle: 'bg-cal-range-bg', text: 'text-cal-range-text' },
+  'default':     { circle: 'bg-calendar-day-bg', text: 'text-calendar-day-text' },
+  'muted':       { circle: 'bg-transparent', text: 'text-calendar-muted-text' },
+  'today':       { circle: 'bg-calendar-today-bg', text: 'text-calendar-today-text' },
+  'selected':    { circle: 'bg-calendar-selected-bg', text: 'text-calendar-selected-text' },
+  'range-start': { circle: 'bg-calendar-selected-bg', text: 'text-calendar-selected-text' },
+  'range-end':   { circle: 'bg-calendar-selected-bg', text: 'text-calendar-selected-text' },
+  'in-range':    { circle: 'bg-calendar-range-bg', text: 'text-calendar-range-text' },
 };
 
 // hover 시 원에 회색 배경을 줄 수 있는(=아직 강조되지 않은) 상태
@@ -47,7 +47,7 @@ export function CalendarDayButton({
 }) {
   const half = HALF_FILL[state] ?? HALF_FILL.default;
   const circle = CIRCLE_STYLE[state] ?? CIRCLE_STYLE.default;
-  const hover = !disabled && HOVERABLE.has(state) ? 'group-hover:bg-cal-hover-bg' : '';
+  const hover = !disabled && HOVERABLE.has(state) ? 'group-hover:bg-calendar-hover-bg' : '';
   // muted는 이미 회색(비활성)으로 읽히므로, disabled여도 추가 dimming(opacity)을 주지 않는다.
   const dimmed = disabled && state !== 'muted';
 

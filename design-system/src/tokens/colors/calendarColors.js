@@ -2,7 +2,7 @@
 // Figma file: h9jZFkEHfcHUGok1TZjjlP — date picker / calendar day button (node 7592:3061)
 //   day(기본)·muted(다른 달)·today·select(선택/범위 끝)·range(범위 안) 상태별 색을
 //   baseColors 경유로 정의한다(하드코딩 금지).
-import { baseColors } from './colors.js';
+import { baseColors } from '../colors.js';
 
 const b = baseColors.base;
 
@@ -17,8 +17,8 @@ export const calendarColors = {
   'today-bg':   b.gray[500], // #505050
   'today-text': b.white,     // #ffffff
   // 선택 / 범위 시작·끝
-  'select-bg':   b.blue[400], // #0f85f2
-  'select-text': b.white,     // #ffffff
+  'selected-bg':   b.blue[400], // #0f85f2
+  'selected-text': b.white,     // #ffffff
   // 범위 안(start~end 사이)
   'range-bg':   b.blue[100],  // #e6f3fe
   'range-text': b.blue[400],  // #0f85f2

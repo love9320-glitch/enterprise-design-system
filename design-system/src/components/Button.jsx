@@ -65,29 +65,29 @@ export function Button({
   let colorStyle;
   if (variant === 'fill') {
     colorStyle = inactive
-      ? 'bg-btn-fill-disabled-bg text-btn-fill-disabled-fg cursor-not-allowed'
-      : 'bg-btn-fill-default-bg text-btn-fill-default-fg cursor-pointer ' +
-        'hover:bg-btn-fill-hover-bg ' +
-        'active:bg-btn-fill-default-bg';
+      ? 'bg-button-fill-disabled-bg text-button-fill-disabled-fg cursor-not-allowed'
+      : 'bg-button-fill-default-bg text-button-fill-default-fg cursor-pointer ' +
+        'hover:bg-button-fill-hover-bg ' +
+        'active:bg-button-fill-default-bg';
   } else if (variant === 'line') {
     colorStyle = inactive
-      ? 'bg-btn-line-disabled-bg text-btn-line-disabled-fg cursor-not-allowed'
-      : 'bg-btn-line-default-bg text-btn-line-default-fg ring-1 ring-inset ring-btn-line-default-line cursor-pointer ' +
-        'hover:bg-btn-line-hover-bg hover:ring-btn-line-hover-line ' +
-        'active:bg-btn-line-default-bg active:ring-btn-line-default-line';
+      ? 'bg-button-line-disabled-bg text-button-line-disabled-fg cursor-not-allowed'
+      : 'bg-button-line-default-bg text-button-line-default-fg ring-1 ring-inset ring-button-line-default-line cursor-pointer ' +
+        'hover:bg-button-line-hover-bg hover:ring-button-line-hover-line ' +
+        'active:bg-button-line-default-bg active:ring-button-line-default-line';
   } else if (variant === 'underline') {
     // 밑줄 텍스트 버튼 — 배경 없이 ghost 텍스트색 재사용, hover 시 밑줄만(active=눌렸을 땐 밑줄 제거)
     // 비활성은 세그먼트 컨트롤·ghost와 동일(font-icon-2 텍스트)
     colorStyle = inactive
       ? 'bg-transparent text-font-icon-2 cursor-not-allowed'
-      : 'bg-transparent text-btn-ghost-default-fg cursor-pointer ' +
+      : 'bg-transparent text-button-ghost-default-fg cursor-pointer ' +
         'hover:underline active:no-underline';
   } else {
     // ghost — 비활성은 세그먼트 컨트롤과 동일(투명 배경 + font-icon-2 텍스트)
     colorStyle = inactive
       ? 'bg-transparent text-font-icon-2 cursor-not-allowed'
-      : 'bg-transparent text-btn-ghost-default-fg cursor-pointer ' +
-        'hover:bg-btn-ghost-hover-bg ' +
+      : 'bg-transparent text-button-ghost-default-fg cursor-pointer ' +
+        'hover:bg-button-ghost-hover-bg ' +
         'active:bg-transparent';
   }
 

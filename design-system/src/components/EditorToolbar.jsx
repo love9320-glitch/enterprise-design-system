@@ -96,7 +96,7 @@ function ColorPanel({ palette, current, onPick }) {
               onMouseDown={keepSelection}
               onClick={() => onPick(c.value)}
               className={`flex w-full cursor-pointer items-center gap-spacing-4 px-spacing-6 py-spacing-3 text-14 transition-colors hover:bg-list-hover-bg ${
-                selected ? 'text-list-select-text' : 'text-list-default-text'
+                selected ? 'text-list-selected-text' : 'text-list-default-text'
               }`}
             >
               <span
