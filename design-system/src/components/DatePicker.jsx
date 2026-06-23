@@ -13,10 +13,11 @@
 // 색은 cal-* / list-* / font-icon-* 시멘틱 토큰만 사용.
 import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import { Calendar as CalendarIcon, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import { Popover } from './Popover';
+import { InlineFieldTrigger } from './InlineFieldTrigger';
 import { TwoDepthList } from './TwoDepthList';
 import { CalendarDayButton } from './CalendarDayButton';
 import { ScrollArea } from './ScrollArea';
@@ -198,22 +199,22 @@ function CalendarScroller({ anchorMonth, anchorKey, weekStartsOn, onVisibleMonth
 
 // ── 연.월 / 시간 선택을 띄우는 셀렉트형 트리거 (텍스트 + chevron, hover 밑줄) ──────
 function DualSelectField({ icon: Icon, display, panelWidth = 201, placement = 'bottom-left', disabled = false, ...panelProps }) {
-  const color = disabled ? 'text-font-icon-2' : 'text-font-icon-5';
-  const trigger = (
-    <span
-      className={`group flex select-none items-center gap-spacing-3 ${
-        disabled ? 'cursor-not-allowed' : 'cursor-pointer'
-      }`}
-    >
-      {Icon && <Icon size={16} strokeWidth={1.8} className={`shrink-0 ${color}`} />}
-      <span className="flex items-center gap-spacing-3">
-        <span className={`text-14 ${color} ${disabled ? '' : 'group-hover:underline'}`}>{display}</span>
-        <ChevronDown size={16} strokeWidth={1.8} className={`shrink-0 ${color}`} />
-      </span>
-    </span>
-  );
+  // 트리거 비주얼은 공유 프리미티브 InlineFieldTrigger 사용(Select 인라인 텍스트형과 동일).
+  // 열림 상태(텍스트 회색·chevron 회전)를 반영하려고 Popover를 controlled로 둔다.
+  const [open, setOpen] = useState(false);
   return (
-    <Popover placement={placement} menuWidth={panelWidth} disabled={disabled} trigger={trigger}>
+    <Popover
+      placement={placement}
+      menuWidth={panelWidth}
+      disabled={disabled}
+      open={open}
+      onOpenChange={setOpen}
+      trigger={
+        <InlineFieldTrigger icon={Icon} open={open} disabled={disabled}>
+          {display}
+        </InlineFieldTrigger>
+      }
+    >
       <TwoDepthList width={panelWidth} {...panelProps} />
     </Popover>
   );

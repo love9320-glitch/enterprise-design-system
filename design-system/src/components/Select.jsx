@@ -12,6 +12,7 @@ import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 import { TruncatingText } from './TruncatingText';
+import { InlineFieldTrigger } from './InlineFieldTrigger';
 import { PopoverMenu } from './PopoverMenu';
 import { ListGroup } from './ListGroup';
 import { List } from './List';
@@ -200,38 +201,21 @@ export function Select({
     }
   };
 
-  // text variant: disabled=흐림(font-icon-2) / readOnly=진함 / 열림=회색(font-icon-3) /
-  // 그 외 placeholder·filled 모두 진함(font-icon-5). hover 밑줄은 상호작용 가능할 때만(아래 className).
-  // box variant: 기존 tf-* 시멘틱 토큰.
-  const textColor = isText
-    ? disabled
-      ? 'text-font-icon-2'
-      : readOnly
-        ? 'text-font-icon-5'
-        : open
-          ? 'text-font-icon-3'
-          : 'text-font-icon-5'
-    : disabled
-      ? 'text-tf-disabled-text'
-      : readOnly
-        ? 'text-tf-readonly-text'
-        : isPlaceholder
-          ? 'text-tf-default-text'
-          : 'text-tf-filled-text';
+  // box variant 색 — tf-* 시멘틱 토큰. (text variant의 색·크기는 InlineFieldTrigger가 담당)
+  const textColor = disabled
+    ? 'text-tf-disabled-text'
+    : readOnly
+      ? 'text-tf-readonly-text'
+      : isPlaceholder
+        ? 'text-tf-default-text'
+        : 'text-tf-filled-text';
 
-  // text variant 화살표: disabled·readOnly는 흐림(font-icon-2), 그 외 진함(font-icon-5)
-  const iconColor = isText
-    ? disabled || readOnly
-      ? 'text-font-icon-2'
-      : 'text-font-icon-5'
-    : disabled
-      ? 'text-tf-disabled-icon'
-      : 'text-tf-default-text group-focus-within:text-tf-filled-text';
+  const iconColor = disabled
+    ? 'text-tf-disabled-icon'
+    : 'text-tf-default-text group-focus-within:text-tf-filled-text';
 
-  // text variant 글자 크기 — size 토큰(24=14px / 20=12px)
-  const sizeTextClass = isText && size === '20' ? 'text-12' : 'text-14';
-  // text variant 화살표 크기 — size 20은 14×14, 그 외(box·size24)는 16×16
-  const chevronSize = isText && size === '20' ? 14 : 16;
+  // box variant 화살표 크기는 항상 16
+  const chevronSize = 16;
 
   return (
     <div
@@ -240,54 +224,59 @@ export function Select({
       style={isText ? undefined : { width: widthStyle, maxWidth: maxWidthStyle }}
       {...props}
     >
-      {/* 트리거 */}
-      <div
-        ref={triggerRef}
-        role="combobox"
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-disabled={disabled || undefined}
-        aria-invalid={error || undefined}
-        tabIndex={interactive ? 0 : -1}
-        onClick={() => interactive && setOpen((o) => !o)}
-        onKeyDown={onTriggerKeyDown}
-        className={
-          isText
-            ? `group inline-flex min-w-0 select-none items-center gap-spacing-3 focus:outline-none ${
-                interactive ? 'cursor-pointer' : disabled ? 'cursor-not-allowed' : 'cursor-default'
-              }`
-            : `group relative grid min-h-[32px] grid-cols-[minmax(0,1fr)_auto] items-center gap-spacing-4 rounded-round-4 bg-tf-default-bg py-spacing-3 pl-spacing-6 pr-spacing-6 transition-shadow focus:outline-none ${
-                interactive ? `cursor-pointer ${RING}` : 'cursor-not-allowed'
-              }`
-        }
-      >
-        {/* box: grid minmax(0,1fr) + JS max-width 보강 / text: maxWidth를 텍스트에 직접(콘텐츠 hug, 넘으면 말줄임) */}
-        <TruncatingText
-          style={
-            isText
-              ? maxWidthStyle
-                ? { maxWidth: maxWidthStyle }
-                : undefined
-              : textMaxW != null
-                ? { maxWidth: `${textMaxW}px` }
-                : undefined
-          }
-          className={
-            isText
-              ? `min-w-0 font-normal ${sizeTextClass} ${textColor} ${interactive ? 'group-hover:underline' : ''}`
-              : `text-14 font-normal ${textColor}`
-          }
+      {/* 트리거 — 상호작용(클릭·키보드·포커스·위치 anchor)은 box·text 공통, 비주얼은 분기 */}
+      {isText ? (
+        // 인라인 텍스트형: 비주얼은 공유 프리미티브 InlineFieldTrigger에 위임(Select·DatePicker 공용)
+        <InlineFieldTrigger
+          ref={triggerRef}
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-disabled={disabled || undefined}
+          aria-invalid={error || undefined}
+          tabIndex={interactive ? 0 : -1}
+          onClick={() => interactive && setOpen((o) => !o)}
+          onKeyDown={onTriggerKeyDown}
+          size={size}
+          open={open}
+          disabled={disabled}
+          readOnly={readOnly}
+          interactive={interactive}
+          maxWidth={maxWidthStyle}
         >
           {selectedOption ? selectedOption.label : placeholder}
-        </TruncatingText>
-        <ChevronDown
-          size={chevronSize}
-          strokeWidth={1.8}
-          className={`pointer-events-none shrink-0 transition-transform ${iconColor} ${
-            open ? 'rotate-180' : ''
+        </InlineFieldTrigger>
+      ) : (
+        <div
+          ref={triggerRef}
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-disabled={disabled || undefined}
+          aria-invalid={error || undefined}
+          tabIndex={interactive ? 0 : -1}
+          onClick={() => interactive && setOpen((o) => !o)}
+          onKeyDown={onTriggerKeyDown}
+          className={`group relative grid min-h-[32px] grid-cols-[minmax(0,1fr)_auto] items-center gap-spacing-4 rounded-round-4 bg-tf-default-bg py-spacing-3 pl-spacing-6 pr-spacing-6 transition-shadow focus:outline-none ${
+            interactive ? `cursor-pointer ${RING}` : 'cursor-not-allowed'
           }`}
-        />
-      </div>
+        >
+          {/* box: grid minmax(0,1fr) + JS max-width 보강 */}
+          <TruncatingText
+            style={textMaxW != null ? { maxWidth: `${textMaxW}px` } : undefined}
+            className={`text-14 font-normal ${textColor}`}
+          >
+            {selectedOption ? selectedOption.label : placeholder}
+          </TruncatingText>
+          <ChevronDown
+            size={chevronSize}
+            strokeWidth={1.8}
+            className={`pointer-events-none shrink-0 transition-transform ${iconColor} ${
+              open ? 'rotate-180' : ''
+            }`}
+          />
+        </div>
+      )}
 
       {/* 드롭다운 — portal + fixed (트리거 컨테이너와 분리해 트리거 레이아웃에 영향 없음) */}
       {open &&
