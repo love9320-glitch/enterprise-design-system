@@ -89,4 +89,3 @@ export function MembersPage() {
 - [ ] 주요 액션 버튼이 공통 `Button`인가
 - [ ] 행 hover 등 인터랙션 피드백이 있는가
 - [ ] 반응형(가로 스크롤 또는 컬럼 축소) 대응했는가
-- [ ] 다크모드(`dark:`) 대응했는가
