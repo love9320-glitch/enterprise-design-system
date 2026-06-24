@@ -7,9 +7,9 @@ const USAGE = `import { Tag } from '../components/Tag';
 import { Tooltip } from '../components/Tooltip';
 import { ScrollArea } from '../components/ScrollArea';
 
-// Tag — type(blue·red·gray) · width(hug 기본 · fill)
-<Tag type="blue">신규</Tag>
-<Tag type="red" width="fill">마감</Tag>
+// Tag — color(blue·red·gray) · width(hug 기본 · fill)
+<Tag color="blue">신규</Tag>
+<Tag color="red" width="fill">마감</Tag>
 
 // Tooltip — variant(error·normal) · beak(top·bottom·none). 위치는 호출부에서 지정
 <Tooltip variant="error" beak="top">필수 입력정보 입니다</Tooltip>
@@ -23,7 +23,7 @@ import { ScrollArea } from '../components/ScrollArea';
 const USAGE_PROPS = [
   // Tag
   { name: 'Tag · children', type: 'ReactNode', default: "'태그'", desc: '태그 내용' },
-  { name: 'Tag · type', type: "'blue' | 'red' | 'gray'", default: "'blue'", desc: '색상 종류' },
+  { name: 'Tag · color', type: "'blue' | 'red' | 'gray'", default: "'blue'", desc: '색상 종류' },
   { name: 'Tag · width', type: "'hug' | 'fill'", default: "'hug'", desc: 'hug=콘텐츠 맞춤, fill=부모 폭 채움' },
   { name: 'Tag · className', type: 'string', default: "''", desc: '추가 클래스' },
   // Tooltip
@@ -53,23 +53,23 @@ export function TagPage() {
 
       {/* Tag */}
       <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
-        Tag — Type
+        Tag — Color
       </h3>
       <p className="mb-spacing-5 text-12 text-font-icon-4">
-        <code className="text-font-icon-5">type</code> 속성으로 색을 바꿉니다 — blue · red · gray.
+        <code className="text-font-icon-5">color</code> 속성으로 색을 바꿉니다 — blue · red · gray.
       </p>
       <div className="mb-spacing-7 flex items-center gap-spacing-5">
-        <Tag type="blue">blue</Tag>
-        <Tag type="red">red</Tag>
-        <Tag type="gray">gray</Tag>
+        <Tag color="blue">blue</Tag>
+        <Tag color="red">red</Tag>
+        <Tag color="gray">gray</Tag>
       </div>
 
       <p className="mb-spacing-5 text-12 text-font-icon-4">
         <code className="text-font-icon-5">width</code> 속성 — hug(콘텐츠 맞춤, 기본) / fill(부모 폭 채움).
       </p>
       <div className="w-[240px] space-y-spacing-4">
-        <Tag type="blue" width="hug">hug</Tag>
-        <Tag type="blue" width="fill">fill (부모 폭을 채움)</Tag>
+        <Tag color="blue" width="hug">hug</Tag>
+        <Tag color="blue" width="fill">fill (부모 폭을 채움)</Tag>
       </div>
 
       {/* Tooltip */}

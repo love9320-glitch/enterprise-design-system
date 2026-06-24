@@ -16,7 +16,7 @@ import { UsageExample } from '../components/UsageExample';
 const USAGE = `import { TableTemplate } from '../components/TableTemplate';
 
 const columns = [
-  { key: 'type', label: '구분', width: 80, render: () => <Tag type="blue">태그</Tag> },
+  { key: 'type', label: '구분', width: 80, render: () => <Tag color="blue">태그</Tag> },
   // 헤더 요소: filter=헤더 인라인 Select로 그 컬럼 필터, headerMenu=헤더 ⋮ 메뉴(오름/내림차순 정렬 등)
   { key: 'status', label: '상태', width: 120, filter: { options: STATUS_OPTIONS } },
   { key: 'title', label: '공고명', headerMenu: { sortable: true } },
@@ -86,11 +86,11 @@ const EVAL_OPTIONS = [1, 2, 3].map((n) => ({ value: `${n}개`, label: `${n}개` 
 // 헤더 요소(Table 내장): 상태 컬럼은 filter(헤더 인라인 Select, 실제 행 필터), 공고명·접수 기간은 headerMenu(정렬 메뉴 버튼).
 // 본문: 지원서·평가는 인라인 텍스트형 Select로 렌더.
 const COLUMNS = [
-  { key: 'type',   label: '구분',     width: 80,  render: () => <Tag type="blue">태그</Tag> },
+  { key: 'type',   label: '구분',     width: 80,  render: () => <Tag color="blue">태그</Tag> },
   {
     key: 'status', label: '상태', width: 120,
     filter: { options: STATUS_OPTIONS }, // 헤더 인라인 Select(size 20) + 실제 필터('상태 전체'=해제)
-    render: (row) => <Tag type={STATUS_TAG[row.status]}>{row.status}</Tag>,
+    render: (row) => <Tag color={STATUS_TAG[row.status]}>{row.status}</Tag>,
   },
   {
     key: 'title', label: '공고명',

@@ -47,7 +47,7 @@ export function TabMenu({
     >
       {Icon && <Icon size={16} strokeWidth={1.8} className="shrink-0" />}
       {children}
-      {tag && <Tag type={tagType}>{tagText}</Tag>}
+      {tag && <Tag color={tagType}>{tagText}</Tag>}
     </button>
   );
 }
