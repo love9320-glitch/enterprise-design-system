@@ -1,7 +1,7 @@
 # Template — 목록 / 리스트 / 테이블 페이지
 
 데이터 목록을 보여주는 페이지 규칙. `foundation.md` + `components.md` 전제.
-페이지 추가는 **규칙 3** 절차를 따른다 (pages 생성 → index export → App.jsx NAV_GROUPS).
+페이지 추가는 **'새 페이지 절차'** 규칙을 따른다 (pages 생성 → index export → App.jsx NAV_GROUPS).
 
 ## 레이아웃 규칙
 
@@ -17,7 +17,7 @@
 - 데이터 셀: `text-14 text-font-icon-5`, 행 구분 보더 `border-base-gray-100`.
 - 행 hover: `hover:bg-base-gray-25`.
 - 셀 패딩: `px-spacing-6 py-spacing-5` 등 토큰만.
-- 컬럼 정의는 **상수 배열로 추출**(규칙 4 정신) → 렌더 매핑.
+- 컬럼 정의는 **상수 배열로 추출**('완전 옵션화' 정신) → 렌더 매핑.
 
 ## 상태 처리 (필수)
 
@@ -82,7 +82,7 @@ export function MembersPage() {
 
 ## 완료 체크리스트
 
-- [ ] 페이지 추가 3단계(규칙 3)를 수행했는가
+- [ ] 페이지 추가 3단계('새 페이지 절차')를 수행했는가
 - [ ] 컬럼 정의를 상수 배열로 분리했는가
 - [ ] 색상/간격/보더가 토큰만 사용하는가
 - [ ] 로딩 · 빈 상태 · 에러 상태를 모두 처리했는가

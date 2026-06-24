@@ -20,3 +20,10 @@ export { TablePage } from './TablePage';
 export { TableTemplatePage } from './TableTemplatePage';
 export { ModalPage } from './ModalPage';
 export { EditorPage } from './EditorPage';
+export {
+  RuleOverviewPage,
+  RuleFoundationPage,
+  RuleComponentsPage,
+  RuleTemplatesPage,
+  RuleUsagePage,
+} from './RulePages';

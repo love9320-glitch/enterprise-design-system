@@ -2,7 +2,7 @@
 
 `src/components/`에 두는 재사용 컴포넌트의 공통 규칙. 토큰 사용은 `foundation.md`를 따른다.
 
-## 규칙 4 — 컴포넌트는 완전 옵션화
+## 컴포넌트는 완전 옵션화 (코드 전용 원칙 상세)
 
 - variant, size, state 등 **모든 시각 옵션을 props로 노출**한다.
 - **기본값(default props)** 을 명시한다.
@@ -18,7 +18,7 @@
 4. 최종 `className`은 `` `${base} ${sizeStyle} ${colorStyle} ${className}` `` 형태로 합성
 5. 나머지 속성은 `...props`로 전달, `onClick` 등 핸들러는 비활성 상태 가드
 
-## 규칙 5 — 말줄임(truncate) 텍스트는 hover 툴팁 필수
+## 말줄임(truncate) 텍스트는 hover 툴팁 필수 (코드 전용 원칙 상세)
 
 영역이 좁아 텍스트가 잘릴 수 있는 곳(목록 항목명, 셀렉트 값, 칩, 표 셀 등)은 **`TruncatingText` 컴포넌트로 감싼다.** 단순히 `truncate` 클래스만 쓰지 말 것.
 
@@ -141,7 +141,7 @@ const sizeStyle = SIZE_STYLES[size];
 
 ## 데모 페이지 등록
 
-새 컴포넌트를 만들면 데모 페이지도 추가한다 (페이지 추가는 규칙 3, 각 templates 참고):
+새 컴포넌트를 만들면 데모 페이지도 추가한다 (페이지 추가는 '새 페이지 절차' 규칙, 각 templates 참고):
 1. `src/pages/XxxPage.jsx` — variant × size × state 조합을 표로 보여줌 (`ButtonPage.jsx` 참고)
 2. `src/pages/index.js`에 export
 3. `App.jsx`의 `NAV_GROUPS` '컴포넌트' 그룹에 항목 추가

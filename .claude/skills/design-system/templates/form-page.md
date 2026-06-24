@@ -1,7 +1,7 @@
 # Template — 폼 / 입력 / 등록·수정 페이지
 
 데이터를 입력·생성·수정하는 폼 페이지 규칙. `foundation.md` + `components.md` 전제.
-페이지 추가는 **규칙 3** 절차를 따른다.
+페이지 추가는 **'새 페이지 절차'** 규칙을 따른다.
 
 ## 레이아웃 규칙
 
@@ -16,7 +16,7 @@
 - 라벨: `text-13 font-semibold text-font-icon-5`, 필수 표시 `*`는 강조 색 토큰.
 - 인풋 공통: `rounded-round-4 border-1 border-base-gray-150 px-spacing-6 py-spacing-4 text-14 text-font-icon-5`, `placeholder:text-font-icon-3`, focus `focus:border-base-gray-400`.
 - 에러: `text-12 text-font-icon-...`(에러 시멘틱 토큰 없으면 먼저 정의), 인풋 보더도 에러색.
-- 인풋은 가능하면 공통 컴포넌트(`Input`)로 추출해 완전 옵션화(규칙 4).
+- 인풋은 가능하면 공통 컴포넌트(`Input`)로 추출해 완전 옵션화('완전 옵션화' 규칙).
 - 필드 정의를 **상수 배열로 추출**해 매핑 렌더 권장.
 
 ## 동작 규칙
@@ -73,7 +73,7 @@ export function MemberFormPage({ mode = 'create', initial = {} }) {
 
 ## 완료 체크리스트
 
-- [ ] 페이지 추가 3단계(규칙 3)를 수행했는가
+- [ ] 페이지 추가 3단계('새 페이지 절차')를 수행했는가
 - [ ] 필드 정의를 상수 배열로 분리했는가
 - [ ] 인풋/라벨/에러 색상·간격·보더가 토큰만 사용하는가 (필요한 시멘틱 토큰 먼저 정의)
 - [ ] 인풋을 공통 컴포넌트로 옵션화했는가 (또는 그럴 계획이 명확한가)
