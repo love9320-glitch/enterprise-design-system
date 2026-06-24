@@ -80,4 +80,4 @@ export function MemberFormPage({ mode = 'create', initial = {} }) {
 - [ ] 필수/검증/에러 인라인 표시를 처리했는가
 - [ ] 제출 중 `loading` + 중복 제출 차단을 처리했는가
 - [ ] 등록/수정 모드 분기(`mode`)를 처리했는가
-- [ ] 취소 동선 + 반응형 + 다크모드(`dark:`) 대응했는가
+- [ ] 취소 동선 + 반응형 대응했는가

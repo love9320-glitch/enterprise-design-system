@@ -163,6 +163,5 @@ const sizeStyle = SIZE_STYLES[size];
 - [ ] 인라인 `style`을 쓰지 않았는가
 - [ ] `disabled`/`loading` 등 비활성 상태에서 이벤트가 차단되는가
 - [ ] 아이콘은 lucide-react 컴포넌트를 props로 받는가 (`<Icon/>`이 아닌 `Icon`)
-- [ ] 다크모드 클래스(`dark:`)를 적절히 처리했는가
 - [ ] 데모 페이지를 추가/갱신했는가
 - [ ] 데모 페이지의 섹션 사이에 구분선(`border-t border-base-gray-100 pt-spacing-8`)을 넣었는가 (첫 섹션 제외)

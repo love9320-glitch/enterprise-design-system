@@ -6,7 +6,7 @@ confirm 창, 알림, 입력 다이얼로그 등 오버레이 UI 규칙. `foundat
 
 - 오버레이(dim) + 패널(panel) 2층 구조.
 - dim 배경색은 시멘틱 알파 토큰 사용 (`bg-base-gray-900-200` 등). 임의 `rgba` 금지.
-- 패널: `bg-base-white`(다크: `dark:bg-base-gray-800`), `rounded-round-8`, 적절한 `p-spacing-*`.
+- 패널: `bg-base-white`, `rounded-round-8`, 적절한 `p-spacing-*`.
 - 너비는 콘텐츠 유형별 고정 단계 사용 (sm/md/lg를 props로). 임의 px 금지하고 토큰/규격값 사용.
 - 헤더(타이틀) · 본문 · 푸터(액션 버튼) 3영역. 영역 간 간격은 `spacing-*`.
 
@@ -47,7 +47,7 @@ export function Modal({
       onClick={onClose}
     >
       <div
-        className={`${SIZE[size]} max-w-[90vw] rounded-round-8 bg-base-white p-spacing-9 dark:bg-base-gray-800`}
+        className={`${SIZE[size]} max-w-[90vw] rounded-round-8 bg-base-white p-spacing-9`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -75,5 +75,4 @@ export function Modal({
 - [ ] 푸터 액션이 공통 `Button` 컴포넌트인가
 - [ ] `role="dialog"` `aria-modal="true"` 등 접근성 속성이 있는가
 - [ ] 열렸을 때 body 스크롤 잠금 / 포커스 트랩 처리했는가
-- [ ] 다크모드(`dark:`) 대응했는가
 - [ ] 모바일 너비(`max-w-[90vw]` 등) 대응했는가
