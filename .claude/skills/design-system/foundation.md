@@ -2,7 +2,7 @@
 
 모든 시각 값은 `src/tokens/`에 등록된 토큰만 사용한다. 토큰은 `tailwind.config.js`를 통해 유틸리티 클래스로 노출된다.
 
-## 규칙 1 — 컬러는 반드시 시멘틱 토큰 경유
+## 컬러는 반드시 시멘틱 토큰 경유 (공통 원칙 '컬러 시멘틱 토큰 경유' 상세)
 
 참조 순서: **Base 컬러 토큰 → Semantic 컬러 토큰 → 컴포넌트**
 
@@ -38,7 +38,7 @@ variant = `fill` | `ghost` | `line`, state = `default` | `hover` | `disabled`
 > **컴포넌트별 시멘틱 컬러 파일은 `tokens/colors/` 폴더에 모은다**(`buttonColors.js`·`tableColors.js`·`switchColors.js` 등). base `colors.js`·`fontIconColors.js`(폰트/아이콘)는 기반 토큰이라 `tokens/` 루트에 둔다.
 > 새 컴포넌트에 컬러가 필요하면 `fontIconColors.js` 또는 `colors/xxxColors.js`에 **시멘틱 토큰을 먼저 추가**한 뒤 `tokens/index.js`에 export하고 사용한다. (컴포넌트 컬러 파일은 base를 `'../colors.js'`로 참조)
 
-## 규칙 2 — 간격·라운드·스트로크는 등록 토큰만
+## 간격·라운드·스트로크는 등록 토큰만 (공통 원칙 '등록 토큰만 사용' 상세)
 
 Tailwind 기본 spacing(`p-4`, `gap-2`)·임의값(`p-[12px]`) **금지**.
 

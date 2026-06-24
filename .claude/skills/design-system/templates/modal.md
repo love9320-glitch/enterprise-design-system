@@ -12,7 +12,7 @@ confirm 창, 알림, 입력 다이얼로그 등 오버레이 UI 규칙. `foundat
 
 ## 동작 규칙
 
-- `open` / `onClose` props 필수. 완전 옵션화(규칙 4).
+- `open` / `onClose` props 필수. '컴포넌트 완전 옵션화' 규칙 준수.
 - 닫기 트리거: dim 클릭, ESC 키, 닫기 버튼 — 모두 `onClose` 호출.
 - 푸터 버튼은 공통 `Button` 컴포넌트 사용 (variant: 주동작 `fill`, 보조 `line`/`ghost`).
 - 포커스 트랩 + 열렸을 때 body 스크롤 잠금.
