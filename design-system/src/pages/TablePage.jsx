@@ -7,7 +7,7 @@ const USAGE = `import { Table } from '../components/Table';
 
 // columns: width 없으면 가변(fill), render로 셀 커스텀
 const columns = [
-  { key: 'type', label: '구분', width: 80, render: () => <Tag type="blue">태그</Tag> },
+  { key: 'type', label: '구분', width: 80, render: () => <Tag color="blue">태그</Tag> },
   { key: 'title', label: '공고명' },                 // 가변 폭
   { key: 'period', label: '접수 기간', width: 280, align: 'center' },
 ];
@@ -93,7 +93,7 @@ const APPLY_MENU = {
 
 // Figma table 가이드(node 7257:1925) 예시 데이터 — 채용 공고 목록
 const COLUMNS = [
-  { key: 'type',   label: '구분',     width: 120, filter: TYPE_FILTER, render: (row) => <Tag type="blue">{row.type}</Tag> },
+  { key: 'type',   label: '구분',     width: 120, filter: TYPE_FILTER, render: (row) => <Tag color="blue">{row.type}</Tag> },
   { key: 'title',  label: '공고명' }, // width 미지정 → 가변(나머지 폭 채움)
   { key: 'period', label: '접수 기간', width: 280 },
   { key: 'apply',  label: '지원서',   width: 120, headerMenu: APPLY_MENU },
@@ -117,7 +117,7 @@ const H_SCROLL_COLUMNS = COLUMNS.map((c) =>
 
 // wrap 옵션 비교용 — 공고명 컬럼을 고정 폭(200)으로 좁혀, 긴 텍스트가 그 안에서 잘리거나 줄바꿈되게 한다.
 const WRAP_COLUMNS = [
-  { key: 'type',  label: '구분',   width: 120, filter: TYPE_FILTER, render: (row) => <Tag type="blue">{row.type}</Tag> },
+  { key: 'type',  label: '구분',   width: 120, filter: TYPE_FILTER, render: (row) => <Tag color="blue">{row.type}</Tag> },
   { key: 'title', label: '공고명', width: 200 },
   { key: 'apply', label: '지원서', width: 100 },
 ];

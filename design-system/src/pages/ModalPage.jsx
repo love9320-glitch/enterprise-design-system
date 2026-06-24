@@ -134,7 +134,7 @@ const STATUS_TAG = { 검토중: 'gray', 합격: 'blue', 보류: 'red' };
 const APPLICANT_COLUMNS = [
   { key: 'name', label: '이름', width: 120 },
   { key: 'dept', label: '지원 부서' },
-  { key: 'status', label: '상태', width: 100, render: (row) => <Tag type={STATUS_TAG[row.status]}>{row.status}</Tag> },
+  { key: 'status', label: '상태', width: 100, render: (row) => <Tag color={STATUS_TAG[row.status]}>{row.status}</Tag> },
   { key: 'date', label: '지원일', width: 160 },
 ];
 const DEPTS = ['프론트엔드', '백엔드', '디자인', '마케팅', '기획'];
