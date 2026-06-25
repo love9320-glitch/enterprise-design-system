@@ -2,6 +2,7 @@ export { HomePage } from './HomePage';
 export { TypographyPage } from './TypographyPage';
 export { BaseColorsPage } from './BaseColorsPage';
 export { FontIconColorsPage } from './FontIconColorsPage';
+export { ComponentColorsPage } from './ComponentColorsPage';
 export { SpacingPage } from './SpacingPage';
 export { IconsPage } from './IconsPage';
 export { ButtonPage } from './ButtonPage';
