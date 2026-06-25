@@ -47,7 +47,7 @@ const NAV_GROUPS = [
     ],
   },
   {
-    label: '규칙',
+    label: '디자인시스템 규칙',
     items: [
       { id: 'rule-overview',   label: '규칙 개요',       Page: RuleOverviewPage },
       { id: 'rule-foundation', label: 'Foundation 규칙', Page: RuleFoundationPage },
