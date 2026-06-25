@@ -1,13 +1,18 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
   HomePage,
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
-  PaginationPage, TablePage, TableTemplatePage, ModalPage, EditorPage, DatePickerPage,
+  PaginationPage, TablePage, TableTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
+
+// Editor는 Tiptap 엔진이 무거워 초기 번들에서 분리(지연 로드). 컴포넌트 자체는 변경 없음.
+const EditorPage = lazy(() =>
+  import('./pages/EditorPage').then((m) => ({ default: m.EditorPage })),
+);
 
 const NAV_GROUPS = [
   {
@@ -167,7 +172,15 @@ export default function App() {
               viewportRef.current = el;
             }}
           >
-            {Page && <Page />}
+            <Suspense
+              fallback={
+                <div className="px-spacing-7 py-spacing-10 text-14 text-font-icon-3">
+                  불러오는 중…
+                </div>
+              }
+            >
+              {Page && <Page />}
+            </Suspense>
           </ScrollArea>
         </main>
       </div>
