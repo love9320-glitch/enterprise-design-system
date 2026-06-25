@@ -108,10 +108,10 @@ const ROWS = [
   { id: 5, type: '옵션 2', title: '2026 디자이너 채용',   period: '26.06.10 (10:00) ~ 26.06.24 (10:00)', apply: '1개', eval: '1개' },
 ];
 
-// Scroll — Horizontal 전용 — '지원서' 셀을 고스트 Button(size 32)으로 렌더(값이 버튼 텍스트).
+// Scroll — Horizontal 전용 — '지원서' 셀을 Underline 텍스트 Button(size 32)으로 렌더(값이 버튼 텍스트).
 const H_SCROLL_COLUMNS = COLUMNS.map((c) =>
   c.key === 'apply'
-    ? { ...c, render: (row) => <Button variant="ghost" size="32">{row.apply}</Button> }
+    ? { ...c, render: (row) => <Button variant="underline" size="32">{row.apply}</Button> }
     : c,
 );
 

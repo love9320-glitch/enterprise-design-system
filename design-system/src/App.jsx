@@ -3,11 +3,13 @@ import {
   HomePage,
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
+  ComponentColorsPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
   PaginationPage, TablePage, TableTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Editor는 Tiptap 엔진이 무거워 초기 번들에서 분리(지연 로드). 컴포넌트 자체는 변경 없음.
 const EditorPage = lazy(() =>
@@ -27,6 +29,7 @@ const NAV_GROUPS = [
       { id: 'typography',       label: 'Typography',          Page: TypographyPage },
       { id: 'colors',           label: 'Base Colors',         Page: BaseColorsPage },
       { id: 'font-icon-colors', label: 'Font/Icon Colors',    Page: FontIconColorsPage },
+      { id: 'component-colors', label: 'Component Colors',    Page: ComponentColorsPage },
       { id: 'spacing',          label: 'Spacing/Round/Border',Page: SpacingPage },
       { id: 'icons',            label: 'Icons',               Page: IconsPage },
     ],
@@ -172,15 +175,19 @@ export default function App() {
               viewportRef.current = el;
             }}
           >
-            <Suspense
-              fallback={
-                <div className="px-spacing-7 py-spacing-10 text-14 text-font-icon-3">
-                  불러오는 중…
-                </div>
-              }
-            >
-              {Page && <Page />}
-            </Suspense>
+            {/* 페이지 하나가 렌더 중 throw해도 셸·메뉴는 유지되도록 ErrorBoundary로 감싼다.
+                resetKey=activeId: 다른 메뉴로 이동하면 에러가 자동 해제된다. */}
+            <ErrorBoundary resetKey={activeId}>
+              <Suspense
+                fallback={
+                  <div className="px-spacing-7 py-spacing-10 text-14 text-font-icon-3">
+                    불러오는 중…
+                  </div>
+                }
+              >
+                {Page && <Page />}
+              </Suspense>
+            </ErrorBoundary>
           </ScrollArea>
         </main>
       </div>

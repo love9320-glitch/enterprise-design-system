@@ -93,6 +93,9 @@ export function Editor({
     editable: !readOnly,
     content: valueControlled ? value : defaultValue,
     extensions: buildExtensions(),
+    // 첫 렌더에서 즉시 뷰를 만들지 않는다(effect에서 생성). React StrictMode가 dev에서
+    // 마운트를 2번 돌릴 때 뷰가 파괴/재생성되며 throw하는 것을 막는다(Tiptap React 권장값).
+    immediatelyRender: false,
   });
 
   // 본문 변경 → onChange(html) 방출

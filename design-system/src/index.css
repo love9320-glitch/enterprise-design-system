@@ -19,6 +19,20 @@
   .hide-native-scroll::-webkit-scrollbar {
     display: none; /* Chrome/Safari */
   }
+
+  /* 체커보드 배경 — 컬러 스와치 아래에 깔아 알파(투명도) 토큰의 투명도를 드러낸다.
+     컬러 데모(Component Colors 페이지) 전용 시각 보조 유틸. 격자색 #e3e3e3은 base gray.100
+     토큰값을 그대로 인라인한 것(Tooltip/ScrollArea의 '토큰값 인라인' 예외와 동일 — 임의 채색 아님). */
+  .bg-checker {
+    background-color: #ffffff;
+    background-image:
+      linear-gradient(45deg, #e3e3e3 25%, transparent 25%),
+      linear-gradient(-45deg, #e3e3e3 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e3e3e3 75%),
+      linear-gradient(-45deg, transparent 75%, #e3e3e3 75%);
+    background-size: 12px 12px;
+    background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  }
 }
 
 @layer components {
