@@ -49,8 +49,8 @@ export function SegmentControlButton({
   } else {
     sizeStyle =
       size === '24'
-        ? 'min-h-[24px] min-w-[24px] px-spacing-5 py-spacing-2 text-[12px] leading-5 tracking-[0px]'
-        : 'min-h-[32px] min-w-[32px] px-spacing-6 py-spacing-3 text-[14px] leading-6 tracking-[0px]';
+        ? 'min-h-[24px] min-w-[24px] px-spacing-5 py-spacing-2 text-12'
+        : 'min-h-[32px] min-w-[32px] px-spacing-6 py-spacing-3 text-14';
   }
 
   // 컬러 — ghost 시멘틱 토큰 재사용
