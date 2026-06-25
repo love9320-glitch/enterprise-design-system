@@ -84,10 +84,13 @@ const md = {
 };
 
 export function MarkdownDoc({ source }) {
+  // 선두 YAML 프론트매터(---\n...\n---) 제거 — 페이지엔 본문만 렌더한다
+  // (안 지우면 ---가 구분선 2개로, name/description가 텍스트로 노출됨).
+  const body = source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
   return (
     <article>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={md}>
-        {source}
+        {body}
       </ReactMarkdown>
     </article>
   );
