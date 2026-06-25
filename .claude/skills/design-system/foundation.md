@@ -13,12 +13,14 @@
 - **Why:** 토큰 값이 바뀌면 컴포넌트에 자동 반영되어야 한다. 하드코딩 시 누락이 생긴다.
 
 ### Base 컬러 (`colors.js` → `baseColors.base`)
-모노톤 그레이 스케일 + black/white + 알파 시리즈. **컴포넌트에서 직접 쓰지 말고 시멘틱을 경유**한다.
+모노톤 그레이 스케일 + black/white + 피드백 유채색(red/blue) + 알파 시리즈. **컴포넌트에서 직접 쓰지 말고 시멘틱을 경유**한다.
 
 - 그레이: `gray.25 ~ gray.900` (25, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900)
 - gray-900 알파: `gray-900-00 ~ gray-900-300` (투명도 단계)
 - white 알파: `white-00 ~ white-300`
 - `black`(#000000), `white`(#ffffff)
+- 피드백 red: `red.25 ~ red.900` — **`red.400`(#e74a4a)이 error/danger 메인** (텍스트필드 에러 툴팁 등). red-400 알파: `red-400-00 ~ red-400-300`
+- 피드백 blue: `blue.25 ~ blue.900` — **`blue.400`(#0f85f2)이 info/링크 메인**. blue-400 알파: `blue-400-00 ~ blue-400-300`
 
 ### Semantic — 폰트/아이콘 컬러 (`fontIconColors.js` → `fontIconColors`)
 Tailwind 클래스: `text-font-icon-{1~5}` / `bg-font-icon-{1~5}`
@@ -33,9 +35,9 @@ Tailwind 클래스: `text-font-icon-{1~5}` / `bg-font-icon-{1~5}`
 
 ### Semantic — 버튼 컬러 (`colors/buttonColors.js` → `buttonColors`)
 Tailwind 클래스: `bg-button-{variant}-{state}-{bg|fg|line}`
-variant = `fill` | `ghost` | `line`, state = `default` | `hover` | `disabled`
+variant = `fill` | `ghost` | `line`, state = `default` | `hover` | `disabled` (+ ghost 전용: `selected`(selected-bg·selected-text), `pagination-fg`)
 
-예: `bg-button-fill-default-bg`, `text-button-fill-default-fg`, `ring-button-line-default-line`
+예: `bg-button-fill-default-bg`, `text-button-fill-default-fg`, `ring-button-line-default-line`, `bg-button-ghost-selected-bg`
 
 > **컴포넌트별 시멘틱 컬러 파일은 `tokens/colors/` 폴더에 모은다**(`buttonColors.js`·`tableColors.js`·`switchColors.js` 등). base `colors.js`·`fontIconColors.js`(폰트/아이콘)는 기반 토큰이라 `tokens/` 루트에 둔다.
 > 새 컴포넌트에 컬러가 필요하면 `fontIconColors.js` 또는 `colors/xxxColors.js`에 **시멘틱 토큰을 먼저 추가**한 뒤 `tokens/index.js`에 export하고 사용한다. (컴포넌트 컬러 파일은 base를 `'../colors.js'`로 참조)
@@ -66,13 +68,14 @@ Tailwind 기본 spacing(`p-4`, `gap-2`)·임의값(`p-[12px]`) **금지**.
 ## 타이포그래피 (`typography.js`)
 
 - 폰트: **Pretendard** — `font-pretendard`. 두께는 `font-normal`(400) / `font-semibold`(600)만.
-- 사이즈 클래스: `text-12`, `text-13`, `text-14`, `text-16`, `text-18`, `text-20` (각 lineHeight·letterSpacing 자동 포함)
+- 사이즈 클래스: `text-12`, `text-13`, `text-14`, `text-15`, `text-16`, `text-18`, `text-20` (각 lineHeight·letterSpacing 자동 포함)
 
 | 클래스 | size / line-height |
 |--------|--------------------|
 | text-12 | 12 / 20 |
 | text-13 | 13 / 22 |
 | text-14 | 14 / 24 |
+| text-15 | 15 / 26 |
 | text-16 | 16 / 28 |
 | text-18 | 18 / 30 |
 | text-20 | 20 / 32 |

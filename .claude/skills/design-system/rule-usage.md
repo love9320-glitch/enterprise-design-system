@@ -17,12 +17,12 @@
 | 세부 규칙 | 적용 | 최근 | 마찰·애매 메모 |
 |---|---|---|---|
 | 1a 컬러 Base→Semantic→컴포넌트 경유 | 2 | 06-24 | (피그마 작도에선 변수 경유라 코드만큼 빈번치 않음) |
-| 1b 하드코딩 HEX/rgba 금지 | 1 | 06-24 | 오버레이 dim을 임시 rgba로 그림 — 시멘틱 알파 변수로 바꿔야 함 |
-| 2a 등록 토큰만(spacing/round/border) | 4 | 06-24 | |
+| 1b 하드코딩 HEX/rgba 금지 | 2 | 06-25 | 오버레이 dim을 임시 rgba로 그림 — 시멘틱 알파 변수로 바꿔야 함. 06-25 Component Colors 페이지의 .bg-checker 격자색에 #e3e3e3을 직접 씀 → gray.100 **토큰값 인라인**으로 정당화(Tooltip/ScrollArea 예외와 동일), 단 데모 보조 유틸이라 토큰화는 보류 — **'토큰값 인라인 예외'와 '하드코딩 금지' 경계가 또 등장** |
+| 2a 등록 토큰만(spacing/round/border) | 6 | 06-25 | 06-25 ErrorBoundary 작성 전 fontSize(text-12~20)·spacing(none~12) 토큰 정의를 먼저 확인하고 등록 토큰만 사용 — **작성 전 검증이 2b 임의값 재발을 예방**. 06-25 Component Colors 페이지도 spacing/text/round 등록 토큰만 사용 |
 | 2b Tailwind 기본값·임의값 금지 | 1 | 06-24 | 규칙 페이지 뷰어(MarkdownDoc) 작성 시 `text-[12px]`·`py-[1px]`·`leading-[1.7]` 임의값을 썼다가 토큰(`text-12`·`spacing-1`)으로 교정 — **신규 컴포넌트에서 임의값 습관 재발**, 작성 직후 셀프 점검 필요 |
 | 3a 페이지→템플릿→컴포넌트 순 매칭 | 5 | 06-24 | **'페이지' 단위 미정의** → 실질 템플릿>컴포넌트만 적용. 페이지 체계 확립 시 보강 |
 | 3b 큰 단위 커버 우선, 안 되면 하위 | 5 | 06-24 | |
-| 3c 기존 DS 자산 우선·신규 제작 지양 | 5 | 06-24 | |
+| 3c 기존 DS 자산 우선·신규 제작 지양 | 6 | 06-25 | 06-25 TablePage 지원서 셀 버튼 교체 시 Button에 이미 있던 `underline` variant 재사용(신규 제작 없음) |
 | 4a 요소 분석(요소·상태 목록화) | 3 | 06-24 | |
 | 4b 매핑(페이지>템플릿>컴포넌트) | 3 | 06-24 | |
 | 4c 조합/배치 | 3 | 06-24 | |
@@ -31,16 +31,16 @@
 | 5a 색 차이=상태/분류색 인식 | 4 | 06-24 | ~~태그 색이 'state'인지 '의미색'인지 애매~~ → **2026-06-24 해소: Tag 속성 `type`→`color`(blue/red/gray)로 개명 확인. 분류색은 상호작용 `state`와 별개의 `color` variant.** 규칙 5에 ①상태(state) ②분류색(color) 구분 반영 완료 |
 | 5b recolor 금지·상태로 표현 | 4 | 06-24 | |
 | 5c 변경 어려우면 기본 상태 유지 | 1 | 06-24 | |
-| 5d (피그마)variant 먼저→detach / (코드)prop | 3 | 06-24 | **버튼 text는 `setProperties`로 변경 불가**(중첩 인스턴스, 폰트 무관 'node not found') → state=variant 적용 후 detach해 텍스트 편집 패턴 확립. 또 pagination state 옵션이 default/hover/pressed/**selected**/disabled라 'selected'를 정규식으로 찾을 때 'pressed'가 먼저 잡히는 함정 |
+| 5d (피그마)variant 먼저→detach / (코드)prop | 4 | 06-25 | **버튼 text는 `setProperties`로 변경 불가**(중첩 인스턴스, 폰트 무관 'node not found') → state=variant 적용 후 detach해 텍스트 편집 패턴 확립. 또 pagination state 옵션이 default/hover/pressed/**selected**/disabled라 'selected'를 정규식으로 찾을 때 'pressed'가 먼저 잡히는 함정. 06-25 TablePage 고스트→밑줄 버튼 교체를 className 덮어쓰기 없이 `variant` prop으로 처리 |
 
 ## B. 코드 작성 전용
 
 | 세부 규칙 | 적용 | 최근 | 마찰·애매 메모 |
 |---|---|---|---|
-| 6a 새 페이지 3단계 절차 | 1 | 06-24 | '규칙' 메뉴 페이지(RulePages) 추가에 적용(page→index→App NAV_GROUPS) |
-| 7a 모든 시각 옵션 props 노출 | 1 | 06-24 | MarkdownDoc(`source` prop) |
-| 7b 기본값 명시 | 0 | – | |
-| 7c 인라인 스타일 금지 | 1 | 06-24 | |
+| 6a 새 페이지 3단계 절차 | 2 | 06-25 | '규칙' 메뉴 페이지(RulePages) 추가에 적용(page→index→App NAV_GROUPS). 06-25 Component Colors 페이지 추가에 동일 절차 적용(파운데이션 그룹) |
+| 7a 모든 시각 옵션 props 노출 | 2 | 06-25 | MarkdownDoc(`source` prop). 06-25 ErrorBoundary: title·description·fallback·onError·resetKey 노출 |
+| 7b 기본값 명시 | 1 | 06-25 | 06-25 ErrorBoundary title·description 기본 문구 명시 |
+| 7c 인라인 스타일 금지 | 2 | 06-25 | 06-25 ErrorBoundary 전부 토큰 클래스(인라인 스타일 0) |
 | 8a 말줄임 hover 툴팁(TruncatingText) | 0 | – | 공용 구현 보류 상태 — 규칙이 '목표'로만 존재 |
 | 8b 적용 시 위치·잘림 검증 | 0 | – | |
 | 9a ScrollArea 사용 | 0 | – | |
