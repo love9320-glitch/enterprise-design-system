@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import {
+  HomePage,
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
@@ -9,6 +10,12 @@ import {
 import { ScrollArea } from './components/ScrollArea';
 
 const NAV_GROUPS = [
+  {
+    label: '',
+    items: [
+      { id: 'home', label: '디자인 시스템 소개', Page: HomePage },
+    ],
+  },
   {
     label: '파운데이션',
     items: [
@@ -65,10 +72,12 @@ function Sidebar({ active, onSelect }) {
     <aside className="relative w-56 shrink-0 border-r border-gray-200">
       <ScrollArea className="absolute inset-0" contentClassName="h-full px-spacing-6 py-spacing-7">
       {NAV_GROUPS.map((group) => (
-        <div key={group.label} className="mb-spacing-7">
-          <p className="mb-spacing-4 px-spacing-4 text-xs font-semibold uppercase tracking-wide text-font-icon-3">
-            {group.label}
-          </p>
+        <div key={group.label || group.items[0].id} className="mb-spacing-9">
+          {group.label && (
+            <p className="mb-spacing-4 px-spacing-4 text-xs font-semibold uppercase tracking-wide text-font-icon-2">
+              {group.label}
+            </p>
+          )}
           <ul className="space-y-spacing-3">
             {group.items.map((item) => (
               <li key={item.id}>
@@ -98,7 +107,7 @@ function isValidId(id) {
 
 function getInitialId() {
   const id = window.location.hash.replace('#', '');
-  return isValidId(id) ? id : 'typography';
+  return isValidId(id) ? id : 'home';
 }
 
 export default function App() {

@@ -1,3 +1,4 @@
+export { HomePage } from './HomePage';
 export { TypographyPage } from './TypographyPage';
 export { BaseColorsPage } from './BaseColorsPage';
 export { FontIconColorsPage } from './FontIconColorsPage';
