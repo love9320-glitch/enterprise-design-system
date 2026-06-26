@@ -11,31 +11,33 @@
 - 테이블/리스트 본문.
 - 하단: 페이지네이션 또는 더보기.
 
-## 테이블 규칙
+## 테이블은 손으로 짜지 말 것 (규칙 4)
 
-- 헤더 셀: `text-12 font-semibold text-font-icon-3`, 하단 보더 `border-1 border-base-gray-100`.
-- 데이터 셀: `text-14 text-font-icon-5`, 행 구분 보더 `border-base-gray-100`.
-- 행 hover: `hover:bg-base-gray-25`.
-- 셀 패딩: `px-spacing-6 py-spacing-5` 등 토큰만.
-- 컬럼 정의는 **상수 배열로 추출**('완전 옵션화' 정신) → 렌더 매핑.
+`<table>`/`<thead>`/`<tr>`을 직접 쓰지 않는다. 목록은 이미 컴포넌트가 있다.
 
-## 상태 처리 (필수)
+- 검색·페이지네이션·툴바까지 한 번에 → **`TableTemplate`** (버튼그룹+검색바+Table+Pagination 묶음)
+- 표 본문만 필요 → **`Table`** (헤더 고정·정렬·필터·가로/세로 스크롤·로딩/빈 상태 내장)
 
-- **로딩**: 스켈레톤 또는 스피너(`LoaderCircle`, lucide-react).
-- **빈 상태**: 안내 문구 + (선택) 생성 유도 버튼. `text-font-icon-3` 톤.
-- **에러 상태**: 재시도 버튼 포함.
+컬럼은 **상수 배열**로 정의해 props로 넘긴다('완전 옵션화' 정신). 헤더/셀 색·간격·보더·hover·구분선은 컴포넌트가 토큰으로 처리하므로 다시 칠하지 않는다. 로딩(`loading`)·빈 상태(`emptyMessage`)도 props로 제어된다. 전체 옵션은 `components.md`의 Table·TableTemplate 카탈로그 행과 코드가 진실이다.
 
-## 모범 예제 (구조 골격)
+## 모범 예제 — `TableTemplate` 조립 (목록 페이지 표준)
 
 ```jsx
+import { TableTemplate } from '../components/TableTemplate';
+import { Button } from '../components/Button';
+import { Tag } from '../components/Tag';
+import { Plus } from 'lucide-react';
+
+// 컬럼 정의는 상수 배열로 — width 없으면 가변(fill), render로 셀 커스텀
 const COLUMNS = [
   { key: 'name',   label: '이름' },
   { key: 'email',  label: '이메일' },
-  { key: 'status', label: '상태' },
+  { key: 'status', label: '상태', width: 100,
+    render: (row) => <Tag color={row.status === '활성' ? 'blue' : 'gray'}>{row.status}</Tag> },
 ];
 
 export function MembersPage() {
-  const rows = [/* ... */];
+  const rows = [/* { id, name, email, status } ... */];
 
   return (
     <section className="mx-auto max-w-4xl px-spacing-7 py-spacing-10 text-left">
@@ -44,48 +46,47 @@ export function MembersPage() {
           <h2 className="text-18 font-semibold text-font-icon-5">멤버</h2>
           <p className="mt-spacing-3 text-14 text-font-icon-4">전체 멤버 목록</p>
         </div>
-        <Button variant="fill" leftIcon={Plus}>멤버 추가</Button>
       </div>
 
-      {rows.length === 0 ? (
-        <div className="rounded-round-4 border border-base-gray-100 py-spacing-12 text-center text-14 text-font-icon-3">
-          아직 멤버가 없습니다.
-        </div>
-      ) : (
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b border-base-gray-100">
-              {COLUMNS.map((c) => (
-                <th key={c.key} className="px-spacing-6 py-spacing-5 text-left text-12 font-semibold text-font-icon-3">
-                  {c.label}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id} className="border-b border-base-gray-100 hover:bg-base-gray-25">
-                {COLUMNS.map((c) => (
-                  <td key={c.key} className="px-spacing-6 py-spacing-5 text-14 text-font-icon-5">
-                    {row[c.key]}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      {/* 검색·페이지네이션·툴바 버튼이 내장 — 표를 손으로 짜지 않는다 */}
+      <TableTemplate
+        columns={COLUMNS}
+        rows={rows}
+        rowKey="id"
+        actions={<Button variant="fill" leftIcon={Plus}>멤버 추가</Button>}
+        searchable
+        pagination
+        emptyMessage="아직 멤버가 없습니다."
+      />
     </section>
   );
 }
 ```
 
+### 표 본문만 필요할 때 — `Table`
+
+```jsx
+import { Table } from '../components/Table';
+
+<Table
+  columns={COLUMNS}
+  rows={rows}
+  rowKey="id"
+  loading={loading}
+  emptyMessage="데이터가 없습니다."
+  maxHeight={480}          // 세로 스크롤 + 헤더 고정
+  onRowClick={(row) => /* ... */}
+/>
+```
+
+> 검색·필터·정렬·선택(체크박스)·페이지네이션 세부 제어 props는 `components.md`의 TableTemplate/Table 행을 참고. 컴포넌트로 안 덮는 고유 레이아웃만 좁게 커스텀한다(규칙 4).
+
 ## 완료 체크리스트
 
+- [ ] `<table>`을 손으로 짜지 않고 `TableTemplate`(또는 `Table`)을 **조립**했는가 (규칙 4)
 - [ ] 페이지 추가 3단계('새 페이지 절차')를 수행했는가
-- [ ] 컬럼 정의를 상수 배열로 분리했는가
-- [ ] 색상/간격/보더가 토큰만 사용하는가
-- [ ] 로딩 · 빈 상태 · 에러 상태를 모두 처리했는가
-- [ ] 주요 액션 버튼이 공통 `Button`인가
-- [ ] 행 hover 등 인터랙션 피드백이 있는가
-- [ ] 반응형(가로 스크롤 또는 컬럼 축소) 대응했는가
+- [ ] 컬럼 정의를 상수 배열로 분리해 props로 넘겼는가
+- [ ] 로딩(`loading`)·빈 상태(`emptyMessage`)를 props로 처리했는가
+- [ ] 주요 액션 버튼이 공통 `Button`이고 `actions` slot으로 들어갔는가
+- [ ] 셀 색·간격·hover·구분선을 직접 칠하지 않고 컴포넌트에 맡겼는가 (토큰)
+- [ ] 컴포넌트로 안 덮는 부분만 좁게 커스텀했는가
