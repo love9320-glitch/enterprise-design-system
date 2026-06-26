@@ -5,7 +5,7 @@ import {
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   ComponentColorsPage,
   SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
-  PaginationPage, TablePage, TableTemplatePage, ModalPage, DatePickerPage,
+  PaginationPage, TablePage, TableTemplatePage, ModalPage, ModalTestPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
@@ -69,6 +69,12 @@ const NAV_GROUPS = [
       { id: 'rule-components', label: '컴포넌트 규칙',    Page: RuleComponentsPage },
       { id: 'rule-templates',  label: '템플릿 규칙',      Page: RuleTemplatesPage },
       { id: 'rule-usage',      label: '규칙 사용 원장',   Page: RuleUsagePage },
+    ],
+  },
+  {
+    label: 'test',
+    items: [
+      { id: 'modal-test', label: '모달 테스트 구현', Page: ModalTestPage },
     ],
   },
 ];

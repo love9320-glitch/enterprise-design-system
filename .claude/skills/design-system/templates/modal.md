@@ -2,77 +2,111 @@
 
 confirm 창, 알림, 입력 다이얼로그 등 오버레이 UI 규칙. `foundation.md` + `components.md` 전제.
 
-## 구조 규칙
+## 먼저 — 손으로 만들지 말 것 (규칙 4)
 
-- 오버레이(dim) + 패널(panel) 2층 구조.
-- dim 배경색은 시멘틱 알파 토큰 사용 (`bg-base-gray-900-200` 등). 임의 `rgba` 금지.
-- 패널: `bg-base-white`, `rounded-round-8`, 적절한 `p-spacing-*`.
-- 너비는 콘텐츠 유형별 고정 단계 사용 (sm/md/lg를 props로). 임의 px 금지하고 토큰/규격값 사용.
-- 헤더(타이틀) · 본문 · 푸터(액션 버튼) 3영역. 영역 간 간격은 `spacing-*`.
+모달/팝업/다이얼로그는 **이미 `components/Modal.jsx`에 구현돼 있다.** dim·패널 셸을 새로 짜지 말고 아래 중 맞는 컴포넌트를 import해 조립한다.
 
-## 동작 규칙
+- 일반 팝업 → `Modal`
+- 폼(취소/저장, form 래핑·유효성) → `FormModal`
+- 알림(헤더 없음, 본문 슬롯 고정) → `AlertModal`
+- 확인(재확인 체크박스·전체폭 버튼) → `ConfirmModal`
 
-- `open` / `onClose` props 필수. '컴포넌트 완전 옵션화' 규칙 준수.
-- 닫기 트리거: dim 클릭, ESC 키, 닫기 버튼 — 모두 `onClose` 호출.
-- 푸터 버튼은 공통 `Button` 컴포넌트 사용 (variant: 주동작 `fill`, 보조 `line`/`ghost`).
-- 포커스 트랩 + 열렸을 때 body 스크롤 잠금.
+## 컴포넌트가 이미 처리하는 것 (다시 구현 금지)
 
-## 모범 예제
+- 오버레이(dim, `modal-overlay` 시멘틱 알파 토큰) + 패널(`modal-inline` 배경·`modal-outline` ring·라운드) 2층 셸 — 임의 `rgba`/색 하드코딩 불필요.
+- 너비 단계 `size`(sm/md/lg/xl/2xl/3xl/4xl/fill) props. 임의 px 금지.
+- 헤더·본문·푸터 3영역, 영역 간 토큰 간격, 본문 70vh 초과 시 내부 `ScrollArea`.
+- 푸터 버튼은 내부에서 공통 `Button`(ButtonGroup) 사용 — `confirmVariant`로 주/보조 구분.
+- 닫기 트리거(딤 클릭·ESC·X) → 모두 `onClose`, body 스크롤 잠금, portal 처리.
+
+## 호출부가 줄 것
+
+- `open` / `onClose` 필수.
+- 본문(children)과 라벨·핸들러(`confirmText`/`onConfirm` 등)만 props로 전달.
+- 컴포넌트가 안 덮는 세부만 `footer`/`footerStart` 커스텀 슬롯으로 채운다(규칙 4 — 커스텀은 가장 늦게·좁게).
+
+## 모범 예제 — 기존 `Modal` 컴포넌트를 조립한다 (직접 만들지 않는다)
+
+> **핵심(규칙 4): 모달은 손으로 만들지 말고 `components/Modal.jsx`의 `Modal`/`FormModal`/`AlertModal`/`ConfirmModal`을 import해 조립한다.** 아래는 "이미 있는 컴포넌트를 어떻게 쓰는가"의 견본이다. dim·패널·라운드·푸터 버튼·ESC/딤 닫기·body 스크롤잠금·포커스 트랩은 **컴포넌트가 이미 처리**하므로 다시 구현하지 않는다. 전체 옵션은 `components.md`의 Modal 카탈로그 행과 `Modal.jsx` 코드가 진실이다.
+
+### (1) 일반 팝업 — base `Modal`
 
 ```jsx
-import { Button } from '../components/Button';
+import { Modal } from '../components/Modal';
 
-export function Modal({
-  open,
-  onClose,
-  title,
-  children,
-  size = 'md',                 // 'sm' | 'md' | 'lg'
-  confirmText = '확인',
-  cancelText = '취소',
-  onConfirm,
-  confirmVariant = 'fill',
-}) {
-  if (!open) return null;
-
-  const SIZE = {
-    sm: 'w-[320px]',
-    md: 'w-[480px]',
-    lg: 'w-[640px]',
-  };
-
+export function ExampleModal({ open, onClose, onConfirm }) {
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-base-gray-900-200"
-      onClick={onClose}
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="제목"
+      size="md"                 // sm/md/lg/xl/2xl/3xl/4xl/fill
+      confirmText="확인"
+      cancelText="취소"
+      onConfirm={onConfirm}
     >
-      <div
-        className={`${SIZE[size]} max-w-[90vw] rounded-round-8 bg-base-white p-spacing-9`}
-        onClick={(e) => e.stopPropagation()}
-        role="dialog"
-        aria-modal="true"
-      >
-        {title && (
-          <h2 className="mb-spacing-6 text-18 font-semibold text-font-icon-5">{title}</h2>
-        )}
-        <div className="text-14 text-font-icon-4">{children}</div>
-        <div className="mt-spacing-9 flex justify-end gap-spacing-5">
-          <Button variant="line" onClick={onClose}>{cancelText}</Button>
-          <Button variant={confirmVariant} onClick={onConfirm}>{confirmText}</Button>
-        </div>
-      </div>
-    </div>
+      {/* ModalBody에 들어갈 본문만 작성 — dim/패널/푸터는 컴포넌트가 만든다 */}
+      <p className="text-14 text-font-icon-4">본문 내용</p>
+    </Modal>
   );
 }
 ```
 
+### (2) 폼 모달 — `FormModal` (취소/저장 + form 래핑)
+
+```jsx
+import { FormModal } from '../components/Modal';
+import { Input } from '../components/Input';
+
+export function MemberFormModal({ open, onClose, onSubmit, submitting }) {
+  return (
+    <FormModal
+      open={open}
+      onClose={onClose}
+      title="멤버 등록"
+      submitText="저장"
+      onSubmit={onSubmit}       // 주면 본문+푸터가 <form>으로 감싸지고 저장 버튼이 submit
+      loading={submitting}
+    >
+      <div className="space-y-spacing-7">
+        <Input placeholder="이름" />
+        <Input placeholder="이메일" />
+      </div>
+    </FormModal>
+  );
+}
+```
+
+### (3) 확인 다이얼로그 — `ConfirmModal` / `AlertModal`
+
+```jsx
+import { ConfirmModal } from '../components/Modal';
+
+// 헤더 없이 title→description→(회색 박스)descriptionDetail→재확인 체크박스 슬롯 고정.
+// requireCheck(기본 true)면 체크해야 확인 버튼 활성화.
+export function DeleteConfirm({ open, onClose, onConfirm }) {
+  return (
+    <ConfirmModal
+      open={open}
+      onClose={onClose}
+      title="삭제하시겠습니까?"
+      description="이 작업은 되돌릴 수 없습니다."
+      confirmText="삭제"
+      confirmVariant="fill"
+      onConfirm={onConfirm}
+    />
+  );
+}
+```
+
+> **Figma 작도 시**: 위와 대응되게 `Modal` **컴포넌트 인스턴스**를 만들고 `ModalBody` slot에 본문(테이블 템플릿 등)을 조립한다. 완성본 복제(clone) 금지 — 규칙 4 참조. 표를 slot 안에서 편집할 땐 detach(규칙 13).
+
 ## 완료 체크리스트
 
-- [ ] `open`/`onClose` props로 완전 제어되는가
-- [ ] dim 클릭 · ESC · 닫기 버튼 모두 닫히는가
-- [ ] dim/패널 색상이 시멘틱 토큰인가 (rgba 하드코딩 X)
-- [ ] 간격·라운드가 토큰만 사용하는가
-- [ ] 푸터 액션이 공통 `Button` 컴포넌트인가
-- [ ] `role="dialog"` `aria-modal="true"` 등 접근성 속성이 있는가
-- [ ] 열렸을 때 body 스크롤 잠금 / 포커스 트랩 처리했는가
-- [ ] 모바일 너비(`max-w-[90vw]` 등) 대응했는가
+- [ ] dim/패널 셸을 손으로 만들지 않고 `Modal`/`FormModal`/`AlertModal`/`ConfirmModal`을 **import해 조립**했는가 (규칙 4)
+- [ ] 용도에 맞는 변형을 골랐는가 (폼=FormModal · 확인=ConfirmModal · 알림=AlertModal · 그 외=Modal)
+- [ ] `open`/`onClose`를 호출부에서 제어하는가
+- [ ] 본문(children)과 라벨·핸들러만 넘기고, 컴포넌트가 처리하는 dim·스크롤잠금·닫기·포커스를 다시 구현하지 않았는가
+- [ ] `size`를 단계값으로 지정했는가 (임의 px 폭 금지)
+- [ ] 컴포넌트로 안 덮는 부분만 `footer`/`footerStart` 슬롯으로 좁게 커스텀했는가
+- [ ] (Figma) `Modal` 인스턴스 + `ModalBody` slot 조립으로 그렸는가 (완성본 복제 금지)

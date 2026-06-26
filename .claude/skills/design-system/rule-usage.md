@@ -16,22 +16,22 @@
 
 | 세부 규칙 | 적용 | 최근 | 마찰·애매 메모 |
 |---|---|---|---|
-| 1a 컬러 Base→Semantic→컴포넌트 경유 | 2 | 06-24 | (피그마 작도에선 변수 경유라 코드만큼 빈번치 않음) |
+| 1a 컬러 Base→Semantic→컴포넌트 경유 | 3 | 06-25 | (피그마 작도에선 변수 경유라 코드만큼 빈번치 않음) 06-25 모달 딤=`Modal Overlay Bg` 컴포넌트로 `modal/overlay` 토큰 바인딩 유지(복제본은 직접 색이라 어긋났음) |
 | 1b 하드코딩 HEX/rgba 금지 | 2 | 06-25 | 오버레이 dim을 임시 rgba로 그림 — 시멘틱 알파 변수로 바꿔야 함. 06-25 Component Colors 페이지의 .bg-checker 격자색에 #e3e3e3을 직접 씀 → gray.100 **토큰값 인라인**으로 정당화(Tooltip/ScrollArea 예외와 동일), 단 데모 보조 유틸이라 토큰화는 보류 — **'토큰값 인라인 예외'와 '하드코딩 금지' 경계가 또 등장** |
-| 2a 등록 토큰만(spacing/round/border) | 6 | 06-25 | 06-25 ErrorBoundary 작성 전 fontSize(text-12~20)·spacing(none~12) 토큰 정의를 먼저 확인하고 등록 토큰만 사용 — **작성 전 검증이 2b 임의값 재발을 예방**. 06-25 Component Colors 페이지도 spacing/text/round 등록 토큰만 사용 |
+| 2a 등록 토큰만(spacing/round/border) | 7 | 06-25 | 06-25 모달 바디 패딩(16/16) 토큰 유지+테이블 템플릿 FILL(처음 템플릿에 패딩 직접 줬다 정정). 06-25 ErrorBoundary 작성 전 fontSize(text-12~20)·spacing(none~12) 토큰 정의를 먼저 확인하고 등록 토큰만 사용 — **작성 전 검증이 2b 임의값 재발을 예방**. 06-25 Component Colors 페이지도 spacing/text/round 등록 토큰만 사용 |
 | 2b Tailwind 기본값·임의값 금지 | 1 | 06-24 | 규칙 페이지 뷰어(MarkdownDoc) 작성 시 `text-[12px]`·`py-[1px]`·`leading-[1.7]` 임의값을 썼다가 토큰(`text-12`·`spacing-1`)으로 교정 — **신규 컴포넌트에서 임의값 습관 재발**, 작성 직후 셀프 점검 필요 |
-| 3a 페이지→템플릿→컴포넌트 순 매칭 | 5 | 06-24 | **'페이지' 단위 미정의** → 실질 템플릿>컴포넌트만 적용. 페이지 체계 확립 시 보강 |
-| 3b 큰 단위 커버 우선, 안 되면 하위 | 5 | 06-24 | |
+| 3a 페이지→템플릿→컴포넌트 순 매칭 | 6 | 06-25 | **'페이지' 단위 미정의** → 실질 템플릿>컴포넌트만 적용. 06-25 모달=Modal 컴포넌트 + 테이블 템플릿으로 템플릿 단위 매칭 |
+| 3b 큰 단위 커버 우선, 안 되면 하위 | 6 | 06-25 | 06-25 Modal+테이블 템플릿으로 대부분 커버, 안 덮이는 셀만 detach |
 | 3c 기존 DS 자산 우선·신규 제작 지양 | 6 | 06-25 | 06-25 TablePage 지원서 셀 버튼 교체 시 Button에 이미 있던 `underline` variant 재사용(신규 제작 없음) |
-| 4a 요소 분석(요소·상태 목록화) | 3 | 06-24 | |
-| 4b 매핑(페이지>템플릿>컴포넌트) | 3 | 06-24 | |
-| 4c 조합/배치 | 3 | 06-24 | |
-| 4d 불필요 요소 제거 | 3 | 06-24 | 인스턴스 토글로 못 끄는 건 detach 후 제거 — 경계 판단 매번 생김 |
-| 4e 세부 정리(커스텀 최소·늦게) | 3 | 06-24 | |
-| 5a 색 차이=상태/분류색 인식 | 4 | 06-24 | ~~태그 색이 'state'인지 '의미색'인지 애매~~ → **2026-06-24 해소: Tag 속성 `type`→`color`(blue/red/gray)로 개명 확인. 분류색은 상호작용 `state`와 별개의 `color` variant.** 규칙 5에 ①상태(state) ②분류색(color) 구분 반영 완료 |
-| 5b recolor 금지·상태로 표현 | 4 | 06-24 | |
+| 4a 요소 분석(요소·상태 목록화) | 5 | 06-25 | 06-25 모달 2건(지원자 배경/선택) 요소·컴포넌트 분석 |
+| 4b 매핑(페이지>템플릿>컴포넌트) | 6 | 06-25 | **06-25 큰 마찰: 규칙4 '큰 단위 먼저'를 '완성본 복제'로 오해 → 정답은 Modal 컴포넌트 + 테이블 템플릿 slot 조립(사용자 지적). modal.md도 파일명만 출력하고 실제 미확인. CLAUDE.md(작도 전 체크)·레시피로 교정** / 06-25 '지원자 배경' 재작업은 처음부터 복제 없이 Modal 셸+ModalBody slot에 테이블 템플릿 조립으로 진행(교정 정착). **2026-06-26 해소: SKILL.md 규칙4에 '조립이지 복제가 아니다' 경고 블록 명시 + templates(modal/list/form/detail) '모범 예제'를 실제 컴포넌트(Modal/FormModal/Table/TableTemplate/Input) import 조립으로 전면 교체 + 각 완료 체크리스트 최상단에 '손으로 짜지 않고 조립했는가(규칙4)' 추가. 규칙·예제·체크리스트 3곳 정합.** |
+| 4c 조합/배치 | 5 | 06-25 | 06-25 ModalBody slot에 테이블 템플릿 appendChild 조립 |
+| 4d 불필요 요소 제거 | 6 | 06-25 | 인스턴스 토글로 못 끄는 건 detach 후 제거 — 경계 판단 매번 생김. 06-25 모달서 Table Title·추가/내보내기 버튼·불필요 컬럼 `visible=false`. 06-25 '지원자 배경'서 가져오기·내보내기 버튼+Table Title 끔 — **슬롯 고스트로 `findOne`이 버튼 깊은순회 중 'node not found' → 직접 `children` 접근+try/catch로 우회, 내보내기는 1회차에 안 잡혀 2회차 재시도 필요** |
+| 4e 세부 정리(커스텀 최소·늦게) | 5 | 06-25 | **06-25 마찰: ① 테이블 잘림 — 테이블 템플릿 FILL + 모달 바디 패딩(16/16) 유지로 해결(처음 템플릿에 패딩 직접 줬다 정정). ② 상태태그 컬럼 재배치 — `insertChild` 인덱스 빗나감 → `appendChild`로 순서 재정렬, 헤더 기준 셀 너비 정렬** |
+| 5a 색 차이=상태/분류색 인식 | 6 | 06-25 | (06-25 모달 태그 color(검토중/합격/보류)·체크박스 selected를 variant로) ~~태그 색이 'state'인지 '의미색'인지 애매~~ → **2026-06-24 해소: Tag 속성 `type`→`color`(blue/red/gray)로 개명 확인. 분류색은 상호작용 `state`와 별개의 `color` variant.** 규칙 5에 ①상태(state) ②분류색(color) 구분 반영 완료 |
+| 5b recolor 금지·상태로 표현 | 7 | 06-25 | 06-25 태그 color·체크박스 selected·페이지네이션 state·확인 state=Disabled 전부 variant `setProperties`로(수동 채색 X). 06-25 '지원자 선택' 상태 태그 검토중=gray/합격=blue/보류=red를 `color` variant로(직접 채색 X) |
 | 5c 변경 어려우면 기본 상태 유지 | 1 | 06-24 | |
-| 5d (피그마)variant 먼저→detach / (코드)prop | 4 | 06-25 | **버튼 text는 `setProperties`로 변경 불가**(중첩 인스턴스, 폰트 무관 'node not found') → state=variant 적용 후 detach해 텍스트 편집 패턴 확립. 또 pagination state 옵션이 default/hover/pressed/**selected**/disabled라 'selected'를 정규식으로 찾을 때 'pressed'가 먼저 잡히는 함정. 06-25 TablePage 고스트→밑줄 버튼 교체를 className 덮어쓰기 없이 `variant` prop으로 처리 |
+| 5d (피그마)variant 먼저→detach / (코드)prop | 7 | 06-25 | 06-25 모달 variant 다수(태그/체크박스/페이지네이션/확인 state). ~~버튼 text는 setProperties로 변경 불가~~ → **2026-06-25 정정: 버튼(line/fill/02_line_left icon text)은 `text#7045:0` TEXT 컴포넌트 속성을 가져 `setProperties({"text#7045:0":…})`로 텍스트 변경 가능 — 중첩 TEXT 노드 직접 편집(getStyledTextSegments)이 슬롯 고스트로 'node not found' 날 때 이게 정답.** 단 **setProperties 직후 같은 노드 readback(componentProperties/characters)은 노드 ID 재생성으로 실패** → set만 하고 readback 금지. 버튼 disabled='지원자 선택' 모달 선택해제·선택완료 state=Disabled. pagination state 옵션 default/hover/pressed/**selected**/disabled('selected'를 정규식으로 찾을 때 'pressed' 먼저 잡힘 주의). 06-25 TablePage 고스트→밑줄 버튼 교체 `variant` prop |
 
 ## B. 코드 작성 전용
 
@@ -41,7 +41,7 @@
 | 7a 모든 시각 옵션 props 노출 | 2 | 06-25 | MarkdownDoc(`source` prop). 06-25 ErrorBoundary: title·description·fallback·onError·resetKey 노출 |
 | 7b 기본값 명시 | 1 | 06-25 | 06-25 ErrorBoundary title·description 기본 문구 명시 |
 | 7c 인라인 스타일 금지 | 2 | 06-25 | 06-25 ErrorBoundary 전부 토큰 클래스(인라인 스타일 0) |
-| 8a 말줄임 hover 툴팁(TruncatingText) | 0 | – | 공용 구현 보류 상태 — 규칙이 '목표'로만 존재 |
+| 8a 말줄임 hover 툴팁(TruncatingText) | 0 | – | 공용 구현 보류 상태 — **'목표(미구현)'이며 활성 제약 아님**(미적용이 위반이 아님). 구현 시 활성화. |
 | 8b 적용 시 위치·잘림 검증 | 0 | – | |
 | 9a ScrollArea 사용 | 0 | – | |
 | 10a 날짜·시간 포맷 통일 | 0 | – | |
@@ -57,14 +57,16 @@
 | 11d 매핑 후 코드 불변 확인 | 0 | – | |
 | 12a 에러 툴팁 상위 프레임 clip 끄기 | 0 | – | (과거 Input 작업서 적용) |
 | 12b (코드)overflow:visible | 0 | – | |
-| 13a table 인스턴스→detach→편집 | 5 | 06-24 | **2026-06-24 검증 종료:** ① 단독 인스턴스 = `findAll`(209)·셀 편집 정상, **고스트 0**(컴포넌트 자체 건강) ② **ModalBody 슬롯에 넣으면 고스트 5개 재현**(슬롯 미러링, 재조회 실패) — 과거 모달-테이블 크래시의 정체. 결론: detach 필요성은 '테이블이라서'가 아니라 '**슬롯 안 편집**'에서 옴. 규칙 13 문구 '필수→대량/슬롯 편집 시 권장'으로 수정 완료 |
-| 13b detach해도 디자인 유지 | 5 | 06-24 | |
+| 13a table 인스턴스→detach→편집 | 9 | 06-25 | 06-25 모달 3건 — 테이블 템플릿 detach 후 컬럼/행/상태태그 재배치(헤더행을 바디로 착각 주의: `find(len>3)`은 헤더 먼저 잡음 / `insertChild` 인덱스 빗나감→`appendChild` 재정렬 / 헤더 기준 셀 너비 정렬). 06-25 '지원자 배경'(tag 없는 4컬럼): 6컬럼→4컬럼, **정렬(⌄) 헤더는 `select` 셀을 끝 위치로 `appendChild` 재정렬**, 너비 동일 적용. 06-25 '지원자 선택'(tag 5컬럼 check/이름/지원부서/상태(tag)/지원일): select 제거, text+icon 헤더의 정렬아이콘 `visible=false`로 plain text화, **tag 셀을 4번째 위치로 재배치**(`[check,t,t,tag,t]` appendChild), 너비 44/150/FILL/100/140. **슬롯 안 ID가 호출마다 무효화 → 매 호출 모달부터 재탐색, null 가드 필수.** **2026-06-25 추가 마찰: 슬롯 미러링이 모달1보다 훨씬 더 flaky** — footer/toolbar **button group(슬롯 인스턴스)**의 자식 1개만 바꿔도(visible=false 등) 형제 ID가 재생성돼 직후 `appendChild` 실패. → **button group을 `detachInstance()`해 프레임화하면 안정**(내부 버튼은 인스턴스 유지). 결론: 재정렬·visibility·아이콘 swap 등 **다중 편집은 슬롯 인스턴스를 먼저 detach**. 아이콘 방향 불일치(가져오기=upload↑/내보내기=download↓)는 `swapComponent`로 교차 교체. **2026-06-24 검증 종료:** ① 단독 인스턴스 = `findAll`(209)·셀 편집 정상, **고스트 0**(컴포넌트 자체 건강) ② **ModalBody 슬롯에 넣으면 고스트 5개 재현**(슬롯 미러링, 재조회 실패) — 과거 모달-테이블 크래시의 정체. 결론: detach 필요성은 '테이블이라서'가 아니라 '**슬롯 안 편집**'에서 옴. 규칙 13 문구 '필수→대량/슬롯 편집 시 권장'으로 수정 완료 |
+| 13b detach해도 디자인 유지 | 8 | 06-25 | 06-25 테이블 템플릿 detach 후에도 셀 색·태그·구분선 유지됨 확인('지원자 배경'서도 컬럼/너비 재구성 후 구분선·정렬 유지) |
 | 13c 단순 컴포넌트는 연결 인스턴스 유지 | 5 | 06-24 | Modal은 연결 유지·표만 detach로 운영 |
 | 13d 체크박스 셀 44px 고정 | 2 | 06-24 | **세션 중 신설** — 기존 56px로 그렸다가 교체. 규칙 확정 전 작업물 보정 필요했음 |
 | 13e (코드)detach 없이 Table 조립 | 0 | – | |
 | ~~14 폰트 정책~~ → 규칙 4(요소 분석)로 통합 | – | 06-24 | 2026-06-24 Pretendard 설치로 휴면 → **독립 규칙 폐지**. '작업 시작 시 폰트 점검 · 설치 불가 환경에서만 텍스트 변경 보류'를 규칙 4(요소 분석)에 흡수. (과거 마찰: 규칙 14 vs '이미지 내용대로' 충돌로 사용자 확인 필요했음) |
 
 ## 튜닝 후보 (메모가 쌓이면 여기로 승격)
+
+- ~~**규칙 4 (조립 vs 복제) — 2026-06-25 가장 큰 마찰**~~ → **2026-06-26 해소.** 규칙4 본문에 '큰 단위 = 큰 컴포넌트/템플릿 조립이지 완성본 복사가 아님' 경고 블록을 명시하고, templates(modal/list/form/detail) 예제를 '손으로 만드는 코드' → '기존 컴포넌트 import 조립'으로 전면 교체, 체크리스트도 정합. (잔여: '라우팅 파일은 파일명만 적지 말고 실제로 읽고 완료 체크리스트 검증' 습관은 CLAUDE.md ⓪에 이미 있음 — 별도 규칙 승격은 보류.)
 
 - ~~**규칙 5 (상태)**: 'state'와 '의미색(type)' 경계 명확화~~ → **2026-06-24 해소.** Tag 속성 `type`→`color` 개명, 규칙 5에 상태(state)/분류색(color) 구분 반영. (후속: 코드 Tag prop `type`→`color` 정렬 여부 결정 필요)
 - **규칙 5d / 13 (버튼 텍스트)**: "중첩 인스턴스 버튼 텍스트는 setProperties 불가 → state 적용 후 detach" 를 본문에 명시할지.

@@ -21,6 +21,7 @@ export { PaginationPage } from './PaginationPage';
 export { TablePage } from './TablePage';
 export { TableTemplatePage } from './TableTemplatePage';
 export { ModalPage } from './ModalPage';
+export { ModalTestPage } from './ModalTestPage';
 // EditorPage는 App.jsx에서 지연 로드(lazy import)하므로 정적 재export하지 않는다
 // (재export가 있으면 정적 그래프에 남아 Tiptap이 초기 번들로 묶임).
 export {
