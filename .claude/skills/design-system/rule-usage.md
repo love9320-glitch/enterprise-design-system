@@ -22,10 +22,10 @@
 | 2b Tailwind 기본값·임의값 금지 | 1 | 06-24 | 규칙 페이지 뷰어(MarkdownDoc) 작성 시 `text-[12px]`·`py-[1px]`·`leading-[1.7]` 임의값을 썼다가 토큰(`text-12`·`spacing-1`)으로 교정 — **신규 컴포넌트에서 임의값 습관 재발**, 작성 직후 셀프 점검 필요 |
 | 3a 페이지→템플릿→컴포넌트 순 매칭 | 6 | 06-25 | **'페이지' 단위 미정의** → 실질 템플릿>컴포넌트만 적용. 06-25 모달=Modal 컴포넌트 + 테이블 템플릿으로 템플릿 단위 매칭 |
 | 3b 큰 단위 커버 우선, 안 되면 하위 | 6 | 06-25 | 06-25 Modal+테이블 템플릿으로 대부분 커버, 안 덮이는 셀만 detach |
-| 3c 기존 DS 자산 우선·신규 제작 지양 | 7 | 06-26 | 06-25 TablePage 지원서 셀 버튼 교체 시 Button에 이미 있던 `underline` variant 재사용(신규 제작 없음). 06-26 Field가 컨트롤을 손수 안 짜고 기존 Input/Select/DateField를 children으로 조립 + Label을 Field 내부에서 재사용(중복 구현 없음) |
+| 3c 기존 DS 자산 우선·신규 제작 지양 | 8 | 06-29 | 06-25 TablePage 지원서 셀 버튼 교체 시 Button에 이미 있던 `underline` variant 재사용(신규 제작 없음). 06-26 Field가 컨트롤을 손수 안 짜고 기존 Input/Select/DateField를 children으로 조립 + Label을 Field 내부에서 재사용(중복 구현 없음). 06-29 업로드 위젯(File/ImageUploadMenu)을 PopoverMenu+ListGroup+List+Button 조립으로 구성, 트리거(File/ImageUploadButton)는 Button+Popover 조립 — 셸·목록·푸터를 손으로 안 짬 |
 | 4a 요소 분석(요소·상태 목록화) | 5 | 06-25 | 06-25 모달 2건(지원자 배경/선택) 요소·컴포넌트 분석 |
 | 4b 매핑(페이지>템플릿>컴포넌트) | 7 | 06-26 | **06-25 큰 마찰: 규칙4 '큰 단위 먼저'를 '완성본 복제'로 오해 → 정답은 Modal 컴포넌트 + 테이블 템플릿 slot 조립(사용자 지적). modal.md도 파일명만 출력하고 실제 미확인. CLAUDE.md(작도 전 체크)·레시피로 교정** / 06-25 '지원자 배경' 재작업은 처음부터 복제 없이 Modal 셸+ModalBody slot에 테이블 템플릿 조립으로 진행(교정 정착). **2026-06-26 해소: SKILL.md 규칙4에 '조립이지 복제가 아니다' 경고 블록 명시 + templates(modal/list/form/detail) '모범 예제'를 실제 컴포넌트(Modal/FormModal/Table/TableTemplate/Input) import 조립으로 전면 교체 + 각 완료 체크리스트 최상단에 '손으로 짜지 않고 조립했는가(규칙4)' 추가. 규칙·예제·체크리스트 3곳 정합.** **2026-06-26 정착 확인: '지원자 선택' 모달 신규 요청을 ⓪체크(modal.md 실제로 열어 완료 체크리스트 검증)→복제 없이 Modal(960)+ModalBody slot에 테이블 템플릿 FILL 조립으로 한 번에 완료. 더 이상 복제 유혹/마찰 없음.** |
-| 4c 조합/배치 | 5 | 06-25 | 06-25 ModalBody slot에 테이블 템플릿 appendChild 조립 |
+| 4c 조합/배치 | 6 | 06-29 | 06-25 ModalBody slot에 테이블 템플릿 appendChild 조립. 06-29 업로드: 안내 박스(child)+ListGroup+footer(PopoverMenu footerButtonsFill)로 조립, List에 `rightButtonIcon`만 신설(삭제 trash) — 나머진 기존 조립. 트리거는 Popover trigger=Button + 패널=업로드메뉴 |
 | 4d 불필요 요소 제거 | 6 | 06-25 | 인스턴스 토글로 못 끄는 건 detach 후 제거 — 경계 판단 매번 생김. 06-25 모달서 Table Title·추가/내보내기 버튼·불필요 컬럼 `visible=false`. 06-25 '지원자 배경'서 가져오기·내보내기 버튼+Table Title 끔 — **슬롯 고스트로 `findOne`이 버튼 깊은순회 중 'node not found' → 직접 `children` 접근+try/catch로 우회, 내보내기는 1회차에 안 잡혀 2회차 재시도 필요** |
 | 4e 세부 정리(커스텀 최소·늦게) | 5 | 06-25 | **06-25 마찰: ① 테이블 잘림 — 테이블 템플릿 FILL + 모달 바디 패딩(16/16) 유지로 해결(처음 템플릿에 패딩 직접 줬다 정정). ② 상태태그 컬럼 재배치 — `insertChild` 인덱스 빗나감 → `appendChild`로 순서 재정렬, 헤더 기준 셀 너비 정렬** |
 | 5a 색 차이=상태/분류색 인식 | 6 | 06-25 | (06-25 모달 태그 color(검토중/합격/보류)·체크박스 selected를 variant로) ~~태그 색이 'state'인지 '의미색'인지 애매~~ → **2026-06-24 해소: Tag 속성 `type`→`color`(blue/red/gray)로 개명 확인. 분류색은 상호작용 `state`와 별개의 `color` variant.** 규칙 5에 ①상태(state) ②분류색(color) 구분 반영 완료 |
@@ -37,8 +37,8 @@
 
 | 세부 규칙 | 적용 | 최근 | 마찰·애매 메모 |
 |---|---|---|---|
-| 6a 새 페이지 3단계 절차 | 3 | 06-26 | '규칙' 메뉴 페이지(RulePages) 추가에 적용(page→index→App NAV_GROUPS). 06-25 Component Colors 페이지 추가에 동일 절차 적용(파운데이션 그룹). 06-26 LabelPage/FieldPage 추가(컴포넌트 그룹, Select 다음) |
-| 7a 모든 시각 옵션 props 노출 | 3 | 06-26 | MarkdownDoc(`source` prop). 06-25 ErrorBoundary: title·description·fallback·onError·resetKey 노출. 06-26 Label(size/required/disabled/htmlFor)·Field(label/direction/labelWidth/labelSize/description/gap…) 전 옵션 노출+기본값 |
+| 6a 새 페이지 3단계 절차 | 4 | 06-29 | '규칙' 메뉴 페이지(RulePages) 추가에 적용(page→index→App NAV_GROUPS). 06-25 Component Colors 페이지 추가에 동일 절차 적용(파운데이션 그룹). 06-26 LabelPage/FieldPage 추가(컴포넌트 그룹, Select 다음). 06-29 UploadMenuPage 추가(컴포넌트 그룹, Option List 다음) |
+| 7a 모든 시각 옵션 props 노출 | 4 | 06-29 | MarkdownDoc(`source` prop). 06-25 ErrorBoundary: title·description·fallback·onError·resetKey 노출. 06-26 Label(size/required/disabled/htmlFor)·Field(label/direction/labelWidth/labelSize/description/gap…) 전 옵션 노출+기본값. 06-29 File/ImageUploadMenu(files·guide·maxCount·accept·onAdd/onDelete…)·File/ImageUploadButton(buttonProps로 모든 Button 스타일 통과·triggerText·showCount/countSuffix·placement/menuWidth) |
 | 7b 기본값 명시 | 1 | 06-25 | 06-25 ErrorBoundary title·description 기본 문구 명시 |
 | 7c 인라인 스타일 금지 | 2 | 06-25 | 06-25 ErrorBoundary 전부 토큰 클래스(인라인 스타일 0) |
 | 8a 말줄임 hover 툴팁(TruncatingText) | 0 | – | 공용 구현 보류 상태 — **'목표(미구현)'이며 활성 제약 아님**(미적용이 위반이 아님). 구현 시 활성화. |
@@ -51,7 +51,7 @@
 
 | 세부 규칙 | 적용 | 최근 | 마찰·애매 메모 |
 |---|---|---|---|
-| 11a Code Connect 기능 훼손 금지 | 1 | 06-26 | 06-26 Figma `label`(7942:2175) 5개 variant(12~16)→코드 `Label` 매핑(`add_code_connect_map`, source=`design-system/src/components/Label.jsx`, React, hasTemplate:false 단순매핑 — Button/Modal과 동일 방식). 매핑 후 코드 컴포넌트 불변(메타데이터만). `get_design_context`로 연결 검증(`Label`로 해석). **마찰: `get_code_connect_map`이 add 직후 같은 턴엔 `{}`(캐시) — `get_design_context`로 확인하는 게 정답.** **SET 노드(7942:2175)는 매핑 대상 아님, variant 노드에 매핑(Modal과 동일).** 06-26 Field(7942:2299, layout vertical/horizontal)도 연결·검증(`get_code_connect_map`에 Field + 내부 Label·Input 연결 확인). |
+| 11a Code Connect 기능 훼손 금지 | 2 | 06-29 | 06-26 Figma `label`(7942:2175) 5개 variant(12~16)→코드 `Label` 매핑(`add_code_connect_map`, source=`design-system/src/components/Label.jsx`, React, hasTemplate:false 단순매핑 — Button/Modal과 동일 방식). 매핑 후 코드 컴포넌트 불변(메타데이터만). `get_design_context`로 연결 검증(`Label`로 해석). **마찰: `get_code_connect_map`이 add 직후 같은 턴엔 `{}`(캐시) — `get_design_context`로 확인하는 게 정답.** **SET 노드(7942:2175)는 매핑 대상 아님, variant 노드에 매핑(Modal과 동일).** 06-26 Field(7942:2299, layout vertical/horizontal)도 연결·검증(`get_code_connect_map`에 Field + 내부 Label·Input 연결 확인). **06-29 업로드/데이트/2depth 연결 — 핵심 학습: Code Connect는 "컴포넌트 셋=코드 컴포넌트 하나" 단위.** 한 셋 안의 variant들을 서로 다른 코드 컴포넌트로 쪼개 연결 불가(popover menu 셋 안 업로드 variant를 File/ImageUploadMenu로 매핑 시도→codegen은 셋 매핑만 반영, variant별 안 먹음). → **별도 셋으로 분리 + 게시**해야 1:1 연결됨: `file upload menu`(7957:5287)→FileUploadMenu·`image upload menu`(7959:5598)→ImageUploadMenu·`date picker`(7594:4368)→DatePicker·`2depth list`(7959:5979)→TwoDepthList 전부 `get_design_context`로 검증. **마찰: ① 미게시 셋은 "Published component not found" → 사용자가 Publish 후 매핑 ② 이미 같은 코드에 매핑돼 있으면 "already mapped"(=이미 원하는 연결, 무시 가능, 예 date picker는 이미 DatePicker였음).** 트리거 프레임(butto+ file/image upload)은 컴포넌트가 아닌 조합 프레임이라 매핑 대상 아님(내부 Button·메뉴는 각자 연결됨). |
 | 11b 코드를 Figma에 맞춰 깎지 않음 | 1 | 06-26 | 06-26 Figma label은 size변형만 있으나 코드 Label은 required(*)·disabled·htmlFor를 추가 노출 — Figma에 맞춰 코드 옵션 깎지 않음 |
 | 11c 옵션 적어도 그대로 매핑 | 1 | 06-26 | 06-26 Figma 단순매핑(prop명 Property1↔코드 size 차이는 codegen 표기차일 뿐, 코드 기능 영향 0) |
 | 11d 매핑 후 코드 불변 확인 | 0 | – | |
