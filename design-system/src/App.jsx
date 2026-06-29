@@ -5,6 +5,7 @@ import {
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   ComponentColorsPage,
   SearchBarPage, InputPage, SelectPage, LabelPage, FieldPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
+  UploadMenuPage,
   PaginationPage, TablePage, TableTemplatePage, ModalPage, ModalTestPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
@@ -50,6 +51,7 @@ const NAV_GROUPS = [
       { id: 'switch',      label: 'Switch',      Page: SwitchPage },
       { id: 'tabs',        label: 'Tabs',        Page: TabsPage },
       { id: 'option-list', label: 'Option List', Page: OptionListPage },
+      { id: 'upload-menu', label: 'Upload Menu', Page: UploadMenuPage },
       { id: 'date-picker', label: 'Date Picker', Page: DatePickerPage },
       { id: 'pagination',  label: 'Pagination',  Page: PaginationPage },
       { id: 'table',       label: 'Table',       Page: TablePage },

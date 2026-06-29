@@ -24,7 +24,9 @@ export function List({
   showSwitch = false,     // 오른쪽 스위치 표시
   switchChecked = false,  // 스위치 상태
   onSwitchChange,         // (e) => void — 스위치 변경
-  rightButton = false,    // 고스트 ⋯ 버튼
+  rightButton = false,    // 고스트 아이콘 버튼 (기본 ⋯)
+  rightButtonIcon: RightButtonIcon = MoreHorizontal, // 우측 버튼 아이콘(lucide) — 예: Trash2(삭제)
+  rightButtonAriaLabel = '더보기', // 우측 버튼 aria-label
   endIcon = false,        // chevron-right
   selected = false,
   highlighted = false, // 키보드 내비게이션 강조 (hover 색)
@@ -108,9 +110,9 @@ export function List({
                 onButtonClick?.(e);
               }}
               className="flex min-h-[24px] min-w-[24px] items-center justify-center rounded-round-4 p-spacing-2 opacity-80 transition-colors hover:bg-button-ghost-hover-bg disabled:cursor-not-allowed"
-              aria-label="더보기"
+              aria-label={rightButtonAriaLabel}
             >
-              <MoreHorizontal size={14} strokeWidth={1.8} className={ellipsisColor} />
+              <RightButtonIcon size={14} strokeWidth={1.8} className={ellipsisColor} />
             </button>
           )}
           {endIcon && <ChevronRight size={16} strokeWidth={1.8} className={iconColor} />}
