@@ -1,6 +1,6 @@
 import {
   baseColors,
-  buttonColors, textFieldColors, listColors, tagColors,
+  buttonColors, textFieldColors, labelFieldColors, listColors, tagColors,
   checkboxColors, radioColors, switchColors, tabColors,
   tableColors, modalColors, editorColors, calendarColors,
 } from '../tokens/index';
@@ -32,6 +32,7 @@ const baseNameOf = (hex) => HEX_TO_BASE[String(hex).toLowerCase()];
 const COMPONENTS = [
   { title: 'Button',                prefix: 'button',     tokens: buttonColors },
   { title: 'Text Field (Input·Search)', prefix: 'text-field', tokens: textFieldColors },
+  { title: 'Label (Field)',         prefix: 'label-field', tokens: labelFieldColors },
   { title: 'List · Option',         prefix: 'list',       tokens: listColors },
   { title: 'Tag',                   prefix: 'tag',        tokens: tagColors },
   { title: 'Checkbox',              prefix: 'checkbox',   tokens: checkboxColors },
