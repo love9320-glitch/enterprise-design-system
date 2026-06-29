@@ -4,7 +4,7 @@ import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   ComponentColorsPage,
-  SearchBarPage, InputPage, SelectPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
+  SearchBarPage, InputPage, SelectPage, LabelPage, FieldPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
   PaginationPage, TablePage, TableTemplatePage, ModalPage, ModalTestPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
@@ -42,6 +42,8 @@ const NAV_GROUPS = [
       { id: 'search-bar', label: 'Search Bar', Page: SearchBarPage },
       { id: 'input',      label: 'Input',      Page: InputPage },
       { id: 'select',      label: 'Select',      Page: SelectPage },
+      { id: 'label',       label: 'Label',       Page: LabelPage },
+      { id: 'field',       label: 'Field',       Page: FieldPage },
       { id: 'tag',         label: 'Tag / Tooltip / Scrollbar', Page: TagPage },
       { id: 'checkbox',    label: 'Checkbox',    Page: CheckboxPage },
       { id: 'radio',       label: 'Radio',       Page: RadioPage },

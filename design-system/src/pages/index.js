@@ -10,6 +10,8 @@ export { SegmentControlPage } from './SegmentControlPage';
 export { SearchBarPage } from './SearchBarPage';
 export { InputPage } from './InputPage';
 export { SelectPage } from './SelectPage';
+export { LabelPage } from './LabelPage';
+export { FieldPage } from './FieldPage';
 export { TagPage } from './TagPage';
 export { CheckboxPage } from './CheckboxPage';
 export { RadioPage } from './RadioPage';
