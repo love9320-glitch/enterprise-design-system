@@ -46,6 +46,8 @@ variant = `fill` | `ghost` | `line`, state = `default` | `hover` | `disabled` (+
 
 Tailwind 기본 spacing(`p-4`, `gap-2`)·임의값(`p-[12px]`) **금지**.
 
+> **적용 범위 = 간격·패딩·갭·마진·라운드·스트로크.** '임의값 금지'는 이들(spacing/round/border)에만 적용된다. **고정 요소 치수**(아이콘·점·트랙·컨트롤의 width/height·`min-h` 등)는 별개다 — 매칭되는 spacing 토큰이 있으면 그것(`w-spacing-*`/`h-spacing-*`)을 **우선** 쓰고(예: 6px 점 = `spacing-4` = `h-spacing-4 w-spacing-4`), 토큰 스케일로 못 맞추는 경우(예: `min-h-[32px]` — minHeight는 spacing 토큰이 안 붙음)는 **임의 px 허용**. 따라서 컴포넌트 예제의 `min-h-[24px]`·`min-h-[32px]`(Button/SegmentControl 등)는 규칙 위반이 아니다.
+
 ### Spacing (`spacing.js`) — `p-spacing-N`, `m-spacing-N`, `gap-spacing-N`, `space-y-spacing-N`
 | 토큰 | px |  | 토큰 | px |
 |------|----|----|------|----|

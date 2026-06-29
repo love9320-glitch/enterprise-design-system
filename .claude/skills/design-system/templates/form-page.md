@@ -18,7 +18,7 @@
 - 셀렉트 → **`Select`** · 날짜 → **`DateField`** · 시간 → **`TimeField`** · 리치 텍스트 → **`Editor`**
 - 폼 모달이면 본문을 **`FormModal`**(취소/저장 + form 래핑)에 넣는다(`templates/modal.md`).
 
-필드(라벨+입력+에러)는 **상수 배열**로 정의해 매핑 렌더한다. 라벨 `text-13 font-semibold text-font-icon-5`, 필수 표시 `*`는 강조 토큰. 에러 메시지는 `Input`의 `error`/`errorMessage` 툴팁을 쓰고, 보더색·간격은 컴포넌트가 토큰으로 처리한다. 전체 옵션은 `components.md`의 Input/Select/DateField 카탈로그 행과 코드가 진실이다.
+필드는 **상수 배열**로 정의해 매핑 렌더하고, 각 필드는 **`Field`(라벨+컨트롤+헬퍼 조립)** 로 감싼다. 라벨은 `Field`가 내부 `Label`로 렌더한다 — **`<label>`·필수 표시 `*`를 손으로 만들지 말 것**(필수는 빨강 점, 색은 `label-field` 시멘틱 토큰을 `Label`이 처리). 컨트롤은 `Input`/`Select`/`DateField`를 children으로 넣고, 에러는 컨트롤의 `error`/`errorMessage` 툴팁을 쓴다(보더색·간격은 컴포넌트가 토큰으로 처리). 전체 옵션은 `components.md`의 Field/Label/Input/Select/DateField 카탈로그 행과 코드가 진실이다.
 
 ## 동작 규칙
 
@@ -29,6 +29,7 @@
 ## 모범 예제 — 공통 `Input`·`Button` 조립
 
 ```jsx
+import { Field } from '../components/Field';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useState } from 'react';
@@ -54,18 +55,16 @@ export function MemberFormPage({ mode = 'create', initial = {} }) {
 
       <form className="space-y-spacing-7">
         {FIELDS.map((f) => (
-          <div key={f.key}>
-            <label className="mb-spacing-4 block text-13 font-semibold text-font-icon-5">
-              {f.label}{f.required && <span className="text-font-icon-4"> *</span>}
-            </label>
-            {/* 보더·focus·에러 스타일은 Input이 처리 — 손으로 칠하지 않는다 */}
+          // 라벨/필수표시/헬퍼는 Field가 담당(라벨=내부 Label, 필수=빨강 점·label-field 토큰).
+          // <label>·* 를 손으로 만들지 않는다. 보더·focus·에러는 Input이 처리.
+          <Field key={f.key} label={f.label} required={f.required}>
             <Input
               value={values[f.key] ?? ''}
               placeholder={f.placeholder}
               onChange={set(f.key)}
               width="fill"
             />
-          </div>
+          </Field>
         ))}
 
         <div className="flex justify-end gap-spacing-5 pt-spacing-5">
@@ -83,6 +82,7 @@ export function MemberFormPage({ mode = 'create', initial = {} }) {
 ## 완료 체크리스트
 
 - [ ] `<input>`을 손으로 짜지 않고 공통 `Input`(셀렉트=`Select`·날짜=`DateField` 등)을 **조립**했는가 (규칙 4)
+- [ ] 라벨/필수표시를 `<label>`·`*`로 손수 만들지 않고 **`Field`(내부 `Label`)** 로 처리했는가 (필수=빨강 점, label-field 토큰)
 - [ ] 페이지 추가 3단계('새 페이지 절차')를 수행했는가
 - [ ] 필드 정의를 상수 배열로 분리해 매핑 렌더했는가
 - [ ] 검증·에러를 `Input`의 `error`/`errorMessage`로 인라인 표시했는가
