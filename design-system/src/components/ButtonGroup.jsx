@@ -49,21 +49,21 @@ export function ButtonGroup({
   const others = items.filter((c) => !isSelect(c));
   const ordered = selects.length ? [...selects, ...others] : items;
 
-  // fill이면 Button 자식을 width="fill"로 만들어 컨테이너 폭을 균등 분할(명시된 width는 존중).
-  const rendered = isFill
-    ? ordered.map((c) =>
-        isValidElement(c) && c.type === Button
-          ? cloneElement(c, { width: c.props.width ?? 'fill' })
-          : c,
-      )
-    : ordered;
+  // 최종 자식 배열 — 모든 요소에 안정 key를 직접 부여한다.
+  // (map 결과 배열은 key가 없으면 React가 key 경고를 내며, Children.toArray로 감싸도 막히지 않는다.)
+  // fill이면 Button 자식을 width="fill"로 복제해 컨테이너 폭을 균등 분할한다(명시된 width는 존중).
+  const rendered = ordered.map((c, i) => {
+    if (!isValidElement(c)) return c;
+    const fillProps = isFill && c.type === Button ? { width: c.props.width ?? 'fill' } : {};
+    return cloneElement(c, { key: c.key ?? `bg-${i}`, ...fillProps });
+  });
 
   return (
     <div
       className={`${isFill ? 'flex w-full' : 'inline-flex'} ${dirStyle} ${gapStyle} ${className}`}
       {...props}
     >
-      {Children.toArray(rendered)}
+      {rendered}
     </div>
   );
 }
