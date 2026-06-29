@@ -37,7 +37,7 @@ export function Label({
       {required && (
         // 필수 표시 — 빨강 6px 점(Figma label-field/required mark)
         <span
-          className="size-[6px] shrink-0 rounded-round-00 bg-label-field-required-mark"
+          className="h-spacing-4 w-spacing-4 shrink-0 rounded-round-00 bg-label-field-required-mark"
           aria-hidden="true"
         />
       )}

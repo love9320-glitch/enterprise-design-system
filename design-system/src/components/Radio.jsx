@@ -67,10 +67,10 @@ export function Radio({
         {...props}
       />
       <span
-        className={`flex size-[16px] shrink-0 items-center justify-center rounded-round-00 transition-shadow ${boxClass}`}
+        className={`flex h-spacing-7 w-spacing-7 shrink-0 items-center justify-center rounded-round-00 transition-shadow ${boxClass}`}
       >
         {/* 가운데 점은 항상 렌더하고 visibility로만 토글 — 선택/해제 시 레이아웃이 흔들리지 않게 */}
-        <span className={`size-[6px] rounded-round-00 ${pointColor} ${isChecked ? '' : 'invisible'}`} />
+        <span className={`h-spacing-4 w-spacing-4 rounded-round-00 ${pointColor} ${isChecked ? '' : 'invisible'}`} />
       </span>
       {label != null && <span className={`text-14 ${textColor}`}>{label}</span>}
     </label>
