@@ -9,6 +9,7 @@ export { ButtonPage } from './ButtonPage';
 export { SegmentControlPage } from './SegmentControlPage';
 export { SearchBarPage } from './SearchBarPage';
 export { InputPage } from './InputPage';
+export { TextAreaPage } from './TextAreaPage';
 export { SelectPage } from './SelectPage';
 export { LabelPage } from './LabelPage';
 export { FieldPage } from './FieldPage';
