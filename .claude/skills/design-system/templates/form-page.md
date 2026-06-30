@@ -28,6 +28,8 @@
 
 ## 모범 예제 — 공통 `Input`·`Button` 조립
 
+> ▶ **데모 페이지: 컨트롤·필드는 `pages/FieldPage.jsx`·`InputPage.jsx`** (빌드·lint 검증). 아래는 폼 페이지 **조립 '패턴' 견본**일 뿐 복붙용 정답이 아니다 — prop 이름·값의 진실은 **`Field.jsx`/`Input.jsx` + components.md 카탈로그**다. (예: 전체폭은 `Input`이 `'fill'` 미지원이라 `width="100%"`, `'fill'`은 DateField/Select/Button/Tag 전용.)
+
 ```jsx
 import { Field } from '../components/Field';
 import { Input } from '../components/Input';
@@ -62,7 +64,7 @@ export function MemberFormPage({ mode = 'create', initial = {} }) {
               value={values[f.key] ?? ''}
               placeholder={f.placeholder}
               onChange={set(f.key)}
-              width="fill"
+              width="100%"
             />
           </Field>
         ))}

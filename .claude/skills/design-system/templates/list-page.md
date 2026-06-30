@@ -22,6 +22,8 @@
 
 ## 모범 예제 — `TableTemplate` 조립 (목록 페이지 표준)
 
+> ▶ **실행되는 전체 예제 = 데모 페이지 `pages/TableTemplatePage.jsx`·`pages/TablePage.jsx`** (빌드·lint 검증). 아래 스니펫은 **조립 '패턴' 견본**일 뿐 복붙용 정답이 아니다 — prop 이름·값의 진실은 항상 **`TableTemplate.jsx`/`Table.jsx` + components.md 카탈로그**다(의심되면 코드 확인).
+
 ```jsx
 import { TableTemplate } from '../components/TableTemplate';
 import { Button } from '../components/Button';
