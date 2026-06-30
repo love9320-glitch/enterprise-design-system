@@ -27,6 +27,8 @@ confirm 창, 알림, 입력 다이얼로그 등 오버레이 UI 규칙. `foundat
 
 ## 모범 예제 — 기존 `Modal` 컴포넌트를 조립한다 (직접 만들지 않는다)
 
+> ▶ **실행되는 전체 예제 = 데모 페이지 `pages/ModalPage.jsx`** (빌드·lint로 검증되는 살아있는 코드). 아래 스니펫은 **조립 '패턴' 견본**일 뿐 복붙용 정답이 아니다 — prop 이름·값의 진실은 항상 **`Modal.jsx` + components.md 카탈로그**다(예제는 드리프트할 수 있으니 의심되면 코드 확인).
+
 > **핵심(규칙 4): 모달은 손으로 만들지 말고 `components/Modal.jsx`의 `Modal`/`FormModal`/`AlertModal`/`ConfirmModal`을 import해 조립한다.** 아래는 "이미 있는 컴포넌트를 어떻게 쓰는가"의 견본이다. dim·패널·라운드·푸터 버튼·ESC/딤 닫기·body 스크롤잠금·포커스 트랩은 **컴포넌트가 이미 처리**하므로 다시 구현하지 않는다. 전체 옵션은 `components.md`의 Modal 카탈로그 행과 `Modal.jsx` 코드가 진실이다.
 
 ### (1) 일반 팝업 — base `Modal`

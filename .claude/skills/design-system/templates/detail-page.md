@@ -21,6 +21,8 @@
 
 ## 모범 예제 (구조 골격)
 
+> ▶ 상세 페이지는 **전용 DS 컴포넌트·데모가 없다**(앱별 마크업). 아래는 **구조 골격**일 뿐 복붙용 정답이 아니며, 안에서 쓰는 컴포넌트(Button/ConfirmModal 등)의 prop 진실은 **`.jsx` + components.md 카탈로그**다.
+
 ```jsx
 const FIELDS = [
   { key: 'name',   label: '이름' },
