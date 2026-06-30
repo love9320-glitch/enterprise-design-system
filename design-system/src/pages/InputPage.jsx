@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Input } from '../components/Input';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Input } from '../components/Input';
 
@@ -80,7 +81,8 @@ export function InputPage() {
       </div>
 
       {/* Width 옵션 — 미지정 시 200px, 숫자(px)나 '100%' 등 지정 가능 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Width 옵션</h3>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">width</code> 미지정 시 기본 200px. 숫자는 px,
@@ -104,7 +106,8 @@ export function InputPage() {
       </div>
 
       {/* 인터랙티브 — 필수 입력 검증 + 오버레이가 아래 인풋에 영향 없음 시연 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
           인터랙티브 — 필수 입력 검증
         </h3>

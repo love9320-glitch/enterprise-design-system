@@ -1,5 +1,6 @@
 import { Label } from '../components/Label';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Label } from '../components/Label';
 
@@ -49,7 +50,8 @@ export function LabelPage() {
       </div>
 
       {/* 상태 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-7 text-15 font-semibold text-font-icon-5">상태 옵션</h3>
         <div className="space-y-spacing-7">
           <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
@@ -68,7 +70,8 @@ export function LabelPage() {
       </div>
 
       {/* htmlFor 연결 — 라벨 클릭 시 입력에 포커스 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">htmlFor 연결</h3>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           아래 라벨을 클릭하면 <code className="text-font-icon-5">id</code>가 같은 입력칸에 포커스가

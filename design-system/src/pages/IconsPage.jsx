@@ -1,5 +1,7 @@
+import { Fragment } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { iconTokens } from '../tokens/index';
+import { Divider } from '../components/Divider';
 
 const ICON_CATEGORIES = [
   {
@@ -96,10 +98,9 @@ export function IconsPage() {
       </p>
 
       {ICON_CATEGORIES.map((category, i) => (
-        <div
-          key={category.label}
-          className={i === 0 ? 'mb-spacing-9' : 'mt-spacing-9 border-t border-base-gray-100 pt-spacing-8'}
-        >
+        <Fragment key={category.label}>
+          {i > 0 && <Divider className="mt-spacing-9 mb-spacing-8" />}
+          <div className={i === 0 ? 'mb-spacing-9' : undefined}>
           <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
             {category.label}
           </h3>
@@ -121,7 +122,8 @@ export function IconsPage() {
               );
             })}
           </div>
-        </div>
+          </div>
+        </Fragment>
       ))}
     </section>
   );

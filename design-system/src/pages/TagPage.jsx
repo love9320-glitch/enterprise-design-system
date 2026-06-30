@@ -1,6 +1,7 @@
 import { Tag } from '../components/Tag';
 import { Tooltip } from '../components/Tooltip';
 import { ScrollArea } from '../components/ScrollArea';
+import { Divider } from '../components/Divider';
 import { UsageExample } from '../components/UsageExample';
 
 const USAGE = `import { Tag } from '../components/Tag';
@@ -73,7 +74,8 @@ export function TagPage() {
       </div>
 
       {/* Tooltip */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
           Tooltip — Variant
         </h3>
@@ -100,7 +102,8 @@ export function TagPage() {
       </div>
 
       {/* Scrollbar */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
           Scrollbar (ScrollArea)
         </h3>
@@ -150,6 +153,26 @@ export function TagPage() {
               </p>
             ))}
           </ScrollArea>
+        </div>
+      </div>
+
+      {/* Divider — 구분선 (Horizontal/Vertical × subtle/default/strong) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Divider</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          구분선. <code className="text-font-icon-5">direction</code>(horizontal/vertical) ·{' '}
+          <code className="text-font-icon-5">color</code>(subtle/default/strong) — 색은 divider 토큰 경유.
+          세로선은 부모 높이를 따른다.
+        </p>
+
+        <div className="space-y-spacing-7">
+          {['subtle', 'default', 'strong'].map((c) => (
+            <div key={c} className="grid grid-cols-[80px_1fr] items-center gap-x-spacing-6">
+              <span className="font-mono text-12 text-font-icon-3">{c}</span>
+              <Divider color={c} />
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { Users, ChevronDown, MoreHorizontal } from 'lucide-react';
 import { Button } from '../components/Button';
 import { ButtonGroup } from '../components/ButtonGroup';
@@ -6,6 +7,7 @@ import { PopoverMenu } from '../components/PopoverMenu';
 import { ListGroup } from '../components/ListGroup';
 import { List } from '../components/List';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const GROUP_USAGE = `import { ButtonGroup } from '../components/ButtonGroup';
 import { Button } from '../components/Button';
@@ -129,10 +131,9 @@ function VariantBlock({ variant, label, tinted = false, rows = BUTTON_ROWS }) {
 
       <div className={`px-spacing-7 py-spacing-7 ${tinted ? 'bg-base-gray-50' : 'bg-white'}`}>
         {['32', '24'].map((size, idx) => (
-          <div
-            key={size}
-            className={idx > 0 ? 'mt-spacing-8 border-t border-base-gray-100 pt-spacing-8' : ''}
-          >
+          <Fragment key={size}>
+            {idx > 0 && <Divider className="mt-spacing-8 mb-spacing-8" />}
+            <div>
             <p className="mb-spacing-5 text-14 font-semibold uppercase tracking-wide text-font-icon-3">
               Size {size}
             </p>
@@ -161,7 +162,8 @@ function VariantBlock({ variant, label, tinted = false, rows = BUTTON_ROWS }) {
                 </div>
               ))}
             </div>
-          </div>
+            </div>
+          </Fragment>
         ))}
       </div>
     </div>
@@ -185,7 +187,8 @@ export function ButtonPage() {
       <VariantBlock variant="underline" label="Underline (Text Button)" rows={BUTTON_ROWS.slice(0, 3)} />
 
       {/* Width fill — 부모 전체 폭 (underline 제외) */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Width: fill</h3>
         <p className="mb-spacing-7 text-14 text-font-icon-4">
           <code className="text-font-icon-3">width="fill"</code>이면 버튼이 부모 너비를 100% 채웁니다(밑줄 텍스트 버튼은 제외).
@@ -208,7 +211,8 @@ export function ButtonPage() {
       </div>
 
       {/* Button Group — 버튼들을 8px 간격으로 묶음 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Button Group</h3>
         <p className="mb-spacing-7 text-14 text-font-icon-4">
           버튼과 버튼들을 모아 일정한 간격으로 배치합니다. 기본 간격은{' '}
@@ -248,7 +252,8 @@ export function ButtonPage() {
       </div>
 
       {/* Popover — 버튼을 트리거로 PopoverMenu 띄우기 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">버튼 + 팝오버 메뉴 (Popover)</h3>
         <p className="mb-spacing-7 text-14 text-font-icon-4">
           <code className="text-font-icon-3">Popover</code>의 <code className="text-font-icon-3">trigger</code>에

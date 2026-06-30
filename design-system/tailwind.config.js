@@ -1,6 +1,6 @@
 import {
   fontFamily, fontSize,
-  baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors,
+  baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors, dividerColors,
   listColors, tagColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors, calendarColors,
   spacing, radius, borderWidth,
@@ -24,6 +24,7 @@ export default {
         button: buttonColors,
         'text-field': textFieldColors,
         'label-field': labelFieldColors,
+        divider: dividerColors,
         list: listColors,
         tag: tagColors,
         checkbox: checkboxColors,

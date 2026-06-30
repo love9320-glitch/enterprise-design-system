@@ -1,5 +1,6 @@
 import { Switch } from '../components/Switch';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Switch } from '../components/Switch';
 
@@ -52,7 +53,8 @@ export function SwitchPage() {
       </div>
 
       {/* 라벨 없음 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
           라벨 없음
         </h3>
