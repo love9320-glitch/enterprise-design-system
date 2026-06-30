@@ -121,6 +121,7 @@ const sizeStyle = SIZE_STYLES[size];
 | Tabs | `components/Tabs.jsx` | **TabMenu**: children · icon(LucideIcon) · tag/tagText/tagType(blue/red/gray) · selected · disabled · onClick — 탭 1개(default/hover/select/disabled, 선택 시 하단 2px underline). **Tabs**: items(`{value,label,icon?,tag?,tagText?,tagType?,disabled?}[]`) · value/defaultValue/onChange(controlled·uncontrolled 단일선택) · variant(hug=내용 폭 / fill=균등 분할 전체 폭) · rightSlot(우측 임의 요소, justify-between) — 그룹 하단 1px 구분선. tab-* 토큰 | `pages/TabsPage.jsx` |
 | Radio | `components/Radio.jsx` | **Radio**: checked/onChange · defaultChecked · disabled · label · name · value — 6상태(unselected/selected×default/hover/disabled), 원형+가운데 점, radio-* 토큰(체크박스와 값 동일하나 별도 파일). **RadioGroup**: items(`{value,label,disabled?}[]`) · value/defaultValue/onChange(controlled·uncontrolled 단일선택) · name(미지정 시 자동) · direction(vertical/horizontal, 기본 vertical) · gap(spacing 토큰 키, 기본 '7'=16px) · disabled(그룹 전체) | `pages/RadioPage.jsx` |
 | List | `components/List.jsx` | **left**: title · tag/tagText · icon(LucideIcon) · checkbox+checked/onCheckChange. **right**: showSwitch+switchChecked/onSwitchChange · rightButton/onButtonClick(고스트 ⋯) · endIcon(chevron). 공통: selected · highlighted · disabled · onClick — 옵션 목록 한 행(5상태). 체크박스·스위치는 공용 컴포넌트 재사용 + 행 클릭과 분리(stopPropagation), disabled 시 함께 비활성 | `pages/OptionListPage.jsx` |
+| Divider | `components/Divider.jsx` | direction(horizontal/vertical) · color(subtle/default/strong) — 1px 구분선(div fill), **divider-* 시멘틱 토큰**(subtle=gray.50/default=gray.100/strong=gray.150). 세로선은 부모 높이를 따름. **Code Connect**(Figma `Divider` 셋 7970:17558) | `pages/TagPage.jsx` |
 | ScrollArea | `components/ScrollArea.jsx` | children · maxHeight · horizontal(가로 오버레이 스크롤바 추가) · variant(default/light — light=어두운 배경 위 흰색 thumb, scroll-bar-light* 토큰) · contentClassName · **onViewport((el)=>void)**(내부 스크롤 요소 콜백 — 부모가 scrollTop 직접 제어) · **onScroll((e)=>void)**(스크롤 이벤트 패스스루) — 커스텀 오버레이 스크롤바(공용, 세로+가로). 스크롤 생기는 모든 곳에 사용 | `pages/TagPage.jsx` |
 | ListGroup | `components/ListGroup.jsx` | children · maxVisible(기본 6) · empty · emptyMessage — 내부 스크롤(ScrollArea 사용). 자식 0개 또는 empty=true면 그룹 안(스크롤 영역 내부)에 ListEmpty를 렌더해 빈 상태도 그룹의 패딩·배경을 따른다 | `pages/OptionListPage.jsx` |
 | ListEmpty | `components/ListEmpty.jsx` | message — 목록 빈 상태. **ListGroup이 빈 상태일 때 내부에서 렌더**(단독 사용도 가능) | `pages/OptionListPage.jsx` |
@@ -157,9 +158,9 @@ const sizeStyle = SIZE_STYLES[size];
 
 페이지를 여러 섹션(`<h3>` 단위 블록)으로 구성할 때, **첫 섹션을 제외한 각 섹션 위에 구분선**을 둬 시각적으로 분리한다.
 
-- 표준 클래스: `mt-spacing-9 border-t border-base-gray-100 pt-spacing-8` (섹션 래퍼 `<div>`에 부여)
+- 표준: 섹션 앞에 **`<Divider className="mt-spacing-9 mb-spacing-8" />`** 를 둔다(2026-06-30부터 — 손수 `border-t`가 아니라 DS `Divider` 컴포넌트 사용). 위 간격은 `mt-spacing-9`, 아래 간격은 `mb-spacing-8`(섹션마다 기존 mt/pt가 다르면 그 값을 옮긴다).
 - 첫 섹션(보통 `UsageExample` 바로 다음)은 구분선 없이 시작한다.
-- **Why:** 항목이 여백만으로 나열되면 경계가 모호하다. 모든 데모/쇼케이스 페이지가 동일한 구분 규약을 따라 일관성을 유지한다.
+- **Why:** 항목이 여백만으로 나열되면 경계가 모호하다. 구분선은 하드코딩 border가 아닌 `Divider`(divider-* 토큰)로 통일해 DS 자산을 재사용한다.
 - 레퍼런스: `ButtonPage.jsx` · `TagPage.jsx` · `EditorPage.jsx`.
 
 ## 컴포넌트 완료 체크리스트
@@ -171,4 +172,4 @@ const sizeStyle = SIZE_STYLES[size];
 - [ ] `disabled`/`loading` 등 비활성 상태에서 이벤트가 차단되는가
 - [ ] 아이콘은 lucide-react 컴포넌트를 props로 받는가 (`<Icon/>`이 아닌 `Icon`)
 - [ ] 데모 페이지를 추가/갱신했는가
-- [ ] 데모 페이지의 섹션 사이에 구분선(`border-t border-base-gray-100 pt-spacing-8`)을 넣었는가 (첫 섹션 제외)
+- [ ] 데모 페이지의 섹션 사이에 구분선(`<Divider className="mt-spacing-9 mb-spacing-8" />`)을 넣었는가 (첫 섹션 제외)

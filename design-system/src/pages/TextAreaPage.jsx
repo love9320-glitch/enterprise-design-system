@@ -3,6 +3,7 @@ import { TextArea } from '../components/TextArea';
 import { Checkbox } from '../components/Checkbox';
 import { Input } from '../components/Input';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { TextArea } from '../components/TextArea';
 
@@ -89,7 +90,8 @@ function Playground() {
         <Checkbox label="disabled" checked={opts.disabled} onChange={toggle('disabled')} />
         <Checkbox label="readOnly" checked={opts.readOnly} onChange={toggle('readOnly')} />
         </div>
-        <div className="flex flex-wrap items-center gap-x-spacing-9 gap-y-spacing-5 border-t border-base-gray-100 pt-spacing-6">
+        <Divider className="mt-spacing-9 mb-spacing-6" />
+        <div className="flex flex-wrap items-center gap-x-spacing-9 gap-y-spacing-5">
           <NumField label="rows" value={rows} onChange={num(setRows)} />
           <NumField label="maxRows" value={maxRows} onChange={num(setMaxRows)} />
           <NumField label="maxLength" value={maxLength} onChange={num(setMaxLength)} />
@@ -156,7 +158,8 @@ export function TextAreaPage() {
         <Playground />
       </div>
 
-      <div className="space-y-spacing-8 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div className="space-y-spacing-8">
         {ROWS.map(({ label, props }) => (
           <div key={label} className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6">
             <p className="pt-spacing-3 text-12 text-font-icon-3">{label}</p>
@@ -172,7 +175,8 @@ export function TextAreaPage() {
       </div>
 
       {/* 인터랙티브 — 필수 입력 검증 + 카운터 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">인터랙티브 — 검증 + 카운터</h3>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           비어 있으면 에러 툴팁, 입력하면 사라집니다. 카운터(N/100)도 타이핑에 따라 갱신됩니다.

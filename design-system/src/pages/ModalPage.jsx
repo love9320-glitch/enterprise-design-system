@@ -7,6 +7,7 @@ import { Input } from '../components/Input';
 import { Tag } from '../components/Tag';
 import { TableTemplate } from '../components/TableTemplate';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 // ───────────── 기본 Modal ─────────────
 const MODAL_NOTE = '요소 구성 — Header[타이틀 · 닫기(X)] + Body[자유 주입 children] + Footer[footerStart(좌측 영역) · 취소/확인 버튼]';
@@ -198,10 +199,13 @@ function TableInModalDemo({ open, onClose }) {
 // 섹션 헤더 — 변형별 제목 + 설명
 function SectionHeader({ title, children, first = false }) {
   return (
-    <div className={`mb-spacing-6 ${first ? '' : 'border-t border-base-gray-100 pt-spacing-9'}`}>
-      <h3 className="mb-spacing-3 text-18 font-semibold text-font-icon-5">{title}</h3>
-      <p className="text-14 text-font-icon-4">{children}</p>
-    </div>
+    <>
+      {!first && <Divider className="mt-spacing-9 mb-spacing-9" />}
+      <div className="mb-spacing-6">
+        <h3 className="mb-spacing-3 text-18 font-semibold text-font-icon-5">{title}</h3>
+        <p className="text-14 text-font-icon-4">{children}</p>
+      </div>
+    </>
   );
 }
 

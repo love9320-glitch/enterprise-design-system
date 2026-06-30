@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 import { LayoutGrid, List as ListIcon, Calendar } from 'lucide-react';
 import { SegmentControlButton, SegmentControlGroup } from '../components/SegmentControl';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { SegmentControlGroup } from '../components/SegmentControl';
 import { LayoutGrid, List, Calendar } from 'lucide-react';
@@ -81,10 +82,9 @@ function ButtonMatrix() {
       </div>
       <div className="bg-base-gray-50 px-spacing-7 py-spacing-7">
         {['32', '24'].map((size, idx) => (
-          <div
-            key={size}
-            className={idx > 0 ? 'mt-spacing-8 border-t border-base-gray-100 pt-spacing-8' : ''}
-          >
+          <Fragment key={size}>
+            {idx > 0 && <Divider className="mt-spacing-8 mb-spacing-8" />}
+            <div>
             <p className="mb-spacing-5 text-14 font-semibold uppercase tracking-wide text-font-icon-3">
               Size {size}
             </p>
@@ -113,7 +113,8 @@ function ButtonMatrix() {
                 </div>
               ))}
             </div>
-          </div>
+            </div>
+          </Fragment>
         ))}
       </div>
     </div>
@@ -160,7 +161,8 @@ export function SegmentControlPage() {
       <ButtonMatrix />
 
       {/* 그룹 — 텍스트 (Figma 기준) */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">그룹 — 텍스트</h3>
         <p className="mb-spacing-7 text-14 text-font-icon-4">
           <code className="text-font-icon-3">SegmentControlGroup</code>은 클릭 시 하나의 항목을 선택합니다.
@@ -170,7 +172,8 @@ export function SegmentControlPage() {
       </div>
 
       {/* 그룹 — controlled + 아이콘 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">그룹 — 아이콘 + 텍스트 (controlled)</h3>
         <p className="mb-spacing-7 text-14 text-font-icon-4">
           현재 선택: <code className="text-font-icon-5">{view}</code>
@@ -179,7 +182,8 @@ export function SegmentControlPage() {
       </div>
 
       {/* 그룹 — 아이콘 전용 + 사이즈 24 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">그룹 — 아이콘 전용 · Size 24</h3>
         <UsageExample code={`<SegmentControlButton selected leftIcon={Calendar}>다음 단계</SegmentControlButton>`} props={BUTTON_PROPS} title="SegmentControlButton 옵션" />
         <div className="flex flex-wrap items-center gap-spacing-9">
@@ -199,7 +203,8 @@ export function SegmentControlPage() {
       </div>
 
       {/* 그룹 비활성 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">그룹 — 비활성</h3>
         <SegmentControlGroup defaultValue="s2" disabled items={TEXT_ITEMS.slice(0, 3)} />
       </div>

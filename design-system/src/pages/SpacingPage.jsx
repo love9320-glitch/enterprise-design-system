@@ -1,4 +1,5 @@
 import { spacing, radius, borderWidth } from '../tokens/index';
+import { Divider } from '../components/Divider';
 
 const spacingScale = Object.entries(spacing);
 const radiusScale = Object.entries(radius);
@@ -32,7 +33,8 @@ export function SpacingPage() {
         ))}
       </div>
 
-      <h2 className="mb-spacing-3 mt-spacing-10 border-t border-base-gray-100 pt-spacing-8 text-20 font-semibold">Radius</h2>
+      <Divider className="mt-spacing-10 mb-spacing-8" />
+      <h2 className="mb-spacing-3 text-20 font-semibold">Radius</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         모서리 둥글기 토큰 — Figma "Round 토큰" (예:{' '}
         <code className="text-font-icon-3">rounded-round-7</code>,{' '}
@@ -53,7 +55,8 @@ export function SpacingPage() {
         ))}
       </div>
 
-      <h2 className="mb-spacing-3 mt-spacing-10 border-t border-base-gray-100 pt-spacing-8 text-20 font-semibold">Border</h2>
+      <Divider className="mt-spacing-10 mb-spacing-8" />
+      <h2 className="mb-spacing-3 text-20 font-semibold">Border</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         테두리 두께 토큰 — Figma "border 토큰" (예:{' '}
         <code className="text-font-icon-3">border-2</code>,{' '}

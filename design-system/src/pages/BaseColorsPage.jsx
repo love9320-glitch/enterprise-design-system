@@ -1,4 +1,5 @@
 import { baseColors } from '../tokens/index';
+import { Divider } from '../components/Divider';
 
 const grayScale = Object.entries(baseColors.base.gray);
 const monoColors = [
@@ -67,7 +68,8 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Black & White
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -76,7 +78,8 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Red
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -85,7 +88,8 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Blue
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -94,7 +98,8 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Gray 900 Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -103,7 +108,8 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         White Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -112,7 +118,8 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Red 400 Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -121,7 +128,8 @@ export function BaseColorsPage() {
         ))}
       </div>
 
-      <h3 className="mb-spacing-5 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8 text-15 font-semibold text-font-icon-5">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Blue 400 Alpha
       </h3>
       <div className="grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">

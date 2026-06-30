@@ -2,6 +2,7 @@ import { Table } from '../components/Table';
 import { Tag } from '../components/Tag';
 import { Button } from '../components/Button';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Table } from '../components/Table';
 
@@ -130,11 +131,14 @@ const ROWS_LONG = [
 // first=true(첫 블록)는 구분선 없이 flush, 이후 블록은 상단 구분선으로 단락을 나눈다.
 function Block({ title, desc, first = false, children }) {
   return (
-    <div className={first ? '' : 'mt-spacing-9 border-t border-base-gray-100 pt-spacing-8'}>
-      <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">{title}</h3>
-      {desc && <p className="mb-spacing-5 text-12 text-font-icon-4">{desc}</p>}
-      {children}
-    </div>
+    <>
+      {!first && <Divider className="mt-spacing-9 mb-spacing-8" />}
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">{title}</h3>
+        {desc && <p className="mb-spacing-5 text-12 text-font-icon-4">{desc}</p>}
+        {children}
+      </div>
+    </>
   );
 }
 

@@ -12,6 +12,7 @@ import { Checkbox } from '../components/Checkbox';
 import { Select } from '../components/Select';
 import { Tag } from '../components/Tag';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { TableTemplate } from '../components/TableTemplate';
 
@@ -225,7 +226,8 @@ function Playground() {
         </div>
 
         {/* 2행: 페이지네이션 세부 옵션(켜짐) / 표 높이(꺼짐) — 상단 구분선으로 1행과 분리 */}
-        <div className="mt-spacing-5 flex min-h-[32px] flex-wrap items-center gap-x-spacing-9 gap-y-spacing-5 border-t border-base-gray-100 pt-spacing-5">
+        <Divider className="mt-spacing-5 mb-spacing-5" />
+        <div className="flex min-h-[32px] flex-wrap items-center gap-x-spacing-9 gap-y-spacing-5">
           {opts.pagination ? (
             <>
               <Checkbox checked={opts.showTotal}    onChange={() => toggle('showTotal')}    label="총 N개 표시" />
@@ -264,7 +266,8 @@ function Playground() {
         </div>
       </div>
       {/* 옵션 박스와 테이블 템플릿 사이 구분선 */}
-      <div className="border-t border-base-gray-100 pt-spacing-7">
+      <Divider className="mt-spacing-9 mb-spacing-7" />
+      <div>
         <DemoTemplate
           actionSet="rich"
           withActions={opts.actions}
@@ -289,11 +292,14 @@ function Playground() {
 // first=true(첫 블록)는 구분선 없이 flush, 이후 블록은 상단 구분선으로 단락을 나눈다.
 function Block({ title, desc, first = false, children }) {
   return (
-    <div className={first ? '' : 'mt-spacing-10 border-t border-base-gray-100 pt-spacing-9'}>
-      <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">{title}</h3>
-      {desc && <p className="mb-spacing-6 text-12 text-font-icon-4">{desc}</p>}
-      {children}
-    </div>
+    <>
+      {!first && <Divider className="mt-spacing-10 mb-spacing-9" />}
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">{title}</h3>
+        {desc && <p className="mb-spacing-6 text-12 text-font-icon-4">{desc}</p>}
+        {children}
+      </div>
+    </>
   );
 }
 

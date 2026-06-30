@@ -7,6 +7,7 @@ import { TimeField } from '../components/TimeField';
 import { Checkbox } from '../components/Checkbox';
 import { UsageExample } from '../components/UsageExample';
 import { formatDateTimeRange } from '../utils/datetime';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { DateField } from '../components/DateField';
 import { DatePicker } from '../components/DatePicker';
@@ -406,7 +407,8 @@ export function DatePickerPage() {
       </div>
 
       {/* TimeField — 시간 트리거 필드 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>TimeField — 시간 트리거 필드</SectionTitle>
         <p className="mb-spacing-5 text-12 text-font-icon-4">
           DateField와 같은 형식의 시간 버전. 누르면 <strong>인풋 영역 없는</strong> 시/분 2depth 목록이 열립니다.
@@ -417,7 +419,8 @@ export function DatePickerPage() {
       </div>
 
       {/* DatePicker — Playground */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>DatePicker — Playground (요소 끄고 켜기)</SectionTitle>
         <p className="mb-spacing-5 text-12 text-font-icon-4">
           체크박스로 DatePicker 팝오버의 옵션(<code className="text-font-icon-5">range·showTime·disablePast·scrollNavigate·rangeTooltip</code>)을
@@ -427,7 +430,8 @@ export function DatePickerPage() {
       </div>
 
       {/* CalendarDayButton 상태 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>CalendarDayButton — 7가지 상태</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           날짜 한 칸의 상태별 모습. 범위 상태(range-start/in-range/range-end)는 좌/우 반쪽 배경으로 끊김 없이 이어집니다.
@@ -443,7 +447,8 @@ export function DatePickerPage() {
       </div>
 
       {/* TwoDepthList */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>TwoDepthList — 연/월 · 시/분</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           상단 입력 영역(현재 값) + 좌/우 2개 컬럼 목록. 같은 구조로 연/월(year_month), 시/분(time)에 공용으로 씁니다.

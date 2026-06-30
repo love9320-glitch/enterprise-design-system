@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Checkbox, CheckboxGroup } from '../components/Checkbox';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Checkbox } from '../components/Checkbox';
 
@@ -84,7 +85,8 @@ export function CheckboxPage() {
       </div>
 
       {/* CheckboxGroup — 다중 선택 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
           CheckboxGroup (다중 선택)
         </h3>
@@ -108,7 +110,8 @@ export function CheckboxPage() {
       </div>
 
       {/* 라벨 없는 체크박스 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
           라벨 없음
         </h3>

@@ -4,6 +4,7 @@ import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { DateField } from '../components/DateField';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Field } from '../components/Field';
 import { Input } from '../components/Input';
@@ -104,7 +105,8 @@ export function FieldPage() {
       </div>
 
       {/* 가로 레이아웃 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">가로 레이아웃</h3>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">direction="horizontal"</code> +{' '}
@@ -121,7 +123,8 @@ export function FieldPage() {
       </div>
 
       {/* 복합 필드 — 한 필드에 컨트롤 2개+ 한 줄 등분 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">복합 필드 (controlsDirection="row")</h3>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           한 필드에 컨트롤을 여러 개 — 인풋+셀렉트·셀렉트 2개·인풋+데이트픽커 등 — 한 줄에 등분 배치합니다.
@@ -143,7 +146,8 @@ export function FieldPage() {
       </div>
 
       {/* 인터랙티브 — 필수 입력 검증 (컨트롤 툴팁) */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
           인터랙티브 — 필수 입력 검증
         </h3>

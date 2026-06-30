@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Editor } from '../components/Editor';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Editor } from '../components/Editor';
 
@@ -73,7 +74,8 @@ export function EditorPage() {
       </div>
 
       {/* 툴바 제한 */}
-      <div className="mb-spacing-10 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div className="mb-spacing-10">
         <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">툴바 제한 (toolbar)</h3>
         <p className="mb-spacing-5 text-13 text-font-icon-4">
           {`toolbar={['block','bold','italic','underline','link']} — 필요한 기능만 노출.`}
@@ -86,7 +88,8 @@ export function EditorPage() {
       </div>
 
       {/* 읽기 전용 */}
-      <div className="mb-spacing-10 mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div className="mb-spacing-10">
         <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">읽기 전용 (readOnly)</h3>
         <p className="mb-spacing-5 text-13 text-font-icon-4">
           편집 탭은 빠지고 <strong className="font-semibold text-font-icon-5">미리보기</strong>가 기본이며, HTML 소스·미리보기 전환만 노출해 구조 확인이 가능하다.

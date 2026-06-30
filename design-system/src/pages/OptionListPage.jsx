@@ -5,6 +5,7 @@ import { ListGroup } from '../components/ListGroup';
 import { PopoverMenu } from '../components/PopoverMenu';
 import { Checkbox } from '../components/Checkbox';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { PopoverMenu } from '../components/PopoverMenu';
 import { ListGroup } from '../components/ListGroup';
@@ -325,7 +326,8 @@ export function OptionListPage() {
       </div>
 
       {/* ListGroup — 기본 / 빈 상태 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>ListGroup — 기본 / 빈 상태</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">maxVisible</code>(기본 6) 초과 시 내부 스크롤합니다.
@@ -353,7 +355,8 @@ export function OptionListPage() {
       </div>
 
       {/* PopoverMenu — 검색바 없음 / 있음 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>PopoverMenu — 검색바 없음 / 있음</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">topArea="search"</code>로 상단 검색바를 켭니다(기본 <code className="text-font-icon-5">'none'</code>).
@@ -384,7 +387,8 @@ export function OptionListPage() {
       </div>
 
       {/* PopoverMenu — 푸터 영역 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>PopoverMenu — 푸터 영역</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">footer</code> 옵션으로 하단 푸터를 켭니다. 좌측{' '}
@@ -397,7 +401,8 @@ export function OptionListPage() {
       </div>
 
       {/* PopoverMenu — 입력 영역 + fill 버튼 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <SectionTitle>PopoverMenu — 입력 영역 + fill 버튼</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">topArea="input"</code>은 검색 아이콘 없는 일반 텍스트 입력 영역을

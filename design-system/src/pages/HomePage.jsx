@@ -1,6 +1,8 @@
 // HomePage — LNB 최상단 '홈'. 디자인 시스템의 목적/방향을 소개하는 랜딩 페이지.
 // 내용은 프로젝트 목적(코드↔Figma 동기화 + 규칙 기반 UI 생산·진화)을 요약한다.
 
+import { Divider } from '../components/Divider';
+
 const PURPOSE = [
   {
     no: '01',
@@ -40,7 +42,8 @@ export function HomePage() {
       </p>
 
       {/* 목적 4 */}
-      <div className="mb-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div className="mb-spacing-9">
         <h2 className="mb-spacing-4 text-16 font-semibold text-font-icon-5">목적</h2>
         <p className="mb-spacing-7 max-w-3xl text-14 leading-[1.7] text-font-icon-4">
           “디자인과 코드의 경계를 없애고, 그 사이를 잇는 규칙까지 살아있는 시스템으로 만들어, AI가
@@ -61,7 +64,8 @@ export function HomePage() {
       </div>
 
       {/* 안내 */}
-      <div className="border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h2 className="mb-spacing-4 text-16 font-semibold text-font-icon-5">둘러보기</h2>
         <p className="text-14 leading-[1.7] text-font-icon-4">
           좌측 메뉴에서 <strong className="font-semibold text-font-icon-5">파운데이션</strong>(토큰),{' '}

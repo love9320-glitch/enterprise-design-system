@@ -1,5 +1,6 @@
 import { Select } from '../components/Select';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Select } from '../components/Select';
 
@@ -100,7 +101,8 @@ export function SelectPage() {
       </div>
 
       {/* Width 옵션 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Width 옵션</h3>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           <code className="text-font-icon-5">width</code> 미지정 시 기본 200px. 숫자는 px,
@@ -139,7 +141,8 @@ export function SelectPage() {
       </div>
 
       {/* 검색 가능 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
           검색 가능 (searchable)
         </h3>
@@ -185,7 +188,8 @@ export function SelectPage() {
       </div>
 
       {/* 드롭다운 위치 — 박스 네 모서리 시연 */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
           드롭다운 위치 (위/아래 · 좌/우)
         </h3>
@@ -214,7 +218,8 @@ export function SelectPage() {
       </div>
 
       {/* 인라인 텍스트형 (variant="text") */}
-      <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
           인라인 텍스트형 (variant="text")
         </h3>
@@ -263,7 +268,8 @@ export function SelectPage() {
         </div>
 
         {/* 너비 (maxWidth) */}
-        <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <Divider className="mt-spacing-9 mb-spacing-8" />
+        <div>
           <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">인라인 텍스트형 — 너비 (maxWidth)</h3>
           <p className="mb-spacing-7 text-12 text-font-icon-4">
             너비는 항상 <code className="text-font-icon-5">hug</code>(콘텐츠 맞춤)이며,
@@ -287,7 +293,8 @@ export function SelectPage() {
         </div>
 
         {/* 검색 가능 (searchable) */}
-        <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <Divider className="mt-spacing-9 mb-spacing-8" />
+        <div>
           <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">인라인 텍스트형 — 검색 가능 (searchable)</h3>
           <p className="mb-spacing-7 text-12 text-font-icon-4">
             <code className="text-font-icon-5">searchable</code>를 켜면 드롭다운 상단에 검색바가

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Pagination } from '../components/Pagination';
 import { UsageExample } from '../components/UsageExample';
+import { Divider } from '../components/Divider';
 
 const USAGE = `import { Pagination } from '../components/Pagination';
 
@@ -70,31 +71,36 @@ export function PaginationPage() {
 
       <div>
         {/* 번호 10개 */}
-        <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <Divider className="mt-spacing-9 mb-spacing-8" />
+        <div>
           <p className="mb-spacing-5 text-12 text-font-icon-3">번호 10개 (maxButtons=10)</p>
           <Pagination defaultPage={3} totalCount={100} maxButtons={10} />
         </div>
 
         {/* 총 200개 — 10개씩이면 20페이지(블록 [1-10]/[11-20]) */}
-        <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <Divider className="mt-spacing-9 mb-spacing-8" />
+        <div>
           <p className="mb-spacing-5 text-12 text-font-icon-3">총 200개 (20페이지 · 두 번째 블록)</p>
           <Pagination defaultPage={12} totalCount={200} maxButtons={10} />
         </div>
 
         {/* 번호 5개 */}
-        <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <Divider className="mt-spacing-9 mb-spacing-8" />
+        <div>
           <p className="mb-spacing-5 text-12 text-font-icon-3">번호 5개 (maxButtons=5)</p>
           <Pagination defaultPage={3} totalCount={100} maxButtons={5} />
         </div>
 
         {/* 페이지 3개뿐 — 마지막 페이지에서 다음/마지막 비활성 */}
-        <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <Divider className="mt-spacing-9 mb-spacing-8" />
+        <div>
           <p className="mb-spacing-5 text-12 text-font-icon-3">페이지가 3개뿐 (마지막 페이지 = 비활성)</p>
           <Pagination defaultPage={3} totalCount={30} maxButtons={10} />
         </div>
 
         {/* 총/행 숨김 — 번호 컨트롤만 */}
-        <div className="mt-spacing-9 border-t border-base-gray-100 pt-spacing-8">
+        <Divider className="mt-spacing-9 mb-spacing-8" />
+        <div>
           <p className="mb-spacing-5 text-12 text-font-icon-3">컨트롤만 (showTotal·showPageSize=false)</p>
           <Pagination defaultPage={1} totalCount={50} maxButtons={5} showTotal={false} showPageSize={false} />
         </div>
