@@ -10,7 +10,7 @@
 //   - placeholder / minHeight / maxHeight: 빈 본문 안내 · 본문 높이(maxHeight 시 ScrollArea 세로 스크롤).
 //   - width: 'fill'(부모 전체 폭, 기본) | 숫자(px) | CSS 길이 문자열.
 // 색·간격·보더는 editor-*/table-*/spacing-*/round-* 토큰만 사용(하드코딩 금지).
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef, useState } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import { StarterKit } from '@tiptap/starter-kit';
 import { TextStyle } from '@tiptap/extension-text-style';
@@ -52,8 +52,10 @@ function buildExtensions() {
 
 // 모드 탭(편집/HTML/미리보기) — 공용 세그먼트 컨트롤(size 24).
 // 읽기 전용이면 편집 탭을 빼고 HTML·미리보기만 노출한다.
-function ModeTabs({ mode, onChange, readOnly }) {
-  const items = readOnly ? MODE_TABS.filter((t) => t.value !== 'edit') : MODE_TABS;
+// showSource=false면 HTML(소스) 탭을 숨긴다(예: SMS 평문 안내문).
+function ModeTabs({ mode, onChange, readOnly, showSource }) {
+  let items = readOnly ? MODE_TABS.filter((t) => t.value !== 'edit') : MODE_TABS;
+  if (!showSource) items = items.filter((t) => t.value !== 'source');
   return (
     <SegmentControlGroup size="24" gap="4" value={mode} onChange={onChange} items={items} />
   );
@@ -68,6 +70,7 @@ export function Editor({
   toolbar,
   mergeFields = [],        // 머지필드 목록: 문자열 또는 {label,value}[] — 툴바 '머지필드' 드롭다운(search list)
   readOnly = false,
+  showSource = true,       // HTML(소스) 모드 탭 노출 여부(false면 편집/미리보기만)
   placeholder = '내용을 입력하세요.',
   minHeight = 240,
   maxHeight,
@@ -81,6 +84,8 @@ export function Editor({
   // 읽기 전용이면 편집 모드가 없으므로 미리보기를 기본으로 한다.
   const [internalMode, setInternalMode] = useState(() => (readOnly ? 'preview' : 'edit'));
   const mode = modeControlled ? modeProp : internalMode;
+  // controlled value 교체(setContent) 후 placeholder(isEmpty) 조건을 다시 평가하기 위한 강제 재렌더 트리거.
+  const [, bumpRender] = useReducer((x) => x + 1, 0);
 
   // 소스 모드에서 편집 중인 HTML 초안(편집 모드와 분리해 커서 튐 방지, 모드 이탈 시 에디터에 반영)
   const [sourceDraft, setSourceDraft] = useState('');
@@ -122,11 +127,21 @@ export function Editor({
     }
   }, [readOnly, modeControlled, internalMode]);
 
-  // controlled value 외부 변경 동기화(편집 결과로 같은 값이 돌아오면 no-op)
+  // HTML 탭이 숨겨졌는데(showSource=false) 소스 모드에 머물면 편집으로 복귀(탭 전환 등으로 갇힘 방지).
   useEffect(() => {
+    if (!showSource && !modeControlled && internalMode === 'source') {
+      setInternalMode('edit'); // eslint-disable-line react-hooks/set-state-in-effect
+    }
+  }, [showSource, modeControlled, internalMode]);
+
+  // controlled value 외부 변경 동기화(편집 결과로 같은 값이 돌아오면 no-op)
+  // useLayoutEffect + bumpRender: 콘텐츠 교체 직후(페인트 전) 재렌더해 placeholder(isEmpty)를 다시 평가한다.
+  // (안 하면 채널 전환 등 value가 바뀔 때 stale한 isEmpty로 그려진 placeholder가 새 본문과 겹쳐 보인다.)
+  useLayoutEffect(() => {
     if (!editor || !valueControlled) return;
     if (value !== editor.getHTML()) {
       editor.commands.setContent(value, { emitUpdate: false });
+      bumpRender();
     }
   }, [editor, value, valueControlled]);
 
@@ -197,9 +212,20 @@ export function Editor({
   } else {
     // edit
     body = wrapScroll(
-      <div className="relative tiptap-prose px-spacing-7 py-spacing-6" style={{ minHeight: bodyMinHeight }}>
+      <div
+        className="relative tiptap-prose cursor-text px-spacing-7 py-spacing-6"
+        style={{ minHeight: bodyMinHeight }}
+        onMouseDown={(e) => {
+          // 콘텐츠(.tiptap) 밖(패딩·첫 줄 아래 빈 영역)을 클릭하면 에디터 끝에 포커스한다 —
+          // 첫 줄까지 가지 않아도 박스 전체가 클릭 영역이 되도록.
+          if (editor && !e.target.closest('.tiptap')) {
+            e.preventDefault();
+            editor.commands.focus('end');
+          }
+        }}
+      >
         {editor?.isEmpty && (
-          <p className="pointer-events-none absolute left-spacing-7 top-spacing-6 text-14 text-editor-placeholder">
+          <p className="pointer-events-none absolute left-spacing-7 top-spacing-6 text-14 leading-30 text-editor-placeholder">
             {placeholder}
           </p>
         )}
@@ -221,7 +247,7 @@ export function Editor({
             </span>
           )}
           <div className="shrink-0">
-            <ModeTabs mode={mode} onChange={changeMode} readOnly={readOnly} />
+            <ModeTabs mode={mode} onChange={changeMode} readOnly={readOnly} showSource={showSource} />
           </div>
         </div>
       </div>

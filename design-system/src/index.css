@@ -40,7 +40,7 @@
      Tiptap(EditorContent)이 생성하는 시맨틱 HTML(h1·ul·table 등)과 미리보기 렌더 결과 모두
      .tiptap-prose 안에서 동일한 토큰 스타일을 받는다. 모든 색·간격은 @apply로 토큰 유틸만 사용. */
   .tiptap-prose {
-    @apply text-14 text-font-icon-5;
+    @apply text-14 leading-30 text-font-icon-5; /* 본문 가독성 — 사이즈 14 유지, 행간만 30px(leading 토큰) */
   }
   /* contentEditable 루트 — 포커스 외곽선 제거(컨테이너가 ring으로 처리), 높이 채움 */
   .tiptap-prose .tiptap {
@@ -95,7 +95,7 @@
   /* 머지필드 칩 — preview 모드는 raw <span data-merge-field>로 렌더되므로 chip 토큰으로 칩 모양을 준다.
      (edit 모드는 MergeFieldNode의 NodeView가 DS Chip 컴포넌트를 렌더 — 이 규칙에 안 걸림) */
   .tiptap-prose :where([data-merge-field]) {
-    @apply inline-flex items-center rounded-round-4 border border-chip-default-line bg-chip-default-bg px-spacing-5 py-spacing-1 align-middle text-12 text-chip-default-text;
+    @apply inline-flex items-center rounded-round-4 border border-chip-blue-default-line bg-chip-blue-default-bg pl-spacing-4 pr-spacing-3 py-spacing-1 align-middle text-12 text-chip-blue-default-text;
   }
   /* 표 — 토큰 보더(table-cell-line)·헤더 배경(table-header-bg) 재사용.
      모서리 라운드(round-4=6px): border-collapse 대신 separate + 외곽 border + overflow-hidden으로 깎는다.
@@ -122,12 +122,14 @@
   .tiptap-prose .selectedCell {
     @apply bg-table-row-hover-bg;
   }
-  /* 본문 첫/끝 요소의 바깥 여백 제거(컨테이너 패딩과 이중되지 않게) */
-  .tiptap-prose > .tiptap > :first-child,
+  /* 본문 첫/끝 요소의 바깥 여백 제거(컨테이너 패딩과 이중되지 않게).
+     edit 모드는 EditorContent가 .tiptap을 래퍼 div로 한 겹 감싸므로 직계(>)가 아닌 자손( )으로 매칭해야
+     첫 문단 top-margin(6px)이 실제로 리셋된다 — 안 그러면 플레이스홀더보다 입력 시작이 6px 내려간다. */
+  .tiptap-prose .tiptap > :first-child,
   .tiptap-prose > :first-child {
     @apply mt-spacing-none;
   }
-  .tiptap-prose > .tiptap > :last-child,
+  .tiptap-prose .tiptap > :last-child,
   .tiptap-prose > :last-child {
     @apply mb-spacing-none;
   }

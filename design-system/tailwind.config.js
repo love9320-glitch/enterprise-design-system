@@ -1,5 +1,5 @@
 import {
-  fontFamily, fontSize,
+  fontFamily, fontSize, lineHeight,
   baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors,
   listColors, tagColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors, calendarColors,
@@ -11,6 +11,7 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   safelist: [
     ...Object.keys(fontSize).map((size) => `text-${size}`),
+    ...Object.keys(lineHeight).map((key) => `leading-${key}`),
     ...Object.keys(radius).map((key) => `rounded-${key}`),
     ...Object.keys(borderWidth).map((key) => `border-${key}`),
   ],
@@ -18,6 +19,7 @@ export default {
     extend: {
       fontFamily,
       fontSize,
+      lineHeight,
       colors: {
         ...baseColors,
         'font-icon': fontIconColors,

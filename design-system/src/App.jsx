@@ -6,7 +6,7 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
   UploadMenuPage,
-  PaginationPage, TablePage, TableTemplatePage, ModalPage, ModalTestPage, DatePickerPage,
+  PaginationPage, TablePage, TableTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
@@ -15,6 +15,14 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 // Editor는 Tiptap 엔진이 무거워 초기 번들에서 분리(지연 로드). 컴포넌트 자체는 변경 없음.
 const EditorPage = lazy(() =>
   import('./pages/EditorPage').then((m) => ({ default: m.EditorPage })),
+);
+// Notice Writing Template도 Editor(Tiptap)를 포함하므로 동일하게 지연 로드한다.
+const NoticeTemplatePage = lazy(() =>
+  import('./pages/NoticeTemplatePage').then((m) => ({ default: m.NoticeTemplatePage })),
+);
+// 모달 테스트 페이지도 '안내 작성' 모달(NoticeWritingTemplate=Editor 포함) 때문에 지연 로드한다.
+const ModalTestPage = lazy(() =>
+  import('./pages/ModalTestPage').then((m) => ({ default: m.ModalTestPage })),
 );
 
 const NAV_GROUPS = [
@@ -64,6 +72,7 @@ const NAV_GROUPS = [
     label: '템플릿',
     items: [
       { id: 'table-template', label: 'Table Template', Page: TableTemplatePage },
+      { id: 'notice-template', label: 'Notice Writing Template', Page: NoticeTemplatePage },
     ],
   },
   {

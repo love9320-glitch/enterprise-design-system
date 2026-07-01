@@ -1,6 +1,6 @@
 import {
   baseColors,
-  buttonColors, textFieldColors, labelFieldColors, listColors, tagColors,
+  buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors, listColors, tagColors,
   checkboxColors, radioColors, switchColors, tabColors,
   tableColors, modalColors, editorColors, calendarColors,
 } from '../tokens/index';
@@ -33,8 +33,10 @@ const COMPONENTS = [
   { title: 'Button',                prefix: 'button',     tokens: buttonColors },
   { title: 'Text Field (Input·Search)', prefix: 'text-field', tokens: textFieldColors },
   { title: 'Label (Field)',         prefix: 'label-field', tokens: labelFieldColors },
+  { title: 'Divider',               prefix: 'divider',    tokens: dividerColors },
   { title: 'List · Option',         prefix: 'list',       tokens: listColors },
   { title: 'Tag',                   prefix: 'tag',        tokens: tagColors },
+  { title: 'Chip',                  prefix: 'chip',       tokens: chipColors },
   { title: 'Checkbox',              prefix: 'checkbox',   tokens: checkboxColors },
   { title: 'Radio',                 prefix: 'radio',      tokens: radioColors },
   { title: 'Switch',                prefix: 'switch',     tokens: switchColors },
