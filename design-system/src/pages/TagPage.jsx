@@ -1,8 +1,34 @@
+import { useState } from 'react';
 import { Tag } from '../components/Tag';
 import { Tooltip } from '../components/Tooltip';
 import { ScrollArea } from '../components/ScrollArea';
 import { Divider } from '../components/Divider';
+import { Chip } from '../components/Chip';
 import { UsageExample } from '../components/UsageExample';
+
+// 제거형 칩 데모 — X로 삭제, 비면 복원 버튼
+function ChipDemo() {
+  const initial = ['{지원자명}', '{회사명}', '{면접장소}', '{면접시간}'];
+  const [chips, setChips] = useState(initial);
+  return (
+    <div className="flex flex-wrap items-center gap-spacing-5">
+      {chips.map((c) => (
+        <Chip key={c} onRemove={() => setChips((prev) => prev.filter((x) => x !== c))}>
+          {c}
+        </Chip>
+      ))}
+      {chips.length === 0 && (
+        <button
+          type="button"
+          onClick={() => setChips(initial)}
+          className="text-12 text-font-icon-3 underline"
+        >
+          되돌리기
+        </button>
+      )}
+    </div>
+  );
+}
 
 const USAGE = `import { Tag } from '../components/Tag';
 import { Tooltip } from '../components/Tooltip';
@@ -174,6 +200,17 @@ export function TagPage() {
             </div>
           ))}
         </div>
+      </div>
+
+      {/* Chip — 제거형 칩 */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Chip</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          제거형 칩. 텍스트 + <code className="text-font-icon-5">X</code>(삭제=<code className="text-font-icon-5">onRemove</code>) ·{' '}
+          <code className="text-font-icon-5">onClick</code>(선택). hover/pressed 상태는 chip 토큰 경유.
+        </p>
+        <ChipDemo />
       </div>
     </section>
   );

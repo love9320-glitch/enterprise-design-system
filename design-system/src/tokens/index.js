@@ -5,6 +5,7 @@ export { buttonColors } from './colors/buttonColors.js';
 export { textFieldColors } from './colors/textFieldColors.js';
 export { labelFieldColors } from './colors/labelFieldColors.js';
 export { dividerColors } from './colors/dividerColors.js';
+export { chipColors } from './colors/chipColors.js';
 export { listColors } from './colors/listColors.js';
 export { tagColors } from './colors/tagColors.js';
 export { checkboxColors } from './colors/checkboxColors.js';
