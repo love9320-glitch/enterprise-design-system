@@ -53,7 +53,10 @@ export function ImageUploadMenu({
 
       {image && (
         <div className="bg-list-group-bg p-spacing-5">
-          <img src={image} alt={imageAlt} className="block w-full rounded-round-4 object-cover" />
+          {/* 높이 360px 초과 시 360에서 잘라 보여준다(clip, 가운데 기준 — 위·아래 균등 크롭) */}
+          <div className="flex max-h-[360px] w-full items-center overflow-hidden rounded-round-4">
+            <img src={image} alt={imageAlt} className="block w-full shrink-0" />
+          </div>
         </div>
       )}
 

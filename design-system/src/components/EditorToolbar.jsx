@@ -2,8 +2,9 @@
 // Tiptap editor 인스턴스를 받아 editor.chain() 명령으로 서식을 적용하고,
 // editor.isActive(...)로 현재 커서 위치의 활성 상태를 버튼에 표시한다.
 // toolbar prop(키 배열)으로 노출할 기능을 고를 수 있다(미지정 시 전체).
-//   키: block · bold · italic · underline · strike · color · highlight ·
+//   키: mergefield · block · bold · italic · underline · strike · color · highlight ·
 //       bulletList · orderedList · blockquote · align · link · table · image · hr · code · codeBlock
+//   mergefield: Editor의 mergeFields prop이 있을 때만 노출(머지 태그 삽입 드롭다운).
 // 색·간격은 editor-*/font-icon-*/spacing-*/round-* 토큰만 사용. 재사용 컴포넌트(Popover/PopoverMenu/
 // ListGroup/List/Button)를 그대로 활용한다. 링크·이미지 입력은 PopoverMenu의 input 타입(topArea="input"
 // + footer footerButtonsFill)으로 대체했다.
@@ -13,6 +14,7 @@ import {
   Bold, Italic, Underline, Strikethrough, Type, Baseline, Highlighter,
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Link as LinkIcon, Table as TableIcon, Image as ImageIcon, Minus,
+  Braces, Plus,
 } from 'lucide-react';
 import { Popover } from './Popover';
 import { PopoverMenu } from './PopoverMenu';
@@ -178,7 +180,36 @@ function ImageForm({ editor, close }) {
   );
 }
 
-export function EditorToolbar({ editor, toolbar }) {
+// 머지필드 삽입 — search list 타입 PopoverMenu(width 180)에 머지 태그 목록(+ 아이콘).
+// 클릭 시 커서 위치에 mergeField 노드(삭제 가능한 칩)를 삽입한다. mergeFields = 문자열 | {label,value}[].
+function MergeFieldMenu({ editor, mergeFields, close }) {
+  const [q, setQ] = useState('');
+  const items = mergeFields
+    .map((m) => (typeof m === 'string' ? { label: m, value: m } : m))
+    .filter((m) => !q || m.label.toLowerCase().includes(q.toLowerCase()));
+  const insert = (value) => {
+    editor.chain().focus().insertContent({ type: 'mergeField', attrs: { value } }).run();
+    close();
+  };
+  return (
+    <PopoverMenu
+      width={180}
+      topArea="search"
+      searchValue={q}
+      onSearchChange={(e) => setQ(e.target.value)}
+      searchPlaceholder="필드명 검색"
+      searchInputProps={{ autoFocus: true }}
+    >
+      <ListGroup empty={items.length === 0} emptyMessage="검색 결과 없음">
+        {items.map((m) => (
+          <List key={m.value} icon={Plus} title={m.label} onClick={() => insert(m.value)} />
+        ))}
+      </ListGroup>
+    </PopoverMenu>
+  );
+}
+
+export function EditorToolbar({ editor, toolbar, mergeFields = [] }) {
   if (!editor) return null;
 
   const show = (key) => !toolbar || toolbar.includes(key);
@@ -215,6 +246,19 @@ export function EditorToolbar({ editor, toolbar }) {
       ),
       show('redo') && (
         <ToolbarButton key="redo" icon={Redo2} label="다시 실행" disabled={!editor.can().redo()} onClick={() => run((c) => c.redo())} />
+      ),
+    ],
+    // 머지필드 — mergeFields가 있을 때만
+    [
+      show('mergefield') && mergeFields.length > 0 && (
+        <Popover
+          key="mergefield"
+          placement="auto-left"
+          menuWidth={180}
+          trigger={<DropTrigger icon={Braces} label="머지필드" />}
+        >
+          {(close) => <MergeFieldMenu editor={editor} mergeFields={mergeFields} close={close} />}
+        </Popover>
       ),
     ],
     // 블록 타입

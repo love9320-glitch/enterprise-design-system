@@ -22,6 +22,7 @@ import { Table, TableRow, TableHeader, TableCell } from '@tiptap/extension-table
 import { ScrollArea } from './ScrollArea';
 import { EditorToolbar } from './EditorToolbar';
 import { SegmentControlGroup } from './SegmentControl';
+import { MergeFieldNode } from './MergeFieldNode';
 
 const MODE_TABS = [
   { value: 'edit', label: '편집' },
@@ -45,6 +46,7 @@ function buildExtensions() {
     TableRow,
     TableHeader,
     TableCell,
+    MergeFieldNode, // 머지필드를 삭제 가능한 인라인 칩으로 렌더(<span data-merge-field>로 직렬화)
   ];
 }
 
@@ -64,6 +66,7 @@ export function Editor({
   mode: modeProp,
   onModeChange,
   toolbar,
+  mergeFields = [],        // 머지필드 목록: 문자열 또는 {label,value}[] — 툴바 '머지필드' 드롭다운(search list)
   readOnly = false,
   placeholder = '내용을 입력하세요.',
   minHeight = 240,
@@ -211,7 +214,7 @@ export function Editor({
       <div className="border-b border-editor-divider bg-editor-toolbar-bg">
         <div className="flex items-center justify-between gap-spacing-5 px-spacing-5 py-spacing-3">
           {mode === 'edit' && !readOnly ? (
-            <EditorToolbar editor={editor} toolbar={toolbar} />
+            <EditorToolbar editor={editor} toolbar={toolbar} mergeFields={mergeFields} />
           ) : (
             <span className="text-12 text-font-icon-5">
               {mode === 'source' ? 'HTML 소스' : mode === 'preview' ? '미리보기' : ''}

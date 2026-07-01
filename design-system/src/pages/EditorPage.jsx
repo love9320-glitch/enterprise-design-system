@@ -42,9 +42,17 @@ const SAMPLE = `<h2>공지사항 템플릿</h2>
 <p>문의: <a href="https://example.com">고객센터</a></p>
 <table><tbody><tr><th>항목</th><th>내용</th></tr><tr><td>플랜</td><td>프리미엄</td></tr><tr><td>금액</td><td>월 9,900원</td></tr></tbody></table>`;
 
+// 머지필드 목록 예시 — 툴바 '머지필드' 드롭다운(search list)에서 클릭 시 커서 위치에 삽입
+const MERGE_FIELDS = [
+  '{지원자명}', '{회사명}', '{일정조율 시작시간}', '{일정조율 마감시간}',
+  '{면접장소}', '{면접시간}', '{평가자명}', '{지원직무}',
+];
+
 function MainDemo() {
   const [html, setHtml] = useState(SAMPLE);
-  return <Editor value={html} onChange={setHtml} minHeight={260} maxHeight={420} />;
+  return (
+    <Editor value={html} onChange={setHtml} mergeFields={MERGE_FIELDS} minHeight={260} maxHeight={420} />
+  );
 }
 
 export function EditorPage() {

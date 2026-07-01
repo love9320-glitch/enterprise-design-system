@@ -92,6 +92,11 @@
   .tiptap-prose :where(img) {
     @apply my-spacing-5 h-auto max-w-full rounded-round-4;
   }
+  /* 머지필드 칩 — preview 모드는 raw <span data-merge-field>로 렌더되므로 chip 토큰으로 칩 모양을 준다.
+     (edit 모드는 MergeFieldNode의 NodeView가 DS Chip 컴포넌트를 렌더 — 이 규칙에 안 걸림) */
+  .tiptap-prose :where([data-merge-field]) {
+    @apply inline-flex items-center rounded-round-4 border border-chip-default-line bg-chip-default-bg px-spacing-5 py-spacing-1 align-middle text-12 text-chip-default-text;
+  }
   /* 표 — 토큰 보더(table-cell-line)·헤더 배경(table-header-bg) 재사용.
      모서리 라운드(round-4=6px): border-collapse 대신 separate + 외곽 border + overflow-hidden으로 깎는다.
      셀은 우/하단 보더만 두고, 마지막 열/행은 제거해 외곽 1px과 겹치지 않게 한다. */
