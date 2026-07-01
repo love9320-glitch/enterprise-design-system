@@ -213,7 +213,10 @@ export function Modal({
     <div
       className={`fixed inset-0 z-[1000] flex bg-modal-overlay ${overlayLayout}`}
       style={overlayStyle}
-      onMouseDown={closeOnOverlayClick ? onClose : undefined}
+      // dim(오버레이) 영역을 '직접' 클릭했을 때만 닫는다. 박스에 stopPropagation을 걸지 않으므로
+      // (걸면 네이티브 mousedown 전파가 막혀 모달 안 Popover의 document 외부클릭 감지가 안 됨)
+      // 박스 클릭은 target≠overlay라 여기서 닫히지 않는다.
+      onMouseDown={closeOnOverlayClick ? (e) => { if (e.target === e.currentTarget) onClose(); } : undefined}
     >
       <div
         ref={boxRef}
@@ -221,7 +224,6 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={typeof title === 'string' ? title : undefined}
-        onMouseDown={(e) => e.stopPropagation()}
         className={`flex ${minWClass} max-w-[calc(100vw-32px)] flex-col gap-spacing-1 overflow-hidden rounded-round-6 bg-modal-inline shadow-[0px_4px_6px_0px_rgba(0,0,0,0.08)] outline-none ring-1 ring-modal-outline ${SIZE_WIDTH[size]} ${className}`}
         style={boxMaxHStyle}
         {...props}

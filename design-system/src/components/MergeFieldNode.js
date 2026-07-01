@@ -13,10 +13,11 @@
 // atom 이라 편집기 안에서 한 덩어리로 선택·백스페이스 삭제되고, 칩의 X 버튼으로도 삭제된다.
 import { Node, mergeAttributes } from '@tiptap/core';
 
+// 머지필드 칩은 blue color 고정.
 const CHIP_CLASS =
-  'inline-flex items-center gap-spacing-3 rounded-round-4 border border-chip-default-line ' +
-  'bg-chip-default-bg pl-spacing-5 pr-spacing-4 py-spacing-1 align-middle font-pretendard ' +
-  'text-12 text-chip-default-text transition-colors hover:border-chip-hover-line hover:bg-chip-hover-bg';
+  'inline-flex items-center gap-spacing-3 rounded-round-4 border border-chip-blue-default-line ' +
+  'bg-chip-blue-default-bg pl-spacing-4 pr-spacing-3 py-spacing-1 align-middle font-pretendard ' +
+  'text-12 text-chip-blue-default-text transition-colors hover:border-chip-blue-hover-line hover:bg-chip-blue-hover-bg';
 
 // lucide X (size 12) — Chip의 삭제 아이콘과 동일 모양.
 const X_SVG =
@@ -63,7 +64,7 @@ export const MergeFieldNode = Node.create({
 
       const btn = document.createElement('button');
       btn.type = 'button';
-      btn.className = 'flex shrink-0 items-center justify-center text-chip-default-icon';
+      btn.className = 'flex shrink-0 items-center justify-center'; // 색은 부모(text-chip-gray-default-text) 상속
       btn.setAttribute('aria-label', '머지필드 삭제');
       btn.innerHTML = X_SVG;
       // mousedown 기본동작(포커스 이동/셀렉션 변경) 차단 후 click으로 노드 삭제.

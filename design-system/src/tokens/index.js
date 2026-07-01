@@ -1,4 +1,5 @@
 export { fontFamily, fontSize } from './typography.js';
+export { lineHeight } from './lineHeight.js';
 export { baseColors } from './colors.js';
 export { fontIconColors } from './fontIconColors.js';
 export { buttonColors } from './colors/buttonColors.js';

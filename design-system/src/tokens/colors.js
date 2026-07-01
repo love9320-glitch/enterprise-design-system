@@ -44,7 +44,7 @@ export const baseColors = {
     // 400(#e74a4a)이 메인이며, 텍스트필드 에러 툴팁 등에 사용한다.
     red: {
       25: '#fef1f1',
-      50: '#fee9e9',
+      50: '#ffeeee',
       100: '#fde1e1',
       150: '#fbc4c4',
       200: '#f8a8a9',

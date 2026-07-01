@@ -6,15 +6,18 @@ export const fontFamily = {
   pretendard: ['Pretendard Variable', 'Pretendard', 'system-ui', 'sans-serif'],
 };
 
+import { lineHeight } from './lineHeight.js';
+
 // Tailwind fontSize 확장 포맷: [fontSize, { lineHeight, letterSpacing }]
+// 기본 행간은 lineHeight 토큰을 참조한다(값은 한 곳=lineHeight.js에서만 정의).
 export const fontSize = {
-  12: ['12px', { lineHeight: '20px', letterSpacing: '-0.24px' }],
-  13: ['13px', { lineHeight: '22px', letterSpacing: '-0.26px' }],
-  14: ['14px', { lineHeight: '24px', letterSpacing: '-0.28px' }],
-  15: ['15px', { lineHeight: '26px', letterSpacing: '-0.30px' }],
-  16: ['16px', { lineHeight: '28px', letterSpacing: '-0.32px' }],
-  18: ['18px', { lineHeight: '30px', letterSpacing: '-0.36px' }],
-  20: ['20px', { lineHeight: '32px', letterSpacing: '-0.40px' }],
+  12: ['12px', { lineHeight: lineHeight[20], letterSpacing: '-0.24px' }],
+  13: ['13px', { lineHeight: lineHeight[22], letterSpacing: '-0.26px' }],
+  14: ['14px', { lineHeight: lineHeight[24], letterSpacing: '-0.28px' }],
+  15: ['15px', { lineHeight: lineHeight[26], letterSpacing: '-0.30px' }],
+  16: ['16px', { lineHeight: lineHeight[28], letterSpacing: '-0.32px' }],
+  18: ['18px', { lineHeight: lineHeight[30], letterSpacing: '-0.36px' }],
+  20: ['20px', { lineHeight: lineHeight[32], letterSpacing: '-0.40px' }],
 };
 
 // 두께는 Tailwind 기본 유틸리티로 매핑됩니다: font-normal(400) / font-semibold(600)

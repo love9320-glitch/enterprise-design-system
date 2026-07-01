@@ -6,6 +6,8 @@ import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Tag } from '../components/Tag';
 import { TableTemplate } from '../components/TableTemplate';
+import { NoticeWritingTemplate } from '../components/NoticeWritingTemplate';
+import { NOTICE_SAMPLE_BODIES } from './noticeSampleBodies';
 
 const FIELDS = ['프론트엔드', '백엔드', '디자인', '마케팅', '기획'];
 
@@ -124,9 +126,35 @@ function SelectionModal({ open, onClose }) {
   );
 }
 
+// ───────── 모달 3: 안내 작성 (모달 바디에 NoticeWritingTemplate) ─────────
+const NOTICE_MERGE_FIELDS = ['{지원자명}', '{회사명}', '{지원직무}', '{면접일시}', '{면접장소}', '{담당자명}'];
+
+function NoticeModal({ open, onClose }) {
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="안내 작성"
+      size="2xl"
+      placement="top"
+      cancelText="취소"
+      confirmText="저장"
+      onConfirm={onClose}
+    >
+      <NoticeWritingTemplate
+        mergeFields={NOTICE_MERGE_FIELDS}
+        defaultBodies={NOTICE_SAMPLE_BODIES}
+        editorMinHeight={320}
+        editorMaxHeight={440}
+      />
+    </Modal>
+  );
+}
+
 export function ModalTestPage() {
   const [bgOpen, setBgOpen] = useState(false);
   const [selOpen, setSelOpen] = useState(false);
+  const [noticeOpen, setNoticeOpen] = useState(false);
   return (
     <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">모달 테스트 구현</h2>
@@ -141,9 +169,13 @@ export function ModalTestPage() {
         <Button variant="fill" onClick={() => setSelOpen(true)}>
           지원자 선택 모달 열기
         </Button>
+        <Button variant="fill" onClick={() => setNoticeOpen(true)}>
+          안내 작성 모달 열기
+        </Button>
       </div>
       <BackgroundModal open={bgOpen} onClose={() => setBgOpen(false)} />
       <SelectionModal open={selOpen} onClose={() => setSelOpen(false)} />
+      <NoticeModal open={noticeOpen} onClose={() => setNoticeOpen(false)} />
     </section>
   );
 }
