@@ -137,7 +137,9 @@ export function DateField({
   error = false,
   errorMessage = '',
   formatErrorMessage = '날짜 형식이 올바르지 않습니다.', // 직접 입력 형식 오류 메시지
-  closeOnSelect = true, // 캘린더 선택 완료 시 자동 닫기(showTime이면 시간도 골라야 하므로 닫지 않음)
+  // 캘린더 선택 완료 시 자동 닫기 — 기본: 단일은 날짜 클릭 즉시 닫힘, 범위는 배경 클릭으로만 닫힘.
+  // (showTime이면 시간도 골라야 하므로 true여도 닫지 않음)
+  closeOnSelect = mode !== 'range',
   // 너비: 'hug'(콘텐츠 폭) | 'fill'(부모 100%) | 숫자(px) | CSS 길이.
   // 미지정 시 기본 = showTime이면 260, 아니면 180. 폭이 좁으면 텍스트는 말줄임(…).
   width,
@@ -363,7 +365,7 @@ export function DateField({
       open={open}
       onOpenChange={setOpen}
       disabled={!interactive}
-      placement="bottom-left"
+      placement="auto"
       menuWidth={276}
       trigger={trigger}
       className={`${isFill ? 'w-full' : ''} ${className}`}

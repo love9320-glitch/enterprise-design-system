@@ -198,7 +198,7 @@ export function TimeField({
       open={open}
       onOpenChange={setOpen}
       disabled={!interactive}
-      placement="bottom-left"
+      placement="auto"
       menuWidth={140}
       trigger={trigger}
       className={`${isFill ? 'w-full' : ''} ${className}`}

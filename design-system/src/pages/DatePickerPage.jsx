@@ -74,7 +74,7 @@ const USAGE_PROPS = [
   { name: 'DateField · error / errorMessage', type: 'boolean / string', default: 'false / —', desc: '에러 상태 + 필드 아래 툴팁' },
   { name: 'DateField · (직접 입력)', type: '—', default: '—', desc: '타이핑 후 Enter/blur로 파싱·정규화. 날짜: 250520·20250520·0520(올해)·25.05.20 / 시간(공백 뒤): 00:10·0010·011. 숫자·구분자·괄호만 입력 가능. 범위 시작만 입력 시 "마감일 없음"' },
   { name: 'DateField · formatErrorMessage', type: 'string', default: "'날짜 형식이 올바르지 않습니다.'", desc: '직접 입력 형식 오류 툴팁' },
-  { name: 'DateField · closeOnSelect', type: 'boolean', default: 'true', desc: '선택 완료 시 자동 닫기(showTime이면 유지)' },
+  { name: 'DateField · closeOnSelect', type: 'boolean', default: '단일 true · 범위 false', desc: '선택 완료 시 자동 닫기(범위 기본은 배경 클릭으로만 닫힘, showTime이면 true여도 유지)' },
   { name: 'DateField · width', type: "'hug' | 'fill' | number | string", default: 'showTime?260:180', desc: "콘텐츠 폭(hug)/부모 100%(fill)/고정. 미지정 시 시간 포함=260·아니면 180. 좁으면 말줄임(…)" },
   { name: 'DateField · (disablePast/minDate/maxDate/disabledDate/weekStartsOn/minYear/maxYear)', type: '—', default: '—', desc: 'DatePicker로 패스스루' },
   // DatePicker
