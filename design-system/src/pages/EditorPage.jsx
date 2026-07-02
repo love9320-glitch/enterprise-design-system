@@ -57,7 +57,7 @@ function MainDemo() {
 
 export function EditorPage() {
   return (
-    <section className="mx-auto max-w-4xl px-spacing-7 py-spacing-10 text-left">
+    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
       <div className="mb-spacing-8">
         <h2 className="text-20 font-semibold text-font-icon-5">Editor</h2>
         <p className="mt-spacing-3 text-14 text-font-icon-4">

@@ -47,7 +47,7 @@ export function SearchBar({
         onKeyDown={(e) => {
           if (e.key === 'Enter' && onSubmit) onSubmit(e.currentTarget.value);
         }}
-        className="min-w-0 flex-1 bg-transparent text-14 text-text-field-filled-text outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed disabled:text-text-field-disabled-text [&::-webkit-search-cancel-button]:appearance-none"
+        className="min-w-0 flex-1 bg-transparent text-14 text-text-field-filled-text outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed disabled:text-text-field-disabled-text disabled:placeholder:text-text-field-disabled-text [&::-webkit-search-cancel-button]:appearance-none"
         {...inputProps}
       />
     </div>
