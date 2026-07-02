@@ -3,6 +3,7 @@ import { Field } from '../components/Field';
 import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { DateField } from '../components/DateField';
+import { EmailField, PhoneField } from '../components/SelectOrInput';
 import { UsageExample } from '../components/UsageExample';
 import { Divider } from '../components/Divider';
 
@@ -55,6 +56,72 @@ const DEPTS = [
   { value: 'be', label: '백엔드' },
   { value: 'design', label: '디자인' },
 ];
+
+// ── Email / Phone Field (SelectOrInput) — 등록값 선택 or 직접 입력 ──────────
+const CONTACT_USAGE = `import { EmailField, PhoneField } from '../components/SelectOrInput';
+
+// 등록된 값 선택 OR 직접 입력 — 상호 배타(마지막 수단이 값을 갖고 반대쪽은 디폴트로 리셋)
+const [email, setEmail] = useState('');
+<EmailField
+  options={['hong@company.com', 'kim@company.com']}   // 등록된 이메일
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}          // e.target.source: 'select'|'input'|null
+  width="100%"
+/>
+
+// PhoneField는 숫자 입력 시 하이픈 자동 삽입(01093589320 → 010-9358-9320)
+<PhoneField options={['010-1234-5678', '010-9876-5432']} defaultValue="010-1234-5678" />
+
+// 한쪽만 사용 — showSelect/showInput으로 끄면 남은 컨트롤이 전체 폭
+<EmailField options={emails} showInput={false} />   // 등록값 선택 전용
+<PhoneField showSelect={false} />                    // 직접 입력 전용
+
+// 라벨·헬프텍스트는 Field로 감싼다(다른 컨트롤과 동일한 조립)
+<Field label="이메일" required description="합격 안내 발송에 사용됩니다.">
+  <EmailField options={emails} width="100%" />
+</Field>`;
+
+const CONTACT_PROPS = [
+  { name: 'options', type: 'string[] | {value,label}[]', default: '[]', desc: '등록된 값 목록(Select 선택지)' },
+  { name: 'showSelect / showInput', type: 'boolean', default: 'true', desc: '한쪽 컨트롤 숨김 — 남은 쪽이 전체 폭(select 전용이면 에러 툴팁도 Select가 담당)' },
+  { name: 'value', type: 'string', default: '—', desc: '최종 값(제어) — options에 있으면 Select, 없으면 Input에 표시' },
+  { name: 'defaultValue', type: 'string', default: "''", desc: '초기 값(비제어)' },
+  { name: 'onChange', type: '(e) => void', default: '—', desc: 'e.target.value(문자열) · e.target.source(select/input/null)' },
+  { name: 'selectPlaceholder', type: 'string', default: "'이메일 선택' 등", desc: 'Select 미선택 문구(Email/Phone 래퍼가 기본값 제공)' },
+  { name: 'inputPlaceholder', type: 'string', default: "'…직접 입력하세요'", desc: 'Input 미입력 문구' },
+  { name: 'selectWidth', type: 'number | string', default: '160', desc: 'Select 너비 — 나머지는 Input이 채움' },
+  { name: 'width', type: 'number | string', default: '400', desc: "전체 너비(px/CSS 길이 '100%' 등)" },
+  { name: 'menuWidth / placement / searchable', type: '—', default: '—', desc: 'Select 드롭다운 옵션 그대로 통과' },
+  { name: 'disabled / readOnly', type: 'boolean', default: 'false', desc: '두 컨트롤 동시 적용' },
+  { name: 'error / errorMessage', type: 'boolean / string', default: 'false', desc: '에러 툴팁(Input 아래 오버레이)' },
+  { name: 'inputProps', type: 'object', default: '{}', desc: '내부 <input> 속성 통과(Email=inputMode email · Phone=tel 기본)' },
+  { name: 'formatInput', type: '(raw) => string', default: 'Phone=하이픈 자동', desc: '직접 입력값 변환. PhoneField는 기본으로 하이픈 자동 삽입(01093589320→010-9358-9320), null로 끔' },
+];
+
+const EMAILS = ['hong@company.com', 'kim@company.com', 'recruit@company.com'];
+const PHONES = ['010-1234-5678', '010-9876-5432', '02-555-0100'];
+
+// 제어 데모 — 현재 값·입력 수단을 아래에 표시
+function ContactLiveDemo({ Comp, options }) {
+  const [val, setVal] = useState('');
+  const [src, setSrc] = useState(null);
+  return (
+    <div>
+      <Comp
+        options={options}
+        value={val}
+        onChange={(e) => {
+          setVal(e.target.value);
+          setSrc(e.target.source);
+        }}
+        width="100%"
+      />
+      <p className="mt-spacing-4 font-mono text-12 text-font-icon-3">
+        value: {val || '(없음)'} · source: {src ?? '—'}
+      </p>
+    </div>
+  );
+}
 
 // 필수 입력 검증 — 컨트롤 자체 에러 툴팁 사용(Field는 라벨만 소유)
 function ValidationDemo() {
@@ -157,6 +224,76 @@ export function FieldPage() {
         </p>
         <div className="max-w-sm pb-spacing-9">
           <ValidationDemo />
+        </div>
+      </div>
+
+      {/* Email / Phone Field — 등록값 선택 or 직접 입력 (SelectOrInput 조립) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
+          Email / Phone Field — 등록값 선택 or 직접 입력
+        </h3>
+        <p className="mb-spacing-6 text-12 text-font-icon-4">
+          등록된 값을 <span className="text-font-icon-5">Select로 선택</span>하거나{' '}
+          <span className="text-font-icon-5">Input에 직접 입력</span>하는 상호 배타 필드(Select+Input 조립).
+          직접 입력하면 Select가 선택 전 상태로, Select에서 선택하면 Input이 입력 전 상태로 되돌아가며,
+          값은 최종 문자열 하나로 전달됩니다.
+        </p>
+        <UsageExample code={CONTACT_USAGE} props={CONTACT_PROPS} />
+
+        <p className="mb-spacing-4 text-12 text-font-icon-3">EmailField — 직접 입력·선택을 번갈아 해보세요</p>
+        <ContactLiveDemo Comp={EmailField} options={EMAILS} />
+
+        <p className="mb-spacing-4 mt-spacing-8 text-12 text-font-icon-3">PhoneField — 동일 로직</p>
+        <ContactLiveDemo Comp={PhoneField} options={PHONES} />
+
+        {/* Field 조합 — 라벨·헬프텍스트 */}
+        <p className="mb-spacing-4 mt-spacing-8 text-12 text-font-icon-3">
+          Field 조합 (라벨 · 헬프텍스트) — 다른 컨트롤과 동일하게 Field로 감쌉니다
+        </p>
+        <div className="max-w-md space-y-spacing-8">
+          <Field label="이메일" required description="합격 안내 발송에 사용됩니다.">
+            <EmailField options={EMAILS} width="100%" />
+          </Field>
+          <Field label="전화번호" description="면접 일정 안내 문자를 받을 번호입니다.">
+            <PhoneField options={PHONES} width="100%" />
+          </Field>
+        </div>
+
+        {/* 한쪽만 사용 — showSelect / showInput */}
+        <p className="mb-spacing-4 mt-spacing-8 text-12 text-font-icon-3">
+          한쪽만 사용 (showSelect / showInput) — 남은 컨트롤이 전체 폭을 차지합니다
+        </p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[140px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">showInput=false</p>
+            <EmailField options={EMAILS} showInput={false} width="100%" />
+          </div>
+          <div className="grid grid-cols-[140px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">showSelect=false</p>
+            <PhoneField showSelect={false} width="100%" />
+          </div>
+        </div>
+
+        {/* 상태 */}
+        <p className="mb-spacing-4 mt-spacing-8 text-12 text-font-icon-3">상태</p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[140px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">defaultValue(등록값)</p>
+            <EmailField options={EMAILS} defaultValue="kim@company.com" width="100%" />
+          </div>
+          <div className="grid grid-cols-[140px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">defaultValue(직접입력)</p>
+            <EmailField options={EMAILS} defaultValue="me@personal.io" width="100%" />
+          </div>
+          <div className="grid grid-cols-[140px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">disabled</p>
+            <PhoneField options={PHONES} disabled width="100%" />
+          </div>
+          <div className="grid grid-cols-[140px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
+            <p className="pt-spacing-4 text-12 text-font-icon-3">error</p>
+            <EmailField options={EMAILS} error errorMessage="이메일을 선택하거나 입력해 주세요" width="100%" />
+          </div>
         </div>
       </div>
     </section>

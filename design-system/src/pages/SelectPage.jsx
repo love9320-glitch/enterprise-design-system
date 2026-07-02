@@ -20,6 +20,11 @@ const [v, setV] = useState('');
 <Select options={options} placement="top-left" />
 <Select options={options} error errorMessage="필수 선택입니다" />
 
+// 다중 선택 (multiple) — 값은 배열, 행 클릭=체크 토글(메뉴 유지)
+// 선택 라벨은 ', '로 이어 표시되고 넘치면 말줄임
+const [vals, setVals] = useState([]);
+<Select multiple options={options} value={vals} onChange={(e) => setVals(e.target.value)} />
+
 // 인라인 텍스트형 (필터·테이블 바디·문단 사이) — 박스 없이 텍스트+화살표, hug + maxWidth만
 <Select variant="text" options={options} placeholder="전체" />
 <Select variant="text" size="20" options={options} maxWidth={160} />
@@ -29,10 +34,11 @@ const [v, setV] = useState('');
 
 const USAGE_PROPS = [
   { name: 'options', type: '{ value, label }[]', default: '[]', desc: '선택지 목록' },
+  { name: 'multiple', type: 'boolean', default: 'false', desc: '체크박스 다중 선택 — value/defaultValue/onChange 값이 배열이 되고, 행 클릭=토글(메뉴 유지)' },
   { name: 'variant', type: "'box' | 'text'", default: "'box'", desc: "필드형(box) / 인라인 텍스트형(text — 필터·문단 사이용)" },
   { name: 'size', type: "'24' | '20'", default: "'24'", desc: 'text variant 글자 크기 — 24=14px / 20=12px (box는 항상 14px)' },
-  { name: 'value', type: 'string', default: '—', desc: '선택값 (제어 컴포넌트로 쓸 때)' },
-  { name: 'defaultValue', type: 'string', default: "''", desc: '초기 선택값 (비제어)' },
+  { name: 'value', type: 'string | string[]', default: '—', desc: '선택값 (제어) — multiple이면 배열' },
+  { name: 'defaultValue', type: 'string | string[]', default: "'' / []", desc: '초기 선택값 (비제어) — multiple이면 배열' },
   { name: 'onChange', type: '(e) => void', default: '—', desc: '선택 변경 — e.target.value 형태로 전달' },
   { name: 'placeholder', type: 'string', default: "'선택하세요'", desc: '미선택 시 표시 문구' },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 열기/선택 차단' },
@@ -185,6 +191,47 @@ export function SelectPage() {
           hug)은 검색 가능한 Select에서도 동일하게 동작합니다. 트리거는 좁게(hug),
           드롭다운·검색바는 넓게(menuWidth) 두는 조합이 검색에 특히 잘 맞습니다.
         </p>
+      </div>
+
+      {/* 다중 선택 (multiple) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
+          다중 선택 (multiple)
+        </h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">multiple</code>을 켜면 드롭다운이{' '}
+          <span className="text-font-icon-5">체크박스 목록</span>이 되어 여러 값을 선택합니다.
+          행을 클릭하면 체크가 토글되고 <span className="text-font-icon-5">메뉴는 닫히지 않습니다</span>(바깥
+          클릭·Esc로 닫기). 선택된 라벨은 트리거에 <span className="text-font-icon-5">', '로 이어</span> 표시되며,
+          영역을 넘으면 <span className="text-font-icon-5">말줄임</span> 처리됩니다. 값은 배열로 전달됩니다.
+        </p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">기본 (width=240)</p>
+            <Select multiple options={OPTIONS} width={240} placeholder="여러 개 선택하세요" />
+          </div>
+          <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">여러 개 선택 → 말줄임</p>
+            <Select
+              multiple
+              options={OPTIONS}
+              width={240}
+              defaultValue={['opt2', 'opt3', 'opt4', 'opt6']}
+            />
+          </div>
+          <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">searchable 조합</p>
+            <Select
+              multiple
+              searchable
+              options={SEARCH_OPTIONS}
+              width={240}
+              menuWidth={280}
+              placeholder="과일 다중 선택"
+            />
+          </div>
+        </div>
       </div>
 
       {/* 드롭다운 위치 — 박스 네 모서리 시연 */}

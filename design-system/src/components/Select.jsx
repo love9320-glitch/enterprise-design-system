@@ -6,8 +6,10 @@
 //  - 키보드: ↑/↓ 이동, Enter/Space 열기·선택, Esc 닫기, Tab 닫기
 //  - 외부 클릭 시 닫힘
 //  - 선택 항목은 List selected(파란색), 키보드 강조는 List highlighted(hover 색)
+//  - multiple: 체크박스 다중 선택 — value는 배열, 행 클릭=토글(메뉴 유지),
+//    트리거에는 선택 라벨을 ', '로 이어 표시하고 넘치면 말줄임(기존 TruncatingText 재사용)
 // 색은 tf-* 시멘틱 토큰(트리거)과 list-* 토큰(목록)을 사용.
-import { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import { Tooltip } from './Tooltip';
@@ -27,6 +29,7 @@ export function Select({
   defaultValue = '',
   onChange,
   options = [],            // [{ value, label }]
+  multiple = false,        // 체크박스 다중 선택 — value/defaultValue/onChange 값은 배열([value])
   variant = 'box',         // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 필터·문단 사이용)
   size = '24',             // text variant 전용: '24'(14px) | '20'(12px) — box는 항상 14px
   placeholder = '선택하세요',
@@ -46,8 +49,16 @@ export function Select({
   ...props
 }) {
   const isControlled = value !== undefined;
-  const [internal, setInternal] = useState(defaultValue);
+  // multiple인데 defaultValue가 배열이 아니면(기본 '') 빈 배열로 시작
+  const [internal, setInternal] = useState(() =>
+    multiple && !Array.isArray(defaultValue) ? [] : defaultValue,
+  );
   const current = isControlled ? value : internal;
+  // multiple 전용 — 현재 선택 배열(비배열 방어)
+  const selectedValues = useMemo(
+    () => (multiple && Array.isArray(current) ? current : []),
+    [multiple, current],
+  );
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(-1);
   const [query, setQuery] = useState('');
@@ -63,8 +74,15 @@ export function Select({
   const isText = variant === 'text';
   // text variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
   const effectiveMenuWidth = menuWidth ?? (isText ? 120 : undefined);
-  const selectedOption = options.find((o) => o.value === current);
-  const isPlaceholder = !selectedOption;
+  const selectedOption = multiple ? undefined : options.find((o) => o.value === current);
+  // 트리거 표시 텍스트 — multiple은 선택 라벨을 ', '로 연결(옵션 순서 기준), 넘치면 TruncatingText가 말줄임
+  const selectedLabels = multiple
+    ? options.filter((o) => selectedValues.includes(o.value)).map((o) => o.label)
+    : [];
+  const isPlaceholder = multiple ? selectedLabels.length === 0 : !selectedOption;
+  const displayLabel = multiple
+    ? (isPlaceholder ? placeholder : selectedLabels.join(', '))
+    : (selectedOption ? selectedOption.label : placeholder);
   const interactive = !disabled && !readOnly;
   // box variant 트리거 너비(text variant는 콘텐츠 hug라 style을 주지 않는다)
   const widthStyle =
@@ -89,6 +107,21 @@ export function Select({
     },
     [isControlled, onChange],
   );
+
+  // multiple: 값 토글 — 메뉴는 닫지 않는다(연속 체크). 배열 순서는 옵션 순서를 따르지 않고 토글 순서.
+  const toggleValue = useCallback(
+    (val) => {
+      const next = selectedValues.includes(val)
+        ? selectedValues.filter((v) => v !== val)
+        : [...selectedValues, val];
+      if (!isControlled) setInternal(next);
+      onChange?.({ target: { value: next } });
+    },
+    [isControlled, onChange, selectedValues],
+  );
+
+  // 행 확정 동작 — 단일=선택 후 닫기 / multiple=토글 후 유지
+  const commitOption = (opt) => (multiple ? toggleValue(opt.value) : selectValue(opt.value));
 
   // 트리거 폭을 재서 텍스트 max-width를 계산(콘텐츠폭 − chevron − gap) — 크롬 truncate 보강.
   // hug(fit-content)는 트리거가 콘텐츠를 따라가므로 max-width를 주면 무한 축소 순환이 생긴다 → 제외.
@@ -130,7 +163,9 @@ export function Select({
     if (!open) return;
     // 열릴 때 1회 리셋 — 의도된 effect 내 setState
     setQuery(''); // eslint-disable-line react-hooks/set-state-in-effect
-    const idx = options.findIndex((o) => o.value === current);
+    const idx = options.findIndex((o) =>
+      multiple ? selectedValues.includes(o.value) : o.value === current,
+    );
     setHighlight(idx >= 0 ? idx : 0);
   }, [open]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -170,7 +205,7 @@ export function Select({
       case 'Enter': {
         e.preventDefault();
         const opt = filtered[highlight];
-        if (opt) selectValue(opt.value);
+        if (opt) commitOption(opt);
         break;
       }
       case 'Tab':
@@ -195,7 +230,7 @@ export function Select({
     if (e.key === ' ') {
       e.preventDefault();
       const opt = filtered[highlight];
-      if (opt) selectValue(opt.value);
+      if (opt) commitOption(opt);
     } else {
       handleListNav(e);
     }
@@ -244,7 +279,7 @@ export function Select({
           interactive={interactive}
           maxWidth={maxWidthStyle}
         >
-          {selectedOption ? selectedOption.label : placeholder}
+          {displayLabel}
         </InlineFieldTrigger>
       ) : (
         <div
@@ -266,7 +301,7 @@ export function Select({
             style={textMaxW != null ? { maxWidth: `${textMaxW}px` } : undefined}
             className={`text-14 font-normal ${textColor}`}
           >
-            {selectedOption ? selectedOption.label : placeholder}
+            {displayLabel}
           </TruncatingText>
           <ChevronDown
             size={chevronSize}
@@ -299,17 +334,31 @@ export function Select({
             >
               {filtered.length > 0 ? (
                 <ListGroup>
-                  {filtered.map((opt, i) => (
-                    <List
-                      key={opt.value}
-                      title={opt.label}
-                      selected={opt.value === current}
-                      highlighted={i === highlight}
-                      onClick={() => selectValue(opt.value)}
-                      onMouseEnter={() => setHighlight(i)}
-                      data-option-index={i}
-                    />
-                  ))}
+                  {filtered.map((opt, i) =>
+                    multiple ? (
+                      // 체크박스 행 — List가 행 전체를 체크 토글 영역으로 처리(메뉴 유지)
+                      <List
+                        key={opt.value}
+                        title={opt.label}
+                        checkbox
+                        checked={selectedValues.includes(opt.value)}
+                        onCheckChange={() => toggleValue(opt.value)}
+                        highlighted={i === highlight}
+                        onMouseEnter={() => setHighlight(i)}
+                        data-option-index={i}
+                      />
+                    ) : (
+                      <List
+                        key={opt.value}
+                        title={opt.label}
+                        selected={opt.value === current}
+                        highlighted={i === highlight}
+                        onClick={() => selectValue(opt.value)}
+                        onMouseEnter={() => setHighlight(i)}
+                        data-option-index={i}
+                      />
+                    ),
+                  )}
                 </ListGroup>
               ) : (
                 <ListEmpty message={searchable && query.trim() ? noResultMessage : emptyMessage} />

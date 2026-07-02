@@ -32,6 +32,10 @@ export function Input({
     : readOnly
       ? 'text-text-field-readonly-text'
       : 'text-text-field-filled-text';
+  // disabled면 플레이스홀더도 비활성 색(#c9c9c9) — TextArea와 동일 패턴(Figma disabled 스펙)
+  const placeholderColor = disabled
+    ? 'placeholder:text-text-field-disabled-text'
+    : 'placeholder:text-text-field-default-text';
 
   return (
     <div
@@ -49,7 +53,7 @@ export function Input({
         disabled={disabled}
         readOnly={readOnly}
         aria-invalid={error || undefined}
-        className={`min-w-0 flex-1 bg-transparent text-14 outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed read-only:cursor-default ${textColor}`}
+        className={`min-w-0 flex-1 bg-transparent text-14 outline-none ${placeholderColor} disabled:cursor-not-allowed read-only:cursor-default ${textColor}`}
         {...inputProps}
       />
 

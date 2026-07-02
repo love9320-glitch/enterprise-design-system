@@ -69,7 +69,11 @@ const md = {
   ),
   table: ({ node, ...p }) => (
     <div className="mb-spacing-6 overflow-x-auto">
-      <table className="w-full border-collapse text-13" {...p} />
+      {/* 첫 열(세부 규칙/이름 등) 폭을 160px로 통일 — 나머지 열은 남는 폭을 나눔 */}
+      <table
+        className="w-full border-collapse text-13 [&_td:first-child]:w-[160px] [&_th:first-child]:w-[160px]"
+        {...p}
+      />
     </div>
   ),
   th: ({ node, ...p }) => (
@@ -79,7 +83,8 @@ const md = {
     />
   ),
   td: ({ node, ...p }) => (
-    <td className="border border-base-gray-150 px-spacing-5 py-spacing-3 align-top text-font-icon-4" {...p} />
+    // overflow-wrap:anywhere — 공백 없는 긴 토큰(슬래시 구분 props·경로 등)도 쪼개 셀 폭이 넘치지 않게(테이블 가로 스크롤 방지)
+    <td className="border border-base-gray-150 px-spacing-5 py-spacing-3 align-top text-font-icon-4 [overflow-wrap:anywhere]" {...p} />
   ),
 };
 

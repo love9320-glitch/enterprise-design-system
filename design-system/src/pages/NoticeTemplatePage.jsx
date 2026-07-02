@@ -148,7 +148,7 @@ function Playground() {
 
 export function NoticeTemplatePage() {
   return (
-    <section className="mx-auto max-w-4xl px-spacing-7 py-spacing-10 text-left">
+    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Notice Writing Template</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         안내문 작성 템플릿. 채널 탭(<span className="text-font-icon-5">채용사이트 · 이메일 · SMS 안내문</span>)으로
