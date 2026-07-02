@@ -221,11 +221,16 @@ function DualSelectField({ icon: Icon, display, panelWidth = 201, placement = 'b
 }
 
 // 시간 영역 한 칸(시작/마감) — 라벨 + 시:분 셀렉트. disabled면 비활성(해당 날짜 미선택 시).
-function TimeField({ label, value, onChange, hourOptions, minuteOptions, placement = 'top-right', disabled = false }) {
+// justify: 'center'(범위 2칸, 기본) | 'between'(단일 1칸 — 라벨 왼쪽·셀렉터 오른쪽 정렬)
+function TimeField({ label, value, onChange, hourOptions, minuteOptions, placement = 'top-right', disabled = false, justify = 'center' }) {
   const [hh = '00', mm = '00'] = (value || '').split(':');
   const set = (h, m) => onChange?.(`${h}:${m}`);
   return (
-    <div className="flex h-[44px] flex-1 items-center justify-center gap-spacing-6 bg-list-group-bg px-spacing-6 py-spacing-5">
+    <div
+      className={`flex h-[44px] flex-1 items-center gap-spacing-6 bg-list-group-bg px-spacing-6 py-spacing-5 ${
+        justify === 'between' ? 'justify-between' : 'justify-center'
+      }`}
+    >
       <span className={`whitespace-nowrap text-12 ${disabled ? 'text-font-icon-2' : 'text-font-icon-5'}`}>{label}</span>
       <DualSelectField
         disabled={disabled}
@@ -267,11 +272,12 @@ export function DatePicker({
   month,            // 표시 월(controlled) — Date
   defaultMonth,
   onMonthChange,
-  showTime = false, // 하단 시작/마감 시간 영역 표시
+  showTime = false, // 하단 시간 영역 표시 — 범위=시작/마감 2칸 · 단일=시간 1칸(startTime 사용, 마감 없음)
   startTime = '00:00',
   endTime = '23:59',
   onStartTimeChange,
   onEndTimeChange,
+  timeLabel = '시간 입력', // 단일 모드 시간 칸 라벨
   weekStartsOn = 0, // 0=일요일 시작
   weekdayLabels = DEFAULT_WEEKDAYS,
   todayLabel = '오늘',
@@ -404,10 +410,14 @@ export function DatePicker({
     const disabled = isDayDisabled(date);
     // 비활성 날짜는 안내 툴팁도 띄우지 않는다(선택 불가이므로 시작일/마감일 안내가 무의미).
     const tip = showRangeTooltip && !disabled;
+    // 행 가장자리 칸(주 시작=왼쪽 끝·주 끝=오른쪽 끝) — 범위 띠가 줄에서 끊길 때 바깥 모서리를 둥글게
+    const col = (date.getDay() - weekStartsOn + 7) % 7;
+    const edge = col === 0 ? 'left' : col === 6 ? 'right' : undefined;
     return (
       <CalendarDayButton
         key={date.toISOString()}
         state={dayState(date)}
+        edge={edge}
         disabled={disabled}
         onClick={(e) => {
           // dayRole은 range(범위)에서만 의미 있고 단일 모드에선 range가 null이라 호출 금지.
@@ -522,29 +532,45 @@ export function DatePicker({
         </div>
       )}
 
-      {/* 3) time area — 시작/마감 시간. 해당 날짜(시작일/마감일)를 고르기 전엔 비활성. */}
-      {showTime && (
-        <div className="flex w-full gap-spacing-1">
-          <TimeField
-            label="시작 시간"
-            placement="top-left"
-            value={startTime}
-            onChange={onStartTimeChange}
-            hourOptions={hourOptions}
-            minuteOptions={minuteOptions}
-            disabled={!(isRange ? range?.start : single)}
-          />
-          <TimeField
-            label="마감 시간"
-            placement="top-right"
-            value={endTime}
-            onChange={onEndTimeChange}
-            hourOptions={hourOptions}
-            minuteOptions={minuteOptions}
-            disabled={!(isRange ? range?.end : single)}
-          />
-        </div>
-      )}
+      {/* 3) time area — 시간 선택. 해당 날짜를 고르기 전엔 비활성.
+          범위 모드=시작/마감 2칸, 단일 모드=시간 1칸(마감 시간 없음 — 값은 startTime 그대로 사용,
+          DateField 단일 표기 "YY.MM.DD (HH:MM)"와 일치). */}
+      {showTime &&
+        (isRange ? (
+          <div className="flex w-full gap-spacing-1">
+            <TimeField
+              label="시작 시간"
+              placement="top-left"
+              value={startTime}
+              onChange={onStartTimeChange}
+              hourOptions={hourOptions}
+              minuteOptions={minuteOptions}
+              disabled={!range?.start}
+            />
+            <TimeField
+              label="마감 시간"
+              placement="top-right"
+              value={endTime}
+              onChange={onEndTimeChange}
+              hourOptions={hourOptions}
+              minuteOptions={minuteOptions}
+              disabled={!range?.end}
+            />
+          </div>
+        ) : (
+          <div className="flex w-full gap-spacing-1">
+            <TimeField
+              label={timeLabel}
+              placement="top-right"
+              justify="between"
+              value={startTime}
+              onChange={onStartTimeChange}
+              hourOptions={hourOptions}
+              minuteOptions={minuteOptions}
+              disabled={!single}
+            />
+          </div>
+        ))}
 
       {/* 범위 hover 안내 툴팁 — 말줄임(TruncatingText)과 동일한 디자인(normal·beak 없음).
           포털(fixed)로 띄워 컨테이너 overflow-hidden에 잘리지 않게 하고, 셀 위 가운데 정렬한다. */}

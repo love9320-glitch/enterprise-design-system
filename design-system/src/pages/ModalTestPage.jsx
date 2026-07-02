@@ -1,13 +1,18 @@
 // 모달 테스트 구현 (test 카테고리 — 확인 후 삭제할 임시 데모)
 // Figma 모달들을 실제 컴포넌트(Modal + TableTemplate)로 구현한 데모.
 import { useState } from 'react';
-import { Plus, Trash2, Upload, Download } from 'lucide-react';
+import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Tag } from '../components/Tag';
 import { TableTemplate } from '../components/TableTemplate';
 import { NoticeWritingTemplate } from '../components/NoticeWritingTemplate';
-import { NOTICE_SAMPLE_BODIES } from './noticeSampleBodies';
+import { FormTemplate } from '../components/FormTemplate';
+import { Input } from '../components/Input';
+import { Select } from '../components/Select';
+import { DateField } from '../components/DateField';
+import { EmailField, PhoneField } from '../components/SelectOrInput';
+import { NOTICE_SAMPLE_BODIES, NOTICE_TEMPLATE_BODIES } from './noticeSampleBodies';
 
 const FIELDS = ['프론트엔드', '백엔드', '디자인', '마케팅', '기획'];
 
@@ -151,10 +156,229 @@ function NoticeModal({ open, onClose }) {
   );
 }
 
+// ───────── 모달 4: 안내 및 발표 작성 (FormTemplate + NoticeWritingTemplate 조립) ─────────
+const COMPOSE_TEMPLATES = [
+  { value: 'pass', label: '합격 안내' },
+  { value: 'fail', label: '불합격 안내' },
+  { value: 'doc', label: '서류 접수 안내' },
+];
+const COMPOSE_METHODS = [
+  { value: 'site', label: '채용사이트' },
+  { value: 'email', label: '이메일' },
+  { value: 'sms', label: 'SMS' },
+];
+const COMPOSE_EMAILS = ['midasHR@midas.com', 'recruit@midas.com'];
+const COMPOSE_PHONES = ['010-1234-1234', '02-555-0100'];
+
+function ComposeModal({ open, onClose }) {
+  // 전형안내 방법(다중 선택) — 체크된 채널에 따라 발신 이메일/SMS 필드가 각각 활성화된다
+  const [methods, setMethods] = useState(['site']);
+  // 발송 템플릿(합격/불합격/서류 접수) — 선택에 따라 에디터 본문 교체(key 재마운트로 defaultBodies 재시드).
+  // 미선택(디폴트) 상태에선 에디터 비움.
+  const [template, setTemplate] = useState('');
+  const emailOn = methods.includes('email');
+  const smsOn = methods.includes('sms');
+  const close = () => {
+    setMethods(['site']);
+    setTemplate('');
+    onClose();
+  };
+
+  // 상단 폼 — Figma form template 2column 구성(발신 이메일/SMS는 선택 채널에 연동)
+  const fields = [
+    {
+      key: 'name',
+      label: '안내 및 발표 명칭',
+      control: <Input width="100%" placeholder="명칭을 입력하세요" />,
+    },
+    {
+      key: 'template',
+      label: '발송 템플릿',
+      control: (
+        <Select
+          width="100%"
+          options={COMPOSE_TEMPLATES}
+          value={template}
+          onChange={(e) => setTemplate(e.target.value)}
+          placeholder="템플릿을 선택하세요"
+        />
+      ),
+    },
+    {
+      key: 'time',
+      label: '발송/게시 시간',
+      control: <DateField width="fill" showTime disablePast placeholder="날짜와 시간을 선택하세요" />,
+    },
+    {
+      key: 'method',
+      label: '전형안내 방법',
+      control: (
+        <Select
+          width="100%"
+          multiple
+          options={COMPOSE_METHODS}
+          value={methods}
+          onChange={(e) => setMethods(e.target.value)}
+          placeholder="전형안내 방법을 선택하세요"
+        />
+      ),
+    },
+    {
+      key: 'email',
+      label: '발신 이메일 주소',
+      disabled: !emailOn,
+      control: (
+        <EmailField
+          options={COMPOSE_EMAILS}
+          defaultValue="midasHR@midas.com"
+          disabled={!emailOn}
+          width="100%"
+          selectWidth="45%"
+          inputPlaceholder="이메일을 직접 입력"
+        />
+      ),
+    },
+    {
+      key: 'sms',
+      label: 'SMS 발신번호',
+      disabled: !smsOn,
+      control: (
+        <PhoneField
+          options={COMPOSE_PHONES}
+          defaultValue="010-1234-1234"
+          disabled={!smsOn}
+          width="100%"
+          selectWidth="45%"
+          inputPlaceholder="전화번호를 직접 입력"
+        />
+      ),
+    },
+  ];
+
+  return (
+    <Modal
+      open={open}
+      onClose={close}
+      title="안내 및 발표 작성"
+      size="2xl"
+      placement="top"
+      cancelText="취소"
+      confirmText="확인"
+      onConfirm={close}
+    >
+      <div className="flex flex-col gap-spacing-9">
+        <FormTemplate columns={2} columnGap={16} rowGap={16} labelSize="14" fields={fields} />
+        {/* key=template — 발송 템플릿 선택 시 재마운트해 defaultBodies를 새 본문으로 재시드(미선택=빈 에디터) */}
+        <NoticeWritingTemplate
+          key={template || 'empty'}
+          mergeFields={NOTICE_MERGE_FIELDS}
+          enabledChannels={methods}
+          defaultBodies={template ? NOTICE_TEMPLATE_BODIES[template] : undefined}
+          editorMinHeight={360}
+        />
+      </div>
+    </Modal>
+  );
+}
+
+// ───────── 모달 5: 평가항목 및 항목별 척도 설정 (툴바 + 선택 테이블) ─────────
+const EVAL_ROWS = [
+  { id: 1, title: '정승욱의 키워드블라인드 전용 채용 절대아무도건들지마라 - 공고', field: '식품', status: 'done' },
+  { id: 2, title: '', field: '신입', status: 'done' },
+  { id: 3, title: '', field: '자판기관리', status: 'none' },
+];
+
+function EvalSettingsModal({ open, onClose }) {
+  const [selectedIds, setSelectedIds] = useState([]);
+  const close = () => {
+    setSelectedIds([]);
+    onClose();
+  };
+  const columns = [
+    {
+      key: 'title',
+      label: '공고명(1개)',
+      // 공고 1건에 채용 분야 3행 — cellSpan으로 공고명 셀을 세로 병합(한 칸). width 미지정=fill
+      cellSpan: (row) => (row.title ? EVAL_ROWS.length : 0),
+      render: (row) => <span className="whitespace-normal break-words text-14">{row.title}</span>,
+    },
+    {
+      key: 'field',
+      label: '채용 분야',
+      render: (row) => (
+        <div className="flex items-center gap-spacing-5">
+          <span>{row.field}</span>
+          {row.status === 'done' ? <Tag color="blue">설정 완료</Tag> : <Tag color="red">미설정</Tag>}
+        </div>
+      ),
+    },
+    {
+      key: 'evalItems',
+      label: '평가 항목',
+      width: 90,
+      render: () => (
+        <Button variant="underline" size="32" rightIcon={ChevronRight}>
+          설정
+        </Button>
+      ),
+    },
+    {
+      key: 'questions',
+      label: '구조화 질문',
+      width: 90,
+      render: () => (
+        <Button variant="underline" size="32" rightIcon={ChevronRight}>
+          설정
+        </Button>
+      ),
+    },
+  ];
+  return (
+    <Modal
+      open={open}
+      onClose={close}
+      title="평가항목 및 항목별 척도 설정"
+      size="2xl"
+      placement="top"
+      showCancel={false}
+      confirmText="닫기"
+      onConfirm={close}
+    >
+      {/* TableTemplate 한 방 조립 — 좌 actions(복사/붙여넣기/삭제) + 우 rightActions(지난 설정 불러오기) */}
+      <TableTemplate
+        columns={columns}
+        rows={EVAL_ROWS}
+        bordered={false}
+        selectable
+        selectedIds={selectedIds}
+        onSelectChange={setSelectedIds}
+        searchable={false}
+        pagination={false}
+        actions={({ selectedIds: ids }) => (
+          <>
+            <Button variant="line" rightIcon={ChevronDown} disabled={ids.length === 0}>
+              복사
+            </Button>
+            <Button variant="line" disabled>
+              붙여넣기
+            </Button>
+            <Button variant="line" rightIcon={ChevronDown}>
+              삭제
+            </Button>
+          </>
+        )}
+        rightActions={<Button variant="line">지난 설정 불러오기</Button>}
+      />
+    </Modal>
+  );
+}
+
 export function ModalTestPage() {
   const [bgOpen, setBgOpen] = useState(false);
   const [selOpen, setSelOpen] = useState(false);
   const [noticeOpen, setNoticeOpen] = useState(false);
+  const [composeOpen, setComposeOpen] = useState(false);
+  const [evalOpen, setEvalOpen] = useState(false);
   return (
     <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">모달 테스트 구현</h2>
@@ -172,10 +396,18 @@ export function ModalTestPage() {
         <Button variant="fill" onClick={() => setNoticeOpen(true)}>
           안내 작성 모달 열기
         </Button>
+        <Button variant="fill" onClick={() => setComposeOpen(true)}>
+          안내 및 발표 작성 모달 열기
+        </Button>
+        <Button variant="fill" onClick={() => setEvalOpen(true)}>
+          평가항목 설정 모달 열기
+        </Button>
       </div>
       <BackgroundModal open={bgOpen} onClose={() => setBgOpen(false)} />
       <SelectionModal open={selOpen} onClose={() => setSelOpen(false)} />
       <NoticeModal open={noticeOpen} onClose={() => setNoticeOpen(false)} />
+      <ComposeModal open={composeOpen} onClose={() => setComposeOpen(false)} />
+      <EvalSettingsModal open={evalOpen} onClose={() => setEvalOpen(false)} />
     </section>
   );
 }

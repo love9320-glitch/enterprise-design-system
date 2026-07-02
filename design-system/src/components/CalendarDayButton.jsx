@@ -40,6 +40,7 @@ const HOVERABLE = new Set(['default', 'muted']);
 export function CalendarDayButton({
   children,
   state = 'default', // 'default' | 'muted' | 'today' | 'selected' | 'range-start' | 'range-end' | 'in-range'
+  edge,              // 'left'(행 첫 칸) | 'right'(행 마지막 칸) — 범위 띠가 줄에서 끊길 때 바깥 모서리를 둥글게
   disabled = false,
   onClick,
   className = '',
@@ -50,6 +51,11 @@ export function CalendarDayButton({
   const hover = !disabled && HOVERABLE.has(state) ? 'group-hover:bg-calendar-hover-bg' : '';
   // muted는 이미 회색(비활성)으로 읽히므로, disabled여도 추가 dimming(opacity)을 주지 않는다.
   const dimmed = disabled && state !== 'muted';
+  // 행 가장자리 + 해당 반쪽이 범위색일 때만 바깥 모서리를 둥글게(줄바꿈으로 각지게 끊기는 것 방지)
+  const leftRound =
+    edge === 'left' && half.left.includes('range-bg') ? 'rounded-l-round-00' : '';
+  const rightRound =
+    edge === 'right' && half.right.includes('range-bg') ? 'rounded-r-round-00' : '';
 
   return (
     <button
@@ -62,9 +68,9 @@ export function CalendarDayButton({
       } ${dimmed ? 'opacity-40' : ''} ${className}`}
       {...props}
     >
-      {/* 뒤쪽 좌/우 반쪽 배경 — 범위 연속 칠 */}
-      <span className={`absolute inset-y-0 left-0 w-1/2 ${half.left}`} aria-hidden="true" />
-      <span className={`absolute inset-y-0 right-0 w-1/2 ${half.right}`} aria-hidden="true" />
+      {/* 뒤쪽 좌/우 반쪽 배경 — 범위 연속 칠 (행 가장자리는 바깥 모서리 둥글게) */}
+      <span className={`absolute inset-y-0 left-0 w-1/2 ${half.left} ${leftRound}`} aria-hidden="true" />
+      <span className={`absolute inset-y-0 right-0 w-1/2 ${half.right} ${rightRound}`} aria-hidden="true" />
       {/* 중앙 원형 하이라이트 + 날짜 텍스트 */}
       <span
         className={`relative z-10 flex size-[24px] items-center justify-center rounded-round-00 transition-colors ${circle.circle} ${hover}`}

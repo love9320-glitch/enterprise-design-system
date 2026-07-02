@@ -8,7 +8,8 @@
 //   - bordered     : 테이블 외곽선/라운드 타입
 //   - selectable   : 체크박스 선택 컬럼(+ 전체선택 헤더)
 // 검색 필터 · 페이지네이션 · 선택은 내부 상태로 동작하며, 선택만 selectedIds/onSelectChange로 제어 가능.
-// 좌(버튼그룹) · 우(검색바) 컨트롤 행은 actions·searchable이 모두 꺼지면 통째로 사라진다.
+// 좌(버튼그룹) · 우(검색바·rightActions) 컨트롤 행은 actions·searchable·rightActions가 모두 꺼지면 통째로 사라진다.
+//   - rightActions : 우측 슬롯(ReactNode 또는 (ctx)=>) — 검색바 대신/함께 임의 버튼 등을 우측에 배치
 // 색·간격·보더는 하위 컴포넌트(Table/Pagination 등)의 토큰을 그대로 따른다.
 import { useMemo, useState } from 'react';
 import { Table } from './Table';
@@ -23,6 +24,7 @@ export function TableTemplate({
   rowKey = 'id',
   // 요소 on/off
   actions = null,                 // 버튼그룹 내용 — null이면 버튼그룹 숨김
+  rightActions = null,            // 우측 슬롯(ReactNode 또는 (ctx)=>) — 검색바 대신/함께 우측에 버튼 등 배치
   title = null,                   // 테이블 타이틀 — 있으면 헤더 좌측(버튼그룹 왼쪽)에 표시
   searchable = true,              // 검색바
   pagination = true,              // 페이지네이션
@@ -132,28 +134,38 @@ export function TableTemplate({
   // actions가 함수면 현재 컨텍스트를 넘겨준다(선택 항목으로 삭제 등 구현 가능).
   const ctx = { selectedIds, clearSelection: () => setSelectedIds([]), visibleRows, query };
   const resolvedActions = typeof actions === 'function' ? actions(ctx) : actions;
-  const showHeader = !!resolvedActions || searchable || !!title; // 타이틀/버튼그룹/검색바 중 하나라도 있으면 헤더 렌더
+  // 우측 슬롯 — 검색바 대신/함께 임의 요소(버튼 등)를 우측에 배치. actions와 동일하게 (ctx) => 함수 지원
+  const resolvedRightActions = typeof rightActions === 'function' ? rightActions(ctx) : rightActions;
+  const showHeader = !!resolvedActions || searchable || !!title || !!resolvedRightActions; // 하나라도 있으면 헤더 렌더
 
   return (
     <div className={`flex flex-col gap-spacing-6 ${className}`} {...props}>
       {showHeader && (
         <div className="flex items-center justify-between gap-spacing-6">
-          {/* 좌: 타이틀 + 버튼그룹 (타이틀이 버튼그룹 왼쪽). 둘 다 없으면 빈 자리로 검색바를 우측 고정 */}
+          {/* 좌: 타이틀 + 버튼그룹 (타이틀이 버튼그룹 왼쪽). 둘 다 없으면 빈 자리로 우측(검색바 등)을 고정 */}
           <div className="flex items-center gap-spacing-6">
             {title && <h3 className="flex h-[32px] items-center text-15 font-semibold text-font-icon-5">{title}</h3>}
             {resolvedActions && <ButtonGroup gap={buttonGroupGap}>{resolvedActions}</ButtonGroup>}
           </div>
-          {/* 우: 검색바 */}
-          {searchable && (
-            <SearchBar
-              value={query}
-              placeholder={searchPlaceholder}
-              width={searchWidth}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                goToPage(1);
-              }}
-            />
+          {/* 우: 검색바 · rightActions 버튼그룹 (둘 다 있으면 나란히) — 좌 actions와 동일하게
+              ButtonGroup으로 감싸 여러 버튼(fill/line/ghost 등 스타일 혼합)을 일정 간격으로 배치 */}
+          {(searchable || resolvedRightActions) && (
+            <div className="flex items-center gap-spacing-5">
+              {searchable && (
+                <SearchBar
+                  value={query}
+                  placeholder={searchPlaceholder}
+                  width={searchWidth}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    goToPage(1);
+                  }}
+                />
+              )}
+              {resolvedRightActions && (
+                <ButtonGroup gap={buttonGroupGap}>{resolvedRightActions}</ButtonGroup>
+              )}
+            </div>
           )}
         </div>
       )}

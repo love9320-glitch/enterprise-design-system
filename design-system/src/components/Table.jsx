@@ -319,22 +319,36 @@ export function Table({
                     </div>
                   </td>
                 )}
-                {columns.map((c, ci) => (
-                  <td key={c.key} className={`${cellLine(ci === columns.length - 1)} ${rowLine} h-[49px] px-spacing-6 py-spacing-5 align-middle`}>
-                    <div className={`flex items-center ${ALIGN_STYLE[c.align] ?? ALIGN_STYLE.left} min-w-0 text-14 text-font-icon-5`}>
-                      {/* wrap=false면 말줄임(행이 세로로 안 늘어남), wrap=true면 줄바꿈으로 늘어남. */}
-                      {c.render ? (
-                        c.render(row)
-                      ) : wrap ? (
-                        <span className="break-words">{row[c.key]}</span>
-                      ) : (
-                        <TruncatingText as="span" className="min-w-0">
-                          {row[c.key]}
-                        </TruncatingText>
-                      )}
-                    </div>
-                  </td>
-                ))}
+                {columns.map((c, ci) => {
+                  // 셀 세로 병합 — 컬럼 cellSpan((row, rowIndex, rows) => n): n>1=아래로 n행 병합,
+                  // 0=위 셀의 병합 범위에 포함(이 행에선 td 생략), 1/미지정=일반 셀.
+                  const span = c.cellSpan ? c.cellSpan(row, ri, displayRows) : 1;
+                  if (span === 0) return null;
+                  // 병합 셀의 행 구분선은 셀이 '끝나는' 행 기준으로 판정(마지막 행에서 끝나면 이중선 방지)
+                  const endsLast = ri + Math.max(span, 1) - 1 >= displayRows.length - 1;
+                  const spanRowLine =
+                    bottomClosed && endsLast ? '' : 'border-b border-table-cell-line';
+                  return (
+                    <td
+                      key={c.key}
+                      rowSpan={span > 1 ? span : undefined}
+                      className={`${cellLine(ci === columns.length - 1)} ${spanRowLine} h-[49px] px-spacing-6 py-spacing-5 align-middle`}
+                    >
+                      <div className={`flex items-center ${ALIGN_STYLE[c.align] ?? ALIGN_STYLE.left} min-w-0 text-14 text-font-icon-5`}>
+                        {/* wrap=false면 말줄임(행이 세로로 안 늘어남), wrap=true면 줄바꿈으로 늘어남. */}
+                        {c.render ? (
+                          c.render(row)
+                        ) : wrap ? (
+                          <span className="break-words">{row[c.key]}</span>
+                        ) : (
+                          <TruncatingText as="span" className="min-w-0">
+                            {row[c.key]}
+                          </TruncatingText>
+                        )}
+                      </div>
+                    </td>
+                  );
+                })}
               </tr>
             );
           })
