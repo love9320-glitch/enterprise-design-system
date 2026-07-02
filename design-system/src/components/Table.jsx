@@ -197,10 +197,10 @@ export function Table({
     bordered ? '' : `${isFirst ? 'rounded-l-round-4' : ''} ${isLast ? 'rounded-r-round-4' : ''}`;
 
   // 헤더 셀(<th>) 공통 — 구분선·코너·패딩·하단 구분선(box-shadow). 체크박스/라벨 셀이 함께 사용.
-  // 오른쪽 패딩은 spacing-5(8px) — 헤더 우측 메뉴 버튼이 가장자리에 너무 떨어지지 않게.
-  // 높이는 spacing-12(36px)로 고정(상하 패딩 없음).
+  // 오른쪽 패딩은 spacing-4(6px) — 헤더 우측 메뉴 버튼이 가장자리에 너무 떨어지지 않게.
+  // 높이는 34px 고정(32px 버튼과의 시각 무게 보정 +2px)(상하 패딩 없음 — 본문 h-[45px]처럼 컴포넌트 고정 치수).
   const headCellProps = (isFirst, isLast, width) => ({
-    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-6 pr-spacing-5 h-spacing-12 align-middle`,
+    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-5-5 pr-spacing-4 h-[34px] align-middle`,
     style: { ...(width ? { width } : null), ...headDivider },
   });
 
@@ -234,9 +234,10 @@ export function Table({
           </TruncatingText>
         )}
       </div>
-        {/* headerMenu는 정렬(sortable)이나 항목(items)이 하나라도 있을 때만 버튼을 렌더(빈 메뉴 방지) */}
+        {/* headerMenu는 정렬(sortable)이나 항목(items)이 하나라도 있을 때만 버튼을 렌더(빈 메뉴 방지).
+            flex 래퍼 — inline-flex(Popover 루트)의 베이스라인 갭(하단 2px)을 없애 상하 여백을 대칭으로. */}
         {c.headerMenu && (c.headerMenu.sortable || c.headerMenu.items?.length > 0) && (
-          <div className="shrink-0">
+          <div className="flex shrink-0 items-center">
             <HeaderMenu column={c} sort={activeSort} onSort={setSort} />
           </div>
         )}
@@ -278,7 +279,7 @@ export function Table({
       <tbody>
         {loading ? (
           <tr className="bg-table-row-bg">
-            <td colSpan={totalCols} className={`${stateLine} px-spacing-6 py-spacing-12`}>
+            <td colSpan={totalCols} className={`${stateLine} px-spacing-5-5 py-spacing-12`}>
               <div className="flex items-center justify-center gap-spacing-4 text-14 text-font-icon-3">
                 <LoaderCircle size={16} strokeWidth={1.8} className="animate-spin" />
                 {loadingMessage}
@@ -287,7 +288,7 @@ export function Table({
           </tr>
         ) : displayRows.length === 0 ? (
           <tr className="bg-table-row-bg">
-            <td colSpan={totalCols} className={`${stateLine} px-spacing-6 py-spacing-12 text-center text-14 text-font-icon-3`}>
+            <td colSpan={totalCols} className={`${stateLine} px-spacing-5-5 py-spacing-12 text-center text-14 text-font-icon-3`}>
               {emptyMessage}
             </td>
           </tr>
@@ -309,7 +310,7 @@ export function Table({
                 }`}
               >
                 {selectable && (
-                  <td className={`${cellLine(false)} ${rowLine} h-[49px] px-spacing-6 py-spacing-5 align-middle`}>
+                  <td className={`${cellLine(false)} ${rowLine} h-[45px] px-spacing-5-5 py-spacing-4 align-middle`}>
                     <div className="flex items-center justify-center">
                       <Checkbox
                         checked={selectedSet.has(key)}
@@ -332,7 +333,7 @@ export function Table({
                     <td
                       key={c.key}
                       rowSpan={span > 1 ? span : undefined}
-                      className={`${cellLine(ci === columns.length - 1)} ${spanRowLine} h-[49px] px-spacing-6 py-spacing-5 align-middle`}
+                      className={`${cellLine(ci === columns.length - 1)} ${spanRowLine} h-[45px] px-spacing-5-5 py-spacing-4 align-middle`}
                     >
                       <div className={`flex items-center ${ALIGN_STYLE[c.align] ?? ALIGN_STYLE.left} min-w-0 text-14 text-font-icon-5`}>
                         {/* wrap=false면 말줄임(행이 세로로 안 늘어남), wrap=true면 줄바꿈으로 늘어남. */}
