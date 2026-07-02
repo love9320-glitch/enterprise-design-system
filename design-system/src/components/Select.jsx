@@ -158,6 +158,21 @@ export function Select({
     return () => document.removeEventListener('mousedown', onDown);
   }, [open]);
 
+  // Esc 닫기 — capture 단계에서 먼저 받아 전파를 끊는다(포커스가 목록에 있어도 동작,
+  // 모달 안에선 드롭다운만 닫히고 모달은 유지되도록 Modal의 Esc 리스너보다 우선).
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => {
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        setOpen(false);
+        triggerRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
+  }, [open]);
+
   // 열릴 때: 검색어 초기화 + 현재 선택 항목을 강조 시작점으로
   useEffect(() => {
     if (!open) return;

@@ -55,6 +55,7 @@ const USAGE_PROPS = [
   { name: 'actions', type: 'ReactNode | (ctx) => ReactNode', default: 'null', desc: '버튼그룹 내용. null이면 버튼그룹 숨김. 함수면 ctx={selectedIds, clearSelection, visibleRows, query} 전달' },
   { name: 'title', type: 'ReactNode', default: 'null', desc: '테이블 타이틀 — 있으면 헤더 좌측(버튼그룹 왼쪽)에 표시(버튼그룹/검색바와 함께 표시 가능)' },
   { name: 'searchable', type: 'boolean', default: 'true', desc: '검색바 on/off' },
+  { name: 'rightActions', type: 'ReactNode | (ctx) => ReactNode', default: 'null', desc: '우측 버튼그룹 — 검색바 대신/함께 배치(검색바 오른쪽). ButtonGroup으로 감싸져 여러 버튼(fill/line/ghost 혼합) 가능' },
   { name: 'pagination', type: 'boolean', default: 'true', desc: '페이지네이션 on/off (false면 전체 행 표시)' },
   { name: 'bordered', type: 'boolean', default: 'false', desc: '테이블 외곽선/라운드 타입' },
   { name: 'selectable', type: 'boolean', default: 'false', desc: '체크박스 선택 컬럼(전체선택 헤더 포함)' },
@@ -205,6 +206,7 @@ const MAX_BUTTONS_OPTIONS = [
 function Playground() {
   const [opts, setOpts] = useState({
     title: false, actions: true, search: true, pagination: true, bordered: false, selectable: false,
+    rightActions: false, // 우측 슬롯(검색바 옆/대신 버튼)
     showTotal: true, showPageSize: true, // 페이지네이션 세부 요소
   });
   const [maxHeight, setMaxHeight] = useState(320); // 페이지네이션 없이일 때 표 높이(px), 0=제한 없음
@@ -218,8 +220,9 @@ function Playground() {
         {/* 1행: 요소 on/off 토글 */}
         <div className="flex min-h-[32px] flex-wrap items-center gap-x-spacing-9 gap-y-spacing-5">
           <Checkbox checked={opts.title}      onChange={() => toggle('title')}      label="타이틀" />
-          <Checkbox checked={opts.actions}    onChange={() => toggle('actions')}    label="버튼그룹" />
+          <Checkbox checked={opts.actions}    onChange={() => toggle('actions')}    label="좌측 버튼그룹" />
           <Checkbox checked={opts.search}     onChange={() => toggle('search')}     label="검색바" />
+          <Checkbox checked={opts.rightActions} onChange={() => toggle('rightActions')} label="우측 버튼그룹" />
           <Checkbox checked={opts.pagination} onChange={() => toggle('pagination')} label="페이지네이션" />
           <Checkbox checked={opts.bordered}   onChange={() => toggle('bordered')}   label="외곽선(bordered)" />
           <Checkbox checked={opts.selectable} onChange={() => toggle('selectable')} label="체크박스 선택" />
@@ -273,6 +276,15 @@ function Playground() {
           withActions={opts.actions}
           title={opts.title ? '공고 목록' : null}
           searchable={opts.search}
+          rightActions={
+            opts.rightActions ? (
+              <>
+                <Button variant="ghost">초기화</Button>
+                <Button variant="line">지난 설정 불러오기</Button>
+                <Button variant="fill">내보내기</Button>
+              </>
+            ) : null
+          }
           pagination={opts.pagination}
           bordered={opts.bordered}
           selectable={opts.selectable}

@@ -65,7 +65,7 @@ export function Modal({
   closeOnEsc = true,
   bodyMaxHeight = '70vh',         // 본문 최대 높이(초과 시 내부 스크롤)
   bodyPadding = 'p-spacing-7',    // 본문 패딩(토큰 클래스). Alert/Confirm은 p-spacing-8
-  footerPadding = 'px-spacing-7 py-spacing-6', // 푸터 패딩(토큰 클래스). Alert/Confirm은 px-spacing-8 py-spacing-7
+  footerPadding = 'py-spacing-6 pl-spacing-7 pr-spacing-6', // 푸터 패딩(토큰 클래스, 우측 12px). Alert/Confirm은 px-spacing-8 py-spacing-7
   bodyClassName = '',
   onSubmit,                       // 주면 본문+푸터를 <form>으로 감싸고 주동작 버튼 type=submit
   className = '',
@@ -231,7 +231,7 @@ export function Modal({
         <Inner className="flex min-h-0 flex-1 flex-col gap-spacing-1" {...innerProps}>
           {/* Header */}
           {showHeader && (
-            <header ref={headerRef} className="flex shrink-0 items-center justify-between bg-modal-panel-bg px-spacing-7 py-spacing-6">
+            <header ref={headerRef} className="flex shrink-0 items-center justify-between bg-modal-panel-bg py-spacing-6 pl-spacing-7 pr-spacing-6">
               <h2 className="text-15 font-semibold text-font-icon-5">{title}</h2>
               {showClose && (
                 <Button variant="ghost" size="32" icon={X} onClick={onClose} aria-label="닫기" />

@@ -6,7 +6,7 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
   UploadMenuPage,
-  PaginationPage, TablePage, TableTemplatePage, ModalPage, DatePickerPage,
+  PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
@@ -72,6 +72,7 @@ const NAV_GROUPS = [
     label: '템플릿',
     items: [
       { id: 'table-template', label: 'Table Template', Page: TableTemplatePage },
+      { id: 'form-template', label: 'Form Template', Page: FormTemplatePage },
       { id: 'notice-template', label: 'Notice Writing Template', Page: NoticeTemplatePage },
     ],
   },

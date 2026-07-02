@@ -30,6 +30,7 @@ export function NoticeWritingTemplate({
   onChannelChange,           // (channel) => void
   showTabs = true,           // 채널 탭 노출 여부(false면 단일 채널 모드)
   tabVariant = 'fill',       // 탭 너비 타입: 'fill'(균등 분할, 기본) | 'hug'(내용 폭)
+  enabledChannels,           // 활성 채널 목록(['site','email','sms']) — 미지정 시 전체 활성. 밖의 탭은 disabled
   mergeFields = [],          // Editor 머지필드 목록
   defaultBodies,             // 채널별 초기 본문 HTML — { site?, email?, sms? }
   maxAttachments = 5,        // 첨부 최대 개수
@@ -44,7 +45,12 @@ export function NoticeWritingTemplate({
 }) {
   const controlled = channelProp !== undefined;
   const [internal, setInternal] = useState(defaultChannel);
-  const channel = controlled ? channelProp : internal;
+  const isEnabled = (v) => !enabledChannels || enabledChannels.includes(v);
+  const rawChannel = controlled ? channelProp : internal;
+  // 현재 채널이 비활성이면 첫 활성 채널로 표시 폴백(파생값 — 다시 활성화되면 원래 채널로 복귀)
+  const channel = isEnabled(rawChannel)
+    ? rawChannel
+    : (CHANNELS.find((c) => isEnabled(c.value))?.value ?? rawChannel);
   const setChannel = (v) => {
     if (!controlled) setInternal(v);
     onChannelChange?.(v);
@@ -77,7 +83,7 @@ export function NoticeWritingTemplate({
     <div className={`flex w-full flex-col gap-spacing-6 ${className}`} {...props}>
       {showTabs && (
         <Tabs
-          items={CHANNELS.map(({ value, label }) => ({ value, label }))}
+          items={CHANNELS.map(({ value, label }) => ({ value, label, disabled: !isEnabled(value) }))}
           value={channel}
           onChange={setChannel}
           variant={tabVariant}

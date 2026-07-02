@@ -73,14 +73,18 @@ export function Popover({
     return () => document.removeEventListener('mousedown', onDown);
   }, [open, close]);
 
-  // Esc 닫기
+  // Esc 닫기 — capture 단계에서 먼저 받아 전파를 끊는다
+  // (모달 안에서 팝오버만 닫히고 모달은 유지되도록 — Modal의 document Esc 리스너보다 우선)
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
-      if (e.key === 'Escape') close();
+      if (e.key === 'Escape') {
+        e.stopPropagation();
+        close();
+      }
     };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onKey, true);
+    return () => document.removeEventListener('keydown', onKey, true);
   }, [open, close]);
 
   // 패널 fixed 위치 계산 — Select와 공유하는 공용 훅

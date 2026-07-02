@@ -88,7 +88,7 @@ const USAGE_PROPS = [
   { name: 'DatePicker · month', type: 'Date', default: '—', desc: '표시 월(controlled)' },
   { name: 'DatePicker · defaultMonth', type: 'Date', default: '선택값/오늘', desc: 'uncontrolled 초기 표시 월' },
   { name: 'DatePicker · onMonthChange', type: '(date) => void', default: '—', desc: '표시 월 변경(이전/다음/오늘·연월 선택)' },
-  { name: 'DatePicker · showTime', type: 'boolean', default: 'false', desc: '하단 시작/마감 시간 영역 표시' },
+  { name: 'DatePicker · showTime', type: 'boolean', default: 'false', desc: '하단 시간 영역 — 범위=시작/마감 2칸 · 단일=시간 1칸(startTime 사용, 마감 없음)' },
   { name: 'DatePicker · startTime / endTime', type: "'HH:MM'", default: "'00:00' / '23:59'", desc: '시간 값' },
   { name: 'DatePicker · onStartTimeChange / onEndTimeChange', type: '(hhmm) => void', default: '—', desc: '시간 변경' },
   { name: 'DatePicker · rangeTooltip', type: 'boolean', default: 'true', desc: '범위 모드에서 날짜 hover 시 "시작일/마감일" 안내 툴팁' },
@@ -140,6 +140,8 @@ function DateFieldDemo() {
   const [rangeT, setRangeT] = useState({ start: null, end: null });
   const [s, setS] = useState('00:00');
   const [e, setE] = useState('23:59');
+  const [dateT, setDateT] = useState(null); // 단일 + 시간
+  const [st, setSt] = useState('09:00');
   const [pastRange, setPastRange] = useState({ start: null, end: null });
   const [errDate, setErrDate] = useState(null); // 값 없을 때만 에러 → 선택 시 툴팁 사라짐
   return (
@@ -152,6 +154,16 @@ function DateFieldDemo() {
         <div>
           <p className="mb-spacing-4 text-12 text-font-icon-3">범위 (range)</p>
           <DateField mode="range" value={range} onChange={setRange} />
+        </div>
+        <div>
+          <p className="mb-spacing-4 text-12 text-font-icon-3">단일 + 시간 (showTime — 시간 1칸)</p>
+          <DateField
+            showTime
+            value={dateT}
+            onChange={setDateT}
+            startTime={st}
+            onStartTimeChange={setSt}
+          />
         </div>
         <div>
           <p className="mb-spacing-4 text-12 text-font-icon-3">범위 + 시간 (showTime)</p>
