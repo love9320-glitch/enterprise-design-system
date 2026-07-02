@@ -44,6 +44,7 @@ const USAGE_PROPS = [
   { name: 'defaultChannel', type: "'site' | 'email' | 'sms'", default: "'site'", desc: '초기 채널(비제어)' },
   { name: 'onChannelChange', type: '(channel) => void', default: '—', desc: '채널 변경 콜백' },
   { name: 'showTabs', type: 'boolean', default: 'true', desc: '채널 탭 노출 여부(false=단일 채널 모드)' },
+  { name: 'showAttach', type: 'boolean', default: 'true', desc: '첨부파일 버튼 노출 여부(false면 제목 입력만 전체 폭)' },
   { name: 'tabVariant', type: "'fill' | 'hug'", default: "'fill'", desc: '탭 너비 타입 — fill=균등 분할(기본), hug=내용 폭' },
   { name: 'mergeFields', type: 'string[] | {label,value}[]', default: '[]', desc: 'Editor 머지필드 목록(툴바 머지필드 드롭다운)' },
   { name: 'defaultBodies', type: '{ site?, email?, sms? }', default: '—', desc: '채널별 초기 본문 HTML(비제어). 데모는 site·email에 합격 안내문 기본 삽입' },
@@ -68,6 +69,7 @@ const DEFAULT_BODIES = NOTICE_SAMPLE_BODIES;
 // Playground — 탭 · 에디터 옵션을 끄고 켜며 동작 확인
 function Playground() {
   const [showTabs, setShowTabs] = useState(true);
+  const [showAttach, setShowAttach] = useState(true);
   const [tabVariant, setTabVariant] = useState('fill');
   // 에디터 옵션
   const [useMerge, setUseMerge] = useState(true);
@@ -87,6 +89,11 @@ function Playground() {
             label="showTabs (채널 탭 노출)"
             checked={showTabs}
             onChange={(e) => setShowTabs(e.target.checked)}
+          />
+          <Checkbox
+            label="showAttach (첨부파일 버튼)"
+            checked={showAttach}
+            onChange={(e) => setShowAttach(e.target.checked)}
           />
           <Checkbox
             label="mergeFields (머지필드 툴바)"
@@ -135,6 +142,7 @@ function Playground() {
       {/* 라이브 미리보기 */}
       <NoticeWritingTemplate
         showTabs={showTabs}
+        showAttach={showAttach}
         tabVariant={tabVariant}
         defaultBodies={DEFAULT_BODIES}
         mergeFields={useMerge ? MERGE_FIELDS : []}

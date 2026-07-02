@@ -10,6 +10,7 @@ export const spacing = {
   'spacing-3': '4px',
   'spacing-4': '6px',
   'spacing-5': '8px',
+  'spacing-5-5': '10px', // 중간 스텝(2026-07-02 추가) — 테이블 셀 좌우 패딩 등. 기존 키 순번 유지를 위해 중간 키 사용
   'spacing-6': '12px',
   'spacing-7': '16px',
   'spacing-8': '20px',

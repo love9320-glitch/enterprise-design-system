@@ -33,6 +33,7 @@ export function NoticeWritingTemplate({
   enabledChannels,           // 활성 채널 목록(['site','email','sms']) — 미지정 시 전체 활성. 밖의 탭은 disabled
   mergeFields = [],          // Editor 머지필드 목록
   defaultBodies,             // 채널별 초기 본문 HTML — { site?, email?, sms? }
+  showAttach = true,         // 첨부파일 버튼 노출 여부(false면 제목 입력만 전체 폭)
   maxAttachments = 5,        // 첨부 최대 개수
   attachGuide = '파일을 첨부하세요 (파일당 최대 10MB).', // 업로드 메뉴 안내 문구
   attachAccept,              // <input accept> 필터(예: '.pdf,.doc') — guide와 직접 일치시킬 것
@@ -102,18 +103,20 @@ export function NoticeWritingTemplate({
               onChange={(e) => setTitles((p) => ({ ...p, [channel]: e.target.value }))}
             />
           </div>
-          <FileUploadButton
-            triggerText="첨부파일"
-            buttonProps={{ leftIcon: Paperclip }}
-            placement="auto-right"
-            menuWidth={320}
-            files={files[channel]}
-            guide={attachGuide}
-            accept={attachAccept}
-            maxCount={maxAttachments}
-            onAdd={addFiles}
-            onDelete={deleteFile}
-          />
+          {showAttach && (
+            <FileUploadButton
+              triggerText="첨부파일"
+              buttonProps={{ leftIcon: Paperclip }}
+              placement="auto-right"
+              menuWidth={320}
+              files={files[channel]}
+              guide={attachGuide}
+              accept={attachAccept}
+              maxCount={maxAttachments}
+              onAdd={addFiles}
+              onDelete={deleteFile}
+            />
+          )}
         </div>
       )}
 

@@ -153,13 +153,7 @@ function DemoTemplate({ withActions = true, actionSet = 'default', ...templatePr
     ? null
     : ({ selectedIds, clearSelection }) => (
         <>
-          <Button variant="line" leftIcon={rich ? Plus : undefined} onClick={addRow}>추가</Button>
-          {rich && (
-            <>
-              <Button variant="line" leftIcon={Upload}>가져오기</Button>
-              <Button variant="line" leftIcon={Download}>내보내기</Button>
-            </>
-          )}
+          {/* 순서 규칙(list-page.md): 삭제 → 추가 → 복사 → 붙여넣기, 그 외(가져오기 등)는 뒤에 */}
           {selectable && (
             <Button
               variant="line"
@@ -173,6 +167,13 @@ function DemoTemplate({ withActions = true, actionSet = 'default', ...templatePr
             >
               삭제{rich && selectedIds.length > 0 ? ` (${selectedIds.length})` : ''}
             </Button>
+          )}
+          <Button variant="line" leftIcon={rich ? Plus : undefined} onClick={addRow}>추가</Button>
+          {rich && (
+            <>
+              <Button variant="line" leftIcon={Upload}>가져오기</Button>
+              <Button variant="line" leftIcon={Download}>내보내기</Button>
+            </>
           )}
         </>
       );

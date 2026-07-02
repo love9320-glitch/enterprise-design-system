@@ -189,6 +189,7 @@ function ComposeModal({ open, onClose }) {
     {
       key: 'name',
       label: '안내 및 발표 명칭',
+      required: true,
       control: <Input width="100%" placeholder="명칭을 입력하세요" />,
     },
     {
@@ -207,6 +208,7 @@ function ComposeModal({ open, onClose }) {
     {
       key: 'time',
       label: '발송/게시 시간',
+      required: true,
       control: <DateField width="fill" showTime disablePast placeholder="날짜와 시간을 선택하세요" />,
     },
     {
@@ -263,7 +265,7 @@ function ComposeModal({ open, onClose }) {
       size="2xl"
       placement="top"
       cancelText="취소"
-      confirmText="확인"
+      confirmText="저장"
       onConfirm={close}
     >
       <div className="flex flex-col gap-spacing-9">
@@ -281,11 +283,90 @@ function ComposeModal({ open, onClose }) {
   );
 }
 
+// ───────── 모달 6: 메세지 템플릿 생성 (FormTemplate 2단 + NoticeWritingTemplate) ─────────
+const MSG_TYPES = [
+  { value: 'common', label: '공통' },
+  { value: 'individual', label: '개별' },
+];
+const MSG_TARGETS = [
+  { value: 'applicant', label: '지원자' },
+  { value: 'evaluator', label: '평가자' },
+];
+
+function MessageTemplateModal({ open, onClose }) {
+  // 전형 안내 방법(다중 선택) — 기본 3개 모두 선택, 체크된 채널만 안내문 탭 활성
+  const [methods, setMethods] = useState(['site', 'email', 'sms']);
+  const close = () => {
+    setMethods(['site', 'email', 'sms']);
+    onClose();
+  };
+
+  const fields = [
+    {
+      key: 'type',
+      label: '템플릿 유형',
+      control: <Select width="100%" options={MSG_TYPES} defaultValue="common" />,
+    },
+    {
+      key: 'target',
+      label: '안내 대상',
+      control: <Select width="100%" options={MSG_TARGETS} defaultValue="applicant" />,
+    },
+    {
+      key: 'method',
+      label: '전형 안내 방법',
+      control: (
+        <Select
+          width="100%"
+          multiple
+          options={COMPOSE_METHODS}
+          value={methods}
+          onChange={(e) => setMethods(e.target.value)}
+          placeholder="전형 안내 방법을 선택하세요"
+        />
+      ),
+    },
+    {
+      key: 'name',
+      label: '템플릿 명',
+      required: true,
+      control: <Input width="100%" placeholder="템플릿 명을 입력해주세요." />,
+    },
+  ];
+
+  return (
+    <Modal
+      open={open}
+      onClose={close}
+      title="메세지 템플릿 생성"
+      size="2xl"
+      placement="top"
+      cancelText="취소"
+      confirmText="저장"
+      onConfirm={close}
+    >
+      <div className="flex flex-col gap-spacing-9">
+        <FormTemplate columns={2} columnGap={16} rowGap={16} labelSize="14" fields={fields} />
+        <NoticeWritingTemplate
+          mergeFields={NOTICE_MERGE_FIELDS}
+          enabledChannels={methods}
+          showAttach={false}
+          editorPlaceholder="메시지 내용을 입력하세요."
+          editorMinHeight={360}
+        />
+      </div>
+    </Modal>
+  );
+}
+
 // ───────── 모달 5: 평가항목 및 항목별 척도 설정 (툴바 + 선택 테이블) ─────────
+// titleSpan: 공고명 셀 세로 병합 — 그룹 첫 행에 행 수, 나머지 행은 0(위 셀에 병합)
 const EVAL_ROWS = [
-  { id: 1, title: '정승욱의 키워드블라인드 전용 채용 절대아무도건들지마라 - 공고', field: '식품', status: 'done' },
-  { id: 2, title: '', field: '신입', status: 'done' },
-  { id: 3, title: '', field: '자판기관리', status: 'none' },
+  { id: 1, title: '정승욱의 키워드블라인드 전용 채용 절대아무도건들지마라 - 공고', titleSpan: 3, field: '식품', status: 'done' },
+  { id: 2, titleSpan: 0, field: '신입', status: 'done' },
+  { id: 3, titleSpan: 0, field: '자판기관리', status: 'none' },
+  { id: 4, title: '2026 상반기 신입·경력 공개채용 - 공고', titleSpan: 2, field: '마케팅', status: 'done' },
+  { id: 5, titleSpan: 0, field: '영업관리', status: 'none' },
 ];
 
 function EvalSettingsModal({ open, onClose }) {
@@ -297,9 +378,9 @@ function EvalSettingsModal({ open, onClose }) {
   const columns = [
     {
       key: 'title',
-      label: '공고명(1개)',
-      // 공고 1건에 채용 분야 3행 — cellSpan으로 공고명 셀을 세로 병합(한 칸). width 미지정=fill
-      cellSpan: (row) => (row.title ? EVAL_ROWS.length : 0),
+      label: '공고명(2개)',
+      // 공고 그룹별 세로 병합 — 데이터의 titleSpan(첫 행=행 수, 나머지=0) 그대로 사용. width 미지정=fill
+      cellSpan: (row) => row.titleSpan,
       render: (row) => <span className="whitespace-normal break-words text-14">{row.title}</span>,
     },
     {
@@ -356,14 +437,15 @@ function EvalSettingsModal({ open, onClose }) {
         pagination={false}
         actions={({ selectedIds: ids }) => (
           <>
+            {/* 순서 규칙(list-page.md): 삭제 → 추가 → 복사 → 붙여넣기 */}
+            <Button variant="line" rightIcon={ChevronDown} disabled={ids.length === 0}>
+              삭제
+            </Button>
             <Button variant="line" rightIcon={ChevronDown} disabled={ids.length === 0}>
               복사
             </Button>
             <Button variant="line" disabled>
               붙여넣기
-            </Button>
-            <Button variant="line" rightIcon={ChevronDown}>
-              삭제
             </Button>
           </>
         )}
@@ -379,6 +461,7 @@ export function ModalTestPage() {
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
   const [evalOpen, setEvalOpen] = useState(false);
+  const [msgOpen, setMsgOpen] = useState(false);
   return (
     <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">모달 테스트 구현</h2>
@@ -402,12 +485,16 @@ export function ModalTestPage() {
         <Button variant="fill" onClick={() => setEvalOpen(true)}>
           평가항목 설정 모달 열기
         </Button>
+        <Button variant="fill" onClick={() => setMsgOpen(true)}>
+          메세지 템플릿 생성 모달 열기
+        </Button>
       </div>
       <BackgroundModal open={bgOpen} onClose={() => setBgOpen(false)} />
       <SelectionModal open={selOpen} onClose={() => setSelOpen(false)} />
       <NoticeModal open={noticeOpen} onClose={() => setNoticeOpen(false)} />
       <ComposeModal open={composeOpen} onClose={() => setComposeOpen(false)} />
       <EvalSettingsModal open={evalOpen} onClose={() => setEvalOpen(false)} />
+      <MessageTemplateModal open={msgOpen} onClose={() => setMsgOpen(false)} />
     </section>
   );
 }
