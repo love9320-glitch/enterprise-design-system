@@ -165,7 +165,7 @@ function CalendarScroller({ anchorMonth, anchorKey, weekStartsOn, onVisibleMonth
 }
 
 // ── 연.월 / 시간 선택을 띄우는 셀렉트형 트리거 (텍스트 + chevron, hover 밑줄) ──────
-function DualSelectField({ icon: Icon, display, panelWidth = 160, placement = 'bottom-left', disabled = false, ...panelProps }) {
+function DualSelectField({ icon: Icon, display, panelWidth = 160, placement = 'auto-left', disabled = false, ...panelProps }) {
   // 트리거 비주얼은 공유 프리미티브 InlineFieldTrigger 사용(Select 인라인 텍스트형과 동일).
   // 열림 상태(텍스트 회색·chevron 회전)를 반영하려고 Popover를 controlled로 둔다.
   const [open, setOpen] = useState(false);
@@ -189,7 +189,7 @@ function DualSelectField({ icon: Icon, display, panelWidth = 160, placement = 'b
 
 // 시간 영역 한 칸(시작/마감) — 라벨 + 시:분 셀렉트. disabled면 비활성(해당 날짜 미선택 시).
 // justify: 'center'(범위 2칸, 기본) | 'between'(단일 1칸 — 라벨 왼쪽·셀렉터 오른쪽 정렬)
-function TimeField({ label, value, onChange, hourOptions, minuteOptions, placement = 'top-right', disabled = false, justify = 'center' }) {
+function TimeField({ label, value, onChange, hourOptions, minuteOptions, placement = 'auto-right', disabled = false, justify = 'center' }) {
   const [hh = '00', mm = '00'] = (value || '').split(':');
   const set = (h, m) => onChange?.(`${h}:${m}`);
   return (
@@ -305,6 +305,23 @@ export function DatePicker({
   };
 
   // ── 날짜 클릭 ────────────────────────────────────────────────
+  // 범위 클릭 규칙 — 완성된 범위는 풀리지 않고 한쪽만 이동한다:
+  //   시작일 앞을 찍으면 시작일만 이동(마감 유지), 마감일 뒤를 찍으면 마감일만 이동(시작 유지),
+  //   범위 안(시작~마감, 경계 포함)은 첫 클릭=시작일 이동, 두 번째 클릭=마감일 이동(교대).
+  // 미완성(시작만) 상태는 기존대로 — 시작 앞을 찍으면 시작 재지정, 뒤를 찍으면 마감 확정.
+  const insideNextRef = useRef('start'); // 범위 안 클릭이 다음에 잡을 쪽(교대 상태)
+  const nextRange = (d) => {
+    const { start, end } = range;
+    if (!start) return { start: d, end: null };
+    if (end) {
+      if (d < start) return { start: d, end };
+      if (d > end) return { start, end: d };
+      return insideNextRef.current === 'start' ? { start: d, end } : { start, end: d };
+    }
+    if (d < start) return { start: d, end: null };
+    return { start, end: d };
+  };
+
   const handleDayClick = (date) => {
     if (isDayDisabled(date)) return; // 비활성 날짜는 무시
     const d = startOfDay(date);
@@ -313,23 +330,24 @@ export function DatePicker({
       return;
     }
     const { start, end } = range;
-    // 시작 없음 또는 이미 범위 완성 → 새 범위 시작
-    if (!start || (start && end)) {
-      commit({ start: d, end: null });
-    } else if (d < start) {
-      // 시작보다 앞을 누르면 시작을 다시 잡는다
-      commit({ start: d, end: null });
-    } else {
-      commit({ start, end: d });
-    }
+    const inside = !!(start && end) && d >= start && d <= end;
+    commit(nextRange(d));
+    // 교대 상태 갱신 — 범위 안 클릭이면 다음 쪽으로 토글, 그 외 클릭은 처음(시작)으로 리셋
+    insideNextRef.current = inside && insideNextRef.current === 'start' ? 'end' : 'start';
   };
 
-  // 이 날짜를 클릭하면 시작일을 잡는지(end) 마감일을 잡는지 — handleDayClick과 동일한 분기.
-  const dayRole = (date) => {
+  // 이 날짜를 클릭하면 시작일을 잡는지 마감일을 잡는지 — nextRange와 동일한 분기.
+  // r을 넘기면 그 범위 기준으로 판정(클릭 직후 다음 역할 계산용 — state 반영 전).
+  const dayRole = (date, r = range) => {
     const d = startOfDay(date);
-    const { start, end } = range;
-    if (!start || (start && end) || d < start) return 'start';
-    return 'end';
+    const { start, end } = r;
+    if (!start) return 'start';
+    if (end) {
+      if (d < start) return 'start';
+      if (d > end) return 'end';
+      return insideNextRef.current;
+    }
+    return d < start ? 'start' : 'end';
   };
 
   // ── 날짜 셀 상태 계산 ────────────────────────────────────────
@@ -392,13 +410,13 @@ export function DatePicker({
         disabled={disabled}
         onClick={(e) => {
           // dayRole은 range(범위)에서만 의미 있고 단일 모드에선 range가 null이라 호출 금지.
-          const wasStart = tip && dayRole(date) === 'start';
+          // 클릭 직후의 다음 역할은 커밋될 범위(nextRange) 기준으로 계산한다(state 반영 전).
+          const nr = tip && !disabled ? nextRange(startOfDay(date)) : null;
           handleDayClick(date);
-          // 클릭 후 같은 셀의 다음 역할로 라벨 갱신(시작 찍으면 곧장 "마감일"로)
-          if (tip) {
+          if (nr) {
             setHover({
               rect: e.currentTarget.getBoundingClientRect(),
-              label: wasStart ? rangeEndLabel : rangeStartLabel,
+              label: dayRole(date, nr) === 'start' ? rangeStartLabel : rangeEndLabel,
             });
           }
         }}
@@ -431,7 +449,6 @@ export function DatePicker({
           {/* 연.월 선택 (캘린더 아이콘 + selected-text → 연/월 2depth 목록) */}
           <DualSelectField
             icon={CalendarIcon}
-            placement="bottom-left"
             separator="."
             display={fmtYearMonth(viewDate)}
             inputValue={fmtYearMonth(viewDate)}
@@ -515,7 +532,6 @@ export function DatePicker({
           <div className="flex w-full gap-spacing-1">
             <TimeField
               label="시작 시간"
-              placement="top-right"
               value={startTime}
               onChange={onStartTimeChange}
               hourOptions={hourOptions}
@@ -524,7 +540,6 @@ export function DatePicker({
             />
             <TimeField
               label="마감 시간"
-              placement="top-right"
               value={endTime}
               onChange={onEndTimeChange}
               hourOptions={hourOptions}
@@ -536,7 +551,6 @@ export function DatePicker({
           <div className="flex w-full gap-spacing-1">
             <TimeField
               label={timeLabel}
-              placement="top-right"
               justify="between"
               value={startTime}
               onChange={onStartTimeChange}

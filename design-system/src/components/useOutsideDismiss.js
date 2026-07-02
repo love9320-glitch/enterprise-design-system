@@ -25,6 +25,11 @@ export function useOutsideDismiss({ open, refs, onDismiss, guard }) {
       document.addEventListener('click', swallow, { capture: true, once: true });
       // 드래그아웃 등으로 click이 발생하지 않는 경우 잔여 리스너 정리
       setTimeout(() => document.removeEventListener('click', swallow, true), 300);
+      // preventDefault로 포커스 이동까지 막히므로, 트리거/패널 안에 남은 포커스는 직접 blur해
+      // 원래 일어났을 blur(입력 확정·focused 해제)를 복원한다 — 안 하면 인풋이 활성 상태로 남아
+      // 재클릭 시 focus 이벤트가 없어 팝오버가 다시 열리지 않는다(DateField 등 onFocus 오픈형).
+      const active = document.activeElement;
+      if (active && refs.some((r) => r.current && r.current.contains(active))) active.blur();
       onDismiss(e);
     };
     document.addEventListener('mousedown', onDown, true);
