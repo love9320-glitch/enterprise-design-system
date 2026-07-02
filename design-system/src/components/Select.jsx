@@ -20,6 +20,7 @@ import { ListGroup } from './ListGroup';
 import { List } from './List';
 import { ListEmpty } from './ListEmpty';
 import { usePopoverPosition } from './usePopoverPosition';
+import { useOutsideDismiss } from './useOutsideDismiss';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰).
 const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus:ring-2 focus:ring-text-field-focused-line';
@@ -146,17 +147,13 @@ export function Select({
     return () => ro.disconnect();
   }, [width, isText]);
 
-  // 외부 클릭 닫기 (트리거·드롭다운 둘 다 바깥일 때 — 드롭다운은 portal)
-  useEffect(() => {
-    if (!open) return;
-    const onDown = (e) => {
-      const inRoot = rootRef.current?.contains(e.target);
-      const inMenu = menuRef.current?.contains(e.target);
-      if (!inRoot && !inMenu) setOpen(false);
-    };
-    document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
-  }, [open]);
+  // 외부 클릭 닫기 (트리거·드롭다운 둘 다 바깥일 때 — 드롭다운은 portal).
+  // 공용 훅 useOutsideDismiss — 바깥 클릭은 "닫기 전용"으로 삼켜 아래 요소가 함께 클릭되지 않는다.
+  useOutsideDismiss({
+    open,
+    refs: [rootRef, menuRef],
+    onDismiss: () => setOpen(false),
+  });
 
   // Esc 닫기 — capture 단계에서 먼저 받아 전파를 끊는다(포커스가 목록에 있어도 동작,
   // 모달 안에선 드롭다운만 닫히고 모달은 유지되도록 Modal의 Esc 리스너보다 우선).

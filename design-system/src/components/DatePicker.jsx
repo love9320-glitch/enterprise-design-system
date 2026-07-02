@@ -33,40 +33,6 @@ const fmtYearMonth = (d) => `${d.getFullYear()}.${pad2(d.getMonth() + 1)}`;
 
 // 직접 입력 파싱 — 연.월. 구분자 있으면 연도 2/4자리·월 1~2자리(예: "2025.05" · "25.3"),
 //   구분자 없으면 YYMM(4자리, 예 "2505") 또는 YYYYMM(6자리, 예 "202505"). 2자리 연도는 20xx로 보정.
-const parseYearMonth = (t) => {
-  const s = String(t).trim();
-  const sep = s.match(/^(\d{2}|\d{4})\D+(\d{1,2})$/); // 구분자 있음
-  const ym6 = s.match(/^(\d{4})(\d{2})$/);            // YYYYMM
-  const ym4 = s.match(/^(\d{2})(\d{2})$/);            // YYMM
-  let year;
-  let mo;
-  if (sep) {
-    year = sep[1].length === 2 ? 2000 + Number(sep[1]) : Number(sep[1]);
-    mo = Number(sep[2]);
-  } else if (ym6) {
-    year = Number(ym6[1]);
-    mo = Number(ym6[2]);
-  } else if (ym4) {
-    year = 2000 + Number(ym4[1]);
-    mo = Number(ym4[2]);
-  } else {
-    return null;
-  }
-  if (mo < 1 || mo > 12) return null;
-  return { year, month: mo - 1 };
-};
-// 직접 입력 파싱 — 시:분. 구분자 있으면 시/분 1~2자리(예: "12:34" · "1:1"),
-//   구분자 없으면 HMM(3자리)·HHMM(4자리)로 보고 끝 2자리를 분으로(예: "0105"→01:05, "1250"→12:50).
-const parseTime = (t) => {
-  const s = String(t).trim();
-  const m = s.match(/^(\d{1,2}):(\d{1,2})$/) || s.match(/^(\d{1,2})(\d{2})$/);
-  if (!m) return null;
-  const h = Number(m[1]);
-  const mn = Number(m[2]);
-  if (h > 23 || mn > 59) return null;
-  return `${pad2(h)}:${pad2(mn)}`;
-};
-
 const DEFAULT_WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 // 표시 월의 6주 × 7일 그리드(앞뒤 달 채움)
@@ -96,7 +62,8 @@ const firstWeekOfMonth = (monthDate, weekStartsOn) =>
 
 // 스크롤 메트릭(셀 24 + 행 간격 12 = 한 주 36px) — idx ↔ scrollTop 환산에 사용
 const ROW_UNIT = 36;
-const VISIBLE_HEIGHT = 6 * 24 + 5 * 12; // 6주 = 204px
+const GRID_PAD = 12; // 날짜 영역 상하 패딩(spacing-6) — 정적 그리드(p-spacing-6)와 동일
+const VISIBLE_HEIGHT = 6 * 24 + 5 * 12 + 2 * GRID_PAD; // 6주+상하 패딩 = 228px (정적 그리드와 동일 높이)
 const WIN_BEFORE = 20; // 앵커 달 첫 주 기준 위로 채울 주
 const WIN_AFTER = 26;  // 아래로 채울 주
 const BATCH = 10;      // 끝 근처에서 한 번에 덧붙일 주
@@ -133,7 +100,7 @@ function CalendarScroller({ anchorMonth, anchorKey, weekStartsOn, onVisibleMonth
   useLayoutEffect(() => {
     const el = vpRef.current;
     if (!el) return;
-    if (adjustRef.current === 'anchor') el.scrollTop = WIN_BEFORE * ROW_UNIT;
+    if (adjustRef.current === 'anchor') el.scrollTop = WIN_BEFORE * ROW_UNIT; // 콘텐츠 py 패딩 덕에 첫 주 위 12px 여백(정적과 동일)
     else if (adjustRef.current) el.scrollTop += adjustRef.current;
     adjustRef.current = 0;
     busyRef.current = false;
@@ -143,7 +110,7 @@ function CalendarScroller({ anchorMonth, anchorKey, weekStartsOn, onVisibleMonth
     const el = vpRef.current;
     if (!el) return;
     // 보이는 중앙 주의 목요일이 속한 달을 현재 달로 본다
-    const idx = Math.min(Math.max(Math.floor((el.scrollTop + el.clientHeight / 2) / ROW_UNIT), 0), weeks.length - 1);
+    const idx = Math.min(Math.max(Math.floor((el.scrollTop - GRID_PAD + el.clientHeight / 2) / ROW_UNIT), 0), weeks.length - 1);
     const wk = weeks[idx];
     const mid = new Date(wk.getFullYear(), wk.getMonth(), wk.getDate() + 3);
     const key = monthKey(mid);
@@ -184,7 +151,7 @@ function CalendarScroller({ anchorMonth, anchorKey, weekStartsOn, onVisibleMonth
       onViewport={setVp}
       onScroll={handleScroll}
       className="w-full bg-list-group-bg"
-      contentClassName="flex select-none flex-col gap-spacing-6 overscroll-contain px-spacing-6"
+      contentClassName="flex select-none flex-col gap-spacing-6 overscroll-contain p-spacing-6"
     >
       {weeks.map((wkStart) => (
         <div key={wkStart.getTime()} className="flex items-center">
@@ -198,7 +165,7 @@ function CalendarScroller({ anchorMonth, anchorKey, weekStartsOn, onVisibleMonth
 }
 
 // ── 연.월 / 시간 선택을 띄우는 셀렉트형 트리거 (텍스트 + chevron, hover 밑줄) ──────
-function DualSelectField({ icon: Icon, display, panelWidth = 201, placement = 'bottom-left', disabled = false, ...panelProps }) {
+function DualSelectField({ icon: Icon, display, panelWidth = 160, placement = 'bottom-left', disabled = false, ...panelProps }) {
   // 트리거 비주얼은 공유 프리미티브 InlineFieldTrigger 사용(Select 인라인 텍스트형과 동일).
   // 열림 상태(텍스트 회색·chevron 회전)를 반영하려고 Popover를 controlled로 둔다.
   const [open, setOpen] = useState(false);
@@ -235,14 +202,18 @@ function TimeField({ label, value, onChange, hourOptions, minuteOptions, placeme
       <DualSelectField
         disabled={disabled}
         placement={placement}
+        panelWidth={140}
+        separator=":"
         display={`${hh}:${mm}`}
         inputValue={`${hh}:${mm}`}
         inputPlaceholder="HH:MM"
-        errorMessage="HH:MM 형식으로 입력하세요 (예: 1:1 · 0105)"
-        allowedChars={/[\d:]/}
         onInputApply={(t) => {
-          const v = parseTime(t); // 정규화된 'HH:MM' 또는 null
-          if (!v) return null;
+          const [hs, ms] = t.split(':');
+          const hh = Number(hs);
+          const mm = Number(ms);
+          if (hs.trim() === '' || Number.isNaN(hh) || hh > 23) return { error: 'left', message: '시는 0~23으로 입력하세요' };
+          if (ms.trim() === '' || Number.isNaN(mm) || mm > 59) return { error: 'right', message: '분은 0~59로 입력하세요' };
+          const v = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
           onChange?.(v);
           return v;
         }}
@@ -461,15 +432,19 @@ export function DatePicker({
           <DualSelectField
             icon={CalendarIcon}
             placement="bottom-left"
+            separator="."
             display={fmtYearMonth(viewDate)}
             inputValue={fmtYearMonth(viewDate)}
             inputPlaceholder="YYYY.MM"
-            errorMessage="YYYY.MM 형식으로 입력하세요 (예: 25.3 · 2505)"
-            allowedChars={/[\d.]/}
             onInputApply={(t) => {
-              const p = parseYearMonth(t);
-              if (!p) return null;
-              const next = new Date(p.year, p.month, 1);
+              const [ys, ms] = t.split('.');
+              if (!/^(\d{2}|\d{4})$/.test(ys.trim()))
+                return { error: 'left', message: '연도는 YYYY 형식으로 입력하세요 (예: 2026 · 26)' };
+              const mo = Number(ms);
+              if (ms.trim() === '' || Number.isNaN(mo) || mo < 1 || mo > 12)
+                return { error: 'right', message: '월은 1~12로 입력하세요' };
+              const yr = ys.trim().length === 2 ? 2000 + Number(ys) : Number(ys);
+              const next = new Date(yr, mo - 1, 1);
               setView(next);
               return fmtYearMonth(next); // 정규화된 'YYYY.MM'
             }}
@@ -540,7 +515,7 @@ export function DatePicker({
           <div className="flex w-full gap-spacing-1">
             <TimeField
               label="시작 시간"
-              placement="top-left"
+              placement="top-right"
               value={startTime}
               onChange={onStartTimeChange}
               hourOptions={hourOptions}

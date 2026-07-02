@@ -147,10 +147,13 @@ export function TableTemplate({
             {title && <h3 className="flex h-[32px] items-center text-15 font-semibold text-font-icon-5">{title}</h3>}
             {resolvedActions && <ButtonGroup gap={buttonGroupGap}>{resolvedActions}</ButtonGroup>}
           </div>
-          {/* 우: 검색바 · rightActions 버튼그룹 (둘 다 있으면 나란히) — 좌 actions와 동일하게
-              ButtonGroup으로 감싸 여러 버튼(fill/line/ghost 등 스타일 혼합)을 일정 간격으로 배치 */}
+          {/* 우: rightActions 버튼그룹 · 검색바 (둘 다 있으면 버튼그룹이 앞, 검색바가 맨 오른쪽) —
+              좌 actions와 동일하게 ButtonGroup으로 감싸 여러 버튼(fill/line/ghost 등 스타일 혼합)을 일정 간격으로 배치 */}
           {(searchable || resolvedRightActions) && (
             <div className="flex items-center gap-spacing-5">
+              {resolvedRightActions && (
+                <ButtonGroup gap={buttonGroupGap}>{resolvedRightActions}</ButtonGroup>
+              )}
               {searchable && (
                 <SearchBar
                   value={query}
@@ -161,9 +164,6 @@ export function TableTemplate({
                     goToPage(1);
                   }}
                 />
-              )}
-              {resolvedRightActions && (
-                <ButtonGroup gap={buttonGroupGap}>{resolvedRightActions}</ButtonGroup>
               )}
             </div>
           )}

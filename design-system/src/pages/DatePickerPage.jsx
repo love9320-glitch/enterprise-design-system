@@ -51,13 +51,14 @@ const [e, setE] = useState('23:59');
 // TwoDepthList — 입력 영역 + 좌/우 2컬럼(연/월·시/분 등). 상단 input은 직접 입력 가능.
 // onInputApply: 타이핑 텍스트를 파싱해 좌/우 값에 라이브 반영하고, 정규화 문자열을 반환(틀리면 null)
 //   → 반환 문자열로 blur 시 표시값 보정 · null이면 errorMessage 툴팁 표시
-<TwoDepthList inputValue="2025.07" errorMessage="YYYY.MM 형식으로 입력하세요"
-  onInputApply={(t) => {
-    const m = t.match(/^(\\d{2}|\\d{4})\\D+(\\d{1,2})$/);
-    if (!m || +m[2] < 1 || +m[2] > 12) return null; // "25.3"도 허용
-    const yyyy = m[1].length === 2 ? String(2000 + +m[1]) : m[1];
-    setY(yyyy); setMo(m[2]);
-    return yyyy + '.' + m[2].padStart(2, '0');
+<TwoDepthList separator="." inputValue="2025.07"  // 좌/우 분리 인풋 + '.' 구분자(아래 정렬)
+  onInputApply={(t) => {                            // 합성 문자열('2026.7') 파싱은 호출부가
+    const [ys, ms] = t.split('.');
+    if (!/^(\\d{2}|\\d{4})$/.test(ys)) return { error: 'left', message: '연도는 YYYY 형식으로 입력하세요' };
+    if (+ms < 1 || +ms > 12) return { error: 'right', message: '월은 1~12로 입력하세요' };
+    const yyyy = ys.length === 2 ? String(2000 + +ys) : ys;
+    setY(yyyy); setMo(ms);
+    return yyyy + '.' + ms.padStart(2, '0');        // 정규화 성공 / 실패 시 {error:파트, message}
   }}
   leftOptions={years}  leftValue={y}  onLeftChange={setY}
   rightOptions={months} rightValue={m} onRightChange={setMo} />`;
@@ -102,11 +103,12 @@ const USAGE_PROPS = [
   { name: 'CalendarDayButton · disabled', type: 'boolean', default: 'false', desc: '비활성(클릭 차단)' },
   { name: 'CalendarDayButton · onClick', type: '() => void', default: '—', desc: '셀 클릭' },
   // TwoDepthList
-  { name: 'TwoDepthList · inputValue', type: 'string', default: "''", desc: '상단 입력 영역에 표시할 현재 값(직접 입력 시 자유 타이핑, 외부 값 변경 시 동기화)' },
+  { name: 'TwoDepthList · inputValue', type: 'string', default: "''", desc: '상단 입력 영역 현재 값(합성 문자열: 2026.7·01:23) — 구분자로 쪼개 좌/우 인풋에 표시' },
+  { name: 'TwoDepthList · separator', type: 'string', default: "':'", desc: "좌/우 분리 인풋 사이 구분자 표시·합성 기준 — 연/월 '.' · 시/분 ':'(아래 정렬)" },
   { name: 'TwoDepthList · editable', type: 'boolean', default: 'true', desc: '상단 input 직접 입력 허용(false면 readOnly로 값만 표시)' },
-  { name: 'TwoDepthList · onInputApply', type: '(text) => string | null', default: '—', desc: '입력 텍스트로 좌/우 값 적용(파싱은 호출부). 타이핑 즉시 적용·정규화 문자열 반환, 형식 오류면 null(blur 시 에러)' },
+  { name: 'TwoDepthList · onInputApply', type: "(text) => string | null | {error:'left'|'right', message?}", default: '—', desc: '합성 텍스트로 좌/우 값 적용(파싱은 호출부). 성공=정규화 문자열, 실패={error:파트, message} — 해당 인풋 아래에 그 문구로 툴팁' },
   { name: 'TwoDepthList · errorMessage', type: 'string', default: "'형식이 올바르지 않습니다.'", desc: '직접 입력 형식 오류 시 툴팁 메시지' },
-  { name: 'TwoDepthList · allowedChars', type: 'RegExp | null', default: '/[\\d.:/- ]/', desc: '입력 허용 문자(문자 1개씩 test) — 기본 숫자·구분자만, null이면 제한 없음' },
+  { name: 'TwoDepthList · allowedChars', type: 'RegExp | null', default: '/\\d/', desc: '파트 입력 허용 문자(문자 1개씩 test) — 기본 숫자만(구분자는 UI가 표시), null이면 제한 없음' },
   { name: 'TwoDepthList · onInputChange', type: '(e) => void', default: '—', desc: '입력 변경 raw 이벤트(선택)' },
   { name: 'TwoDepthList · leftOptions / rightOptions', type: '{value,label,disabled?}[]', default: '[]', desc: '좌/우 컬럼 옵션' },
   { name: 'TwoDepthList · leftValue / rightValue', type: 'string', default: '—', desc: '좌/우 선택값' },
@@ -331,21 +333,17 @@ function YearMonthDemo({ showInput = true }) {
   return (
     <TwoDepthList
       showInput={showInput}
+      separator="."
       inputValue={`${y}.${String(m).padStart(2, '0')}`}
       inputPlaceholder="YYYY.MM"
-      errorMessage="YYYY.MM 형식으로 입력하세요 (예: 25.3 · 2505)"
-      allowedChars={/[\d.]/}
       onInputApply={(t) => {
-        const s = t.trim();
-        const sep = s.match(/^(\d{2}|\d{4})\D+(\d{1,2})$/);
-        const ym6 = s.match(/^(\d{4})(\d{2})$/);
-        const ym4 = s.match(/^(\d{2})(\d{2})$/);
-        const mt = sep || ym6 || ym4;
-        if (!mt) return null;
-        const mo = Number(mt[2]);
-        if (mo < 1 || mo > 12) return null;
-        const yr = sep ? mt[1] : ym6 ? mt[1] : String(2000 + Number(mt[1]));
-        const yyyy = yr.length === 2 ? String(2000 + Number(yr)) : yr;
+        const [ys, ms] = t.split('.');
+        if (!/^(\d{2}|\d{4})$/.test(ys.trim()))
+          return { error: 'left', message: '연도는 YYYY 형식으로 입력하세요 (예: 2026 · 26)' };
+        const mo = Number(ms);
+        if (ms.trim() === '' || Number.isNaN(mo) || mo < 1 || mo > 12)
+          return { error: 'right', message: '월은 1~12로 입력하세요' };
+        const yyyy = ys.trim().length === 2 ? String(2000 + Number(ys)) : ys.trim();
         setY(yyyy);
         setM(String(mo));
         return `${yyyy}.${String(mo).padStart(2, '0')}`;
@@ -368,15 +366,14 @@ function TimeListDemo({ showInput = true }) {
       showInput={showInput}
       inputValue={`${h}:${min}`}
       inputPlaceholder="HH:MM"
-      errorMessage="HH:MM 형식으로 입력하세요 (예: 1:1 · 0105)"
-      allowedChars={/[\d:]/}
       onInputApply={(t) => {
-        const s = t.trim();
-        const mt = s.match(/^(\d{1,2}):(\d{1,2})$/) || s.match(/^(\d{1,2})(\d{2})$/);
-        if (!mt) return null;
-        const hh = Number(mt[1]);
-        const mm = Number(mt[2]);
-        if (hh > 23 || mm > 59) return null;
+        const [hs, ms] = t.split(':');
+        const hh = Number(hs);
+        const mm = Number(ms);
+        if (hs.trim() === '' || Number.isNaN(hh) || hh > 23)
+          return { error: 'left', message: '시는 0~23으로 입력하세요' };
+        if (ms.trim() === '' || Number.isNaN(mm) || mm > 59)
+          return { error: 'right', message: '분은 0~59로 입력하세요' };
         const HH = String(hh).padStart(2, '0');
         const MM = String(mm).padStart(2, '0');
         setH(HH);
@@ -463,14 +460,15 @@ export function DatePickerPage() {
       <div>
         <SectionTitle>TwoDepthList — 연/월 · 시/분</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
-          상단 입력 영역(현재 값) + 좌/우 2개 컬럼 목록. 같은 구조로 연/월(year_month), 시/분(time)에 공용으로 씁니다.
+          상단 입력 영역 + 좌/우 2개 컬럼 목록. 같은 구조로 연/월(year_month, 폭 160)·시/분(time, 폭 140)에 공용으로 씁니다.
+          상단 입력은 <code className="text-font-icon-5">좌/우 분리 인풋</code>이고 사이에 구분자
+          (<code className="text-font-icon-5">separator</code> — 연/월 <code className="text-font-icon-5">.</code> · 시/분 <code className="text-font-icon-5">:</code>, 아래 정렬)를 둡니다.
           선택 행은 파란 텍스트로 표시되고, 열릴 때 선택값으로 자동 스크롤됩니다.
           <code className="text-font-icon-5">showInput={'{false}'}</code>로 상단 입력 영역을 빼고 컬럼만 둘 수도 있습니다(트리거가 따로 입력을 가질 때).
-          상단 input에 <code className="text-font-icon-5">직접 입력</code>도 가능합니다 — 연.월은 <code className="text-font-icon-5">2025.05</code>·<code className="text-font-icon-5">25.3</code>·<code className="text-font-icon-5">2505</code>·<code className="text-font-icon-5">202505</code>,
-          시간은 <code className="text-font-icon-5">12:34</code>·<code className="text-font-icon-5">1:1</code>·<code className="text-font-icon-5">0105</code>·<code className="text-font-icon-5">1250</code>처럼 (구분자 없이도) 입력하면 컬럼 선택에 반영됩니다.
-          입력은 <code className="text-font-icon-5">숫자와 구분자</code>만 받습니다(그 외 문자는 무시).
-          타이핑하는 즉시 적용(라이브)되고, 표시값 정규화는 <code className="text-font-icon-5">Enter</code>·포커스 아웃 시점에 하므로
-          <code className="text-font-icon-5">2:20</code>처럼 자유롭게 입력할 수 있습니다(포커스 시 전체 선택돼 덮어쓰기 쉬움). 형식이 틀리면 에러 툴팁으로 알려줍니다.
+          각 인풋에 <code className="text-font-icon-5">직접 입력</code>도 가능합니다 — 연도 <code className="text-font-icon-5">2026</code>·<code className="text-font-icon-5">26</code>, 월 <code className="text-font-icon-5">1~12</code>,
+          시 <code className="text-font-icon-5">0~23</code>, 분 <code className="text-font-icon-5">0~59</code>. 입력은 <code className="text-font-icon-5">숫자만</code> 받습니다(구분자는 UI가 표시).
+          타이핑하는 즉시 적용(라이브)되고, 표시값 정규화는 <code className="text-font-icon-5">Enter</code>·포커스 아웃 시점에 합니다(포커스 시 전체 선택돼 덮어쓰기 쉬움).
+          형식이 틀리면 <code className="text-font-icon-5">틀린 인풋 아래에</code> 그 파트에 맞는 문구로 에러 툴팁이 뜹니다.
         </p>
         <div className="flex flex-wrap items-start gap-spacing-9">
           <div>
