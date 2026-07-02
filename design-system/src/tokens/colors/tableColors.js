@@ -9,7 +9,7 @@ import { baseColors } from '../colors.js';
 const b = baseColors.base;
 
 export const tableColors = {
-  'header-bg':    b.gray[50],  // #f2f2f2 (헤더 행 배경)
+  'header-bg':    b['gray-900-25'], // #0d0d0d12 — 알파 배경(헤더 행, 2026-07-02 gray.50→gray-900-25)
   'cell-line':    b.gray[100], // #e3e3e3 (셀 사이 구분선)
   'outline':      b.gray[100], // #e3e3e3 (테이블 외곽선)
   'row-bg':       b.white,     // #ffffff (바디 행 기본 배경)

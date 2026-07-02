@@ -13,14 +13,14 @@ export const buttonColors = {
     'default-bg':  b.gray[900],         // fill/gray default bg    → #0d0d0d
     'default-fg':  b.white,             // fill/gray default text  → #ffffff
     'hover-bg':    b['gray-900-200'],   // fill/gray hover bg      → #0d0d0da6
-    'disabled-bg': b['gray-900-50'],    // fill/gray disableld bg  → #0d0d0d29
-    'disabled-fg': b.gray[300],         // fill/gray disabled text → #878787
+    'disabled-bg': b['gray-900-25'],    // fill/gray disabled bg  → #0d0d0d12 (2026-07-02 900-50→900-25)
+    'disabled-fg': b.gray[150],         // fill/gray disabled text/icon → #c9c9c9 (=font-icon-2)
   },
   ghost: {
     'default-fg':  b.gray[900],         // ghost/gray default text → #0d0d0d
     'hover-bg':    b['gray-900-25'],    // ghost/gray hover bg     → #0d0d0d12
-    'disabled-bg': b['gray-900-50'],    // ghost/gray disableld bg → #0d0d0d29
-    'disabled-fg': b.gray[300],         // ghost/gray disabled text → #878787
+    'disabled-bg': b['gray-900-25'],    // ghost/gray disabled bg → #0d0d0d12 (2026-07-02 900-50→900-25)
+    'disabled-fg': b.gray[150],         // ghost/gray disabled text/icon → #c9c9c9 (=font-icon-2)
     'selected-bg':   b.gray[400],         // ghost/gray select bg    → #6a6a6a (선택/현재 항목)
     'selected-text': b.white,             // ghost/gray select text  → #ffffff
     'pagination-fg': b.gray[300],       // ghost/gray default text (pagination) → #878787
@@ -32,8 +32,8 @@ export const buttonColors = {
     'default-line': b.gray[150],        // line/gray default line  → #c9c9c9
     'hover-bg':     b['gray-900-25'],   // line/gray hover bg      → #0d0d0d12
     'hover-line':   b.gray[250],        // line/gray hover line    → #999999
-    'disabled-bg':  b['gray-900-50'],   // line/gray disableld bg  → #0d0d0d29
-    'disabled-fg':  b.gray[300],        // line/gray disabled text → #878787
+    'disabled-bg':  b['gray-900-25'],   // line/gray disabled bg  → #0d0d0d12 (2026-07-02 900-50→900-25)
+    'disabled-fg':  b.gray[150],        // line/gray disabled text/icon → #c9c9c9 (=font-icon-2)
     'disabled-line':b['gray-900-75'],   // line/gray disableld line → #0d0d0d54
   },
 };

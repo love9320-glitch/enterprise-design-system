@@ -193,6 +193,12 @@ function ComposeModal({ open, onClose }) {
       control: <Input width="100%" placeholder="명칭을 입력하세요" />,
     },
     {
+      key: 'time',
+      label: '발송/게시 시간',
+      required: true,
+      control: <DateField width="fill" showTime disablePast placeholder="날짜와 시간을 선택하세요" />,
+    },
+    {
       key: 'template',
       label: '발송 템플릿',
       control: (
@@ -204,12 +210,6 @@ function ComposeModal({ open, onClose }) {
           placeholder="템플릿을 선택하세요"
         />
       ),
-    },
-    {
-      key: 'time',
-      label: '발송/게시 시간',
-      required: true,
-      control: <DateField width="fill" showTime disablePast placeholder="날짜와 시간을 선택하세요" />,
     },
     {
       key: 'method',
@@ -302,6 +302,13 @@ function MessageTemplateModal({ open, onClose }) {
   };
 
   const fields = [
+    // 필수 입력(템플릿 명)은 그리드 첫 칸(왼쪽 위)에 배치
+    {
+      key: 'name',
+      label: '템플릿 명',
+      required: true,
+      control: <Input width="100%" placeholder="템플릿 명을 입력해주세요." />,
+    },
     {
       key: 'type',
       label: '템플릿 유형',
@@ -325,12 +332,6 @@ function MessageTemplateModal({ open, onClose }) {
           placeholder="전형 안내 방법을 선택하세요"
         />
       ),
-    },
-    {
-      key: 'name',
-      label: '템플릿 명',
-      required: true,
-      control: <Input width="100%" placeholder="템플릿 명을 입력해주세요." />,
     },
   ];
 

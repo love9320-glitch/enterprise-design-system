@@ -15,6 +15,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { usePopoverPosition } from './usePopoverPosition';
+import { useOutsideDismiss } from './useOutsideDismiss';
 
 // 열려 있는 popover 패널들(menuRef)을 연 순서대로 보관 — 중첩 popover 외부클릭 판정에 사용.
 // 패널은 각자 portal이라 DOM이 분리되므로, "나보다 나중에 열린(위) 패널 안 클릭"은 바깥으로 보지 않는다
@@ -58,20 +59,16 @@ export function Popover({
     };
   }, [open]);
 
-  // 외부 클릭 닫기 (트리거·패널 둘 다 바깥일 때 — 패널은 portal).
-  // 중첩 대응: 외부 클릭은 "맨 위(가장 나중에 열린) 팝오버" 하나만 닫는다.
+  // 외부 클릭 닫기 (트리거·패널 둘 다 바깥일 때 — 패널은 portal). 공용 훅 useOutsideDismiss:
+  //   바깥 클릭은 "닫기 전용"으로 삼켜 아래 요소가 함께 클릭되지 않는다(click-through 방지).
+  // 중첩 대응(guard): 외부 클릭은 "맨 위(가장 나중에 열린) 팝오버" 하나만 닫는다.
   //   → 시간/연월 선택 팝오버가 위에 있으면 그것부터 닫히고, 다음 외부 클릭에 DatePicker가 닫힌다.
-  //   (이 패널/트리거 안 클릭은 당연히 안 닫음.)
-  useEffect(() => {
-    if (!open) return undefined;
-    const onDown = (e) => {
-      if (anchorRef.current?.contains(e.target) || menuRef.current?.contains(e.target)) return;
-      if (openPopoverPanels[openPopoverPanels.length - 1] !== menuRef) return; // 맨 위가 아니면 닫지 않음
-      close();
-    };
-    document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
-  }, [open, close]);
+  useOutsideDismiss({
+    open,
+    refs: [anchorRef, menuRef],
+    guard: () => openPopoverPanels[openPopoverPanels.length - 1] === menuRef,
+    onDismiss: close,
+  });
 
   // Esc 닫기 — capture 단계에서 먼저 받아 전파를 끊는다
   // (모달 안에서 팝오버만 닫히고 모달은 유지되도록 — Modal의 document Esc 리스너보다 우선)

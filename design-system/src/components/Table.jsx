@@ -198,9 +198,9 @@ export function Table({
 
   // 헤더 셀(<th>) 공통 — 구분선·코너·패딩·하단 구분선(box-shadow). 체크박스/라벨 셀이 함께 사용.
   // 오른쪽 패딩은 spacing-4(6px) — 헤더 우측 메뉴 버튼이 가장자리에 너무 떨어지지 않게.
-  // 높이는 34px 고정(32px 버튼과의 시각 무게 보정 +2px)(상하 패딩 없음 — 본문 h-[45px]처럼 컴포넌트 고정 치수).
+  // 높이는 32px 고정(상하 패딩 없음 — 본문 h-[45px]처럼 컴포넌트 고정 치수).(상하 패딩 없음 — 본문 h-[45px]처럼 컴포넌트 고정 치수).
   const headCellProps = (isFirst, isLast, width) => ({
-    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-5-5 pr-spacing-4 h-[34px] align-middle`,
+    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-5-5 pr-spacing-4 h-[32px] align-middle`,
     style: { ...(width ? { width } : null), ...headDivider },
   });
 
