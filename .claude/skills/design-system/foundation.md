@@ -15,7 +15,7 @@
 ### Base 컬러 (`colors.js` → `baseColors.base`)
 모노톤 그레이 스케일 + black/white + 피드백 유채색(red/blue) + 알파 시리즈. **컴포넌트에서 직접 쓰지 말고 시멘틱을 경유**한다.
 
-- 그레이: `gray.25 ~ gray.900` (25, 50, 100, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900)
+- 그레이: `gray.25 ~ gray.900` (25, 50, 100, **125**, 150, 200, 250, 300, 400, 500, 600, 700, 800, 900) — `125`(#d6d6d6)는 100↔150 중간색(2026-07-03 신설, 테이블 헤더 구분선용). 스케일에 없는 중간값이 필요하면 임의값 대신 이렇게 **중간 키를 base에 신설**하고 시멘틱이 참조한다
 - gray-900 알파: `gray-900-00 ~ gray-900-300` (투명도 단계)
 - white 알파: `white-00 ~ white-300`
 - `black`(#000000), `white`(#ffffff)
@@ -57,7 +57,10 @@ Tailwind 기본 spacing(`p-4`, `gap-2`)·임의값(`p-[12px]`) **금지**.
 | spacing-3 | 4 |  | spacing-10 | 28 |
 | spacing-4 | 6 |  | spacing-11 | 32 |
 | spacing-5 | 8 |  | spacing-12 | 36 |
+| spacing-5-5 | 10 |  | | |
 | spacing-6 | 12 |  | | |
+
+> `spacing-5-5`(10px)는 8↔12 사이 중간 스텝(2026-07-02 신설 — 테이블 셀 좌우 패딩). 기존 키 순번 보존을 위해 중간 키를 쓴다 — 없는 간격 값은 임의값 대신 사용자 확인 후 이렇게 추가.
 
 ### Radius (`radius.js`) — `rounded-round-N`
 `round-2`(2px), `round-3`(4px), `round-4`(6px), `round-5`(8px), `round-6`(10px), `round-7`(12px), `round-8`(16px), `round-9`(20px), `round-10`(24px), `round-11`(28px), `round-12`(32px), `round-00`(999px, 완전 둥근/필).
@@ -81,6 +84,9 @@ Tailwind 기본 spacing(`p-4`, `gap-2`)·임의값(`p-[12px]`) **금지**.
 | text-16 | 16 / 28 |
 | text-18 | 18 / 30 |
 | text-20 | 20 / 32 |
+
+### 행간(lineHeight) 독립 토큰 (`lineHeight.js`) — `leading-N` (2026-07-01 신설)
+`leading-16`(16px)·`leading-18`(18px)·`leading-20`~`leading-32`(2px 단위) — fontSize 토큰이 기본 행간으로 이 값을 참조하므로(위 표의 line-height = leading 토큰) 값은 한 곳에서만 정의된다. **사이즈는 그대로 두고 행간만 바꿀 때**(예: 에디터 본문 `leading-30`) 조합해 쓴다. `leading-[1.7]` 같은 임의 행간 금지 — 기본 행간이 의도값과 같으면 leading 클래스 자체를 생략한다.
 
 ## 날짜·시간 표기 규칙 (`src/utils/datetime.js`)
 

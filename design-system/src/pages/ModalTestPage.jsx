@@ -40,7 +40,7 @@ function BackgroundModal({ open, onClose }) {
     <Modal
       open={open}
       onClose={close}
-      title="지원자 배경"
+      title="지원자 배정"
       size="3xl"
       placement="top"
       footerStart={<span>{selectedIds.length}명 선택됨</span>}
@@ -228,7 +228,7 @@ function ComposeModal({ open, onClose }) {
     },
     {
       key: 'email',
-      label: '발신 이메일 주소',
+      label: '이메일 안내문 발신주소',
       disabled: !emailOn,
       control: (
         <EmailField
@@ -243,7 +243,7 @@ function ComposeModal({ open, onClose }) {
     },
     {
       key: 'sms',
-      label: 'SMS 발신번호',
+      label: 'SMS 안내문 발신번호',
       disabled: !smsOn,
       control: (
         <PhoneField
