@@ -1,7 +1,7 @@
 // 모달 테스트 구현 (test 카테고리 — 확인 후 삭제할 임시 데모)
 // Figma 모달들을 실제 컴포넌트(Modal + TableTemplate)로 구현한 데모.
 import { useState } from 'react';
-import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight } from 'lucide-react';
+import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight, Pencil } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { Tag } from '../components/Tag';
@@ -12,6 +12,7 @@ import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { DateField } from '../components/DateField';
 import { EmailField, PhoneField } from '../components/SelectOrInput';
+import { iconCellWidth } from '../components/tableView';
 import { NOTICE_SAMPLE_BODIES, NOTICE_TEMPLATE_BODIES } from './noticeSampleBodies';
 
 const FIELDS = ['프론트엔드', '백엔드', '디자인', '마케팅', '기획'];
@@ -456,6 +457,133 @@ function EvalSettingsModal({ open, onClose }) {
   );
 }
 
+// ── 항목 추가 모달 — 코드 입력(Input+추가) + 순서/명칭 테이블(TableTemplate, 페이지네이션) ──
+// 기본 제공 항목(base)은 회색 표기 + 수정/삭제 비활성, 사용자가 추가한 항목만 연필(인라인 수정)·휴지통(삭제) 활성.
+const ITEM_BASE_NAMES = ['수시', '공채', '상시', '특별채용', '추천채용', '마이다스인', '마이다스아이티'];
+
+function ItemAddModal({ open, onClose }) {
+  const [items, setItems] = useState(() => [
+    ...ITEM_BASE_NAMES.map((name, i) => ({ id: `base-${i}`, name, base: true })),
+    // 페이지네이션 데모용 사용자 항목(총 25개)
+    ...Array.from({ length: 18 }, (_, i) => ({ id: `seed-${i}`, name: `사용자 추가 항목 ${i + 8}`, base: false })),
+  ]);
+  const [draft, setDraft] = useState('');
+  const [editingId, setEditingId] = useState(null);
+  const [editText, setEditText] = useState('');
+
+  const addItem = () => {
+    const name = draft.trim();
+    if (!name) return;
+    setItems((prev) => [...prev, { id: `item-${Date.now()}`, name, base: false }]);
+    setDraft('');
+  };
+  const removeItem = (id) => setItems((prev) => prev.filter((it) => it.id !== id));
+  const startEdit = (row) => {
+    setEditingId(row.id);
+    setEditText(row.name);
+  };
+  const commitEdit = () => {
+    setItems((prev) => prev.map((it) => (it.id === editingId ? { ...it, name: editText.trim() || it.name } : it)));
+    setEditingId(null);
+  };
+
+  const rows = items.map((it, i) => ({ ...it, order: i + 1 }));
+  const columns = [
+    {
+      key: 'order',
+      label: '순서',
+      width: 60,
+      render: (row) => <span className="text-font-icon-3">{row.order}</span>,
+    },
+    {
+      key: 'name',
+      label: '명칭',
+      render: (row) =>
+        editingId === row.id ? (
+          <Input
+            value={editText}
+            onChange={(e) => setEditText(e.target.value)}
+            width="100%"
+            inputProps={{
+              autoFocus: true,
+              onBlur: commitEdit,
+              onKeyDown: (e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  commitEdit();
+                }
+              },
+            }}
+          />
+        ) : (
+          <span className={row.base ? 'text-font-icon-3' : ''}>{row.name}</span>
+        ),
+    },
+    {
+      key: 'actions',
+      label: '',
+      // 아이콘 전용 셀 — 임의 폭 대신 "좌우 패딩 + 버튼 2개 + 간격" 합산(size 32 → 92px)
+      width: iconCellWidth(2, { buttonSize: 32 }),
+      render: (row) => (
+        <div className="flex items-center justify-end gap-spacing-5">
+          <Button variant="ghost" size="32" icon={Pencil} aria-label="수정" disabled={row.base} onClick={() => startEdit(row)} />
+          <Button variant="ghost" size="32" icon={Trash2} aria-label="삭제" disabled={row.base} onClick={() => removeItem(row.id)} />
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="항목 추가"
+      size="lg"
+      placement="top"
+      cancelText="취소"
+      confirmText="확인"
+      onConfirm={onClose}
+    >
+      <div className="flex flex-col gap-spacing-6">
+        {/* 코드 입력 + 추가 — Input(fill) 오른쪽에 line 버튼 */}
+        <div className="flex items-center gap-spacing-5">
+          <div className="min-w-0 flex-1">
+            <Input
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="채용 분야 코드를 입력하세요"
+              width="100%"
+              inputProps={{
+                onKeyDown: (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    addItem();
+                  }
+                },
+              }}
+            />
+          </div>
+          <Button variant="line" leftIcon={Plus} onClick={addItem}>
+            추가
+          </Button>
+        </div>
+        {/* 순서/명칭 목록 — 외곽선 없는 테이블 + 페이지네이션(10행, 행 수 셀렉트 없음) */}
+        <TableTemplate
+          columns={columns}
+          rows={rows}
+          bordered={false}
+          searchable={false}
+          pagination
+          defaultPageSize={10}
+          showPageSize={false}
+          showTotal
+          minWidth={0}
+        />
+      </div>
+    </Modal>
+  );
+}
+
 export function ModalTestPage() {
   const [bgOpen, setBgOpen] = useState(false);
   const [selOpen, setSelOpen] = useState(false);
@@ -463,6 +591,7 @@ export function ModalTestPage() {
   const [composeOpen, setComposeOpen] = useState(false);
   const [evalOpen, setEvalOpen] = useState(false);
   const [msgOpen, setMsgOpen] = useState(false);
+  const [itemOpen, setItemOpen] = useState(false);
   return (
     <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">모달 테스트 구현</h2>
@@ -483,6 +612,9 @@ export function ModalTestPage() {
         <Button variant="fill" onClick={() => setComposeOpen(true)}>
           안내 및 발표 작성 모달 열기
         </Button>
+        <Button variant="fill" onClick={() => setItemOpen(true)}>
+          항목 추가 모달 열기
+        </Button>
         <Button variant="fill" onClick={() => setEvalOpen(true)}>
           평가항목 설정 모달 열기
         </Button>
@@ -494,6 +626,7 @@ export function ModalTestPage() {
       <SelectionModal open={selOpen} onClose={() => setSelOpen(false)} />
       <NoticeModal open={noticeOpen} onClose={() => setNoticeOpen(false)} />
       <ComposeModal open={composeOpen} onClose={() => setComposeOpen(false)} />
+      <ItemAddModal open={itemOpen} onClose={() => setItemOpen(false)} />
       <EvalSettingsModal open={evalOpen} onClose={() => setEvalOpen(false)} />
       <MessageTemplateModal open={msgOpen} onClose={() => setMsgOpen(false)} />
     </section>

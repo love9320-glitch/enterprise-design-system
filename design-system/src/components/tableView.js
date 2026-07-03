@@ -1,4 +1,5 @@
-// tableView — Table 헤더 요소(필터·정렬)의 순수 데이터 헬퍼.
+// tableView — Table 헤더 요소(필터·정렬)의 순수 데이터 헬퍼 + 셀 치수 계산.
+import { spacing } from '../tokens';
 // Table 내부와 TableTemplate(페이지 자르기 전 전체 행)이 같은 규칙을 공유하도록 컴포넌트 파일과 분리해 둔다.
 
 // 정렬 비교 — 둘 다 숫자로 해석되면 수치 비교, 아니면 한국어 로케일 문자열 비교. null은 뒤로.
@@ -29,4 +30,13 @@ export function applySort(rows, sort) {
     const r = compareValues(a[sort.key], b[sort.key]);
     return sort.dir === 'desc' ? -r : r;
   });
+}
+
+// 아이콘 전용 셀 너비 계산 — 고스트 아이콘 버튼만 단독으로 들어가는 컬럼의 width를
+// "셀 좌우 패딩(spacing-5-5×2) + 버튼 폭 합 + 버튼 사이 간격 합"으로 정확히 산출한다(임의 폭 금지).
+// 예: iconCellWidth(2) = 10+10 + 24×2 + 8 = 76px (ghost size 24 버튼 2개, gap spacing-5)
+const CELL_PAD_X = parseInt(spacing['spacing-5-5'], 10); // Table 바디/헤더 셀 좌우 패딩과 동일 토큰(10px)
+
+export function iconCellWidth(count = 1, { buttonSize = 24, gap = parseInt(spacing['spacing-5'], 10) } = {}) {
+  return CELL_PAD_X * 2 + buttonSize * count + gap * Math.max(0, count - 1);
 }

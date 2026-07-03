@@ -177,8 +177,9 @@ export function Table({
   const tableMinWidth = hasHScroll ? Math.max(minWidth ?? 0, contentMinWidth) : minWidth;
   const needsScroll = hasVScroll || hasHScroll;
 
-  // 셀 공통 — 마지막 컬럼 제외 우측 구분선
+  // 셀 공통 — 마지막 컬럼 제외 우측 구분선. 헤더는 한 단계 진한 header-line 토큰(2026-07-03 분리).
   const cellLine = (isLast) => (isLast ? '' : 'border-r border-table-cell-line');
+  const headLine = (isLast) => (isLast ? '' : 'border-r border-table-header-line');
 
   // empty/loading 행: noneline은 데이터 행처럼 하단 구분선, bordered는 외곽선이 처리하므로 생략.
   const stateLine = bordered ? '' : 'border-b border-table-cell-line';
@@ -188,7 +189,7 @@ export function Table({
   // 세로 스크롤(sticky 헤더)이어도 구분선을 긋지 않는다(회색 바 배경으로 본문과 구분).
   // border-collapse 환경에서 스크롤 시 사라지는 버그를 피하려 box-shadow로 안정적으로 그린다.
   const headDivider = bordered
-    ? { boxShadow: `inset 0 -1px 0 ${tableColors['cell-line']}` }
+    ? { boxShadow: `inset 0 -1px 0 ${tableColors['header-line']}` }
     : undefined;
 
   // noneline(외곽선 없음) 테이블은 헤더가 위·아래 모두 둥근 회색 바 → 헤더 바깥 셀에 좌/우 라운드.
@@ -200,7 +201,7 @@ export function Table({
   // 오른쪽 패딩은 spacing-4(6px) — 헤더 우측 메뉴 버튼이 가장자리에 너무 떨어지지 않게.
   // 높이는 32px 고정(상하 패딩 없음 — 본문 h-[45px]처럼 컴포넌트 고정 치수).(상하 패딩 없음 — 본문 h-[45px]처럼 컴포넌트 고정 치수).
   const headCellProps = (isFirst, isLast, width) => ({
-    className: `${cellLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-5-5 pr-spacing-4 h-[32px] align-middle`,
+    className: `${headLine(isLast)} ${headCorner(isFirst, isLast)} pl-spacing-5-5 pr-spacing-4 h-[32px] align-middle`,
     style: { ...(width ? { width } : null), ...headDivider },
   });
 
