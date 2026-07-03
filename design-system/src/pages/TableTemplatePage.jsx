@@ -56,6 +56,9 @@ const USAGE_PROPS = [
   { name: 'title', type: 'ReactNode', default: 'null', desc: '테이블 타이틀 — 있으면 헤더 좌측(버튼그룹 왼쪽)에 표시(버튼그룹/검색바와 함께 표시 가능)' },
   { name: 'searchable', type: 'boolean', default: 'true', desc: '검색바 on/off' },
   { name: 'rightActions', type: 'ReactNode | (ctx) => ReactNode', default: 'null', desc: '우측 버튼그룹 — 검색바 대신/함께 배치(검색바 오른쪽). ButtonGroup으로 감싸져 여러 버튼(fill/line/ghost 혼합) 가능' },
+  { name: 'selects', type: 'ReactNode | (ctx) => ReactNode', default: 'null', desc: '좌측 셀렉트 그룹 — 좌측 버튼그룹 앞(타이틀과 버튼그룹 사이). SelectGroup으로 감싸짐' },
+  { name: 'rightSelects', type: 'ReactNode | (ctx) => ReactNode', default: 'null', desc: '우측 셀렉트 그룹 — 우측 버튼그룹과 검색바 사이. SelectGroup으로 감싸짐' },
+  { name: 'selectGroupGap', type: "'3'~'7'", default: "'5'", desc: '좌/우 셀렉트 그룹 간격 토큰 키 — 기본 8px(버튼그룹·그룹 간 간격과 통일)' },
   { name: 'pagination', type: 'boolean', default: 'true', desc: '페이지네이션 on/off (false면 전체 행 표시)' },
   { name: 'bordered', type: 'boolean', default: 'false', desc: '테이블 외곽선/라운드 타입' },
   { name: 'selectable', type: 'boolean', default: 'false', desc: '체크박스 선택 컬럼(전체선택 헤더 포함)' },
@@ -190,6 +193,24 @@ const HEIGHT_OPTIONS = [
 ];
 
 // 페이지네이션 있을 때 고를 수 있는 페이지당 행 수 옵션
+// 좌/우 셀렉트 그룹 데모용 필터 옵션
+const FILTER_STATUS_OPTIONS = [
+  { value: 'all', label: '전체' },
+  { value: 'open', label: '진행중' },
+  { value: 'closed', label: '마감' },
+];
+const FILTER_DEPT_OPTIONS = [
+  { value: 'all', label: '전체 부서' },
+  { value: 'dev', label: '개발' },
+  { value: 'design', label: '디자인' },
+  { value: 'hr', label: '인사' },
+];
+const FILTER_SORT_OPTIONS = [
+  { value: 'latest', label: '최신순' },
+  { value: 'name', label: '이름순' },
+  { value: 'due', label: '마감임박순' },
+];
+
 const PAGE_SIZE_OPTIONS = [
   { value: 5,  label: '5개씩' },
   { value: 10, label: '10개씩' },
@@ -208,6 +229,7 @@ function Playground() {
   const [opts, setOpts] = useState({
     title: false, actions: true, search: true, pagination: true, bordered: false, selectable: false,
     rightActions: false, // 우측 슬롯(검색바 옆/대신 버튼)
+    selects: false, rightSelects: false, // 좌/우 셀렉트 그룹 슬롯
     showTotal: true, showPageSize: true, // 페이지네이션 세부 요소
   });
   const [maxHeight, setMaxHeight] = useState(320); // 페이지네이션 없이일 때 표 높이(px), 0=제한 없음
@@ -221,8 +243,10 @@ function Playground() {
         {/* 1행: 요소 on/off 토글 */}
         <div className="flex min-h-[32px] flex-wrap items-center gap-x-spacing-9 gap-y-spacing-5">
           <Checkbox checked={opts.title}      onChange={() => toggle('title')}      label="타이틀" />
+          <Checkbox checked={opts.selects}    onChange={() => toggle('selects')}    label="좌측 셀렉트 그룹" />
           <Checkbox checked={opts.actions}    onChange={() => toggle('actions')}    label="좌측 버튼그룹" />
           <Checkbox checked={opts.search}     onChange={() => toggle('search')}     label="검색바" />
+          <Checkbox checked={opts.rightSelects} onChange={() => toggle('rightSelects')} label="우측 셀렉트 그룹" />
           <Checkbox checked={opts.rightActions} onChange={() => toggle('rightActions')} label="우측 버튼그룹" />
           <Checkbox checked={opts.pagination} onChange={() => toggle('pagination')} label="페이지네이션" />
           <Checkbox checked={opts.bordered}   onChange={() => toggle('bordered')}   label="외곽선(bordered)" />
@@ -277,6 +301,21 @@ function Playground() {
           withActions={opts.actions}
           title={opts.title ? '공고 목록' : null}
           searchable={opts.search}
+          selects={
+            opts.selects ? (
+              <>
+                <Select options={FILTER_STATUS_OPTIONS} placeholder="상태" width={120} />
+                <Select options={FILTER_DEPT_OPTIONS} placeholder="부서" width={140} />
+              </>
+            ) : null
+          }
+          rightSelects={
+            opts.rightSelects ? (
+              <>
+                <Select options={FILTER_SORT_OPTIONS} placeholder="정렬" width={140} />
+              </>
+            ) : null
+          }
           rightActions={
             opts.rightActions ? (
               <>

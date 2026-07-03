@@ -8,8 +8,10 @@
 //   - bordered     : 테이블 외곽선/라운드 타입
 //   - selectable   : 체크박스 선택 컬럼(+ 전체선택 헤더)
 // 검색 필터 · 페이지네이션 · 선택은 내부 상태로 동작하며, 선택만 selectedIds/onSelectChange로 제어 가능.
-// 좌(버튼그룹) · 우(검색바·rightActions) 컨트롤 행은 actions·searchable·rightActions가 모두 꺼지면 통째로 사라진다.
+// 좌(셀렉트그룹·버튼그룹) · 우(셀렉트그룹·버튼그룹·검색바) 컨트롤 행은 전부 꺼지면 통째로 사라진다.
 //   - rightActions : 우측 슬롯(ReactNode 또는 (ctx)=>) — 검색바 대신/함께 임의 버튼 등을 우측에 배치
+//   - selects / rightSelects : 좌/우 셀렉트 그룹 슬롯(ReactNode 또는 (ctx)=>) — SelectGroup으로 감싸 배치.
+//     좌=타이틀→셀렉트그룹→버튼그룹(셀렉트가 버튼그룹 앞), 우=버튼그룹→셀렉트그룹→검색바(셀렉트가 버튼그룹과 검색바 사이)
 // 색·간격·보더는 하위 컴포넌트(Table/Pagination 등)의 토큰을 그대로 따른다.
 import { useMemo, useState } from 'react';
 import { Table } from './Table';
@@ -17,6 +19,7 @@ import { applyColumnFilters, applySort } from './tableView';
 import { Pagination } from './Pagination';
 import { SearchBar } from './SearchBar';
 import { ButtonGroup } from './ButtonGroup';
+import { SelectGroup } from './SelectGroup';
 
 export function TableTemplate({
   columns = [],
@@ -25,6 +28,8 @@ export function TableTemplate({
   // 요소 on/off
   actions = null,                 // 버튼그룹 내용 — null이면 버튼그룹 숨김
   rightActions = null,            // 우측 슬롯(ReactNode 또는 (ctx)=>) — 검색바 대신/함께 우측에 버튼 등 배치
+  selects = null,                 // 좌측 셀렉트 그룹(ReactNode 또는 (ctx)=>) — 좌측 버튼그룹 앞(왼쪽)
+  rightSelects = null,            // 우측 셀렉트 그룹(ReactNode 또는 (ctx)=>) — 우측 버튼그룹과 검색바 사이
   title = null,                   // 테이블 타이틀 — 있으면 헤더 좌측(버튼그룹 왼쪽)에 표시
   searchable = true,              // 검색바
   pagination = true,              // 페이지네이션
@@ -55,7 +60,8 @@ export function TableTemplate({
   loading = false,
   emptyMessage,
   onRowClick,
-  buttonGroupGap = '5',
+  buttonGroupGap = '5',           // 좌/우 버튼그룹 간격 토큰 키 — 기본 '5'(8px, 셀렉트 그룹과 통일)
+  selectGroupGap = '5',           // 좌/우 셀렉트 그룹 간격 토큰 키 — 기본 '5'(8px, 버튼그룹과 통일)
   className = '',
   ...props
 }) {
@@ -136,23 +142,32 @@ export function TableTemplate({
   const resolvedActions = typeof actions === 'function' ? actions(ctx) : actions;
   // 우측 슬롯 — 검색바 대신/함께 임의 요소(버튼 등)를 우측에 배치. actions와 동일하게 (ctx) => 함수 지원
   const resolvedRightActions = typeof rightActions === 'function' ? rightActions(ctx) : rightActions;
-  const showHeader = !!resolvedActions || searchable || !!title || !!resolvedRightActions; // 하나라도 있으면 헤더 렌더
+  // 좌/우 셀렉트 그룹 슬롯 — actions와 동일하게 (ctx) => 함수 지원
+  const resolvedSelects = typeof selects === 'function' ? selects(ctx) : selects;
+  const resolvedRightSelects = typeof rightSelects === 'function' ? rightSelects(ctx) : rightSelects;
+  const showHeader =
+    !!resolvedActions || searchable || !!title || !!resolvedRightActions || !!resolvedSelects || !!resolvedRightSelects; // 하나라도 있으면 헤더 렌더
 
   return (
     <div className={`flex flex-col gap-spacing-6 ${className}`} {...props}>
       {showHeader && (
         <div className="flex items-center justify-between gap-spacing-6">
-          {/* 좌: 타이틀 + 버튼그룹 (타이틀이 버튼그룹 왼쪽). 둘 다 없으면 빈 자리로 우측(검색바 등)을 고정 */}
-          <div className="flex items-center gap-spacing-6">
+          {/* 좌: 타이틀 → 셀렉트그룹 → 버튼그룹 (셀렉트그룹이 버튼그룹 앞). 전부 없으면 빈 자리로 우측(검색바 등)을 고정.
+              그룹 간 간격 8px(spacing-5) — 그룹 내부 갭과 통일 */}
+          <div className="flex items-center gap-spacing-5">
             {title && <h3 className="flex h-[32px] items-center text-15 font-semibold text-font-icon-5">{title}</h3>}
+            {resolvedSelects && <SelectGroup gap={selectGroupGap}>{resolvedSelects}</SelectGroup>}
             {resolvedActions && <ButtonGroup gap={buttonGroupGap}>{resolvedActions}</ButtonGroup>}
           </div>
-          {/* 우: rightActions 버튼그룹 · 검색바 (둘 다 있으면 버튼그룹이 앞, 검색바가 맨 오른쪽) —
-              좌 actions와 동일하게 ButtonGroup으로 감싸 여러 버튼(fill/line/ghost 등 스타일 혼합)을 일정 간격으로 배치 */}
-          {(searchable || resolvedRightActions) && (
+          {/* 우: rightActions 버튼그룹 → 셀렉트그룹 → 검색바(맨 오른쪽) — 셀렉트그룹은 버튼그룹과 검색바 사이.
+              좌 actions처럼 각 그룹으로 감싸 스타일 혼합 요소를 일정 간격으로 배치 */}
+          {(searchable || resolvedRightActions || resolvedRightSelects) && (
             <div className="flex items-center gap-spacing-5">
               {resolvedRightActions && (
                 <ButtonGroup gap={buttonGroupGap}>{resolvedRightActions}</ButtonGroup>
+              )}
+              {resolvedRightSelects && (
+                <SelectGroup gap={selectGroupGap}>{resolvedRightSelects}</SelectGroup>
               )}
               {searchable && (
                 <SearchBar

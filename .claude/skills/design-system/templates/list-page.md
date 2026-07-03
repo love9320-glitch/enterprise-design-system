@@ -30,6 +30,28 @@
 - 이 네 가지 외의 버튼(가져오기·내보내기·불러오기 등)은 규칙 대상이 아니며, 네 버튼 **뒤에** 이어 배치한다.
 - `rightActions`(우측 버튼그룹)에는 적용하지 않는다 — 좌측 actions 전용 규칙.
 
+## 테이블 셀 width 규칙 — 아이콘 전용 셀은 계산으로 (2026-07-03 지시)
+
+**고스트 아이콘 버튼만 단독으로 들어가는 셀**(연필/휴지통 액션 컬럼 등)의 `width`는 임의 숫자로 잡지 않고, `components/tableView.js`의 **`iconCellWidth(개수, {buttonSize, gap})`** 로 계산해 넣는다:
+
+> width = 셀 좌우 패딩(spacing-5-5 × 2) + 버튼 폭 × 개수 + 버튼 간격(spacing-5) × (개수−1)
+
+```jsx
+import { iconCellWidth } from '../components/tableView';
+
+{ key: 'actions', label: '', width: iconCellWidth(2),   // ghost 24 버튼 2개 = 76px
+  render: (row) => (
+    <div className="flex items-center justify-end gap-spacing-5">
+      <Button variant="ghost" size="24" icon={Pencil} />
+      <Button variant="ghost" size="24" icon={Trash2} />
+    </div>
+  ) }
+```
+
+- 패딩·간격을 **토큰에서 읽으므로** 토큰이 바뀌면 셀 폭도 자동 추종 — 셀 폭·패딩·간격이 어긋날 수 없다.
+- 버튼 크기(`size="32"` 등)나 셀 안 간격이 기본과 다르면 `iconCellWidth(n, { buttonSize, gap })`로 실제 값을 넘긴다(render의 gap 클래스와 일치시킬 것).
+- 대상은 "아이콘 버튼만 있는 셀"이다 — 텍스트·태그가 섞인 셀은 기존대로 지정 폭 또는 fill.
+
 ## 모범 예제 — `TableTemplate` 조립 (목록 페이지 표준)
 
 > ▶ **실행되는 전체 예제 = 데모 페이지 `pages/TableTemplatePage.jsx`·`pages/TablePage.jsx`** (빌드·lint 검증). 아래 스니펫은 **조립 '패턴' 견본**일 뿐 복붙용 정답이 아니다 — prop 이름·값의 진실은 항상 **`TableTemplate.jsx`/`Table.jsx` + components.md 카탈로그**다(의심되면 코드 확인).
@@ -101,5 +123,6 @@ import { Table } from '../components/Table';
 - [ ] 로딩(`loading`)·빈 상태(`emptyMessage`)를 props로 처리했는가
 - [ ] 주요 액션 버튼이 공통 `Button`이고 `actions` slot으로 들어갔는가
 - [ ] 좌측 버튼그룹의 선택 연관 버튼이 **삭제 → 추가 → 복사 → 붙여넣기** 순인가(없는 건 건너뜀, 그 외 버튼은 뒤에)
+- [ ] 아이콘 버튼만 단독으로 들어가는 셀의 width를 임의 숫자 대신 **`iconCellWidth(n)`** 계산으로 잡았는가
 - [ ] 셀 색·간격·hover·구분선을 직접 칠하지 않고 컴포넌트에 맡겼는가 (토큰)
 - [ ] 컴포넌트로 안 덮는 부분만 좁게 커스텀했는가

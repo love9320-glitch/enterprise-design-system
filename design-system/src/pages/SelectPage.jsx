@@ -1,4 +1,5 @@
 import { Select } from '../components/Select';
+import { SelectGroup } from '../components/SelectGroup';
 import { UsageExample } from '../components/UsageExample';
 import { Divider } from '../components/Divider';
 
@@ -30,7 +31,16 @@ const [vals, setVals] = useState([]);
 <Select variant="text" size="20" options={options} maxWidth={160} />
 // disabled·readOnly·error도 지원 (box와 동일)
 <Select variant="text" options={options} readOnly defaultValue="a" />
-<Select variant="text" options={options} error errorMessage="필수 선택입니다" />`;
+<Select variant="text" options={options} error errorMessage="필수 선택입니다" />
+
+// 셀렉트 그룹 — 셀렉트들을 일정 간격으로 묶는다 (간격 규칙은 ButtonGroup과 동일)
+import { SelectGroup } from '../components/SelectGroup';
+<SelectGroup>
+  <Select options={options} width={160} />
+  <Select options={options} width={160} />
+</SelectGroup>
+<SelectGroup gap="7" direction="vertical">…</SelectGroup>
+<SelectGroup width="fill">…</SelectGroup> // 부모 폭 균등 분할`;
 
 const USAGE_PROPS = [
   { name: 'options', type: '{ value, label }[]', default: '[]', desc: '선택지 목록' },
@@ -54,6 +64,11 @@ const USAGE_PROPS = [
   { name: 'emptyMessage', type: 'string', default: "'옵션이 없습니다.'", desc: 'options가 비었을 때 문구' },
   { name: 'noResultMessage', type: 'string', default: "'검색 결과가 없습니다.'", desc: '검색 결과 없을 때 문구' },
   { name: 'className', type: 'string', default: "''", desc: '트리거 추가 클래스' },
+  // SelectGroup
+  { name: 'SelectGroup · children', type: 'ReactNode', default: '—', desc: '묶을 Select들 (fragment·조건부 렌더 평탄화)' },
+  { name: 'SelectGroup · direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '배치 방향' },
+  { name: 'SelectGroup · gap', type: "'3' | '4' | '5' | '6' | '7'", default: "'5'", desc: '간격 토큰 키(4/6/8/12/16px) — ButtonGroup과 동일 규칙' },
+  { name: 'SelectGroup · width', type: "'hug' | 'fill'", default: "'hug'", desc: "fill이면 부모 전체 폭을 셀렉트들이 균등 분할" },
 ];
 
 const OPTIONS = [
@@ -230,6 +245,60 @@ export function SelectPage() {
               menuWidth={280}
               placeholder="과일 다중 선택"
             />
+          </div>
+        </div>
+      </div>
+
+      {/* 셀렉트 그룹 (SelectGroup) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
+          셀렉트 그룹 (SelectGroup)
+        </h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          셀렉트들을 일정 간격으로 묶는 컨테이너입니다. 간격 규칙은{' '}
+          <span className="text-font-icon-5">ButtonGroup과 동일</span> —{' '}
+          <code className="text-font-icon-5">gap</code> 토큰 키('3'~'7' = 4/6/8/12/16px, 기본
+          '5'=8px)만 허용합니다. <code className="text-font-icon-5">direction</code>으로 가로/세로,{' '}
+          <code className="text-font-icon-5">width="fill"</code>로 부모 폭 균등 분할을 지원합니다.
+        </p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">기본 (gap='5' · 8px)</p>
+            <SelectGroup>
+              <Select options={OPTIONS} width={160} placeholder="지역" />
+              <Select options={OPTIONS} width={160} placeholder="직무" />
+              <Select options={OPTIONS} width={160} placeholder="경력" />
+            </SelectGroup>
+          </div>
+          <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">gap='3' (4px)</p>
+            <SelectGroup gap="3">
+              <Select options={OPTIONS} width={160} placeholder="지역" />
+              <Select options={OPTIONS} width={160} placeholder="직무" />
+            </SelectGroup>
+          </div>
+          <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">gap='7' (16px)</p>
+            <SelectGroup gap="7">
+              <Select options={OPTIONS} width={160} placeholder="지역" />
+              <Select options={OPTIONS} width={160} placeholder="직무" />
+            </SelectGroup>
+          </div>
+          <div className="grid grid-cols-[180px_1fr] items-start gap-x-spacing-6">
+            <p className="pt-spacing-4 text-12 text-font-icon-3">direction="vertical"</p>
+            <SelectGroup direction="vertical">
+              <Select options={OPTIONS} width={200} placeholder="1차 분류" />
+              <Select options={OPTIONS} width={200} placeholder="2차 분류" />
+            </SelectGroup>
+          </div>
+          <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">width="fill" (균등 분할)</p>
+            <SelectGroup width="fill">
+              <Select options={OPTIONS} placeholder="지역" />
+              <Select options={OPTIONS} placeholder="직무" />
+              <Select options={OPTIONS} placeholder="경력" />
+            </SelectGroup>
           </div>
         </div>
       </div>
