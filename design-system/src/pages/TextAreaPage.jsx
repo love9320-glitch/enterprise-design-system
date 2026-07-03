@@ -30,8 +30,8 @@ const USAGE_PROPS = [
   { name: 'rows', type: 'number', default: '4', desc: '기본 높이(줄 수). autoGrow면 최소 높이' },
   { name: 'autoGrow', type: 'boolean', default: 'false', desc: '입력량따라 높이 자동 증가' },
   { name: 'maxRows', type: 'number', default: '—', desc: 'autoGrow 시 최대 행(초과 스크롤). 없으면 무한 증가' },
-  { name: 'maxLength', type: 'number', default: '—', desc: '최대 글자수(입력 제한 + 카운터 분모)' },
-  { name: 'showCount', type: 'boolean', default: 'true', desc: '글자수 카운터(Figma countTxt). maxLength 있으면 N/max' },
+  { name: 'maxLength', type: 'number', default: '—', desc: '최대 글자 수(입력 제한 + 카운터 분모)' },
+  { name: 'showCount', type: 'boolean', default: 'true', desc: '글자 수 카운터(Figma countTxt). maxLength 있으면 N/max' },
   { name: 'disabled / readOnly', type: 'boolean', default: 'false', desc: '비활성 / 읽기 전용' },
   { name: 'error / errorMessage', type: 'boolean / string', default: 'false / ""', desc: '에러 상태 + 하단 툴팁' },
   { name: 'width', type: 'number | string', default: '320', desc: '너비 — 숫자=px, 문자열=CSS' },
@@ -85,7 +85,7 @@ function Playground() {
           onChange={toggle('capRows')}
           disabled={!opts.autoGrow}
         />
-        <Checkbox label="showCount (글자수 카운터)" checked={opts.showCount} onChange={toggle('showCount')} />
+        <Checkbox label="showCount (글자 수 카운터)" checked={opts.showCount} onChange={toggle('showCount')} />
         <Checkbox label="error" checked={opts.error} onChange={toggle('error')} />
         <Checkbox label="disabled" checked={opts.disabled} onChange={toggle('disabled')} />
         <Checkbox label="readOnly" checked={opts.readOnly} onChange={toggle('readOnly')} />
@@ -145,7 +145,7 @@ export function TextAreaPage() {
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">TextArea</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         여러 줄 텍스트 입력 (solid 타입). Input의 멀티라인 버전으로, 하단에{' '}
-        <span className="text-font-icon-5">글자수 카운터</span>를 옵션으로 표시합니다.{' '}
+        <span className="text-font-icon-5">글자 수 카운터</span>를 옵션으로 표시합니다.{' '}
         <span className="text-font-icon-5">Hover</span>·<span className="text-font-icon-5">Focus</span>는 직접 확인하세요.
         에러는 테두리를 바꾸지 않고 <span className="text-font-icon-5">툴팁 오버레이</span>로 표시합니다.
       </p>

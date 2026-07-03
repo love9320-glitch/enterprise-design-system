@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
   HomePage,
   TypographyPage, BaseColorsPage, FontIconColorsPage,
@@ -45,27 +46,61 @@ const NAV_GROUPS = [
   },
   {
     label: '컴포넌트',
-    items: [
-      { id: 'button',     label: 'Button',     Page: ButtonPage },
-      { id: 'segment-control', label: 'Segment Control', Page: SegmentControlPage },
-      { id: 'search-bar', label: 'Search Bar', Page: SearchBarPage },
-      { id: 'input',      label: 'Input',      Page: InputPage },
-      { id: 'textarea',   label: 'TextArea',   Page: TextAreaPage },
-      { id: 'select',      label: 'Select',      Page: SelectPage },
-      { id: 'label',       label: 'Label',       Page: LabelPage },
-      { id: 'field',       label: 'Field',       Page: FieldPage },
-      { id: 'tag',         label: 'Tag / Tooltip / Scrollbar', Page: TagPage },
-      { id: 'checkbox',    label: 'Checkbox',    Page: CheckboxPage },
-      { id: 'radio',       label: 'Radio',       Page: RadioPage },
-      { id: 'switch',      label: 'Switch',      Page: SwitchPage },
-      { id: 'tabs',        label: 'Tabs',        Page: TabsPage },
-      { id: 'option-list', label: 'Option List', Page: OptionListPage },
-      { id: 'upload-menu', label: 'Upload Menu', Page: UploadMenuPage },
-      { id: 'date-picker', label: 'Date Picker', Page: DatePickerPage },
-      { id: 'pagination',  label: 'Pagination',  Page: PaginationPage },
-      { id: 'table',       label: 'Table',       Page: TablePage },
-      { id: 'modal',       label: 'Modal',       Page: ModalPage },
-      { id: 'editor',      label: 'Editor',      Page: EditorPage },
+    // 2뎁스 — 용도별 서브그룹(접기/펼치기). 활성 항목이 든 서브그룹은 자동으로 펼쳐진다.
+    subgroups: [
+      {
+        label: '액션',
+        items: [
+          { id: 'button',          label: 'Button',          Page: ButtonPage },
+          { id: 'segment-control', label: 'Segment Control', Page: SegmentControlPage },
+        ],
+      },
+      {
+        label: '입력',
+        items: [
+          { id: 'search-bar',  label: 'Search Bar',  Page: SearchBarPage },
+          { id: 'input',       label: 'Input',       Page: InputPage },
+          { id: 'textarea',    label: 'TextArea',    Page: TextAreaPage },
+          { id: 'select',      label: 'Select',      Page: SelectPage },
+          { id: 'checkbox',    label: 'Checkbox',    Page: CheckboxPage },
+          { id: 'radio',       label: 'Radio',       Page: RadioPage },
+          { id: 'switch',      label: 'Switch',      Page: SwitchPage },
+          { id: 'date-picker', label: 'Date Picker', Page: DatePickerPage },
+        ],
+      },
+      {
+        label: '폼 구성',
+        items: [
+          { id: 'label', label: 'Label', Page: LabelPage },
+          { id: 'field', label: 'Field', Page: FieldPage },
+        ],
+      },
+      {
+        label: '내비게이션',
+        items: [
+          { id: 'tabs',       label: 'Tabs',       Page: TabsPage },
+          { id: 'pagination', label: 'Pagination', Page: PaginationPage },
+        ],
+      },
+      {
+        label: '데이터 표시',
+        items: [
+          { id: 'table', label: 'Table', Page: TablePage },
+          { id: 'tag',   label: 'Tag / Tooltip / Scrollbar', Page: TagPage },
+        ],
+      },
+      {
+        label: '오버레이·메뉴',
+        items: [
+          { id: 'modal',       label: 'Modal',       Page: ModalPage },
+          { id: 'option-list', label: 'Option List', Page: OptionListPage },
+          { id: 'upload-menu', label: 'Upload Menu', Page: UploadMenuPage },
+        ],
+      },
+      {
+        label: '에디터',
+        items: [{ id: 'editor', label: 'Editor', Page: EditorPage }],
+      },
     ],
   },
   {
@@ -94,35 +129,90 @@ const NAV_GROUPS = [
   },
 ];
 
-const ALL_ITEMS = NAV_GROUPS.flatMap((g) => g.items);
+// 그룹은 items(1뎁스) 또는 subgroups(2뎁스) 중 하나를 가진다 — 항목 평탄화는 둘 다 지원
+const groupItems = (g) => g.items ?? g.subgroups.flatMap((s) => s.items);
+const ALL_ITEMS = NAV_GROUPS.flatMap(groupItems);
+
+// 1뎁스 메뉴 항목 버튼 (서브그룹 하위 항목은 indent로 들여쓴다)
+function NavItem({ item, active, onSelect, indent = false }) {
+  return (
+    <li>
+      <button
+        onClick={() => onSelect(item.id)}
+        className={`w-full cursor-pointer rounded-round-4 py-spacing-4 text-left text-sm transition-colors ${
+          indent ? 'pl-spacing-9 pr-spacing-4' : 'px-spacing-4'
+        } ${
+          active === item.id
+            ? 'bg-gray-100 font-semibold text-font-icon-5'
+            : 'text-font-icon-4 hover:bg-gray-50 hover:text-font-icon-5'
+        }`}
+      >
+        {item.label}
+      </button>
+    </li>
+  );
+}
 
 function Sidebar({ active, onSelect }) {
+  // 서브그룹 접기/펼치기 — 수동 토글 상태. 미지정 시 활성 항목이 든 서브그룹만 자동 펼침.
+  // 활성 항목이 바뀌면 그 항목이 든 서브그룹의 수동 '접힘'은 해제한다(선택했는데 접혀 있는 모순 방지) — 렌더 시 파생.
+  const [openMap, setOpenMap] = useState({});
+  const [prevActive, setPrevActive] = useState(active);
+  if (active !== prevActive) {
+    setPrevActive(active);
+    const sub = NAV_GROUPS.flatMap((g) => g.subgroups ?? []).find((s) => s.items.some((it) => it.id === active));
+    if (sub && openMap[sub.label] === false) setOpenMap((m) => ({ ...m, [sub.label]: true }));
+  }
+  const isOpen = (sub) => openMap[sub.label] ?? sub.items.some((it) => it.id === active);
+  const toggle = (sub) => setOpenMap((m) => ({ ...m, [sub.label]: !isOpen(sub) }));
+
   return (
     <aside className="relative w-56 shrink-0 border-r border-gray-200">
       <ScrollArea className="absolute inset-0" contentClassName="h-full px-spacing-6 py-spacing-7">
       {NAV_GROUPS.map((group) => (
-        <div key={group.label || group.items[0].id} className="mb-spacing-9">
+        <div key={group.label || groupItems(group)[0].id} className="mb-spacing-9">
           {group.label && (
             <p className="mb-spacing-4 px-spacing-4 text-xs font-semibold uppercase tracking-wide text-font-icon-2">
               {group.label}
             </p>
           )}
-          <ul className="space-y-spacing-3">
-            {group.items.map((item) => (
-              <li key={item.id}>
-                <button
-                  onClick={() => onSelect(item.id)}
-                  className={`w-full cursor-pointer rounded-round-4 px-spacing-4 py-spacing-4 text-left text-sm transition-colors ${
-                    active === item.id
-                      ? 'bg-gray-100 font-semibold text-font-icon-5'
-                      : 'text-font-icon-4 hover:bg-gray-50 hover:text-font-icon-5'
-                  }`}
-                >
-                  {item.label}
-                </button>
-              </li>
-            ))}
-          </ul>
+          {group.items && (
+            <ul className="space-y-spacing-3">
+              {group.items.map((item) => (
+                <NavItem key={item.id} item={item} active={active} onSelect={onSelect} />
+              ))}
+            </ul>
+          )}
+          {group.subgroups && (
+            <ul className="space-y-spacing-3">
+              {group.subgroups.map((sub) => {
+                const open = isOpen(sub);
+                return (
+                  <li key={sub.label}>
+                    <button
+                      onClick={() => toggle(sub)}
+                      aria-expanded={open}
+                      className="flex w-full cursor-pointer items-center gap-spacing-3 rounded-round-4 px-spacing-4 py-spacing-4 text-left text-sm text-font-icon-5 transition-colors hover:bg-gray-50"
+                    >
+                      {open ? (
+                        <ChevronDown size={14} strokeWidth={1.8} className="shrink-0 text-font-icon-3" />
+                      ) : (
+                        <ChevronRight size={14} strokeWidth={1.8} className="shrink-0 text-font-icon-3" />
+                      )}
+                      {sub.label}
+                    </button>
+                    {open && (
+                      <ul className="mt-spacing-3 space-y-spacing-3">
+                        {sub.items.map((item) => (
+                          <NavItem key={item.id} item={item} active={active} onSelect={onSelect} indent />
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </div>
       ))}
       </ScrollArea>

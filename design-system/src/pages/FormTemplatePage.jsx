@@ -84,7 +84,7 @@ function buildFields(mixed) {
     },
     {
       key: 'email',
-      label: '발신 이메일 주소',
+      label: '이메일 안내문 발신주소',
       disabled: true,
       span: mixed ? 4 : undefined,
       control: (
@@ -100,7 +100,7 @@ function buildFields(mixed) {
     },
     {
       key: 'sms',
-      label: 'SMS 발신번호',
+      label: 'SMS 안내문 발신번호',
       disabled: true,
       span: mixed ? 12 : undefined,
       control: (

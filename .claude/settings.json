@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(curl -s -o /tmp/select-overview.png \"https://www.figma.com/api/mcp/asset/bd4b3e10-5d69-4e7d-af5a-dab686608968\")"
+      "Bash(curl -s -o /tmp/select-overview.png \"https://www.figma.com/api/mcp/asset/bd4b3e10-5d69-4e7d-af5a-dab686608968\")",
+      "Edit(/.claude/skills/design-system/**)"
     ]
   }
 }
