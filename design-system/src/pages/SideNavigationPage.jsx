@@ -28,7 +28,7 @@ const USAGE_PROPS = [
   { name: 'Button · children', type: 'ReactNode', default: "'side menu'", desc: '메뉴 라벨' },
   { name: 'Button · overflow', type: "'ellipsis' | 'wrap'", default: "'ellipsis'", desc: '긴 라벨 처리 — 말줄임(+hover 전체 툴팁) / 멀티라인 줄바꿈' },
   { name: 'Button · icon', type: 'Component', default: '—', desc: '좌측 lucide 아이콘(16)' },
-  { name: 'Button · selected', type: 'boolean', default: 'false', desc: 'select 상태 — 파란 텍스트·알파 배경(side-nav-select-*)' },
+  { name: 'Button · selected', type: 'boolean', default: 'false', desc: 'select 상태 — 파란 텍스트·알파 배경(side-nav-select-*) + line=true면 우측 1px 라인(select-text, 컨테이너 구분선 위에 겹침)' },
   { name: 'Button · disabled', type: 'boolean', default: 'false', desc: '비활성(#c9c9c9, hover 없음)' },
   { name: 'Button · showNewTag / newTagColor', type: "boolean / 'blue'|'red'|'black'", default: "false / 'blue'", desc: "라벨 오른쪽 NewTag(N) 표시" },
   { name: 'Button · showArrow', type: 'boolean', default: 'true', desc: '우측 chevron(›) 표시' },
@@ -96,7 +96,7 @@ export function SideNavigationPage() {
       {/* 상태 */}
       <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">상태 (state)</h3>
       <p className="mb-spacing-6 text-12 text-font-icon-4">
-        default(회색, hover 시 진해짐+배경) · select(파란 텍스트·알파 배경) · disabled(연회색, 클릭 불가)
+        default(회색, hover 시 진해짐+배경) · select(파란 텍스트·알파 배경, line 접합형이면 우측 1px 파란 라인) · disabled(연회색, 클릭 불가)
       </p>
       <div className="w-[240px] space-y-spacing-2">
         <SideNavigationButton icon={Users} selected showNewTag>select</SideNavigationButton>
