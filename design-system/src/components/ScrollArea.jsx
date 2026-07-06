@@ -31,7 +31,7 @@ const THUMB_COLORS = {
 // 오버레이 thumb — 세로/가로 공용(축만 다름).
 function Thumb({ orientation, thumb, active, colors, onDown, onEnter, onLeave }) {
   const vertical = orientation === 'vertical';
-  const placement = vertical ? 'right-spacing-3 w-spacing-5' : 'bottom-spacing-3 h-spacing-5';
+  const placement = vertical ? 'right-spacing-3 w-spacing-4' : 'bottom-spacing-3 h-spacing-4'; // 두께 6px(2026-07-06 8→6)
   const extent = vertical
     ? { top: `${thumb.pos}px`, height: `${thumb.size}px` }
     : { left: `${thumb.pos}px`, width: `${thumb.size}px` };

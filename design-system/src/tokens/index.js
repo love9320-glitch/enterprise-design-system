@@ -9,6 +9,8 @@ export { dividerColors } from './colors/dividerColors.js';
 export { chipColors } from './colors/chipColors.js';
 export { listColors } from './colors/listColors.js';
 export { tagColors } from './colors/tagColors.js';
+export { newTagColors } from './colors/newTagColors.js';
+export { sideNavColors } from './colors/sideNavColors.js';
 export { checkboxColors } from './colors/checkboxColors.js';
 export { radioColors } from './colors/radioColors.js';
 export { switchColors } from './colors/switchColors.js';

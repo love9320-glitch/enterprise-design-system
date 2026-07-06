@@ -1,6 +1,7 @@
 import {
   baseColors,
   buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors, listColors, tagColors,
+  newTagColors, sideNavColors,
   checkboxColors, radioColors, switchColors, tabColors,
   tableColors, modalColors, editorColors, calendarColors,
 } from '../tokens/index';
@@ -36,11 +37,13 @@ const COMPONENTS = [
   { title: 'Divider',               prefix: 'divider',    tokens: dividerColors },
   { title: 'List · Option',         prefix: 'list',       tokens: listColors },
   { title: 'Tag',                   prefix: 'tag',        tokens: tagColors },
+  { title: 'New Tag',               prefix: 'new-tag',    tokens: newTagColors },
   { title: 'Chip',                  prefix: 'chip',       tokens: chipColors },
   { title: 'Checkbox',              prefix: 'checkbox',   tokens: checkboxColors },
   { title: 'Radio',                 prefix: 'radio',      tokens: radioColors },
   { title: 'Switch',                prefix: 'switch',     tokens: switchColors },
   { title: 'Tabs',                  prefix: 'tab',        tokens: tabColors },
+  { title: 'Side Navigation',       prefix: 'side-nav',   tokens: sideNavColors },
   { title: 'Table',                 prefix: 'table',      tokens: tableColors },
   { title: 'Modal',                 prefix: 'modal',      tokens: modalColors },
   { title: 'Editor',                prefix: 'editor',     tokens: editorColors },

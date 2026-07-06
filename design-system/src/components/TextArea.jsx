@@ -177,7 +177,7 @@ export function TextArea({
           onMouseLeave={() => {
             if (!dragRef.current) setActive(false);
           }}
-          className="absolute right-spacing-3 w-spacing-5 cursor-pointer rounded-round-00"
+          className="absolute right-spacing-3 w-spacing-4 cursor-pointer rounded-round-00"
           style={{
             top: `${thumb.pos}px`,
             height: `${thumb.size}px`,

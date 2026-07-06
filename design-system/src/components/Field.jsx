@@ -36,7 +36,7 @@ export function Field({
   direction = 'vertical',   // 'vertical' | 'horizontal' (라벨↔컨트롤 배치)
   controlsDirection = 'column', // 'column' | 'row' — 컨트롤 여러 개일 때 배치(복합 필드, row=한 줄 등분)
   labelWidth,               // horizontal일 때 라벨 영역 너비(number=px | CSS 문자열)
-  labelSize,                // Label size (12~16). 미지정 시 layout 기본값(가로 '14' / 세로 '12')
+  labelSize,                // Label size (12~16). 미지정 시 '14' (2026-07-06 세로도 12→14 통일)
   gap,                      // 라벨↔컨트롤 간격 토큰 키 override (예: 'spacing-5')
   className = '',
   children,                 // 컨트롤
@@ -45,7 +45,7 @@ export function Field({
   const isHorizontal = direction === 'horizontal';
   const isRowControls = controlsDirection === 'row';
   // 라벨 기본 사이즈는 layout에 따라 다름(가로=14 / 세로=12), 명시 지정 시 그것 우선
-  const resolvedLabelSize = labelSize ?? (isHorizontal ? '14' : '12');
+  const resolvedLabelSize = labelSize ?? '14';
   const gapClass =
     GAP_CLASS[gap] || GAP_CLASS[DEFAULT_GAP[isHorizontal ? 'horizontal' : 'vertical']];
 

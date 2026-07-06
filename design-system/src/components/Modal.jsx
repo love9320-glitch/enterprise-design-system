@@ -24,6 +24,7 @@ import { X } from 'lucide-react';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import { ScrollArea } from './ScrollArea';
+import { ModalBodyMaxContext } from './modalContext';
 import { Checkbox } from './Checkbox';
 
 // ModalBox width 규격 — sm:360 md:480 lg:600 xl:720 2xl:840 3xl:960 4xl:1260
@@ -65,7 +66,7 @@ export function Modal({
   closeOnEsc = true,
   bodyMaxHeight = '70vh',         // 본문 최대 높이(초과 시 내부 스크롤)
   bodyPadding = 'p-spacing-7',    // 본문 패딩(토큰 클래스). Alert/Confirm은 p-spacing-8
-  footerPadding = 'py-spacing-6 pl-spacing-7 pr-spacing-6', // 푸터 패딩(토큰 클래스, 우측 12px). Alert/Confirm은 px-spacing-8 py-spacing-7
+  footerPadding = 'px-spacing-6 py-spacing-6', // 푸터 패딩(토큰 클래스, 좌우 12px — 2026-07-06 좌 16→12). Alert/Confirm은 px-spacing-8 py-spacing-7
   bodyClassName = '',
   onSubmit,                       // 주면 본문+푸터를 <form>으로 감싸고 주동작 버튼 type=submit
   className = '',
@@ -82,7 +83,7 @@ export function Modal({
   //    내용 많으면 작게(최소 = 하단 여백 16). center 정렬이면 null.
   //  - bodyMax: ModalBody 실제 maxHeight(px). header·footer·여백을 빼 화면에 맞춘 값이라
   //    footer가 절대 가려지지 않는다(flex 높이 전파에 의존하지 않음).
-  const [layout, setLayout] = useState({ top: null, bodyMax: null });
+  const [layout, setLayout] = useState({ top: null, bodyMax: null, bodyInner: null });
 
   // ESC 닫기
   useEffect(() => {
@@ -127,6 +128,13 @@ export function Modal({
       const fh = footerRef.current?.offsetHeight ?? 0;
       const ch = contentRef.current?.offsetHeight ?? 0; // 본문 natural(미캡) 높이
       const designCap = toPx(bodyMaxHeight);            // 디자인 캡(기본 70vh)
+      // 본문 '내용' 가용 높이용 — 본문 패딩(py)을 실측해 빼준다(height='fill' 자식 소비, ModalBodyMaxContext)
+      const padY = () => {
+        const el = contentRef.current;
+        if (!el) return 0;
+        const cs = getComputedStyle(el);
+        return parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom);
+      };
 
       if (placement === 'top') {
         // 상단 정렬은 % 높이 캡(bodyMaxHeight, 70vh)을 적용하지 않는다 — top 여백 + 화면 가용
@@ -146,10 +154,10 @@ export function Modal({
         const top = lockedTopRef.current;
         // -2: header↔body, body↔footer 사이 gap-spacing-1(각 1px 구분선) 공간 확보
         const bodyMax = Math.max(0, vh - top - BOTTOM - hh - fh - 2);
-        setLayout({ top, bodyMax });
+        setLayout({ top, bodyMax, bodyInner: Math.max(0, bodyMax - padY()) });
       } else {
         const bodyMax = Math.max(0, Math.min(designCap, vh - 32 - hh - fh));
-        setLayout({ top: null, bodyMax });
+        setLayout({ top: null, bodyMax, bodyInner: Math.max(0, bodyMax - padY()) });
       }
     };
     compute();
@@ -244,7 +252,9 @@ export function Modal({
           <div className="min-h-0 bg-modal-panel-bg">
             <ScrollArea maxHeight={layout.bodyMax ?? bodyMaxHeight}>
               <div ref={contentRef} className={`${bodyPadding} text-14 text-font-icon-4 ${bodyClassName}`}>
-                {children}
+                <ModalBodyMaxContext.Provider value={layout.bodyInner ?? null}>
+                  {children}
+                </ModalBodyMaxContext.Provider>
               </div>
             </ScrollArea>
           </div>
