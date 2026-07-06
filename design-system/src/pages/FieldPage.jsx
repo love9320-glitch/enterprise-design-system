@@ -45,7 +45,7 @@ const USAGE_PROPS = [
   { name: 'direction', type: "'vertical'|'horizontal'", default: "'vertical'", desc: '라벨↔컨트롤 배치' },
   { name: 'controlsDirection', type: "'column'|'row'", default: "'column'", desc: '컨트롤 여러 개 배치(복합 필드, row=한 줄 등분)' },
   { name: 'labelWidth', type: 'number | string', default: '—', desc: 'horizontal일 때 라벨 영역 너비' },
-  { name: 'labelSize', type: "'12'~'16'", default: "가로 '14' / 세로 '12'", desc: '내부 Label 사이즈 (미지정 시 layout 기본값)' },
+  { name: 'labelSize', type: "'12'~'16'", default: "'14'", desc: '내부 Label 사이즈 (가로·세로 동일 기본)' },
   { name: 'gap', type: 'spacing 토큰 키', default: "세로 'spacing-3' / 가로 'spacing-6'", desc: '라벨↔컨트롤 간격' },
   { name: 'children', type: 'ReactNode', default: '—', desc: '컨트롤 (Input/Select/DateField 등)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },

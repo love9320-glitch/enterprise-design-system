@@ -30,3 +30,29 @@ export function Tag({
     </span>
   );
 }
+
+// NewTag — 원형 'N' 뱃지 (Figma new tag, node 8187:40848). 신규 항목 표시용.
+// 18×18 고정 원형(rounded-round-00) + semibold 12 텍스트. 색은 new-tag-* 시멘틱 토큰만 사용. (22→20→18)
+const NEW_TAG_BG = {
+  blue: 'bg-new-tag-blue-bg',
+  red: 'bg-new-tag-red-bg',
+  black: 'bg-new-tag-black-bg',
+};
+
+export function NewTag({
+  color = 'blue',   // 'blue' | 'red' | 'black'
+  children = 'N',   // 뱃지 글자(기본 'N')
+  className = '',
+  ...props
+}) {
+  return (
+    <span
+      className={`inline-flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-round-00 text-12 font-semibold text-new-tag-title ${
+        NEW_TAG_BG[color] ?? NEW_TAG_BG.blue
+      } ${className}`}
+      {...props}
+    >
+      {children}
+    </span>
+  );
+}

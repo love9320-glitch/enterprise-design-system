@@ -1,7 +1,7 @@
 import {
   fontFamily, fontSize, lineHeight,
   baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors,
-  listColors, tagColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
+  listColors, tagColors, newTagColors, sideNavColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors, calendarColors,
   spacing, radius, borderWidth,
 } from './src/tokens/index.js';
@@ -30,6 +30,8 @@ export default {
         chip: chipColors,
         list: listColors,
         tag: tagColors,
+        'new-tag': newTagColors,
+        'side-nav': sideNavColors,
         checkbox: checkboxColors,
         radio: radioColors,
         switch: switchColors,

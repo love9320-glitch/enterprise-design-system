@@ -5,9 +5,9 @@ import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   ComponentColorsPage,
-  SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
+  SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
   UploadMenuPage,
-  PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, ModalPage, DatePickerPage,
+  PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
@@ -80,13 +80,16 @@ const NAV_GROUPS = [
         items: [
           { id: 'tabs',       label: 'Tabs',       Page: TabsPage },
           { id: 'pagination', label: 'Pagination', Page: PaginationPage },
+          { id: 'side-navigation', label: 'Side Navigation', Page: SideNavigationPage },
         ],
       },
       {
         label: '데이터 표시',
         items: [
           { id: 'table', label: 'Table', Page: TablePage },
-          { id: 'tag',   label: 'Tag / Tooltip / Scrollbar', Page: TagPage },
+          { id: 'tag',   label: 'Tag',  Page: TagPage },
+          { id: 'chip',  label: 'Chip', Page: ChipPage },
+          { id: 'tooltip-scrollbar', label: 'Tooltip / Scrollbar / Divider', Page: TooltipScrollbarPage },
         ],
       },
       {
@@ -108,6 +111,7 @@ const NAV_GROUPS = [
     items: [
       { id: 'table-template', label: 'Table Template', Page: TableTemplatePage },
       { id: 'form-template', label: 'Form Template', Page: FormTemplatePage },
+      { id: 'side-nav-template', label: 'Side Navigation Template', Page: SideNavTemplatePage },
       { id: 'notice-template', label: 'Notice Writing Template', Page: NoticeTemplatePage },
     ],
   },

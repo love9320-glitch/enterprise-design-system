@@ -103,6 +103,20 @@ export function DeleteConfirm({ open, onClose, onConfirm }) {
 
 > **Figma 작도 시**: 위와 대응되게 `Modal` **컴포넌트 인스턴스**를 만들고 `ModalBody` slot에 본문(테이블 템플릿 등)을 조립한다. 완성본 복제(clone) 금지 — 규칙 4 참조. 표를 slot 안에서 편집할 땐 detach(규칙 13).
 
+## 규칙 18 — 모달 안 무한 스크롤(페이지네이션 없는) 테이블 설정 (2026-07-06 지시)
+
+모달 본문에서 **페이지네이션 없이 목록이 계속 늘어날 수 있는 테이블**은 아래 설정을 기본값으로 적용한다:
+
+```jsx
+<Table bordered maxHeight="fill" className="min-h-0" … />
+```
+
+- `bordered`(외곽라인) + `maxHeight="fill"` + `className="min-h-0"` — 바디 스크롤 상한 = **모달 가용 높이**(ModalBodyMaxContext 체인). 헤더는 스크롤 밖 분리(고정)라 알파 헤더 뒤로 행이 비치지 않는다. **`flex-1`(grow)을 주지 말 것 — 내비 등 옆 요소가 더 길면 테이블이 빈 공간까지 늘어나 hug가 깨진다. min-h-0(shrink)만으로 '넘칠 때만 줄어드는' 상한이 된다.**
+- **min은 hug(기본)** — 내용만큼만 차지하고, 상한 도달 시 바디만 스크롤. 고정 최소 높이가 꼭 필요할 때만 `minHeight` 추가.
+- 2단(사이드 내비) 구성이면 컨테이너(SideNavigationTemplate 등)에도 `height="fill"`을 함께 준다 — 모달 높이는 "내용~가용 상한" 사이에서만 변하고, **모달 바디 전체 스크롤은 발생시키지 않는다**.
+- 페이지네이션이 있는 목록(행 수 고정)은 이 규칙 대상이 아니다 — 기존처럼 고정 `maxHeight`(숫자)나 페이지네이션으로 처리.
+- 판례: '채용 코드 생성' 모달(ModalTestPage) — 열림 시 내용만큼(387px), 코드 증가 시 상한(가용 높이)에서 멈추고 바디 스크롤.
+
 ## 완료 체크리스트
 
 - [ ] dim/패널 셸을 손으로 만들지 않고 `Modal`/`FormModal`/`AlertModal`/`ConfirmModal`을 **import해 조립**했는가 (규칙 4)
@@ -111,4 +125,5 @@ export function DeleteConfirm({ open, onClose, onConfirm }) {
 - [ ] 본문(children)과 라벨·핸들러만 넘기고, 컴포넌트가 처리하는 dim·스크롤잠금·닫기·포커스를 다시 구현하지 않았는가
 - [ ] `size`를 단계값으로 지정했는가 (임의 px 폭 금지)
 - [ ] 컴포넌트로 안 덮는 부분만 `footer`/`footerStart` 슬롯으로 좁게 커스텀했는가
+- [ ] 페이지네이션 없는 무한 스크롤 테이블에 규칙 18 설정(`bordered maxHeight="fill" min-h-0`)을 적용했는가
 - [ ] (Figma) `Modal` 인스턴스 + `ModalBody` slot 조립으로 그렸는가 (완성본 복제 금지)

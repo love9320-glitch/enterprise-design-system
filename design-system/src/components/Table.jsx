@@ -111,7 +111,8 @@ export function Table({
   onSortChange,
   bordered = false,
   wrap = false,
-  maxHeight,
+  maxHeight,                 // number | 'fill' — fill=부모 flex 높이를 상한으로(모달 등), 내용 적으면 자연 높이
+  minHeight,                 // 바디 스크롤 영역 최소 높이(px|CSS) — 내용이 적어도 이 높이는 확보
   minWidth,
   scrollX = false,
   loading = false,
@@ -163,7 +164,9 @@ export function Table({
     emit(selectedSet.has(key) ? selected.filter((k) => k !== key) : [...selected, key]);
 
   const totalCols = columns.length + (selectable ? 1 : 0);
-  const hasVScroll = maxHeight != null;
+  const vMax = maxHeight;
+  const fillV = vMax === 'fill'; // 세로 상한을 부모 flex 높이로
+  const hasVScroll = vMax != null;
 
   // 컬럼 최소 너비 보장 — 가변(width 미지정=fill) 컬럼은 COL_MIN_WIDTH(40px), 고정 컬럼은 지정 폭.
   // 이들의 합을 테이블 최소 너비로 삼아, 그보다 좁아지면 fill 컬럼이 40px 아래로 줄지 않고 가로 스크롤이 생긴다.
@@ -246,19 +249,23 @@ export function Table({
     </th>
   );
 
-  const table = (
-    <table
-      className="w-full table-fixed border-separate"
-      style={{ borderSpacing: 0, ...(tableMinWidth ? { minWidth: tableMinWidth } : null) }}
-    >
-      <colgroup>
-        {selectable && <col style={{ width: CHECKBOX_COL_WIDTH }} />}
-        {columns.map((c) => (
-          <col key={c.key} style={c.width ? { width: c.width } : undefined} />
-        ))}
-      </colgroup>
+  // 세로 스크롤이면 타입과 무관하게 헤더를 스크롤 영역 밖으로 분리한다(2026-07-06, noneline도 통일) —
+  // sticky 헤더는 알파 배경(header-bg) 뒤/위로 행이 비쳐 보이므로, 세로 스크롤 영역을 '바디 높이'로 한정.
+  const splitHeader = hasVScroll;
 
-      <thead className={hasVScroll ? 'sticky top-0 z-10' : ''} data-scroll-sticky-top={hasVScroll ? '' : undefined}>
+  const colgroupEl = (
+    <colgroup>
+      {selectable && <col style={{ width: CHECKBOX_COL_WIDTH }} />}
+      {columns.map((c) => (
+        <col key={c.key} style={c.width ? { width: c.width } : undefined} />
+      ))}
+    </colgroup>
+  );
+  const tableClass = 'w-full table-fixed border-separate';
+  const tableStyle = { borderSpacing: 0, ...(tableMinWidth ? { minWidth: tableMinWidth } : null) };
+
+  const theadEl = (
+      <thead>
         <tr className="bg-table-header-bg">
           {selectable && (
             // 체크박스 컬럼 헤더만 상하좌우 패딩을 8px(spacing-5)로 통일 — 공통 headCellProps의 좌(spacing-6) 패딩 대신.
@@ -276,7 +283,9 @@ export function Table({
           )}
         </tr>
       </thead>
+  );
 
+  const tbodyEl = (
       <tbody>
         {loading ? (
           <tr className="bg-table-row-bg">
@@ -356,6 +365,13 @@ export function Table({
           })
         )}
       </tbody>
+  );
+
+  const table = (
+    <table className={tableClass} style={tableStyle}>
+      {colgroupEl}
+      {theadEl}
+      {tbodyEl}
     </table>
   );
 
@@ -369,17 +385,66 @@ export function Table({
       ? 'border-b border-table-cell-line'
       : '';
 
-  // 스크롤 래핑 — 세로·가로 모두 ScrollArea 오버레이 스크롤바로 처리
-  const body = needsScroll ? (
-    <ScrollArea maxHeight={maxHeight} horizontal={hasHScroll}>
-      {table}
-    </ScrollArea>
-  ) : (
-    table
-  );
+  // 스크롤 래핑 — splitHeader(bordered+세로)면 헤더는 고정하고 바디만 maxHeight 세로 스크롤.
+  // 컬럼 정렬은 동일 colgroup + table-fixed + 동일 최소폭 래퍼로 보장하고,
+  // 가로 스크롤은 헤더·바디가 같이 움직이도록 바깥에서 함께 감싼다.
+  let body;
+  if (splitHeader) {
+    // 빈 상태/로딩은 스크롤 영역 자체를 두지 않는다(빈 목록에 세로 썸이 뜨는 아티팩트 방지)
+    const bodyTable = (
+      <table className={tableClass} style={tableStyle}>
+        {colgroupEl}
+        {tbodyEl}
+      </table>
+    );
+    const scrollableBody = !loading && displayRows.length > 0;
+    const fillActive = fillV && scrollableBody; // 데이터 없을 땐 최대 높이(fill) 미적용 — 자연 높이(2026-07-06)
+    const minHStyle = minHeight
+      ? { minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight }
+      : undefined;
+    // fill: 바디 스크롤 상한 = 부모 flex 높이(뷰포트 max-h-full — SideNavigation 독립 스크롤과 동일 패턴)
+    const region = scrollableBody ? (
+      fillActive ? (
+        <ScrollArea className="min-h-0 flex-1" contentClassName="max-h-full" style={minHStyle}>
+          {bodyTable}
+        </ScrollArea>
+      ) : (
+        <ScrollArea maxHeight={vMax} style={minHStyle}>{bodyTable}</ScrollArea>
+      )
+    ) : (
+      <div>{bodyTable}</div> // 빈/로딩 상태 — minHeight도 미적용(무조건 hug)
+    );
+    const split = (
+      <div
+        className={fillActive ? 'flex min-h-0 flex-1 flex-col' : undefined}
+        style={tableMinWidth ? { minWidth: tableMinWidth } : undefined}
+      >
+        <table className={`${tableClass} shrink-0`} style={tableStyle}>
+          {colgroupEl}
+          {theadEl}
+        </table>
+        {region}
+      </div>
+    );
+    body = hasHScroll ? (
+      <ScrollArea horizontal className={fillActive ? 'min-h-0 flex-1' : ''} contentClassName={fillActive ? 'flex h-full min-h-0 flex-col' : ''}>
+        {split}
+      </ScrollArea>
+    ) : (
+      split
+    );
+  } else if (needsScroll) {
+    body = (
+      <ScrollArea maxHeight={vMax} horizontal={hasHScroll}>
+        {table}
+      </ScrollArea>
+    );
+  } else {
+    body = table;
+  }
 
   return (
-    <div className={`${shell} ${className}`} {...props}>
+    <div className={`${shell} ${fillV && !loading && displayRows.length > 0 ? 'flex min-h-0 flex-col' : ''} ${className}`} {...props}>
       {body}
     </div>
   );
