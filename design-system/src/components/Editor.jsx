@@ -104,6 +104,11 @@ export function Editor({
     // 첫 렌더에서 즉시 뷰를 만들지 않는다(effect에서 생성). React StrictMode가 dev에서
     // 마운트를 2번 돌릴 때 뷰가 파괴/재생성되며 throw하는 것을 막는다(Tiptap React 권장값).
     immediatelyRender: false,
+    // Tiptap v3는 기본이 false(트랜잭션이 React 재렌더를 안 일으킴) — 이 컴포넌트는 툴바
+    // isActive/undo 상태·placeholder(isEmpty)를 렌더에서 직접 읽으므로 v2 방식으로 되돌린다.
+    // 끄면 uncontrolled에서 placeholder가 입력 텍스트에 겹치고, 커서만 옮기면 툴바가 이전
+    // 상태로 굳는다(2026-07-07 감사).
+    shouldRerenderOnTransaction: true,
   });
 
   // 본문 변경 → onChange(html) 방출
@@ -141,9 +146,14 @@ export function Editor({
     if (!editor || !valueControlled) return;
     if (value !== editor.getHTML()) {
       editor.commands.setContent(value, { emitUpdate: false });
+      // 소스 모드 열람 중 외부에서 value가 바뀌면(템플릿 불러오기 등) 초안도 동기화 —
+      // 안 하면 모드 이탈 시 stale 초안이 외부 변경분을 덮어쓴다(2026-07-07 감사)
+      if (mode === 'source') {
+        setSourceDraft((d) => (d === value ? d : value)); // eslint-disable-line react-hooks/set-state-in-effect
+      }
       bumpRender();
     }
-  }, [editor, value, valueControlled]);
+  }, [editor, value, valueControlled, mode]);
 
   const changeMode = (next) => {
     if (next === mode) return;
@@ -178,7 +188,8 @@ export function Editor({
   }, [mode, sourceDraft]);
 
   const sourceEditable = allowSourceEdit && !readOnly;
-  const previewHtml = editor ? editor.getHTML() : '';
+  // 전체 문서 직렬화(getHTML)는 미리보기 모드에서만 — edit 모드 타이핑마다 직렬화하지 않는다(2026-07-07 감사)
+  const previewHtml = mode === 'preview' && editor ? editor.getHTML() : '';
   const bodyMinHeight = typeof minHeight === 'number' ? `${minHeight}px` : minHeight;
   const widthStyle = width === 'fill' ? '100%' : typeof width === 'number' ? `${width}px` : width;
 

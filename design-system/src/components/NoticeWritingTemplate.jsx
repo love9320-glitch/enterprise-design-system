@@ -4,6 +4,7 @@
 //   - site/email : 제목 Input + [첨부파일] FileUploadButton(업로드 메뉴 팝오버) + 풀 툴바 Editor(머지필드 포함)
 //   - sms        : 바이트 안내 문구 + 축약 툴바 Editor(undo/redo·머지필드만, SMS 평문)
 // 채널·제목·본문·첨부는 내부 상태로 동작하며(채널만 controlled 지원), 색·간격은 하위 컴포넌트 토큰을 따른다.
+// 작성 내용은 onChange 스냅샷으로 반출한다(2026-07-07 감사 — 값 반출 계약 없이는 저장/발송이 불가능했음).
 import { useState } from 'react';
 import { Paperclip } from 'lucide-react';
 import { Tabs } from './Tabs';
@@ -28,6 +29,9 @@ export function NoticeWritingTemplate({
   channel: channelProp,      // controlled 채널값('site'|'email'|'sms')
   defaultChannel = 'site',   // uncontrolled 초기 채널
   onChannelChange,           // (channel) => void
+  onChange,                  // (values) => void — 작성 내용이 바뀔 때마다 전체 스냅샷 반출:
+                             //   { channel, titles: {site,email,sms}, bodies: {site,email,sms},
+                             //     attachments: {site,email,sms} } (attachments 항목에 원본 File은 .file)
   showTabs = true,           // 채널 탭 노출 여부(false면 단일 채널 모드)
   tabVariant = 'fill',       // 탭 너비 타입: 'fill'(균등 분할, 기본) | 'hug'(내용 폭)
   enabledChannels,           // 활성 채널 목록(['site','email','sms']) — 미지정 시 전체 활성. 밖의 탭은 disabled
@@ -57,28 +61,49 @@ export function NoticeWritingTemplate({
     onChannelChange?.(v);
   };
 
-  // 채널별 제목·본문·첨부는 내부 상태로 유지(채널 전환 시 각자 보존)
+  // 채널별 제목·본문·첨부는 내부 상태로 유지(채널 전환 시 각자 보존).
+  // 변경 시마다 onChange로 전체 스냅샷을 반출한다 — 소비자는 이 값으로 저장/발송한다.
   const [titles, setTitles] = useState({ site: '', email: '', sms: '' });
   const [bodies, setBodies] = useState(() => ({ site: '', email: '', sms: '', ...(defaultBodies || {}) }));
   const [files, setFiles] = useState(emptyByChannel);
 
+  const emitChange = (patch) =>
+    onChange?.({ channel, titles, bodies, attachments: files, ...patch });
+
   const current = CHANNELS.find((c) => c.value === channel) ?? CHANNELS[0];
   const isSms = channel === 'sms';
 
-  const addFiles = (fileList) =>
-    setFiles((p) => ({
-      ...p,
+  const setTitle = (value) => {
+    const next = { ...titles, [channel]: value };
+    setTitles(next);
+    emitChange({ titles: next });
+  };
+  const setBody = (html) => {
+    const next = { ...bodies, [channel]: html };
+    setBodies(next);
+    emitChange({ bodies: next });
+  };
+  const addFiles = (fileList) => {
+    const next = {
+      ...files,
       [channel]: [
-        ...p[channel],
+        ...files[channel],
         ...Array.from(fileList).map((f) => ({
           name: f.name,
           size: Math.max(0.1, Math.round((f.size / 1048576) * 10) / 10), // MB(소수 1자리)
           id: `${f.name}-${f.size}-${Date.now()}`,
+          file: f, // 원본 File — 소비자가 실제 업로드에 사용(표시용 name/size만 남기면 발송 불가)
         })),
       ].slice(0, maxAttachments),
-    }));
-  const deleteFile = (_file, index) =>
-    setFiles((p) => ({ ...p, [channel]: p[channel].filter((_, i) => i !== index) }));
+    };
+    setFiles(next);
+    emitChange({ attachments: next });
+  };
+  const deleteFile = (_file, index) => {
+    const next = { ...files, [channel]: files[channel].filter((_, i) => i !== index) };
+    setFiles(next);
+    emitChange({ attachments: next });
+  };
 
   return (
     <div className={`flex w-full flex-col gap-spacing-6 ${className}`} {...props}>
@@ -100,7 +125,7 @@ export function NoticeWritingTemplate({
               width="100%"
               placeholder={current.titlePlaceholder}
               value={titles[channel]}
-              onChange={(e) => setTitles((p) => ({ ...p, [channel]: e.target.value }))}
+              onChange={(e) => setTitle(e.target.value)}
             />
           </div>
           {showAttach && (
@@ -122,7 +147,7 @@ export function NoticeWritingTemplate({
 
       <Editor
         value={bodies[channel]}
-        onChange={(html) => setBodies((p) => ({ ...p, [channel]: html }))}
+        onChange={setBody}
         mergeFields={mergeFields}
         toolbar={isSms ? SMS_TOOLBAR : undefined}
         showSource={!isSms}

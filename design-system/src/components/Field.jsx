@@ -77,8 +77,11 @@ export function Field({
         {isRowControls ? (
           // 복합 필드(row): 컨트롤을 한 줄에 등분(각 min-w-0 flex-1), 컨트롤 간 8px
           <div className="flex flex-row items-start gap-spacing-5">
-            {Children.map(children, (c) => (
-              <div className="min-w-0 flex-1">{c}</div>
+            {/* toArray — 조건부 자식(false/null)을 걸러 유령 등분 컬럼이 생기지 않게 */}
+            {Children.toArray(children).map((c) => (
+              <div key={c.key} className="min-w-0 flex-1">
+                {c}
+              </div>
             ))}
           </div>
         ) : (

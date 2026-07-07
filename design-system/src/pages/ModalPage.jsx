@@ -36,6 +36,7 @@ const MODAL_PROPS = [
   { name: 'confirmText / onConfirm', type: 'string / () => void', default: "'확인'", desc: '주동작 버튼 라벨·핸들러' },
   { name: 'cancelText / onCancel', type: 'string / () => void', default: "'취소'", desc: '보조 버튼 라벨·핸들러(미지정 시 onClose)' },
   { name: 'footer / footerStart', type: 'ReactNode', default: '—', desc: '푸터 우측 전체 커스텀 / 좌측 영역(버튼·안내글·유효성 메시지)' },
+  { name: 'footerStartType', type: "'text' | 'button'", default: "'text'", desc: '푸터 좌측 내용 유형 — 왼쪽 여백 결정: text=16px / button=12px(버튼 자체 여백 감안)' },
   { name: 'showHeader / showClose / showFooter / showCancel', type: 'boolean', default: 'true', desc: '헤더 / X 버튼 / 푸터 / 취소 버튼 노출' },
   { name: 'closeOnOverlayClick / closeOnEsc', type: 'boolean', default: 'true', desc: '딤 클릭 / ESC로 닫기 허용' },
   { name: 'bodyMaxHeight', type: 'number | string', default: "'70vh'", desc: '본문 최대 높이(초과 시 ScrollArea 내부 스크롤)' },
@@ -343,6 +344,7 @@ export function ModalPage() {
             <span>마지막 동기화 · 방금 전</span>
           </div>
         }
+        footerStartType="button"
         confirmText="저장"
         onConfirm={() => setFooterStartOpen(false)}
       >

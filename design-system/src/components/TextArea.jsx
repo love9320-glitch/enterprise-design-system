@@ -9,7 +9,7 @@
 //   동기화해 얹는다**(scroll-bar 토큰, hover/드래그 동작). 커서 추적·hover 둘 다 만족.
 //
 // 에러 표현 규칙: Input과 동일 — 테두리 대신 박스 아래 absolute 툴팁 오버레이(레이아웃 영향 0).
-import { useState, useRef, useCallback, useLayoutEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
 import { listColors } from '../tokens';
 import { Tooltip } from './Tooltip';
 
@@ -118,6 +118,10 @@ export function TextArea({
     onChange?.(e);
   };
 
+  // 드래그 도중 언마운트 시 window 리스너·body userSelect 잔존 방지(ScrollArea와 동일, 2026-07-07 감사)
+  const dragCleanupRef = useRef(null);
+  useEffect(() => () => dragCleanupRef.current?.(), []);
+
   // thumb 드래그 → textarea.scrollTop 동기화 (ScrollArea와 동일 방식)
   const startDrag = (e) => {
     e.preventDefault();
@@ -129,7 +133,9 @@ export function TextArea({
     const startScroll = el.scrollTop;
     const maxScroll = el.scrollHeight - el.clientHeight;
     const trackH = el.clientHeight - TRACK_PAD * 2;
-    const ratio = maxScroll / (trackH - thumb.size);
+    // 트랙이 thumb보다 짧으면 분모 0/음수 → NaN 스크롤 방지(이동 무시)
+    const denom = trackH - thumb.size;
+    const ratio = denom > 0 ? maxScroll / denom : 0;
     const onMove = (ev) => {
       el.scrollTop = startScroll + (ev.clientY - start) * ratio;
     };
@@ -139,10 +145,12 @@ export function TextArea({
       document.body.style.userSelect = '';
       window.removeEventListener('mousemove', onMove);
       window.removeEventListener('mouseup', onUp);
+      dragCleanupRef.current = null;
     };
     document.body.style.userSelect = 'none';
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onUp);
+    dragCleanupRef.current = onUp;
   };
 
   return (
@@ -170,14 +178,15 @@ export function TextArea({
           className={`hide-native-scroll block w-full resize-none overflow-y-auto bg-transparent pt-spacing-4 pb-spacing-12 text-14 outline-none disabled:cursor-not-allowed read-only:cursor-default ${placeholderColor} ${textColor}`}
           {...textareaProps}
         />
-        {/* 오버레이 thumb — 항상 렌더, opacity로 표시 제어(콘텐츠 폭을 줄이지 않음) */}
+        {/* 오버레이 thumb — 항상 렌더, opacity로 표시 제어(콘텐츠 폭을 줄이지 않음).
+            시각 6px + 클릭 영역 10px(투명 ::before 사방 2px 확장) — ScrollArea thumb와 동일(2026-07-06) */}
         <div
           onMouseDown={startDrag}
           onMouseEnter={() => setActive(true)}
           onMouseLeave={() => {
             if (!dragRef.current) setActive(false);
           }}
-          className="absolute right-spacing-3 w-spacing-4 cursor-pointer rounded-round-00"
+          className="absolute right-spacing-3 w-spacing-4 cursor-pointer rounded-round-00 before:absolute before:-inset-spacing-2 before:content-['']"
           style={{
             top: `${thumb.pos}px`,
             height: `${thumb.size}px`,

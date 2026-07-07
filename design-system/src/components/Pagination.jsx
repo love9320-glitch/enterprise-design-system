@@ -121,6 +121,10 @@ export function Pagination({
   const atFirst = current <= 1;
   const atLast = current >= computedTotalPages;
 
+  // totalPages를 외부에서 고정했는데 onPageSizeChange가 없으면 '페이지 행' Select는
+  // 바꿔도 아무것도 달라지지 않는 무반응 UI가 된다(기본값 조합 충돌) → 자동 숨김.
+  const pageSizeVisible = showPageSize && !(totalPages != null && !onPageSizeChange);
+
   const sizeSelectOptions = pageSizeOptions.map((n) => ({ value: n, label: `${n}개` }));
 
   return (
@@ -152,7 +156,7 @@ export function Pagination({
 
       {/* 우: 페이지 행 선택 */}
       <div className="flex items-center gap-spacing-5 justify-self-end">
-        {showPageSize && (
+        {pageSizeVisible && (
           <>
             <span className="whitespace-nowrap text-14 text-font-icon-5">페이지 행</span>
             <Select

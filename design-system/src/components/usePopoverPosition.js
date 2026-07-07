@@ -55,14 +55,30 @@ export function usePopoverPosition({ open, anchorRef, menuRef, placement = 'auto
 
       const top = vertical === 'top' ? tr.top - gap - menuH : tr.bottom + gap;
       const left = horizontal === 'right' ? tr.right - w : tr.left;
-      setMenuStyle({ position: 'fixed', top, left, width: widthCss });
+      // 값이 같으면 이전 객체를 유지 — 참조 변경으로 인한 팝오버 서브트리 불필요 리렌더 방지
+      setMenuStyle((prev) =>
+        prev && prev.top === top && prev.left === left && prev.width === widthCss
+          ? prev
+          : { position: 'fixed', top, left, width: widthCss },
+      );
     };
-    measure();
-    window.addEventListener('resize', measure);
-    window.addEventListener('scroll', measure, true);
+    measure(); // 열림 직후 1회는 동기 측정 — 첫 프레임에 올바른 위치로 표시
+    // scroll(capture, 문서 내 모든 스크롤에 발화)·resize는 rAF로 코얼레싱 —
+    // 프레임당 1회만 측정/재계산해 스크롤 중 측정+리렌더 반복을 줄인다(2026-07-07 감사)
+    let raf = 0;
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        measure();
+      });
+    };
+    window.addEventListener('resize', schedule);
+    window.addEventListener('scroll', schedule, true);
     return () => {
-      window.removeEventListener('resize', measure);
-      window.removeEventListener('scroll', measure, true);
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener('resize', schedule);
+      window.removeEventListener('scroll', schedule, true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, placement, menuWidth, ...deps]);

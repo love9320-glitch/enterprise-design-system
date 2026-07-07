@@ -32,7 +32,7 @@ export function Chip({
   return (
     <span
       onClick={clickable ? onClick : undefined}
-      className={`${base} ${COLOR_CLASS[color]} ${clickable ? 'cursor-pointer' : ''} ${className}`}
+      className={`${base} ${COLOR_CLASS[color] ?? COLOR_CLASS.gray} ${clickable ? 'cursor-pointer' : ''} ${className}`}
       {...props}
     >
       <span className="whitespace-nowrap">{children}</span>

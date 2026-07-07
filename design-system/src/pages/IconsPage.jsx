@@ -1,7 +1,36 @@
 import { Fragment } from 'react';
-import * as LucideIcons from 'lucide-react';
+// `import * as`(배럴)는 lucide 전체(1,000개+ ≈ 620KB)를 번들에 끌어들여 트리셰이킹을 깬다
+// (2026-07-07 감사 — 메인 번들 비대의 주범). 갤러리에 노출하는 아이콘만 named import한다.
+import {
+  Home, Menu, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowLeft, ArrowRight,
+  ArrowUp, ArrowDown, MoreHorizontal, MoreVertical, ExternalLink, CornerDownRight, Plus, Minus, Edit, Pencil,
+  Trash2, Copy, Save, Download, Upload, Share2, RefreshCw, Search, Filter, Settings,
+  SlidersHorizontal, Check, X, CheckCircle, XCircle, AlertTriangle, AlertCircle, Info, HelpCircle, Loader,
+  Bell, BellOff, ShieldCheck, ShieldAlert, Mail, MessageCircle, MessageSquare, Phone, PhoneCall, Send,
+  Inbox, AtSign, File, FileText, Folder, FolderOpen, Image, Paperclip, Database, HardDrive,
+  Archive, ClipboardList, Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Music, Video,
+  Camera, Mic, User, Users, UserPlus, UserCheck, LogIn, LogOut, Lock, Unlock,
+  Shield, Key, ShoppingCart, ShoppingBag, CreditCard, DollarSign, Tag, Gift, Package, Truck,
+  Grid, List, LayoutGrid, Columns, PanelLeft, Maximize, Minimize, Eye, EyeOff, Star,
+  Heart, Bookmark, Calendar, CalendarDays, CalendarCheck, Clock, Timer, History, LoaderCircle, LoaderPinwheel,
+} from 'lucide-react';
 import { iconTokens } from '../tokens/index';
 import { Divider } from '../components/Divider';
+
+// 이름 → 컴포넌트 조회 맵(카테고리 정의는 문자열 이름을 유지)
+const LucideIcons = {
+  Home, Menu, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowLeft, ArrowRight,
+  ArrowUp, ArrowDown, MoreHorizontal, MoreVertical, ExternalLink, CornerDownRight, Plus, Minus, Edit, Pencil,
+  Trash2, Copy, Save, Download, Upload, Share2, RefreshCw, Search, Filter, Settings,
+  SlidersHorizontal, Check, X, CheckCircle, XCircle, AlertTriangle, AlertCircle, Info, HelpCircle, Loader,
+  Bell, BellOff, ShieldCheck, ShieldAlert, Mail, MessageCircle, MessageSquare, Phone, PhoneCall, Send,
+  Inbox, AtSign, File, FileText, Folder, FolderOpen, Image, Paperclip, Database, HardDrive,
+  Archive, ClipboardList, Play, Pause, SkipBack, SkipForward, Volume2, VolumeX, Music, Video,
+  Camera, Mic, User, Users, UserPlus, UserCheck, LogIn, LogOut, Lock, Unlock,
+  Shield, Key, ShoppingCart, ShoppingBag, CreditCard, DollarSign, Tag, Gift, Package, Truck,
+  Grid, List, LayoutGrid, Columns, PanelLeft, Maximize, Minimize, Eye, EyeOff, Star,
+  Heart, Bookmark, Calendar, CalendarDays, CalendarCheck, Clock, Timer, History, LoaderCircle, LoaderPinwheel,
+};
 
 const ICON_CATEGORIES = [
   {

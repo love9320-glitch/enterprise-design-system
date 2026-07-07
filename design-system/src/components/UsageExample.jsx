@@ -5,17 +5,23 @@
 //   - note: 코드 위 한 줄 설명 (옵션)
 //   - props: 전체 옵션 설명 표 데이터 (옵션) — [{ name, type, default, desc }]
 // 우상단 복사 버튼으로 코드를 클립보드에 복사한다. 색·간격은 토큰만 사용.
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 
 export function UsageExample({ code, title = '사용 예시', note, props, className = '' }) {
   const [copied, setCopied] = useState(false);
+  const timerRef = useRef(null);
+  useEffect(() => () => clearTimeout(timerRef.current), []); // 언마운트 후 setState 방지
 
   function handleCopy() {
-    navigator.clipboard?.writeText(code).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
-    });
+    navigator.clipboard
+      ?.writeText(code)
+      .then(() => {
+        setCopied(true);
+        clearTimeout(timerRef.current);
+        timerRef.current = setTimeout(() => setCopied(false), 1500);
+      })
+      .catch(() => {}); // 비HTTPS/권한 거부 — 복사 실패는 상태 변경 없이 무시
   }
 
   return (
