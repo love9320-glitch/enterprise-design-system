@@ -14,6 +14,7 @@ import { createPortal } from 'react-dom';
 import { ChevronDown } from 'lucide-react';
 import { Tooltip } from './Tooltip';
 import { TruncatingText } from './TruncatingText';
+import { CHIP_COLOR_CLASS } from './chipStyles';
 import { InlineFieldTrigger } from './InlineFieldTrigger';
 import { PopoverMenu } from './PopoverMenu';
 import { ListGroup } from './ListGroup';
@@ -25,14 +26,39 @@ import { useOutsideDismiss } from './useOutsideDismiss';
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰).
 const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus:ring-2 focus:ring-text-field-focused-line';
 
+// 내부 라벨(label) 구분자 아이콘 — 세로 점 2개(2×7). lucide에 없는 커스텀 셰이프라
+// Figma 원본(Ellipse, 8219:76216) path를 인라인 SVG로 가져왔다(2026-07-07 개정 — 콜론 텍스트 대체).
+// 색은 currentColor — 사용처에서 시멘틱 토큰 클래스(text-font-icon-3 = #878787, Figma 값)로 지정.
+function LabelSeparatorIcon({ className = '' }) {
+  return (
+    <svg
+      viewBox="0 0 2 7"
+      width={2}
+      height={7}
+      fill="currentColor"
+      aria-hidden="true"
+      className={`shrink-0 ${className}`}
+    >
+      <path d="M2 1C2 1.55228 1.55228 2 1 2C0.447715 2 0 1.55228 0 1C0 0.447715 0.447715 0 1 0C1.55228 0 2 0.447715 2 1Z" />
+      <path d="M2 6C2 6.55228 1.55228 7 1 7C0.447715 7 0 6.55228 0 6C0 5.44772 0.447715 5 1 5C1.55228 5 2 5.44772 2 6Z" />
+    </svg>
+  );
+}
+
 export function Select({
   value,
   defaultValue = '',
   onChange,
-  options = [],            // [{ value, label }]
+  options = [],            // [{ value, label, disabled? }] — disabled 옵션은 목록에 비활성 행으로 표시(선택 불가)
   multiple = false,        // 체크박스 다중 선택 — value/defaultValue/onChange 값은 배열([value])
   variant = 'box',         // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 필터·문단 사이용)
+                           //   | 'chip'(칩형 트리거 — Figma select chip 8219:81717, SelectChip으로 export)
   size = '24',             // text variant 전용: '24'(14px) | '20'(12px) — box는 항상 14px
+  color = 'gray',          // chip variant 전용: 'gray' | 'red' | 'blue' | 'black' — Chip과 동일한
+                           //   chip-* 시멘틱 토큰(CHIP_COLOR_CLASS) 재사용. pressed=default(Figma 동일)
+  label = null,            // 내부 라벨(box 전용, Figma type="solid label") — 값 선택 시 트리거에
+                           //   "라벨 ⋮ 값"으로 표시(구분자=점 2개 아이콘, 라벨 고정·값만 말줄임).
+                           //   placeholder 상태는 미표시. 외부 Label을 못 쓰는 좁은 배치의 대안(2026-07-07 Figma 개정).
   placeholder = '선택하세요',
   disabled = false,
   readOnly = false,
@@ -73,8 +99,10 @@ export function Select({
   // text variant: 박스/보더 없는 인라인 텍스트형. 항상 hug(콘텐츠 맞춤) + maxWidth만 받는다.
   // disabled/readOnly/error는 box와 동일하게 지원(테이블 바디·폼용). 드롭다운·키보드·검색 동작도 동일.
   const isText = variant === 'text';
-  // text variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
-  const effectiveMenuWidth = menuWidth ?? (isText ? 120 : undefined);
+  // chip variant: 칩 비주얼 트리거(콘텐츠 hug) — 드롭다운·키보드·검색 동작은 box와 동일.
+  const isChip = variant === 'chip';
+  // text/chip variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
+  const effectiveMenuWidth = menuWidth ?? (isText || isChip ? 120 : undefined);
   const selectedOption = multiple ? undefined : options.find((o) => o.value === current);
   // 트리거 표시 텍스트 — multiple은 선택 라벨을 ', '로 연결(옵션 순서 기준), 넘치면 TruncatingText가 말줄임
   const selectedLabels = multiple
@@ -121,14 +149,17 @@ export function Select({
     [isControlled, onChange, selectedValues],
   );
 
-  // 행 확정 동작 — 단일=선택 후 닫기 / multiple=토글 후 유지
-  const commitOption = (opt) => (multiple ? toggleValue(opt.value) : selectValue(opt.value));
+  // 행 확정 동작 — 단일=선택 후 닫기 / multiple=토글 후 유지. disabled 옵션은 확정 불가(키보드 포함)
+  const commitOption = (opt) => {
+    if (opt?.disabled) return;
+    return multiple ? toggleValue(opt.value) : selectValue(opt.value);
+  };
 
   // 트리거 폭을 재서 텍스트 max-width를 계산(콘텐츠폭 − chevron − gap) — 크롬 truncate 보강.
   // hug(fit-content)는 트리거가 콘텐츠를 따라가므로 max-width를 주면 무한 축소 순환이 생긴다 → 제외.
   useLayoutEffect(() => {
     const trigger = triggerRef.current;
-    if (!trigger || isText || width === 'hug') {
+    if (!trigger || isText || isChip || width === 'hug') {
       setTextMaxW(undefined);
       return;
     }
@@ -145,7 +176,7 @@ export function Select({
     const ro = new ResizeObserver(update);
     ro.observe(trigger);
     return () => ro.disconnect();
-  }, [width, isText]);
+  }, [width, isText, isChip]);
 
   // 외부 클릭 닫기 (트리거·드롭다운 둘 다 바깥일 때 — 드롭다운은 portal).
   // 공용 훅 useOutsideDismiss — 바깥 클릭은 "닫기 전용"으로 삼켜 아래 요소가 함께 클릭되지 않는다.
@@ -267,11 +298,11 @@ export function Select({
   return (
     <div
       ref={rootRef}
-      className={`relative ${isText ? 'inline-flex max-w-full align-middle' : ''} ${className}`}
-      style={isText ? undefined : { width: widthStyle, maxWidth: maxWidthStyle }}
+      className={`relative ${isText || isChip ? 'inline-flex max-w-full align-middle' : ''} ${className}`}
+      style={isText || isChip ? undefined : { width: widthStyle, maxWidth: maxWidthStyle }}
       {...props}
     >
-      {/* 트리거 — 상호작용(클릭·키보드·포커스·위치 anchor)은 box·text 공통, 비주얼은 분기 */}
+      {/* 트리거 — 상호작용(클릭·키보드·포커스·위치 anchor)은 box·text·chip 공통, 비주얼은 분기 */}
       {isText ? (
         // 인라인 텍스트형: 비주얼은 공유 프리미티브 InlineFieldTrigger에 위임(Select·DatePicker 공용)
         <InlineFieldTrigger
@@ -293,6 +324,31 @@ export function Select({
         >
           {displayLabel}
         </InlineFieldTrigger>
+      ) : isChip ? (
+        // 칩형: Chip과 동일 박스 규격(pl-4/pr-3/py-1·gap-3·round-4·text-12)+chip-* 토큰, chevron 12.
+        // 상태는 default/hover(CSS)만 — pressed는 Figma에서 default 재사용, disabled 변형은 미제공(동작만 차단).
+        <div
+          ref={triggerRef}
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded={open}
+          aria-disabled={disabled || undefined}
+          aria-invalid={error || undefined}
+          tabIndex={interactive ? 0 : -1}
+          onClick={() => interactive && setOpen((o) => !o)}
+          onKeyDown={onTriggerKeyDown}
+          style={maxWidthStyle ? { maxWidth: maxWidthStyle } : undefined}
+          className={`inline-flex min-w-0 items-center gap-spacing-3 rounded-round-4 border pl-spacing-4 pr-spacing-3 py-spacing-1 font-pretendard text-12 font-normal transition-colors focus:outline-none ${
+            CHIP_COLOR_CLASS[color] ?? CHIP_COLOR_CLASS.gray
+          } ${interactive ? 'cursor-pointer' : 'cursor-not-allowed'}`}
+        >
+          <TruncatingText className="min-w-0 text-12 font-normal">{displayLabel}</TruncatingText>
+          <ChevronDown
+            size={12}
+            strokeWidth={1.8}
+            className={`pointer-events-none shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          />
+        </div>
       ) : (
         <div
           ref={triggerRef}
@@ -308,13 +364,27 @@ export function Select({
             interactive ? `cursor-pointer ${RING}` : 'cursor-not-allowed'
           }`}
         >
-          {/* box: grid minmax(0,1fr) + JS max-width 보강 */}
-          <TruncatingText
-            style={textMaxW != null ? { maxWidth: `${textMaxW}px` } : undefined}
-            className={`text-14 font-normal ${textColor}`}
-          >
-            {displayLabel}
-          </TruncatingText>
+          {/* box: grid minmax(0,1fr) + JS max-width 보강.
+              내부 라벨(label)은 값이 있을 때만 "라벨 ⋮ 값" — 라벨·점 구분자 고정(shrink-0), 값만 말줄임(Figma solid label). */}
+          {label != null && !isPlaceholder ? (
+            <div
+              style={textMaxW != null ? { maxWidth: `${textMaxW}px` } : undefined}
+              className="flex min-w-0 items-center gap-spacing-3"
+            >
+              <span className={`shrink-0 text-14 font-normal ${textColor}`}>{label}</span>
+              <LabelSeparatorIcon className="text-font-icon-3" />
+              <TruncatingText className={`min-w-0 flex-1 text-14 font-normal ${textColor}`}>
+                {displayLabel}
+              </TruncatingText>
+            </div>
+          ) : (
+            <TruncatingText
+              style={textMaxW != null ? { maxWidth: `${textMaxW}px` } : undefined}
+              className={`text-14 font-normal ${textColor}`}
+            >
+              {displayLabel}
+            </TruncatingText>
+          )}
           <ChevronDown
             size={chevronSize}
             strokeWidth={1.8}
@@ -353,20 +423,22 @@ export function Select({
                         key={opt.value}
                         title={opt.label}
                         checkbox
+                        disabled={opt.disabled}
                         checked={selectedValues.includes(opt.value)}
-                        onCheckChange={() => toggleValue(opt.value)}
-                        highlighted={i === highlight}
-                        onMouseEnter={() => setHighlight(i)}
+                        onCheckChange={opt.disabled ? undefined : () => toggleValue(opt.value)}
+                        highlighted={!opt.disabled && i === highlight}
+                        onMouseEnter={() => !opt.disabled && setHighlight(i)}
                         data-option-index={i}
                       />
                     ) : (
                       <List
                         key={opt.value}
                         title={opt.label}
+                        disabled={opt.disabled}
                         selected={opt.value === current}
-                        highlighted={i === highlight}
-                        onClick={() => selectValue(opt.value)}
-                        onMouseEnter={() => setHighlight(i)}
+                        highlighted={!opt.disabled && i === highlight}
+                        onClick={opt.disabled ? undefined : () => selectValue(opt.value)}
+                        onMouseEnter={() => !opt.disabled && setHighlight(i)}
                         data-option-index={i}
                       />
                     ),
@@ -390,4 +462,11 @@ export function Select({
       )}
     </div>
   );
+}
+
+// SelectChip — 칩 비주얼 트리거의 Select (Figma `select chip` 8219:81717, color gray/red/blue/black ×
+// state Default/hover/pressed=default). 클릭하면 팝오버 옵션 메뉴가 열리고, options·value/onChange·
+// multiple·searchable·menuWidth 등 모든 옵션·동작은 Select와 완전히 동일하다(variant="chip" 별칭).
+export function SelectChip(props) {
+  return <Select variant="chip" {...props} />;
 }
