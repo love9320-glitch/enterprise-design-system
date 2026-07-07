@@ -5,15 +5,8 @@
 //  - onClick 주면 칩 전체가 클릭 가능(선택 등)
 // (disabled 변형은 Figma에 없어 미제공 — 필요 시 추후 추가)
 import { X } from 'lucide-react';
-
-// color별 전체 클래스(Tailwind purge를 위해 동적 문자열이 아닌 완전한 클래스명으로 나열).
-// text 색만 지정하면 X 아이콘(lucide, stroke=currentColor)이 상속받는다. icon 토큰=text 토큰 값.
-const COLOR_CLASS = {
-  gray: 'text-chip-gray-default-text border-chip-gray-default-line bg-chip-gray-default-bg hover:text-chip-gray-hover-text hover:border-chip-gray-hover-line hover:bg-chip-gray-hover-bg',
-  red: 'text-chip-red-default-text border-chip-red-default-line bg-chip-red-default-bg hover:text-chip-red-hover-text hover:border-chip-red-hover-line hover:bg-chip-red-hover-bg',
-  blue: 'text-chip-blue-default-text border-chip-blue-default-line bg-chip-blue-default-bg hover:text-chip-blue-hover-text hover:border-chip-blue-hover-line hover:bg-chip-blue-hover-bg',
-  black: 'text-chip-black-default-text border-chip-black-default-line bg-chip-black-default-bg hover:text-chip-black-hover-text hover:border-chip-black-hover-line hover:bg-chip-black-hover-bg',
-};
+// 칩 색 클래스 맵 — SelectChip(Select variant="chip")과 공유(별도 파일, react-refresh 규칙 회피)
+import { CHIP_COLOR_CLASS } from './chipStyles';
 
 export function Chip({
   children,
@@ -32,7 +25,7 @@ export function Chip({
   return (
     <span
       onClick={clickable ? onClick : undefined}
-      className={`${base} ${COLOR_CLASS[color] ?? COLOR_CLASS.gray} ${clickable ? 'cursor-pointer' : ''} ${className}`}
+      className={`${base} ${CHIP_COLOR_CLASS[color] ?? CHIP_COLOR_CLASS.gray} ${clickable ? 'cursor-pointer' : ''} ${className}`}
       {...props}
     >
       <span className="whitespace-nowrap">{children}</span>

@@ -1,4 +1,4 @@
-import { Select } from '../components/Select';
+import { Select, SelectChip } from '../components/Select';
 import { SelectGroup } from '../components/SelectGroup';
 import { UsageExample } from '../components/UsageExample';
 import { Divider } from '../components/Divider';
@@ -43,7 +43,7 @@ import { SelectGroup } from '../components/SelectGroup';
 <SelectGroup width="fill">…</SelectGroup> // 부모 폭 균등 분할`;
 
 const USAGE_PROPS = [
-  { name: 'options', type: '{ value, label }[]', default: '[]', desc: '선택지 목록' },
+  { name: 'options', type: '{ value, label, disabled? }[]', default: '[]', desc: '선택지 목록 — disabled 옵션은 비활성 행으로 표시(클릭·키보드 선택 불가)' },
   { name: 'multiple', type: 'boolean', default: 'false', desc: '체크박스 다중 선택 — value/defaultValue/onChange 값이 배열이 되고, 행 클릭=토글(메뉴 유지)' },
   { name: 'variant', type: "'box' | 'text'", default: "'box'", desc: "필드형(box) / 인라인 텍스트형(text — 필터·문단 사이용)" },
   { name: 'size', type: "'24' | '20'", default: "'24'", desc: 'text variant 글자 크기 — 24=14px / 20=12px (box는 항상 14px)' },
@@ -51,6 +51,7 @@ const USAGE_PROPS = [
   { name: 'defaultValue', type: 'string | string[]', default: "'' / []", desc: '초기 선택값 (비제어) — multiple이면 배열' },
   { name: 'onChange', type: '(e) => void', default: '—', desc: '선택 변경 — e.target.value 형태로 전달' },
   { name: 'placeholder', type: 'string', default: "'선택하세요'", desc: '미선택 시 표시 문구' },
+  { name: 'label', type: 'string', default: '—', desc: "내부 라벨(box 전용) — 값 선택 시 '라벨 ⋮ 값'으로 표시(구분자=점 2개 SVG 아이콘, 라벨 고정·값만 말줄임). 미선택 시엔 placeholder만. 외부 Label을 못 쓰는 좁은 배치의 대안" },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 열기/선택 차단' },
   { name: 'readOnly', type: 'boolean', default: 'false', desc: '읽기 전용 — 값 표시, 변경 불가' },
   { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시' },
@@ -64,6 +65,9 @@ const USAGE_PROPS = [
   { name: 'emptyMessage', type: 'string', default: "'옵션이 없습니다.'", desc: 'options가 비었을 때 문구' },
   { name: 'noResultMessage', type: 'string', default: "'검색 결과가 없습니다.'", desc: '검색 결과 없을 때 문구' },
   { name: 'className', type: 'string', default: "''", desc: '트리거 추가 클래스' },
+  // SelectChip
+  { name: 'SelectChip', type: '컴포넌트', default: '—', desc: '칩 비주얼 트리거의 Select(variant="chip" 별칭) — 클릭하면 동일한 팝오버 옵션 메뉴. 옵션·동작은 Select와 완전 동일' },
+  { name: 'SelectChip · color', type: "'gray' | 'red' | 'blue' | 'black'", default: "'gray'", desc: '칩 분류색 — Chip과 동일한 chip-* 토큰 재사용(default/hover, pressed=default)' },
   // SelectGroup
   { name: 'SelectGroup · children', type: 'ReactNode', default: '—', desc: '묶을 Select들 (fragment·조건부 렌더 평탄화)' },
   { name: 'SelectGroup · direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '배치 방향' },
@@ -119,6 +123,68 @@ export function SelectPage() {
       <div className="mt-spacing-7 grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
         <p className="pt-spacing-4 text-12 text-font-icon-3">Error</p>
         <Select options={OPTIONS} error errorMessage="필수 선택입니다" />
+      </div>
+
+      {/* Select Chip */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Select Chip</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          칩 비주얼 트리거의 Select(<code className="text-font-icon-5">SelectChip</code>)입니다.
+          클릭하면 동일한 팝오버 옵션 메뉴가 열리고, <code className="text-font-icon-5">options</code>·
+          <code className="text-font-icon-5">value/onChange</code>·<code className="text-font-icon-5">multiple</code>·
+          <code className="text-font-icon-5">searchable</code> 등 모든 옵션이 Select와 같습니다.
+          색은 Chip과 동일한 <code className="text-font-icon-5">color</code>(chip-* 토큰) 4종입니다.
+        </p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">color 4종</p>
+            <div className="flex items-center gap-spacing-5">
+              <SelectChip options={OPTIONS} placeholder="gray" />
+              <SelectChip options={OPTIONS} color="red" placeholder="red" />
+              <SelectChip options={OPTIONS} color="blue" placeholder="blue" />
+              <SelectChip options={OPTIONS} color="black" placeholder="black" />
+            </div>
+          </div>
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">선택됨</p>
+            <div className="flex items-center gap-spacing-5">
+              <SelectChip options={OPTIONS} defaultValue="opt1" />
+              <SelectChip options={OPTIONS} color="blue" defaultValue="opt2" />
+            </div>
+          </div>
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">maxWidth 말줄임</p>
+            <SelectChip options={OPTIONS} maxWidth={120} defaultValue="opt6" />
+          </div>
+        </div>
+      </div>
+
+      {/* 내부 라벨 (label) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">내부 라벨 (label)</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">label</code>을 주면 값을 선택했을 때 트리거에{' '}
+          <code className="text-font-icon-5">라벨 ⋮ 값</code>으로 표시됩니다(미선택 시엔 placeholder만).
+          구분자는 점 2개 커스텀 SVG 아이콘(lucide 미제공, Figma 원본 path)입니다.
+          외부 <code className="text-font-icon-5">Label</code> 컴포넌트를 둘 공간이 없을 때의 대안이며,
+          라벨·구분자는 고정되고 값만 말줄임됩니다.
+        </p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">미선택</p>
+            <Select options={OPTIONS} label="구분" />
+          </div>
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">선택됨</p>
+            <Select options={OPTIONS} label="구분" defaultValue="opt1" />
+          </div>
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">긴 값 말줄임</p>
+            <Select options={OPTIONS} label="구분" width={180} defaultValue="opt6" />
+          </div>
+        </div>
       </div>
 
       {/* Width 옵션 */}

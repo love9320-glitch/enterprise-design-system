@@ -11,6 +11,7 @@ export { listColors } from './colors/listColors.js';
 export { tagColors } from './colors/tagColors.js';
 export { newTagColors } from './colors/newTagColors.js';
 export { sideNavColors } from './colors/sideNavColors.js';
+export { conditionOrderSlotColors } from './colors/conditionOrderSlotColors.js';
 export { checkboxColors } from './colors/checkboxColors.js';
 export { radioColors } from './colors/radioColors.js';
 export { switchColors } from './colors/switchColors.js';
