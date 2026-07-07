@@ -2,7 +2,7 @@
 // 시계 아이콘 + 'HH:MM' 값. 누르면 인풋 영역 없는 시/분 2depth 목록(TwoDepthList showInput=false)이 뜬다.
 //   - 직접 타이핑: "12:34"·"1:1"·"1230"·"011"(→01:01) → Enter/포커스 아웃 시 'HH:MM'로 정규화.
 //   - 숫자·콜론만 입력 가능. 필드 상태(default·hover·focused·filled·disabled·readOnly·error)는 tf-* 토큰.
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Clock as ClockIcon } from 'lucide-react';
 import { Popover } from './Popover';
@@ -46,6 +46,9 @@ export function TimeField({
   const [focused, setFocused] = useState(false);
   const [text, setText] = useState('');
   const [parseError, setParseError] = useState(false);
+  // Enter/ESC의 동기 blur가 onBlur commit을 중복/오발화시키지 않게 1회 건너뛰는 플래그(DateField와 동일)
+  const skipBlurCommitRef = useRef(false);
+  const inputRef = useRef(null);
   const [truncRect, setTruncRect] = useState(null);
 
   // 값 (controlled/uncontrolled)
@@ -113,6 +116,7 @@ export function TimeField({
       >
         <ClockIcon size={16} strokeWidth={1.8} className={`shrink-0 ${iconColor}`} />
         <input
+          ref={inputRef}
           type="text"
           value={focused ? text : display}
           placeholder={placeholder}
@@ -145,6 +149,11 @@ export function TimeField({
           onBlur={() => {
             if (!interactive) return;
             setFocused(false);
+            // Enter(이미 커밋)/ESC(취소) 직후의 blur는 커밋을 건너뛴다
+            if (skipBlurCommitRef.current) {
+              skipBlurCommitRef.current = false;
+              return;
+            }
             commit(text);
           }}
           onKeyDown={(e) => {
@@ -153,10 +162,14 @@ export function TimeField({
               e.preventDefault();
               commit(text);
               setOpen(false);
+              skipBlurCommitRef.current = true;
               e.currentTarget.blur();
             } else if (e.key === 'Escape') {
+              // 취소: 초안을 버리고 기존 표시값으로 복원(커밋 금지)
               setText(display);
+              setParseError(false);
               setOpen(false);
+              skipBlurCommitRef.current = true;
               e.currentTarget.blur();
             }
           }}
@@ -196,7 +209,16 @@ export function TimeField({
   return (
     <Popover
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(o) => {
+        setOpen(o);
+        // ESC 닫힘 시 입력 편집도 해제(취소+blur) — 바로 재클릭하면 focus로 즉시 재활성(DateField와 동일)
+        if (!o && inputRef.current && document.activeElement === inputRef.current) {
+          setText(display);
+          setParseError(false);
+          skipBlurCommitRef.current = true;
+          inputRef.current.blur();
+        }
+      }}
       disabled={!interactive}
       placement="auto"
       menuWidth={140}

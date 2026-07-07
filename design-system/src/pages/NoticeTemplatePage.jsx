@@ -43,6 +43,7 @@ const USAGE_PROPS = [
   { name: 'channel', type: "'site' | 'email' | 'sms'", default: '—', desc: '현재 채널(제어). 미지정 시 내부 상태' },
   { name: 'defaultChannel', type: "'site' | 'email' | 'sms'", default: "'site'", desc: '초기 채널(비제어)' },
   { name: 'onChannelChange', type: '(channel) => void', default: '—', desc: '채널 변경 콜백' },
+  { name: 'onChange', type: '(values) => void', default: '—', desc: '작성 내용 스냅샷 반출 — {channel, titles, bodies, attachments}. 첨부 항목의 원본 File은 .file. 저장/발송은 이 값 사용' },
   { name: 'showTabs', type: 'boolean', default: 'true', desc: '채널 탭 노출 여부(false=단일 채널 모드)' },
   { name: 'showAttach', type: 'boolean', default: 'true', desc: '첨부파일 버튼 노출 여부(false면 제목 입력만 전체 폭)' },
   { name: 'tabVariant', type: "'fill' | 'hug'", default: "'fill'", desc: '탭 너비 타입 — fill=균등 분할(기본), hug=내용 폭' },

@@ -44,11 +44,13 @@ export function SearchBar({
         onChange={onChange}
         placeholder={placeholder}
         disabled={disabled}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' && onSubmit) onSubmit(e.currentTarget.value);
-        }}
         className="min-w-0 flex-1 bg-transparent text-14 text-text-field-filled-text outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed disabled:text-text-field-disabled-text disabled:placeholder:text-text-field-disabled-text [&::-webkit-search-cancel-button]:appearance-none"
         {...inputProps}
+        onKeyDown={(e) => {
+          // Enter 제출 + 소비자 onKeyDown 합성 — 스프레드가 덮어써 onSubmit이 무력화되지 않게
+          if (e.key === 'Enter' && onSubmit) onSubmit(e.currentTarget.value);
+          inputProps?.onKeyDown?.(e);
+        }}
       />
     </div>
   );

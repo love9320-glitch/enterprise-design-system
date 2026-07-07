@@ -4,7 +4,7 @@
 //   - 표기/입력 형식은 utils/datetime 규칙: "YY.MM.DD (HH:MM)", 범위 "A~B" / 시작만 "A ~ 마감일 없음".
 //   - 범위에서 마감일을 안 적고 확정하면(시작만 입력) end=null → "마감일 없음"으로 표시된다.
 //   - 필드 외형/상태(default·hover·focused·filled·disabled·readOnly·error 툴팁)는 tf-* 토큰.
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { Popover } from './Popover';
@@ -161,6 +161,10 @@ export function DateField({
   const [focused, setFocused] = useState(false);
   const [text, setText] = useState(''); // 포커스 중 직접 입력 텍스트
   const [parseError, setParseError] = useState(false);
+  // Enter/ESC가 blur()를 동기 발화시키므로, onBlur의 commit을 1회 건너뛰는 플래그.
+  // 없으면 ESC(취소)가 편집 중 초안을 커밋하고, Enter는 onChange가 2회 발화한다(2026-07-07 감사).
+  const skipBlurCommitRef = useRef(false);
+  const inputRef = useRef(null);
   // 말줄임 hover 툴팁(규칙 5) — 값이 폭을 넘쳐 잘릴 때 전체 값을 보여준다(TruncatingText와 동일 방식).
   const [truncRect, setTruncRect] = useState(null);
 
@@ -276,6 +280,7 @@ export function DateField({
       >
         <CalendarIcon size={16} strokeWidth={1.8} className={`shrink-0 ${iconColor}`} />
         <input
+          ref={inputRef}
           type="text"
           value={focused ? text : display}
           placeholder={placeholder}
@@ -310,6 +315,11 @@ export function DateField({
           onBlur={() => {
             if (!interactive) return; // readOnly/disabled은 commit 안 함(값 보존)
             setFocused(false);
+            // Enter(이미 커밋)/ESC(취소) 직후의 blur는 커밋을 건너뛴다
+            if (skipBlurCommitRef.current) {
+              skipBlurCommitRef.current = false;
+              return;
+            }
             commit(text);
           }}
           onKeyDown={(e) => {
@@ -318,10 +328,14 @@ export function DateField({
               e.preventDefault();
               commit(text);
               setOpen(false);
+              skipBlurCommitRef.current = true;
               e.currentTarget.blur();
             } else if (e.key === 'Escape') {
+              // 취소: 초안을 버리고 기존 표시값으로 복원(커밋 금지)
               setText(display);
+              setParseError(false);
               setOpen(false);
+              skipBlurCommitRef.current = true;
               e.currentTarget.blur();
             }
           }}
@@ -363,7 +377,19 @@ export function DateField({
   return (
     <Popover
       open={open}
-      onOpenChange={setOpen}
+      onOpenChange={(o) => {
+        setOpen(o);
+        // ESC로 닫힐 때: Popover의 capture 리스너가 키를 선점해 인풋 ESC 핸들러가 못 받으므로
+        // 여기서 입력 편집을 해제한다 — 초안은 버리고(취소) blur해서, 필드를 바로 다시
+        // 클릭하면 focus 이벤트로 즉시 재활성된다(2026-07-07 사용자 지적).
+        // 외부 클릭 닫힘은 useOutsideDismiss가 먼저 blur를 복원해(activeElement가 이미 아님) 여기 안 탄다.
+        if (!o && inputRef.current && document.activeElement === inputRef.current) {
+          setText(display);
+          setParseError(false);
+          skipBlurCommitRef.current = true;
+          inputRef.current.blur();
+        }
+      }}
       disabled={!interactive}
       placement="auto"
       menuWidth={276}

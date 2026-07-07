@@ -22,7 +22,7 @@
 // 색·간격·보더는 table-*/spacing-*/border-* 토큰만 사용(하드코딩 금지).
 // sticky 헤더의 하단 구분선은 border-collapse 환경에서 스크롤 시 사라지는 브라우저 버그를 피하려
 // box-shadow(토큰 색 인라인)로 그린다. — Tooltip/ScrollArea의 토큰값 인라인 적용과 동일한 예외.
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { LoaderCircle, MoreVertical } from 'lucide-react';
 import { Checkbox } from './Checkbox';
 import { ScrollArea } from './ScrollArea';
@@ -131,8 +131,12 @@ export function Table({
     if (!filtersControlled) setInternalFilters(next);
     onFilterChange?.(next);
   };
-  // 활성 필터를 적용해 행을 거른다(공유 헬퍼).
-  const filteredRows = applyColumnFilters(rows, columns, activeFilters);
+  // 활성 필터를 적용해 행을 거른다(공유 헬퍼). 메모 — 안 하면 선택 토글 등 무관한 state
+  // 변경마다 전체 행 재필터+재정렬이 돌아 수천 행에서 클릭마다 지연된다(2026-07-07 감사).
+  const filteredRows = useMemo(
+    () => applyColumnFilters(rows, columns, activeFilters),
+    [rows, columns, activeFilters],
+  );
 
   // 정렬 상태 — controlled(sort+onSortChange) 또는 내부 상태. { key, dir:'asc'|'desc' } | null
   const sortControlled = sort !== undefined;
@@ -142,8 +146,8 @@ export function Table({
     if (!sortControlled) setInternalSort(next);
     onSortChange?.(next);
   };
-  // 정렬 적용(필터 뒤, 공유 헬퍼) — 헤더 메뉴 항목 기준(row[key]).
-  const displayRows = applySort(filteredRows, activeSort);
+  // 정렬 적용(필터 뒤, 공유 헬퍼) — 헤더 메뉴 항목 기준(row[key]). 메모(위와 동일 이유).
+  const displayRows = useMemo(() => applySort(filteredRows, activeSort), [filteredRows, activeSort]);
 
   // 선택 상태 — controlled(selectedIds+onSelectChange) 또는 내부 상태
   const isControlled = selectedIds !== undefined;
@@ -152,6 +156,12 @@ export function Table({
   const selectedSet = new Set(selected); // O(1) 조회 — 행마다 includes 하지 않게
 
   const getKey = (row, i) => row[rowKey] ?? i;
+  // 선택 + 인덱스 key 폴백 + 정렬/필터가 겹치면 체크가 다른 행으로 옮겨간다 — 개발 중에만 경고
+  if (import.meta.env?.DEV && selectable && rows.length > 0 && rows[0]?.[rowKey] == null) {
+    console.warn(
+      `[Table] selectable인데 rows에 rowKey('${rowKey}')가 없어 인덱스로 선택을 추적합니다 — 정렬/필터 시 선택이 다른 행으로 이동합니다. 고유 키 필드를 지정하세요.`,
+    );
+  }
   const emit = (next) => {
     if (!isControlled) setInternalSel(next);
     onSelectChange?.(next);
@@ -167,6 +177,10 @@ export function Table({
   const vMax = maxHeight;
   const fillV = vMax === 'fill'; // 세로 상한을 부모 flex 높이로
   const hasVScroll = vMax != null;
+  // 가로+세로 스크롤 중첩 시(헤더 분리형) 바디 스크롤 요소 — 세로 thumb는 가로 스크롤을 안 받는
+  // 바깥 가로 ScrollArea(vScrollEl 연동)가 그린다. 바디 자체 ScrollArea로 그리면 thumb가
+  // 콘텐츠 전체 폭 우측(뷰포트 밖)에 붙어 가로 스크롤 위치에 따라 안 보인다(2026-07-06 지시).
+  const [bodyScrollEl, setBodyScrollEl] = useState(null);
 
   // 컬럼 최소 너비 보장 — 가변(width 미지정=fill) 컬럼은 COL_MIN_WIDTH(40px), 고정 컬럼은 지정 폭.
   // 이들의 합을 테이블 최소 너비로 삼아, 그보다 좁아지면 fill 컬럼이 40px 아래로 줄지 않고 가로 스크롤이 생긴다.
@@ -404,7 +418,27 @@ export function Table({
       : undefined;
     // fill: 바디 스크롤 상한 = 부모 flex 높이(뷰포트 max-h-full — SideNavigation 독립 스크롤과 동일 패턴)
     const region = scrollableBody ? (
-      fillActive ? (
+      hasHScroll ? (
+        // 가로 스크롤 중첩 — 바디는 thumb 없는 스크롤 요소만 두고, 세로 thumb는 바깥
+        // 가로 ScrollArea가 vScrollEl 연동으로 그린다(가로 스크롤 영향 없이 항상 보임)
+        fillActive ? (
+          <div
+            ref={setBodyScrollEl}
+            className="hide-native-scroll min-h-0 flex-1 overflow-y-auto"
+            style={minHStyle}
+          >
+            {bodyTable}
+          </div>
+        ) : (
+          <div
+            ref={setBodyScrollEl}
+            className="hide-native-scroll overflow-y-auto"
+            style={{ ...minHStyle, maxHeight: typeof vMax === 'number' ? `${vMax}px` : vMax }}
+          >
+            {bodyTable}
+          </div>
+        )
+      ) : fillActive ? (
         <ScrollArea className="min-h-0 flex-1" contentClassName="max-h-full" style={minHStyle}>
           {bodyTable}
         </ScrollArea>
@@ -427,7 +461,12 @@ export function Table({
       </div>
     );
     body = hasHScroll ? (
-      <ScrollArea horizontal className={fillActive ? 'min-h-0 flex-1' : ''} contentClassName={fillActive ? 'flex h-full min-h-0 flex-col' : ''}>
+      <ScrollArea
+        horizontal
+        vScrollEl={bodyScrollEl}
+        className={fillActive ? 'min-h-0 flex-1' : ''}
+        contentClassName={fillActive ? 'flex h-full min-h-0 flex-col' : ''}
+      >
         {split}
       </ScrollArea>
     ) : (

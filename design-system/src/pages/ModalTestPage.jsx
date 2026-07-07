@@ -638,6 +638,7 @@ function CodeCreateModal({ open, onClose }) {
           카테고리 추가
         </Button>
       }
+      footerStartType="button"
     >
       <SideNavigationTemplate
         menus={menus}

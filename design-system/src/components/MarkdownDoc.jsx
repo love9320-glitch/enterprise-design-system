@@ -2,6 +2,7 @@
 // 단일 출처: 실제 규칙은 .claude/skills/design-system/*.md 이고, 페이지는 그 원문을 ?raw로 읽어 렌더한다.
 // Tailwind typography 플러그인이 없으므로 요소별로 시멘틱 토큰 클래스를 직접 매핑한다.
 
+import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -91,7 +92,11 @@ const md = {
 export function MarkdownDoc({ source }) {
   // 선두 YAML 프론트매터(---\n...\n---) 제거 — 페이지엔 본문만 렌더한다
   // (안 지우면 ---가 구분선 2개로, name/description가 텍스트로 노출됨).
-  const body = source.replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, '');
+  // useMemo — 상위 리렌더마다 긴 문서의 remark 재파싱 방지 + source 미지정 시 크래시 가드
+  const body = useMemo(
+    () => (source ?? '').replace(/^---\r?\n[\s\S]*?\r?\n---\r?\n/, ''),
+    [source],
+  );
   return (
     <article>
       <ReactMarkdown remarkPlugins={[remarkGfm]} components={md}>

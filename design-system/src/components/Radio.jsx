@@ -5,7 +5,7 @@
 // 색은 radio-* 시멘틱 토큰(base 경유)만 사용. 체크박스와 구조는 같으나 원형 + 가운데 점.
 // - Radio       : 단일 라디오 버튼 1개(controlled/uncontrolled 모두 지원)
 // - RadioGroup  : name 공유로 단일 선택을 관리하는 컨테이너
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
 // gap 토큰 키 → gap 클래스 (Tailwind purge 안전하게 정적 매핑) — SegmentControl/ButtonGroup과 동일 규약
 const GAP_STYLE = {
@@ -93,8 +93,9 @@ export function RadioGroup({
   const [internal, setInternal] = useState(defaultValue);
   const selected = isControlled ? value : internal;
 
-  // name 미지정 시 그룹 인스턴스마다 고유 name 생성
-  const [groupName] = useState(() => name ?? `radio-group-${Math.random().toString(36).slice(2, 9)}`);
+  // name 미지정 시 그룹 인스턴스마다 고유 name 생성 — useId(SSR/hydration 안전, Math.random은 서버·클라 불일치)
+  const autoName = useId();
+  const groupName = name ?? `radio-group-${autoName}`;
 
   const handleSelect = (val) => {
     if (!isControlled) setInternal(val);

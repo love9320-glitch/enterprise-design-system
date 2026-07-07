@@ -63,8 +63,9 @@ export function Tabs({
   ...props
 }) {
   const isControlled = value !== undefined;
-  const [internal, setInternal] = useState(defaultValue ?? items[0]?.value);
-  const selected = isControlled ? value : internal;
+  const [internal, setInternal] = useState(defaultValue);
+  // 첫 탭 폴백은 렌더 파생값 — mount 시 items가 빈 배열(비동기 로드)이어도 도착 후 첫 탭이 선택된다
+  const selected = isControlled ? value : (internal ?? items[0]?.value);
 
   const handleSelect = (val) => {
     if (!isControlled) setInternal(val);

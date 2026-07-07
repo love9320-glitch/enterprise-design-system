@@ -27,6 +27,15 @@ import { ScrollArea } from './ScrollArea';
 import { ModalBodyMaxContext } from './modalContext';
 import { Checkbox } from './Checkbox';
 
+// 중첩 모달 전역 관리(2026-07-07 감사) —
+//  openModalStack: ESC는 '맨 위' 모달만 닫는다(없으면 ESC 한 번에 중첩 모달이 전부 닫혀 폼 유실).
+//    closeOnEsc=false 모달도 스택에는 올라 아래 모달의 ESC를 막는다(맨 위가 안 닫히는 게 맞는 동작).
+//  scrollLock: body 스크롤 잠금 참조 카운트 — 인스턴스별 prev 저장/복원은 A→B 순서로 열고 A를
+//    먼저 닫으면 B가 떠 있는데 잠금이 풀리므로, 첫 잠금의 원래 값을 마지막 해제 때만 복원한다.
+const openModalStack = [];
+let scrollLockCount = 0;
+let scrollLockPrev = '';
+
 // ModalBox width 규격 — sm:360 md:480 lg:600 xl:720 2xl:840 3xl:960 4xl:1260
 //  fill = 브라우저 너비에서 좌우 16px씩 뺀 값(calc(100vw-32px)), 단 최소 너비 1260px
 const SIZE_WIDTH = {
@@ -52,6 +61,7 @@ export function Modal({
   showFooter = true,
   footer,                         // 푸터 전체 커스텀 노드(주면 아래 버튼 props 무시)
   footerStart = null,             // 푸터 좌측 영역 — 새로고침/불러오기 버튼, 안내글, 유효성 메시지 등(텍스트/컴포넌트)
+  footerStartType = 'text',       // 'text' | 'button' — footerStart 내용 유형. 좌측 여백 결정: text=16(spacing-7) / button=12(spacing-6, 버튼 자체 여백 감안) — 2026-07-06 지시
   // 푸터 기본 버튼 — footer 미지정 시 사용
   confirmText = '확인',
   cancelText = '취소',
@@ -66,7 +76,7 @@ export function Modal({
   closeOnEsc = true,
   bodyMaxHeight = '70vh',         // 본문 최대 높이(초과 시 내부 스크롤)
   bodyPadding = 'p-spacing-7',    // 본문 패딩(토큰 클래스). Alert/Confirm은 p-spacing-8
-  footerPadding = 'px-spacing-6 py-spacing-6', // 푸터 패딩(토큰 클래스, 좌우 12px — 2026-07-06 좌 16→12). Alert/Confirm은 px-spacing-8 py-spacing-7
+  footerPadding = null,           // 푸터 패딩 직접 지정(토큰 클래스) — 미지정 시 footerStartType 기반 기본값(좌 16/12·우 12·상하 12). Alert/Confirm은 px-spacing-8 py-spacing-7
   bodyClassName = '',
   onSubmit,                       // 주면 본문+푸터를 <form>으로 감싸고 주동작 버튼 type=submit
   className = '',
@@ -85,23 +95,42 @@ export function Modal({
   //    footer가 절대 가려지지 않는다(flex 높이 전파에 의존하지 않음).
   const [layout, setLayout] = useState({ top: null, bodyMax: null, bodyInner: null });
 
-  // ESC 닫기
+  // ESC 닫기 — 열린 모달 스택의 '맨 위'일 때만 닫는다(중첩 모달 동시 닫힘 방지).
+  // closeOnEsc/onClose는 ref로 읽어 effect 재실행(스택 순서 뒤틀림)을 피한다.
+  const closeOnEscRef = useRef(closeOnEsc);
+  const onCloseRef = useRef(onClose);
   useEffect(() => {
-    if (!open || !closeOnEsc) return;
-    const onKey = (e) => {
-      if (e.key === 'Escape') onClose?.();
-    };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
-  }, [open, closeOnEsc, onClose]);
-
-  // 열렸을 때 body 스크롤 잠금
+    closeOnEscRef.current = closeOnEsc;
+    onCloseRef.current = onClose;
+  }); // 매 렌더 후 최신값 유지(latest-ref) — 렌더 중 ref 쓰기 금지 규칙 준수
   useEffect(() => {
     if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    const token = {};
+    openModalStack.push(token);
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return;
+      if (openModalStack[openModalStack.length - 1] !== token) return; // 맨 위 모달만
+      if (closeOnEscRef.current) onCloseRef.current?.();
+    };
+    document.addEventListener('keydown', onKey);
     return () => {
-      document.body.style.overflow = prev;
+      document.removeEventListener('keydown', onKey);
+      const i = openModalStack.indexOf(token);
+      if (i !== -1) openModalStack.splice(i, 1);
+    };
+  }, [open]);
+
+  // 열렸을 때 body 스크롤 잠금 — 참조 카운트(중첩 모달에서 먼저 닫힌 쪽이 잠금을 풀지 않게)
+  useEffect(() => {
+    if (!open) return;
+    scrollLockCount += 1;
+    if (scrollLockCount === 1) {
+      scrollLockPrev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+    }
+    return () => {
+      scrollLockCount -= 1;
+      if (scrollLockCount === 0) document.body.style.overflow = scrollLockPrev;
     };
   }, [open]);
 
@@ -259,11 +288,14 @@ export function Modal({
             </ScrollArea>
           </div>
 
-          {/* Footer */}
+          {/* Footer — 좌측 여백은 footerStart 내용 유형(footerStartType)에 따라 text=16/button=12 */}
           {showFooter && (footer || footerStart || confirmText) && (
             <footer
               ref={footerRef}
-              className={`flex shrink-0 items-center bg-modal-panel-bg ${footerPadding} ${footerFullWidth ? '' : 'justify-between'}`}
+              className={`flex shrink-0 items-center bg-modal-panel-bg ${
+                footerPadding ??
+                `${footerStartType === 'button' ? 'pl-spacing-6' : 'pl-spacing-7'} pr-spacing-6 py-spacing-6`
+              } ${footerFullWidth ? '' : 'justify-between'}`}
             >
               {!footerFullWidth && <div className="min-w-0 flex-1 text-14 text-font-icon-5">{footerStart}</div>}
               {footer ?? defaultFooterEnd}

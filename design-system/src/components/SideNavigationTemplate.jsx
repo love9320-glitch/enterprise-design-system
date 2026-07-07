@@ -33,8 +33,9 @@ export function SideNavigationTemplate({
   const fixedHeight = !isFill ? (typeof height === 'number' ? `${height}px` : height) : null;
 
   const controlled = selectedProp !== undefined;
-  const [internal, setInternal] = useState(defaultSelectedId ?? menus[0]?.id ?? null);
-  const selected = controlled ? selectedProp : internal;
+  const [internal, setInternal] = useState(defaultSelectedId);
+  // 첫 메뉴 폴백은 렌더 파생값 — mount 시 menus가 빈 배열(비동기 로드)이어도 도착 후 첫 메뉴가 선택된다
+  const selected = controlled ? selectedProp : (internal ?? menus[0]?.id ?? null);
   const select = (id) => {
     if (!controlled) setInternal(id);
     onSelect?.(id);

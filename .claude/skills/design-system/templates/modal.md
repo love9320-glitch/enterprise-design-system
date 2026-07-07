@@ -24,6 +24,7 @@ confirm 창, 알림, 입력 다이얼로그 등 오버레이 UI 규칙. `foundat
 - `open` / `onClose` 필수.
 - 본문(children)과 라벨·핸들러(`confirmText`/`onConfirm` 등)만 props로 전달.
 - 컴포넌트가 안 덮는 세부만 `footer`/`footerStart` 커스텀 슬롯으로 채운다(규칙 4 — 커스텀은 가장 늦게·좁게).
+- **`footerStart`에 버튼(그룹)이 선두로 들어가면 `footerStartType="button"`을 함께 지정한다** — 푸터 왼쪽 여백이 텍스트=16px/버튼=12px(버튼 자체 여백 감안)로 갈린다(2026-07-06 지시, 기본값은 'text'=16).
 
 ## 모범 예제 — 기존 `Modal` 컴포넌트를 조립한다 (직접 만들지 않는다)
 
