@@ -62,6 +62,7 @@ const NAV_GROUPS = [
           { id: 'search-bar',  label: 'Search Bar',  Page: SearchBarPage },
           { id: 'input',       label: 'Input',       Page: InputPage },
           { id: 'textarea',    label: 'TextArea',    Page: TextAreaPage },
+          { id: 'editor',      label: 'Editor',      Page: EditorPage },
           { id: 'select',      label: 'Select',      Page: SelectPage },
           { id: 'checkbox',    label: 'Checkbox',    Page: CheckboxPage },
           { id: 'radio',       label: 'Radio',       Page: RadioPage },
@@ -101,10 +102,6 @@ const NAV_GROUPS = [
           { id: 'option-list', label: 'Option List', Page: OptionListPage },
           { id: 'upload-menu', label: 'Upload Menu', Page: UploadMenuPage },
         ],
-      },
-      {
-        label: '에디터',
-        items: [{ id: 'editor', label: 'Editor', Page: EditorPage }],
       },
     ],
   },

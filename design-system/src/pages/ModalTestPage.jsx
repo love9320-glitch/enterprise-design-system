@@ -1,8 +1,9 @@
 // 모달 테스트 구현 (test 카테고리 — 확인 후 삭제할 임시 데모)
 // Figma 모달들을 실제 컴포넌트(Modal + TableTemplate)로 구현한 데모.
-import { useState } from 'react';
-import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight, Pencil } from 'lucide-react';
+import { useRef, useState } from 'react';
+import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight, Pencil, RotateCcw } from 'lucide-react';
 import { Modal } from '../components/Modal';
+import { PositionSetupTemplate } from '../components/PositionSetupTemplate';
 import { Button } from '../components/Button';
 import { Tag } from '../components/Tag';
 import { TableTemplate } from '../components/TableTemplate';
@@ -676,8 +677,76 @@ function CodeCreateModal({ open, onClose }) {
   );
 }
 
+// ───────── 모달: 채용 직무 설정 (PositionSetupTemplate 조립) ─────────
+const POS_CRITERIA = [
+  { value: 'region', label: '지역' },
+  { value: 'employ', label: '고용형태' },
+  { value: 'career', label: '경력' },
+  { value: 'job', label: '직무' },
+];
+const POS_VALUES = {
+  region: [
+    { value: 'seoul', label: '서울' },
+    { value: 'busan', label: '부산' },
+    { value: 'remote', label: '재택' },
+  ],
+  employ: [
+    { value: 'regular', label: '정규직' },
+    { value: 'contract', label: '계약직' },
+  ],
+  career: [
+    { value: 'new', label: '신입' },
+    { value: 'exp', label: '경력' },
+  ],
+  job: [
+    { value: 'fe', label: '프론트엔드' },
+    { value: 'be', label: '백엔드' },
+    { value: 'design', label: '디자인' },
+    { value: 'ios', label: 'iOS' },
+    { value: 'android', label: '안드로이드' },
+    { value: 'data', label: '데이터 엔지니어' },
+    { value: 'ml', label: '머신러닝' },
+    { value: 'pm', label: '프로덕트 매니저' },
+    { value: 'marketing', label: '마케팅' },
+    { value: 'sales', label: '영업' },
+  ],
+};
+
+function PositionSetupModal({ open, onClose }) {
+  const [resetKey, setResetKey] = useState(0); // 리셋 = key 리마운트(모달 유지)
+  const templateRef = useRef(null);
+  return (
+    <Modal
+      open={open}
+      onClose={onClose}
+      title="채용 직무 설정"
+      size="3xl"
+      cancelText="취소"
+      confirmText="저장"
+      onConfirm={() => {
+        if (!templateRef.current?.validate()) return; // 빈 칩 있으면 저장 중단(에러 툴팁)
+        onClose(); // 실무에선 templateRef.current.getRows()로 저장 API 호출
+      }}
+      footerStart={
+        <Button variant="line" leftIcon={RotateCcw} onClick={() => setResetKey((k) => k + 1)}>
+          리셋
+        </Button>
+      }
+      footerStartType="button"
+    >
+      <PositionSetupTemplate
+        key={resetKey}
+        ref={templateRef}
+        criteriaOptions={POS_CRITERIA}
+        valueOptions={POS_VALUES}
+      />
+    </Modal>
+  );
+}
+
 export function ModalTestPage() {
   const [bgOpen, setBgOpen] = useState(false);
+  const [posOpen, setPosOpen] = useState(false);
   const [selOpen, setSelOpen] = useState(false);
   const [noticeOpen, setNoticeOpen] = useState(false);
   const [composeOpen, setComposeOpen] = useState(false);
@@ -717,6 +786,9 @@ export function ModalTestPage() {
         <Button variant="fill" onClick={() => setMsgOpen(true)}>
           메세지 템플릿 생성 모달 열기
         </Button>
+        <Button variant="fill" onClick={() => setPosOpen(true)}>
+          채용 직무 설정 모달 열기
+        </Button>
       </div>
       <BackgroundModal open={bgOpen} onClose={() => setBgOpen(false)} />
       <SelectionModal open={selOpen} onClose={() => setSelOpen(false)} />
@@ -726,6 +798,7 @@ export function ModalTestPage() {
       <CodeCreateModal open={codeOpen} onClose={() => setCodeOpen(false)} />
       <EvalSettingsModal open={evalOpen} onClose={() => setEvalOpen(false)} />
       <MessageTemplateModal open={msgOpen} onClose={() => setMsgOpen(false)} />
+      <PositionSetupModal open={posOpen} onClose={() => setPosOpen(false)} />
     </section>
   );
 }
