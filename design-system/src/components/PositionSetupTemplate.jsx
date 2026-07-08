@@ -89,9 +89,15 @@ export function PositionSetupTemplate({
     onChange?.(next);
   };
 
-  // 중복 검증(2026-07-07 지시) — 현재 조건 조합(기준+값, 순서 포함)이 이미 테이블에 있으면 추가 불가.
+  // 중복 검증(2026-07-07 지시) — 조건 조합(기준+값)이 이미 테이블에 있으면 추가 불가.
+  // 순서는 무관하다(2026-07-08 지시): "정규직>신입…"과 "신입>정규직…"은 값 집합이 같으므로 같은 조합.
+  //   → 각 (기준:값) 쌍을 정렬한 뒤 join해 순서 독립 키를 만든다.
   // 에러는 추가 시도 시 표시하고, 조합·로우가 바뀌어 중복이 해소되면 자동으로 사라진다(렌더 파생).
-  const comboKey = (items) => items.map((it) => `${it.criteria}:${it.value}`).join('|');
+  const comboKey = (items) =>
+    items
+      .map((it) => `${it.criteria}:${it.value}`)
+      .sort()
+      .join('|');
   const isDuplicate =
     activeComplete.length > 0 && rows.some((r) => comboKey(r.items) === comboKey(activeComplete));
   const [dupAttempted, setDupAttempted] = useState(false);
@@ -215,7 +221,7 @@ export function PositionSetupTemplate({
   ];
 
   return (
-    <div className={`flex w-full items-stretch gap-spacing-6 ${className}`} {...props}>
+    <div className={`flex w-full items-stretch gap-spacing-7 ${className}`} {...props}>
       {/* Step 01 — 조건 조합 설정 */}
       <div className="flex shrink-0 flex-col gap-spacing-6">
         <p className="text-14 text-font-icon-5">{step1Title}</p>
