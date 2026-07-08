@@ -27,8 +27,8 @@ export function PositionSetupTemplate({
   conditionCount = 4,         // 조건 카드 수
   defaultRows = [],           // 초기 로우 [{ id, items: [{ criteria, value }] }]
   onChange,                   // (rows) => void — 로우 추가/삭제/칩 변경 시 전체 스냅샷 반출
-  step1Title = 'Step 01. 조건 조합 설정',
-  step2Title = 'Step 02. 채용 직무 추가',
+  step1Title = '1. 조건 조합 설정',
+  step2Title = '2. 채용 직무 추가',
   addLabel = '추가',
   inputPlaceholder = '조건을 선택하세요',
   orderLabel = '순서',
