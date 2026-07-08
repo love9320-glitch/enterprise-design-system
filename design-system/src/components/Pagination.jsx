@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { iconTokens } from '../tokens';
 import { Select } from './Select';
+import { useHoverTooltip } from './useHoverTooltip';
 
 const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 
@@ -54,7 +55,10 @@ function PaginationButton({ state = 'default', type = 'number', icon: Icon, labe
   const interactive = state === 'default';
   const stateStyle =
     state === 'default' ? `${DEFAULT_TEXT[type]} ${BTN_INTERACTIVE}` : STATE_STYLES[state];
+  // 아이콘 버튼(첫/이전/다음/마지막)은 명칭이 안 보이므로 hover 툴팁으로 알려준다(base Button과 동일 패턴)
+  const hoverTip = useHoverTooltip(type === 'icon' ? label : null);
   return (
+    <>
     <button
       type="button"
       className={`${BTN_BASE} ${stateStyle}`}
@@ -62,6 +66,8 @@ function PaginationButton({ state = 'default', type = 'number', icon: Icon, labe
       aria-label={type === 'icon' ? label : undefined}
       disabled={state === 'disabled'}
       onClick={interactive ? onClick : undefined}
+      onMouseEnter={hoverTip.onMouseEnter}
+      onMouseLeave={hoverTip.onMouseLeave}
     >
       {type === 'icon' ? (
         <Icon size={iconTokens.size} strokeWidth={iconTokens.strokeWidth} />
@@ -69,6 +75,8 @@ function PaginationButton({ state = 'default', type = 'number', icon: Icon, labe
         children
       )}
     </button>
+    {hoverTip.tooltip}
+    </>
   );
 }
 

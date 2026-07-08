@@ -1,4 +1,4 @@
-// JobPositionTemplate — 채용 직무 설정 템플릿 (Figma "Position Setup Template" 8220:82935)
+// JobPositionTemplate — 채용 직무 설정 템플릿 (Figma "JobPositionTemplate" 8220:82935)
 // Step 01(좌): ConditionOrderSlot — 조건 카드(기준 Select + 값 Select)들을 드래그 정렬·사용/미사용.
 // Step 02(우): 활성 조건의 선택 값이 read-only Input에 "값1 / 값2 / …"로 실시간 표시되고,
 //   [추가] 클릭 시 하단 외곽선(bordered) 무한 스크롤 테이블(규칙 18)에 로우가 추가된다(최신이 위).

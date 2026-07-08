@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import { LoaderCircle } from 'lucide-react';
 import { TruncatingText } from './TruncatingText';
+import { useHoverTooltip } from './useHoverTooltip';
 
 export function Button({
   children,
@@ -13,12 +14,20 @@ export function Button({
   loading = false,
   truncate = false,       // 라벨이 부모 폭을 넘으면 말줄임(테이블 셀 등 좁은 영역용)
   width = 'hug',          // 'hug'(콘텐츠 폭) | 'fill'(부모 전체 폭) — underline 변형엔 미적용
+  showTooltip = true,     // 아이콘 전용 버튼 hover 명칭 툴팁 on/off (기본 켬)
+  tooltip,                // 툴팁 문구 커스텀. 미지정 시 aria-label 사용
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   className = '',
   ...props
 }) {
   const inactive = disabled || loading;
   const iconOnly = !!Icon;
+  // 아이콘만 있는 버튼은 명칭이 안 보이므로 hover 툴팁으로 알려준다(showTooltip으로 on/off,
+  // 문구=tooltip prop ?? aria-label).
+  const tipLabel = iconOnly && showTooltip ? (tooltip ?? props['aria-label']) : null;
+  const hoverTip = useHoverTooltip(tipLabel);
   const iconSize = size === '24' ? 14 : 16;
   // fill: 부모 폭을 100% 채운다(밑줄 텍스트 버튼은 박스가 없어 제외).
   const isFill = width === 'fill' && variant !== 'underline';
@@ -92,11 +101,20 @@ export function Button({
   }
 
   return (
+    <>
     <button
       ref={ref}
       className={`${base} ${sizeStyle} ${colorStyle} ${truncStyle} ${widthStyle} ${className}`}
       disabled={inactive}
       onClick={!inactive ? onClick : undefined}
+      onMouseEnter={(e) => {
+        onMouseEnter?.(e);
+        hoverTip.onMouseEnter(e);
+      }}
+      onMouseLeave={(e) => {
+        onMouseLeave?.(e);
+        hoverTip.onMouseLeave(e);
+      }}
       {...props}
     >
       {loading && (
@@ -124,5 +142,7 @@ export function Button({
         )}
       </span>
     </button>
+    {hoverTip.tooltip}
+    </>
   );
 }

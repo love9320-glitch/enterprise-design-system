@@ -56,7 +56,7 @@ function HeaderMenu({ column, sort, onSort }) {
     <Popover
       placement="bottom-right"
       menuWidth={menu.width ?? 120}
-      trigger={<Button variant="ghost" size="24" icon={TriggerIcon} aria-label={`${column.label ?? ''} 컬럼 메뉴`} />}
+      trigger={<Button variant="ghost" size="24" icon={TriggerIcon} aria-label={`${column.label ?? ''} 컬럼 메뉴`} showTooltip={false} />}
     >
       {(close) => (
         <PopoverMenu width="100%">

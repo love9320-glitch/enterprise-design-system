@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { Users, ChevronDown, MoreHorizontal } from 'lucide-react';
+import { Users, ChevronDown, MoreHorizontal, Copy, Trash2, Pencil, Download } from 'lucide-react';
 import { Button } from '../components/Button';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Popover } from '../components/Popover';
@@ -100,7 +100,9 @@ const USAGE_PROPS = [
   { name: 'size', type: "'32' | '24'", default: "'32'", desc: '버튼 높이(px)' },
   { name: 'leftIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 왼쪽 아이콘 (컴포넌트 자체를 전달)' },
   { name: 'rightIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 오른쪽 아이콘' },
-  { name: 'icon', type: 'lucide 컴포넌트', default: 'null', desc: '아이콘 전용 버튼(텍스트 없음)' },
+  { name: 'icon', type: 'lucide 컴포넌트', default: 'null', desc: '아이콘 전용 버튼(텍스트 없음) — hover 시 명칭 툴팁 자동 표시(문구=tooltip ?? aria-label)' },
+  { name: 'showTooltip', type: 'boolean', default: 'true', desc: '아이콘 전용 버튼 hover 명칭 툴팁 on/off' },
+  { name: 'tooltip', type: 'string', default: '—', desc: '툴팁 문구 커스텀. 미지정 시 aria-label 사용' },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 흐림 처리 + 클릭 차단' },
   { name: 'loading', type: 'boolean', default: 'false', desc: '로딩 상태 — 클릭 차단' },
   { name: 'truncate', type: 'boolean', default: 'false', desc: '라벨이 부모 폭을 넘으면 말줄임 + hover 시 전체 텍스트 툴팁(좁은 셀용)' },
@@ -185,6 +187,30 @@ export function ButtonPage() {
       <VariantBlock variant="ghost" label="Ghost (Third Button)" tinted />
       {/* Underline — 배경 없이 밑줄(hover) 텍스트 버튼. 아이콘 전용은 의미가 없어 제외 */}
       <VariantBlock variant="underline" label="Underline (Text Button)" rows={BUTTON_ROWS.slice(0, 3)} />
+
+      {/* 아이콘 전용 버튼 — hover 툴팁 */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">아이콘 전용 버튼 — hover 툴팁</h3>
+        <p className="mb-spacing-7 text-14 text-font-icon-4">
+          <code className="text-font-icon-3">icon</code>만 있는 버튼은 명칭이 안 보이므로 hover 시
+          툴팁으로 알려줍니다. 문구는 <code className="text-font-icon-3">tooltip</code> prop, 없으면{' '}
+          <code className="text-font-icon-3">aria-label</code>을 씁니다(마우스를 올려보세요).{' '}
+          <code className="text-font-icon-3">showTooltip=&#123;false&#125;</code>로 끌 수 있습니다.
+        </p>
+        <div className="flex items-center gap-spacing-5">
+          <Button variant="ghost" icon={Copy} aria-label="복사" />
+          <Button variant="ghost" icon={Pencil} aria-label="수정" />
+          <Button variant="ghost" icon={Trash2} aria-label="삭제" />
+          <Button variant="line" icon={Download} tooltip="내보내기" />
+          <Button variant="ghost" size="24" icon={MoreHorizontal} aria-label="더보기" />
+        </div>
+        <p className="mb-spacing-4 mt-spacing-7 text-12 text-font-icon-3">showTooltip=&#123;false&#125; — 툴팁 없음</p>
+        <div className="flex items-center gap-spacing-5">
+          <Button variant="ghost" icon={Copy} aria-label="복사" showTooltip={false} />
+          <Button variant="ghost" icon={Trash2} aria-label="삭제" showTooltip={false} />
+        </div>
+      </div>
 
       {/* Width fill — 부모 전체 폭 (underline 제외) */}
       <Divider className="mt-spacing-9 mb-spacing-8" />
