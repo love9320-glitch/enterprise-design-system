@@ -37,7 +37,6 @@ function ToolbarButton({ icon, label, active = false, disabled = false, onClick 
       disabled={disabled}
       onClick={onClick}
       onMouseDown={keepSelection}
-      title={label}
       aria-label={label}
       aria-pressed={active}
     />

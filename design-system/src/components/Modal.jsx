@@ -271,7 +271,7 @@ export function Modal({
             <header ref={headerRef} className="flex shrink-0 items-center justify-between bg-modal-panel-bg py-spacing-6 pl-spacing-7 pr-spacing-6">
               <h2 className="text-15 font-semibold text-font-icon-5">{title}</h2>
               {showClose && (
-                <Button variant="ghost" size="32" icon={X} onClick={onClose} aria-label="닫기" />
+                <Button variant="ghost" size="32" icon={X} onClick={onClose} aria-label="닫기" showTooltip={false} />
               )}
             </header>
           )}
