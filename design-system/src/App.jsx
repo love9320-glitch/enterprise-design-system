@@ -5,7 +5,7 @@ import {
   TypographyPage, BaseColorsPage, FontIconColorsPage,
   SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
   ComponentColorsPage,
-  SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
+  SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
   ConditionOrderSlotPage, JobPositionTemplatePage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
@@ -82,6 +82,7 @@ const NAV_GROUPS = [
         label: '내비게이션',
         items: [
           { id: 'tabs',       label: 'Tabs',       Page: TabsPage },
+          { id: 'segmented-tabs', label: 'Segmented Tabs', Page: SegmentedTabsPage },
           { id: 'pagination', label: 'Pagination', Page: PaginationPage },
           { id: 'side-navigation', label: 'Side Navigation', Page: SideNavigationPage },
         ],

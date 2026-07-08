@@ -18,6 +18,8 @@ const USAGE_PROPS = [
   { name: 'criteriaOptions', type: '{ value, label }[]', default: '[]', desc: '조건 카드의 기준 목록(첫 Select)' },
   { name: 'valueOptions', type: '{ [criteria]: { value, label }[] }', default: '{}', desc: '기준별 값 목록 — 카드의 값 Select와 로우 SelectChip이 공용' },
   { name: 'conditionCount', type: 'number', default: '4', desc: '조건 카드 수' },
+  { name: 'multiLastValue', type: 'boolean', default: 'false', desc: '마지막(맨 아래) 조건 값을 체크박스 다중 선택으로 — 추가 시 값마다 행 하나씩 생성(각 행=단일 조합, 중복 건너뜀)' },
+  { name: 'defaultDisabledIds', type: 'string[]', default: '[]', desc: "초기 미사용(스위치 off) 조건 id — 예: ['cond-4'] (id=cond-1..cond-N)" },
   { name: 'defaultRows / onChange', type: 'rows / (rows) => void', default: '[] / —', desc: '로우 스냅샷 반출 — [{ id, items: [{ criteria, value }] }] (추가/삭제/칩 변경 시)' },
   { name: 'tableHeight', type: "'fill' | number", default: "'fill'", desc: "테이블 세로 — 'fill'=내용만큼 계속 확장(모달에선 바디 전체 스크롤) / 숫자=고정 상한(px, 바디만 스크롤)" },
   { name: 'ref (validate / getRows)', type: '{ validate(): boolean, getRows(): rows }', default: '—', desc: '저장 API — validate()=미선택 칩 에러 표시+통과 여부, getRows()=저장 시점 최신 로우(변경 없이 저장해도 안전)' },
@@ -89,8 +91,12 @@ export function JobPositionTemplatePage() {
 
       <UsageExample code={USAGE} props={USAGE_PROPS} note="tableHeight 기본('fill')은 로우가 늘수록 테이블이 계속 확장됩니다(모달에선 모달 바디가 스크롤). 고정 상한이 필요하면 숫자(px)를 주세요." />
 
-      <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">단독 배치</h3>
-      <JobPositionTemplate criteriaOptions={CRITERIA} valueOptions={VALUES} onChange={setSaved} />
+      <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">단독 배치 (multiLastValue — 마지막 조건 다중 선택)</h3>
+      <p className="mb-spacing-6 text-12 text-font-icon-4">
+        <code className="text-font-icon-5">multiLastValue</code>를 켜면 맨 아래 조건 카드의 값이 체크박스
+        다중 선택이 됩니다. 여러 값을 고르고 추가하면 값마다 행이 하나씩 생깁니다(각 행은 단일 조합, 중복은 건너뜀).
+      </p>
+      <JobPositionTemplate criteriaOptions={CRITERIA} valueOptions={VALUES} multiLastValue defaultDisabledIds={['cond-4']} onChange={setSaved} />
       {saved && (
         <p className="mt-spacing-5 text-12 text-font-icon-4">
           onChange 스냅샷: 로우 {saved.length}건
@@ -130,6 +136,8 @@ export function JobPositionTemplatePage() {
             ref={templateRef}
             criteriaOptions={CRITERIA}
             valueOptions={VALUES}
+            multiLastValue
+            defaultDisabledIds={['cond-4']}
           />
         </Modal>
       </div>

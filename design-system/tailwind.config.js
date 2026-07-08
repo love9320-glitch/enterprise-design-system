@@ -1,7 +1,7 @@
 import {
   fontFamily, fontSize, lineHeight,
   baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors,
-  listColors, tagColors, newTagColors, sideNavColors, conditionOrderSlotColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
+  listColors, tagColors, newTagColors, sideNavColors, conditionOrderSlotColors, segmentedColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors, calendarColors,
   spacing, radius, borderWidth,
 } from './src/tokens/index.js';
@@ -33,6 +33,7 @@ export default {
         'new-tag': newTagColors,
         'side-nav': sideNavColors,
         'condition-slot': conditionOrderSlotColors,
+        segmented: segmentedColors,
         checkbox: checkboxColors,
         radio: radioColors,
         switch: switchColors,

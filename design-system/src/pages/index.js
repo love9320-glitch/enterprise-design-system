@@ -22,6 +22,7 @@ export { CheckboxPage } from './CheckboxPage';
 export { RadioPage } from './RadioPage';
 export { SwitchPage } from './SwitchPage';
 export { TabsPage } from './TabsPage';
+export { SegmentedTabsPage } from './SegmentedTabsPage';
 export { OptionListPage } from './OptionListPage';
 export { UploadMenuPage } from './UploadMenuPage';
 export { DatePickerPage } from './DatePickerPage';

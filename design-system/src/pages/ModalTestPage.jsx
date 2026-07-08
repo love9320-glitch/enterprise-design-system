@@ -739,6 +739,8 @@ function JobPositionModal({ open, onClose }) {
         ref={templateRef}
         criteriaOptions={POS_CRITERIA}
         valueOptions={POS_VALUES}
+        multiLastValue
+        defaultDisabledIds={['cond-4']}
       />
     </Modal>
   );

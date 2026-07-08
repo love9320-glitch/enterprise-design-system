@@ -25,6 +25,9 @@ export function JobPositionTemplate({
   criteriaOptions = [],       // 기준 목록 [{ value, label }] — 카드의 첫 Select(예: 지역/고용형태/경력/직무)
   valueOptions = {},          // 기준별 값 목록 { [criteriaValue]: [{ value, label }] } — 카드의 둘째 Select·로우 칩 공용
   conditionCount = 4,         // 조건 카드 수
+  defaultDisabledIds = [],    // 초기 미사용(스위치 off) 조건 id 목록 — 예: ['cond-4'] (id=`cond-1`..`cond-N`)
+  multiLastValue = false,     // 마지막 조건(표시 순서상 맨 아래 카드)의 값을 체크박스 다중 선택으로.
+                              //   추가 시 선택한 값마다 행을 하나씩 생성(각 행=단일 조합, 중복은 건너뜀).
   defaultRows = [],           // 초기 로우 [{ id, items: [{ criteria, value }] }]
   onChange,                   // (rows) => void — 로우 추가/삭제/칩 변경 시 전체 스냅샷 반출
   step1Title = '1. 조건 조합 설정',
@@ -48,17 +51,34 @@ export function JobPositionTemplate({
   // 카드별 (기준, 값) 선택은 템플릿이 소유한다(미리보기·추가 스냅샷 계산용).
   const cardIds = Array.from({ length: conditionCount }, (_, i) => `cond-${i + 1}`);
   const [order, setOrder] = useState(cardIds);
-  const [enabledIds, setEnabledIds] = useState(cardIds);
+  const [enabledIds, setEnabledIds] = useState(() =>
+    cardIds.filter((id) => !defaultDisabledIds.includes(id)),
+  );
   const [selections, setSelections] = useState({}); // { [cardId]: { criteria, value } }
   const effOrder = [
     ...order.filter((id) => cardIds.includes(id)),
     ...cardIds.filter((id) => !order.includes(id)),
   ];
 
+  // 마지막 '사용 중' 조건 — multiLastValue면 이 카드의 값 셀렉트가 다중 선택(배열 값)이 된다.
+  // 물리적 맨 아래가 아니라 활성 순번상 마지막(제목 "조건 N."의 최대 N)이어야 한다
+  // (조건 3·4를 끄면 조건 2가 마지막 → 조건 2가 체크박스, 2026-07-08 지적).
+  const activeOrder = effOrder.filter((id) => enabledIds.includes(id));
+  const lastCardId = activeOrder[activeOrder.length - 1];
+
   const setCardCriteria = (id, criteria) =>
     setSelections((p) => ({ ...p, [id]: { criteria, value: '' } })); // 기준 변경 시 값 리셋
   const setCardValue = (id, value) =>
     setSelections((p) => ({ ...p, [id]: { ...(p[id] ?? { criteria: '' }), value } }));
+
+  // 값 정규화 — 다중 카드는 배열, 그 외는 문자열로 강제한다. 재정렬로 마지막 카드가 바뀌면
+  // 이전 카드에 남은 배열 값은 여기서 ''로 취급돼(단일화) 조합·미리보기가 꼬이지 않는다.
+  const isMultiCard = (id) => multiLastValue && id === lastCardId;
+  const valueOf = (id) => {
+    const raw = selections[id]?.value;
+    if (isMultiCard(id)) return Array.isArray(raw) ? raw : raw ? [raw] : [];
+    return Array.isArray(raw) ? '' : (raw ?? '');
+  };
 
   const labelOf = (criteria, value) =>
     (valueOptions[criteria] ?? []).find((o) => o.value === value)?.label ?? '';
@@ -75,12 +95,18 @@ export function JobPositionTemplate({
     return used;
   };
 
-  // 활성 조건 중 (기준+값) 모두 선택된 것 — 표시 순서(effOrder) 기준
+  // 활성 조건 중 (기준+값) 모두 선택된 것 — 표시 순서(effOrder) 기준.
+  // 다중 값(배열)은 하나 이상 골랐을 때만 완성으로 본다(빈 배열=미완성).
   const activeComplete = effOrder
     .filter((id) => enabledIds.includes(id))
-    .map((id) => selections[id])
-    .filter((s) => s?.criteria && s?.value);
-  const preview = activeComplete.map((s) => labelOf(s.criteria, s.value)).join(' / ');
+    .map((id) => ({ criteria: selections[id]?.criteria, value: valueOf(id) }))
+    .filter((s) => s.criteria && (Array.isArray(s.value) ? s.value.length > 0 : s.value));
+  // 미리보기 — 다중 값 세그먼트는 라벨을 ', '로 잇는다(예: "서울 / 신입 / 프론트엔드, 백엔드")
+  const valueLabel = (s) =>
+    Array.isArray(s.value)
+      ? s.value.map((v) => labelOf(s.criteria, v)).join(', ')
+      : labelOf(s.criteria, s.value);
+  const preview = activeComplete.map(valueLabel).join(' / ');
 
   // Step 02 로우 — 최신이 위(순서 내림차순). onChange로 전체 스냅샷 반출.
   const [rows, setRows] = useState(defaultRows);
@@ -98,19 +124,32 @@ export function JobPositionTemplate({
       .map((it) => `${it.criteria}:${it.value}`)
       .sort()
       .join('|');
+  // 현재 조건을 추가 가능한 '단일 조합 행'들로 펼친다 — 마지막 조건이 다중이면 값마다 한 조합.
+  //   다중 아님: 조합 1개 / 다중(값 N개): 조합 N개(각 행은 값 하나짜리 단일 조합).
+  const expandCombos = () => {
+    const idx = activeComplete.findIndex((s) => Array.isArray(s.value));
+    if (idx === -1) return [activeComplete.map((s) => ({ criteria: s.criteria, value: s.value }))];
+    return activeComplete[idx].value.map((v) =>
+      activeComplete.map((s, i) => ({ criteria: s.criteria, value: i === idx ? v : s.value })),
+    );
+  };
+  const combos = activeComplete.length > 0 ? expandCombos() : [];
+  // 추가할 게 하나도 없으면(전부 이미 존재) 중복 — 인풋 에러로 알린다.
   const isDuplicate =
-    activeComplete.length > 0 && rows.some((r) => comboKey(r.items) === comboKey(activeComplete));
+    combos.length > 0 && combos.every((items) => rows.some((r) => comboKey(r.items) === comboKey(items)));
   const [dupAttempted, setDupAttempted] = useState(false);
   const showDupError = dupAttempted && isDuplicate;
 
   const addRow = () => {
     if (activeComplete.length === 0) return;
-    if (isDuplicate) {
+    // 이미 존재하는 조합은 건너뛰고 새 조합만 추가(다중 값의 일부만 새것일 수 있음)
+    const fresh = combos.filter((items) => !rows.some((r) => comboKey(r.items) === comboKey(items)));
+    if (fresh.length === 0) {
       setDupAttempted(true); // 추가하지 않고 인풋에 에러 툴팁 표시
       return;
     }
     setDupAttempted(false);
-    applyRows([{ id: newRowId(), items: activeComplete.map((s) => ({ ...s })) }, ...rows]);
+    applyRows([...fresh.map((items) => ({ id: newRowId(), items })), ...rows]);
   };
   const removeRow = (id) => applyRows(rows.filter((r) => r.id !== id));
   // 로우 복사(2026-07-07 지시) — 값을 그대로 복제하되 완전 중복을 피하도록 마지막 칩만 미선택으로.
@@ -246,7 +285,8 @@ export function JobPositionTemplate({
                   <Select
                     width="100%"
                     options={valueOptions[sel.criteria] ?? []}
-                    value={sel.value}
+                    value={valueOf(id)}
+                    multiple={isMultiCard(id)} // 마지막 조건은 체크박스 다중 선택(값 여러 개)
                     label="값" // 내부 라벨 — 선택 시 "값 ⋮ 서울"으로 표시(2026-07-07 지시)
                     placeholder="값 선택"
                     disabled={!sel.criteria}
