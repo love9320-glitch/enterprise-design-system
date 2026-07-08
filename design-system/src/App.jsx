@@ -7,7 +7,7 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, PositionSetupTemplatePage,
+  ConditionOrderSlotPage, JobPositionTemplatePage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
@@ -112,7 +112,7 @@ const NAV_GROUPS = [
       { id: 'form-template', label: 'Form Template', Page: FormTemplatePage },
       { id: 'side-nav-template', label: 'Side Navigation Template', Page: SideNavTemplatePage },
       { id: 'notice-template', label: 'Notice Writing Template', Page: NoticeTemplatePage },
-      { id: 'position-setup-template', label: 'Position Setup Template', Page: PositionSetupTemplatePage },
+      { id: 'job-position-template', label: 'Job Position Template', Page: JobPositionTemplatePage },
     ],
   },
   {
