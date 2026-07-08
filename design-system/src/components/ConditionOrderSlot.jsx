@@ -140,6 +140,13 @@ export function ConditionOrderSlot({
     <div
       className={`inline-flex ${vertical ? 'flex-col' : 'flex-row'} items-center gap-spacing-2 rounded-round-4 bg-condition-slot-slot-bg p-spacing-6 ${className}`}
       {...props}
+      // 커넥터·여백 위에서 놓아도 드롭 수락 — 카드 밖 드롭의 스냅백 방지(카드 쪽 onDragOver와 동일)
+      onDragOver={(e) => {
+        if (dragId == null) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      }}
+      onDrop={(e) => e.preventDefault()}
     >
       {effOrder.map((id, i) => {
         const item = items.find((it) => it.id === id);
@@ -189,8 +196,13 @@ export function ConditionOrderSlot({
                 allowDragRef.current = false;
               }}
               onDragOver={(e) => {
-                if (dragId != null && dragId !== id) e.preventDefault();
+                // 드래그 중엔 자기 자신 위 포함 항상 드롭 허용 — 미허용 상태로 놓으면
+                // 크롬이 고스트를 원위치로 되돌리는 스냅백 애니메이션을 재생한다(2026-07-08 지적)
+                if (dragId == null) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
               }}
+              onDrop={(e) => e.preventDefault()}
               onDragEnter={() => {
                 if (dragId != null && dragId !== id) moveTo(dragId, id);
               }}

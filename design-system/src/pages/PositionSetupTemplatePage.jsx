@@ -21,7 +21,7 @@ const USAGE_PROPS = [
   { name: 'defaultRows / onChange', type: 'rows / (rows) => void', default: '[] / —', desc: '로우 스냅샷 반출 — [{ id, items: [{ criteria, value }] }] (추가/삭제/칩 변경 시)' },
   { name: 'tableHeight', type: "'fill' | number", default: "'fill'", desc: "테이블 세로 — 'fill'=내용만큼 계속 확장(모달에선 바디 전체 스크롤) / 숫자=고정 상한(px, 바디만 스크롤)" },
   { name: 'ref (validate / getRows)', type: '{ validate(): boolean, getRows(): rows }', default: '—', desc: '저장 API — validate()=미선택 칩 에러 표시+통과 여부, getRows()=저장 시점 최신 로우(변경 없이 저장해도 안전)' },
-  { name: 'step1Title / step2Title / addLabel / 라벨들', type: 'string', default: 'Step 01·02 문구 등', desc: '카피 커스텀(orderLabel/jobLabel/manageLabel/inputPlaceholder/emptyMessage)' },
+  { name: 'step1Title / step2Title / addLabel / 라벨들', type: 'string', default: "'1. 조건 조합 설정' 등", desc: '카피 커스텀(orderLabel/jobLabel/manageLabel/inputPlaceholder/emptyMessage)' },
 ];
 
 const CRITERIA = [
@@ -80,8 +80,8 @@ export function PositionSetupTemplatePage() {
     <section className="mx-auto max-w-6xl px-spacing-7 py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Position Setup Template</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
-        채용 직무 설정 템플릿. <span className="text-font-icon-5">Step 01</span>에서 조건 카드(기준·값)를
-        정렬·사용 설정하면 활성 조건의 값이 <span className="text-font-icon-5">Step 02</span>의 read-only
+        채용 직무 설정 템플릿. <span className="text-font-icon-5">1. 조건 조합 설정</span>에서 조건 카드(기준·값)를
+        정렬·사용 설정하면 활성 조건의 값이 <span className="text-font-icon-5">2. 채용 직무 추가</span>의 read-only
         인풋에 실시간 표시되고, 추가 버튼으로 외곽선 무한 스크롤 테이블에 로우가 쌓입니다(최신이 위).
         로우의 SelectChip을 클릭해 그 자리에서 값을 바꿀 수 있습니다.
         ConditionOrderSlot·Select·SelectChip·Input·Button·Table 조립(규칙 4)입니다.
