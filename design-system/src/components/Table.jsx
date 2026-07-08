@@ -205,8 +205,9 @@ export function Table({
   // noneline(외곽선 없음)은 가이드상 둥근 회색 바만 있고 헤더 언더라인이 없어야 하므로,
   // 세로 스크롤(sticky 헤더)이어도 구분선을 긋지 않는다(회색 바 배경으로 본문과 구분).
   // border-collapse 환경에서 스크롤 시 사라지는 버그를 피하려 box-shadow로 안정적으로 그린다.
+  // 색은 외곽선(outline)과 동일하게 맞춘다(2026-07-08 지시 — header-line #d6d6d6 → outline #e3e3e3).
   const headDivider = bordered
-    ? { boxShadow: `inset 0 -1px 0 ${tableColors['header-line']}` }
+    ? { boxShadow: `inset 0 -1px 0 ${tableColors['outline']}` }
     : undefined;
 
   // noneline(외곽선 없음) 테이블은 헤더가 위·아래 모두 둥근 회색 바 → 헤더 바깥 셀에 좌/우 라운드.
