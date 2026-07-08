@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react';
 import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight, Pencil, RotateCcw } from 'lucide-react';
 import { Modal } from '../components/Modal';
-import { PositionSetupTemplate } from '../components/PositionSetupTemplate';
+import { JobPositionTemplate } from '../components/JobPositionTemplate';
 import { Button } from '../components/Button';
 import { Tag } from '../components/Tag';
 import { TableTemplate } from '../components/TableTemplate';
@@ -677,7 +677,7 @@ function CodeCreateModal({ open, onClose }) {
   );
 }
 
-// ───────── 모달: 채용 직무 설정 (PositionSetupTemplate 조립) ─────────
+// ───────── 모달: 채용 직무 설정 (JobPositionTemplate 조립) ─────────
 const POS_CRITERIA = [
   { value: 'region', label: '지역' },
   { value: 'employ', label: '고용형태' },
@@ -712,7 +712,7 @@ const POS_VALUES = {
   ],
 };
 
-function PositionSetupModal({ open, onClose }) {
+function JobPositionModal({ open, onClose }) {
   const [resetKey, setResetKey] = useState(0); // 리셋 = key 리마운트(모달 유지)
   const templateRef = useRef(null);
   return (
@@ -734,7 +734,7 @@ function PositionSetupModal({ open, onClose }) {
       }
       footerStartType="button"
     >
-      <PositionSetupTemplate
+      <JobPositionTemplate
         key={resetKey}
         ref={templateRef}
         criteriaOptions={POS_CRITERIA}
@@ -798,7 +798,7 @@ export function ModalTestPage() {
       <CodeCreateModal open={codeOpen} onClose={() => setCodeOpen(false)} />
       <EvalSettingsModal open={evalOpen} onClose={() => setEvalOpen(false)} />
       <MessageTemplateModal open={msgOpen} onClose={() => setMsgOpen(false)} />
-      <PositionSetupModal open={posOpen} onClose={() => setPosOpen(false)} />
+      <JobPositionModal open={posOpen} onClose={() => setPosOpen(false)} />
     </section>
   );
 }

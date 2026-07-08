@@ -1,14 +1,14 @@
 import { useRef, useState } from 'react';
 import { RotateCcw } from 'lucide-react';
-import { PositionSetupTemplate } from '../components/PositionSetupTemplate';
+import { JobPositionTemplate } from '../components/JobPositionTemplate';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { UsageExample } from '../components/UsageExample';
 import { Divider } from '../components/Divider';
 
-const USAGE = `import { PositionSetupTemplate } from '../components/PositionSetupTemplate';
+const USAGE = `import { JobPositionTemplate } from '../components/JobPositionTemplate';
 
-<PositionSetupTemplate
+<JobPositionTemplate
   criteriaOptions={[{ value: 'region', label: '지역' }, …]}
   valueOptions={{ region: [{ value: 'seoul', label: '서울' }, …], … }}
   onChange={(rows) => save(rows)}   // 로우 추가/삭제/칩 변경 시 전체 스냅샷
@@ -68,7 +68,7 @@ const VALUES = {
   ],
 };
 
-export function PositionSetupTemplatePage() {
+export function JobPositionTemplatePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [saved, setSaved] = useState(null);
   // 리셋 — key 리마운트로 템플릿 내부 상태(조건 선택·정렬·사용·로우)를 통째로 초기화(모달은 유지)
@@ -78,7 +78,7 @@ export function PositionSetupTemplatePage() {
 
   return (
     <section className="mx-auto max-w-6xl px-spacing-7 py-spacing-10 text-left">
-      <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Position Setup Template</h2>
+      <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Job Position Template</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         채용 직무 설정 템플릿. <span className="text-font-icon-5">1. 조건 조합 설정</span>에서 조건 카드(기준·값)를
         정렬·사용 설정하면 활성 조건의 값이 <span className="text-font-icon-5">2. 채용 직무 추가</span>의 read-only
@@ -90,7 +90,7 @@ export function PositionSetupTemplatePage() {
       <UsageExample code={USAGE} props={USAGE_PROPS} note="tableHeight 기본('fill')은 로우가 늘수록 테이블이 계속 확장됩니다(모달에선 모달 바디가 스크롤). 고정 상한이 필요하면 숫자(px)를 주세요." />
 
       <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">단독 배치</h3>
-      <PositionSetupTemplate criteriaOptions={CRITERIA} valueOptions={VALUES} onChange={setSaved} />
+      <JobPositionTemplate criteriaOptions={CRITERIA} valueOptions={VALUES} onChange={setSaved} />
       {saved && (
         <p className="mt-spacing-5 text-12 text-font-icon-4">
           onChange 스냅샷: 로우 {saved.length}건
@@ -125,7 +125,7 @@ export function PositionSetupTemplatePage() {
           }
           footerStartType="button"
         >
-          <PositionSetupTemplate
+          <JobPositionTemplate
             key={resetKey}
             ref={templateRef}
             criteriaOptions={CRITERIA}
