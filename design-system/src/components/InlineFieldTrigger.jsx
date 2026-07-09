@@ -18,6 +18,7 @@ export const InlineFieldTrigger = forwardRef(function InlineFieldTrigger(
     readOnly = false,
     interactive, // 상호작용 가능 여부(미지정 시 !disabled && !readOnly)
     maxWidth, // 텍스트 최대 폭(CSS 길이) — 넘으면 말줄임
+    fill = false, // 부모 전체 폭 채움 — 텍스트 왼쪽·chevron 오른쪽 끝(justify-between). 기본 hug
     className = '',
     ...props
   },
@@ -37,15 +38,15 @@ export const InlineFieldTrigger = forwardRef(function InlineFieldTrigger(
   return (
     <span
       ref={ref}
-      className={`group inline-flex min-w-0 select-none items-center gap-spacing-3 focus:outline-none ${
-        canInteract ? 'cursor-pointer' : disabled ? 'cursor-not-allowed' : 'cursor-default'
-      } ${className}`}
+      className={`group min-w-0 select-none items-center gap-spacing-3 focus:outline-none ${
+        fill ? 'flex w-full justify-between' : 'inline-flex'
+      } ${canInteract ? 'cursor-pointer' : disabled ? 'cursor-not-allowed' : 'cursor-default'} ${className}`}
       {...props}
     >
       {Icon && <Icon size={iconSize} strokeWidth={1.8} className={`shrink-0 ${iconColor}`} />}
       <TruncatingText
         style={maxWidth ? { maxWidth } : undefined}
-        className={`min-w-0 font-normal ${sizeTextClass} ${textColor} ${
+        className={`min-w-0 font-normal ${fill ? 'flex-1' : ''} ${sizeTextClass} ${textColor} ${
           canInteract ? 'group-hover:underline' : ''
         }`}
       >

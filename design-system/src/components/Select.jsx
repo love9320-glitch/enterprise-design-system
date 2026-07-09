@@ -99,6 +99,8 @@ export function Select({
   // text variant: 박스/보더 없는 인라인 텍스트형. 항상 hug(콘텐츠 맞춤) + maxWidth만 받는다.
   // disabled/readOnly/error는 box와 동일하게 지원(테이블 바디·폼용). 드롭다운·키보드·검색 동작도 동일.
   const isText = variant === 'text';
+  // text variant fill — 부모 전체 폭(라벨 왼쪽·chevron 오른쪽 끝). width='fill'일 때만.
+  const isTextFill = variant === 'text' && width === 'fill';
   // chip variant: 칩 비주얼 트리거(콘텐츠 hug) — 드롭다운·키보드·검색 동작은 box와 동일.
   const isChip = variant === 'chip';
   // text/chip variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
@@ -298,7 +300,9 @@ export function Select({
   return (
     <div
       ref={rootRef}
-      className={`relative ${isText || isChip ? 'inline-flex max-w-full align-middle' : ''} ${className}`}
+      className={`relative ${
+        isTextFill ? 'flex w-full' : isText || isChip ? 'inline-flex max-w-full align-middle' : ''
+      } ${className}`}
       style={isText || isChip ? undefined : { width: widthStyle, maxWidth: maxWidthStyle }}
       {...props}
     >
@@ -321,6 +325,7 @@ export function Select({
           readOnly={readOnly}
           interactive={interactive}
           maxWidth={maxWidthStyle}
+          fill={isTextFill}
         >
           {displayLabel}
         </InlineFieldTrigger>
