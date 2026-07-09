@@ -4,6 +4,10 @@ import { List } from '../components/List';
 import { ListGroup } from '../components/ListGroup';
 import { PopoverMenu } from '../components/PopoverMenu';
 import { Checkbox } from '../components/Checkbox';
+import { SegmentedTabs } from '../components/SegmentedTabs';
+import { SelectGroup } from '../components/SelectGroup';
+import { Select } from '../components/Select';
+import { Input } from '../components/Input';
 import { UsageExample } from '../components/UsageExample';
 import { Divider } from '../components/Divider';
 
@@ -72,6 +76,7 @@ const USAGE_PROPS = [
   // ListGroup
   { name: 'ListGroup · children', type: 'ReactNode', default: '—', desc: '내부 List들 (0개면 빈 상태 자동)' },
   { name: 'ListGroup · maxVisible', type: 'number', default: '6', desc: '이 개수 초과 시 내부 스크롤' },
+  { name: 'ListGroup · gap', type: "'2' | '3'", default: '—', desc: '행 간격 — 미지정=0(붙임) / 2=2px / 3=4px (라디오 리스트 등)' },
   { name: 'ListGroup · empty', type: 'boolean', default: 'false', desc: '빈 상태 강제 표시 (그룹 안에 ListEmpty 렌더)' },
   { name: 'ListGroup · emptyMessage', type: 'string', default: "'검색 결과가 없습니다.'", desc: '빈 상태 문구' },
   { name: 'ListGroup · className', type: 'string', default: "''", desc: '추가 클래스' },
@@ -293,6 +298,140 @@ function FooterPopovers() {
   );
 }
 
+// radio list — 라디오(단일 선택) 목록 + 푸터. 가점/감점 행은 [입력 + 점] 후행 슬롯을 가지며,
+// 그 행의 라디오가 선택됐을 때만 입력이 활성화된다(미선택 행 입력은 disabled).
+function RadioListPopover() {
+  const [v, setV] = useState('plus');
+  const [scores, setScores] = useState({ plus: '0', minus: '0' });
+  const scoreInput = (key) => (
+    <span className="flex shrink-0 items-center gap-spacing-5" onClick={(e) => e.stopPropagation()}>
+      <Input
+        width={56}
+        value={scores[key]}
+        disabled={v !== key}
+        onChange={(e) => setScores((p) => ({ ...p, [key]: e.target.value }))}
+        inputProps={{ inputMode: 'numeric' }}
+      />
+      <span className={`text-14 ${v === key ? 'text-list-default-text' : 'text-list-disabled-text'}`}>점</span>
+    </span>
+  );
+  const rows = [
+    { value: 'plus', label: '가점', right: scoreInput('plus') },
+    { value: 'minus', label: '감점', right: scoreInput('minus') },
+    { value: 'fit', label: '적합' },
+    { value: 'unfit', label: '부적합' },
+  ];
+  return (
+    <PopoverMenu width={200} footer footerButtonsFill confirmText="저장" onCancel={() => {}} onConfirm={() => {}}>
+      <ListGroup gap="3">
+        {rows.map((r) => (
+          <List
+            key={r.value}
+            radio
+            title={r.label}
+            checked={v === r.value}
+            onCheckChange={() => setV(r.value)}
+            rightSlot={r.right}
+          />
+        ))}
+      </ListGroup>
+    </PopoverMenu>
+  );
+}
+
+// tab radio list — 상단 SegmentedTabs + 탭별 라디오 목록 + 푸터.
+// 탭에 따라 하단 리스트를 '내용 변경'하거나 '비활성(disabled)'으로 둘 수 있다:
+//   대상 → 라디오 목록 활성 / 비대상 → disabled + 선택값을 선택 전으로 리셋.
+function TabRadioListPopover() {
+  const [tab, setTab] = useState('target');
+  const [v, setV] = useState('severe');
+  const rows = [
+    { value: 'severe', label: '심한 장애인' },
+    { value: 'mild', label: '심하지 않은 장애인' },
+  ];
+  const listDisabled = tab === 'exclude'; // 비대상 탭이면 하단 리스트 비활성
+  const changeTab = (t) => {
+    setTab(t);
+    if (t === 'exclude') setV(null); // 비활성으로 바뀌면 라디오 선택 해제(선택 전)
+  };
+  return (
+    <PopoverMenu width={240} footer footerButtonsFill confirmText="저장" onCancel={() => {}} onConfirm={() => {}}>
+      {/* 탭 영역 — 흰 배경 블록(위/아래 gap-1이 구분선). */}
+      <div className="w-full bg-list-group-bg p-spacing-5">
+        <SegmentedTabs
+          items={[
+            { value: 'target', label: '대상' },
+            { value: 'exclude', label: '비대상' },
+          ]}
+          value={tab}
+          onChange={changeTab}
+        />
+      </div>
+      <ListGroup gap="3">
+        {rows.map((r) => (
+          <List
+            key={r.value}
+            radio
+            title={r.label}
+            checked={v === r.value}
+            disabled={listDisabled}
+            onCheckChange={() => setV(r.value)}
+          />
+        ))}
+      </ListGroup>
+    </PopoverMenu>
+  );
+}
+
+// tab select list — 상단 SegmentedTabs + 셀렉트 그룹(세로) + 푸터.
+// 미보유 탭이면 하단 셀렉트들을 비활성(disabled) + 값을 입력 전으로 리셋한다.
+function TabSelectListPopover() {
+  const [tab, setTab] = useState('have');
+  const [vals, setVals] = useState({ lang: '', cat: '', level: [] }); // level=다중 선택(배열)
+  const selectsDisabled = tab === 'none'; // 미보유 탭이면 셀렉트 비활성
+  const changeTab = (t) => {
+    setTab(t);
+    if (t === 'none') setVals({ lang: '', cat: '', level: [] }); // 비활성으로 바뀌면 선택값 리셋
+  };
+  const setVal = (key) => (e) => setVals((p) => ({ ...p, [key]: e.target.value }));
+  const LANG = [
+    { value: 'en', label: '영어' },
+    { value: 'jp', label: '일본어' },
+    { value: 'cn', label: '중국어' },
+  ];
+  const CAT = [
+    { value: 'cert', label: '자격증' },
+    { value: 'lang', label: '어학' },
+    { value: 'etc', label: '기타' },
+  ];
+  const LEVEL = [
+    { value: 'high', label: '상' },
+    { value: 'mid', label: '중' },
+    { value: 'low', label: '하' },
+  ];
+  return (
+    <PopoverMenu width={240} footer footerButtonsFill confirmText="저장" onCancel={() => {}} onConfirm={() => {}}>
+      <div className="w-full bg-list-group-bg p-spacing-5">
+        <SegmentedTabs
+          items={[
+            { value: 'have', label: '보유' },
+            { value: 'none', label: '미보유' },
+          ]}
+          value={tab}
+          onChange={changeTab}
+        />
+      </div>
+      <div className="w-full bg-list-group-bg p-spacing-6">
+        <SelectGroup direction="vertical" width="fill" gap="4">
+          <Select width="100%" label="외국어" options={LANG} placeholder="외국어 선택" value={vals.lang} onChange={setVal('lang')} disabled={selectsDisabled} />
+          <Select width="100%" label="분류" options={CAT} placeholder="분류 선택" value={vals.cat} onChange={setVal('cat')} disabled={selectsDisabled} />
+          <Select width="100%" label="수준" multiple options={LEVEL} placeholder="수준 선택" value={vals.level} onChange={setVal('level')} disabled={selectsDisabled} />
+        </SelectGroup>
+      </div>
+    </PopoverMenu>
+  );
+}
+
 function SectionTitle({ children }) {
   return (
     <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
@@ -412,6 +551,35 @@ export function OptionListPage() {
           저장 단일 버튼만 둘 수도 있습니다(링크·이미지 URL 입력 등).
         </p>
         <InputPopovers />
+      </div>
+
+      {/* PopoverMenu — radio list / tab radio list / tab select list */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <SectionTitle>PopoverMenu — radio / tab radio / tab select list</SectionTitle>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          라디오(단일 선택) 목록, 상단 세그먼트 탭 + 라디오, 상단 탭 + 셀렉트 그룹 조합입니다.
+          모두 <code className="text-font-icon-5">PopoverMenu</code> 조립이며, 라디오 행은{' '}
+          <code className="text-font-icon-5">List radio</code>, 탭은{' '}
+          <code className="text-font-icon-5">SegmentedTabs</code>, 셀렉트 스택은{' '}
+          <code className="text-font-icon-5">SelectGroup</code>을 씁니다. 탭이 있는 경우 탭에 따라 하단
+          영역의 <span className="text-font-icon-5">내용을 바꾸거나 비활성(disabled)</span>으로 둘 수 있습니다
+          (비대상·미보유 탭을 눌러보세요 — 하단이 disabled 처리됩니다).
+        </p>
+        <div className="flex flex-wrap items-start gap-spacing-9">
+          <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">radio list</p>
+            <RadioListPopover />
+          </div>
+          <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">tab radio list</p>
+            <TabRadioListPopover />
+          </div>
+          <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">tab select list</p>
+            <TabSelectListPopover />
+          </div>
+        </div>
       </div>
     </section>
   );

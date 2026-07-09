@@ -10,6 +10,7 @@
 import { ChevronRight, MoreHorizontal } from 'lucide-react';
 import { Tag } from './Tag';
 import { Checkbox } from './Checkbox';
+import { Radio } from './Radio';
 import { Switch } from './Switch';
 import { TruncatingText } from './TruncatingText';
 
@@ -18,9 +19,10 @@ export function List({
   tag = false,            // 태그 표시 여부
   tagText = '태그',
   icon: Icon = null,      // 왼쪽 lucide 아이콘 (예: User)
-  checkbox = false,       // 왼쪽 체크박스 표시
-  checked = false,        // 체크박스 상태
-  onCheckChange,          // (e) => void — 체크박스 변경
+  checkbox = false,       // 왼쪽 체크박스 표시(다중 선택)
+  radio = false,          // 왼쪽 라디오 표시(단일 선택) — checkbox와 배타. checked/onCheckChange 공용
+  checked = false,        // 체크박스/라디오 선택 상태
+  onCheckChange,          // (e) => void — 체크박스/라디오 변경(e.target.checked)
   showSwitch = false,     // 오른쪽 스위치 표시
   switchChecked = false,  // 스위치 상태
   onSwitchChange,         // (e) => void — 스위치 변경
@@ -28,6 +30,7 @@ export function List({
   rightButtonIcon: RightButtonIcon = MoreHorizontal, // 우측 버튼 아이콘(lucide) — 예: Trash2(삭제)
   rightButtonAriaLabel = '더보기', // 우측 버튼 aria-label
   endIcon = false,        // chevron-right
+  rightSlot = null,       // 우측 임의 콘텐츠(입력칸+단위 등) — 행 클릭과 분리(자체 stopPropagation은 사용처가)
   selected = false,
   highlighted = false, // 키보드 내비게이션 강조 (hover 색)
   disabled = false,
@@ -37,13 +40,15 @@ export function List({
   ...props
 }) {
   const interactive = !disabled;
+  // 라디오 행은 hover/pressed 배경 없음(선택 표시는 라디오가 담당) + 내부 상하 패딩 제거(2026-07-09 지시)
+  const noHover = radio;
 
   const rowBg = disabled
     ? 'bg-list-default-bg cursor-not-allowed'
-    : highlighted
+    : highlighted && !noHover
       ? 'bg-list-hover-bg cursor-pointer' // 키보드 강조 우선
-      : selected
-        ? 'bg-list-default-bg cursor-pointer' // 선택 상태: hover/pressed 효과 없음
+      : selected || noHover
+        ? 'bg-list-default-bg cursor-pointer' // 선택·라디오: hover/pressed 효과 없음
         : 'bg-list-default-bg cursor-pointer hover:bg-list-hover-bg active:bg-list-pressed-bg';
 
   const titleColor = disabled
@@ -62,11 +67,12 @@ export function List({
   // 체크박스·스위치는 행 onClick과 분리한다(직접 클릭 시 각자 onChange만 발화 → 행 핸들러로 전파 차단)
   const stop = (e) => e.stopPropagation();
 
-  // 체크박스가 있으면 행 전체를 체크박스 클릭 영역으로 — 행 어디를 눌러도 토글된다.
-  // (체크박스를 직접 누른 경우는 stop으로 전파가 막혀 여기로 오지 않으므로 이중 토글이 없다.)
+  // 체크박스/라디오가 있으면 행 전체가 클릭 영역이 된다 — 행 어디를 눌러도 체크박스는 토글, 라디오는 선택.
+  // (컨트롤을 직접 누른 경우는 stop으로 전파가 막혀 여기로 오지 않으므로 이중 처리가 없다.)
   const handleRowClick = (e) => {
     if (!interactive) return;
     if (checkbox) onCheckChange?.({ target: { checked: !checked } });
+    else if (radio && !checked) onCheckChange?.({ target: { checked: true } }); // 라디오는 선택만(해제 없음)
     onClick?.(e);
   };
 
@@ -76,7 +82,9 @@ export function List({
       aria-selected={selected || undefined}
       aria-disabled={disabled || undefined}
       onClick={interactive ? handleRowClick : undefined}
-      className={`flex min-h-[32px] w-full items-center justify-between px-spacing-6 py-spacing-3 transition-colors ${rowBg} ${className}`}
+      className={`flex min-h-[32px] w-full items-center justify-between px-spacing-6 ${
+        noHover ? '' : 'py-spacing-3'
+      } transition-colors ${rowBg} ${className}`}
       {...props}
     >
       {/* left: tag · checkbox · icon · title (말줄임 시 hover 툴팁 — TruncatingText) */}
@@ -87,15 +95,21 @@ export function List({
             <Checkbox checked={checked} onChange={onCheckChange} disabled={disabled} />
           </span>
         )}
+        {radio && !checkbox && (
+          <span className="flex shrink-0 items-center" onClick={stop}>
+            <Radio checked={checked} onChange={onCheckChange} disabled={disabled} />
+          </span>
+        )}
         {Icon && <Icon size={16} strokeWidth={1.8} className={`shrink-0 ${iconColor}`} />}
         <TruncatingText className={`min-w-0 flex-1 text-14 ${titleColor}`}>
           {title}
         </TruncatingText>
       </div>
 
-      {/* right: switch · 고스트 ⋯ 버튼 · chevron */}
-      {(showSwitch || rightButton || endIcon) && (
+      {/* right: 임의 슬롯 · switch · 고스트 ⋯ 버튼 · chevron */}
+      {(rightSlot || showSwitch || rightButton || endIcon) && (
         <div className="flex shrink-0 items-center gap-spacing-2">
+          {rightSlot}
           {showSwitch && (
             <span className="flex shrink-0 items-center" onClick={stop}>
               <Switch checked={switchChecked} onChange={onSwitchChange} disabled={disabled} />

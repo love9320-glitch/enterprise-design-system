@@ -56,7 +56,7 @@ const USAGE_PROPS = [
   { name: 'readOnly', type: 'boolean', default: 'false', desc: '읽기 전용 — 값 표시, 변경 불가' },
   { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시' },
   { name: 'errorMessage', type: 'string', default: "''", desc: '에러 툴팁 문구' },
-  { name: 'width', type: "number | string | 'hug'", default: '200', desc: "트리거 너비 — px/CSS 길이/'hug'(콘텐츠 맞춤)" },
+  { name: 'width', type: "number | string | 'hug' | 'fill'", default: '200', desc: "트리거 너비 — px/CSS 길이/'hug'(콘텐츠 맞춤). text variant는 기본 hug이며 'fill'이면 부모 전체 폭(텍스트 왼쪽·chevron 오른쪽 끝)" },
   { name: 'maxWidth', type: 'number | string', default: '—', desc: 'hug일 때 최대 너비 제한(넘으면 말줄임)' },
   { name: 'menuWidth', type: 'number | string', default: '—', desc: '드롭다운 너비 (미지정 시 box=트리거와 동일 / text=120px)' },
   { name: 'placement', type: "'auto' | 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'", default: "'auto'", desc: '드롭다운 펼침 방향 (auto=공간 따라 자동)' },
@@ -452,11 +452,12 @@ export function SelectPage() {
         {/* 너비 (maxWidth) */}
         <Divider className="mt-spacing-9 mb-spacing-8" />
         <div>
-          <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">인라인 텍스트형 — 너비 (maxWidth)</h3>
+          <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">인라인 텍스트형 — 너비 (maxWidth / fill)</h3>
           <p className="mb-spacing-7 text-12 text-font-icon-4">
-            너비는 항상 <code className="text-font-icon-5">hug</code>(콘텐츠 맞춤)이며,
-            <code className="text-font-icon-5"> maxWidth</code>로 상한만 둡니다. 값이 상한을 넘으면
-            말줄임 + hover 툴팁으로 전체 값을 보여줍니다.
+            기본은 <code className="text-font-icon-5">hug</code>(콘텐츠 맞춤) +
+            <code className="text-font-icon-5"> maxWidth</code> 상한(넘으면 말줄임+툴팁).
+            <code className="text-font-icon-5"> width="fill"</code>이면 부모 전체 폭을 채워
+            텍스트는 왼쪽, chevron은 오른쪽 끝에 놓입니다.
           </p>
           <div className="space-y-spacing-7">
             <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
@@ -467,9 +468,11 @@ export function SelectPage() {
               <p className="text-12 text-font-icon-3">maxWidth=160 (말줄임)</p>
               <Select variant="text" options={OPTIONS} maxWidth={160} defaultValue="opt4" menuWidth={280} />
             </div>
-            <div className="grid grid-cols-[180px_1fr] items-center gap-x-spacing-6">
-              <p className="text-12 text-font-icon-3">maxWidth=240</p>
-              <Select variant="text" options={OPTIONS} maxWidth={240} defaultValue="opt4" menuWidth={280} />
+            <div className="grid grid-cols-[180px_1fr] items-start gap-x-spacing-6">
+              <p className="pt-spacing-2 text-12 text-font-icon-3">width="fill" (부모 전체 폭)</p>
+              <div className="max-w-[360px] rounded-round-4 border border-divider-default px-spacing-6 py-spacing-4">
+                <Select variant="text" width="fill" options={OPTIONS} placeholder="외국어 선택" menuWidth={280} />
+              </div>
             </div>
           </div>
         </div>
