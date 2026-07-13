@@ -5,7 +5,7 @@ import { useHoverTooltip } from './useHoverTooltip';
 
 export function Button({
   children,
-  size = '32',
+  size = '32',            // '32' | '24' | '18'(아이콘 전용 소형 — 버튼 18×18·아이콘 14×14)
   variant = 'fill',       // 'fill' | 'line' | 'ghost' | 'underline'(밑줄 텍스트 버튼)
   leftIcon: LeftIcon = null,
   rightIcon: RightIcon = null,
@@ -28,7 +28,7 @@ export function Button({
   // 문구=tooltip prop ?? aria-label).
   const tipLabel = iconOnly && showTooltip ? (tooltip ?? props['aria-label']) : null;
   const hoverTip = useHoverTooltip(tipLabel);
-  const iconSize = size === '24' ? 14 : 16;
+  const iconSize = size === '18' || size === '24' ? 14 : 16;
   // fill: 부모 폭을 100% 채운다(밑줄 텍스트 버튼은 박스가 없어 제외).
   const isFill = width === 'fill' && variant !== 'underline';
   const ref = useRef(null);
@@ -60,10 +60,13 @@ export function Button({
         ? 'min-h-[24px] text-[12px] leading-5 tracking-[0px]'
         : 'min-h-[32px] text-[14px] leading-6 tracking-[0px]';
   } else if (iconOnly) {
+    // 18 = 아이콘 전용 소형(18×18, 아이콘 14 → 상하좌우 2px 패딩). 24/32는 min-h/w로 높이 확보.
     sizeStyle =
-      size === '24'
-        ? 'min-h-[24px] min-w-[24px] p-spacing-2'
-        : 'min-h-[32px] min-w-[32px] p-spacing-3';
+      size === '18'
+        ? 'min-h-[18px] min-w-[18px] p-spacing-2'
+        : size === '24'
+          ? 'min-h-[24px] min-w-[24px] p-spacing-2'
+          : 'min-h-[32px] min-w-[32px] p-spacing-3';
   } else {
     sizeStyle =
       size === '24'

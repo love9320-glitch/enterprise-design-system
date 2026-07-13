@@ -10,11 +10,18 @@ import { Tooltip } from './Tooltip';
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰). 색은 시멘틱 토큰.
 const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-text-field-focused-line';
 
+// 사이즈 — '32'(기본, 32px·text-14) | '22'(작게, 22px·text-12·leading-18로 핏하게, 좁은 셀/인라인용).
+const SIZE_STYLE = {
+  '32': { box: 'min-h-[32px] px-spacing-6 py-spacing-3', text: 'text-14' },
+  '22': { box: 'min-h-[22px] px-spacing-5 py-spacing-2', text: 'text-12 leading-18' },
+};
+
 export function Input({
   value,
   defaultValue,
   onChange,
   placeholder = '텍스트를 입력하세요',
+  size = '32', // '32'(32px·14px) | '22'(22px·12px, 라인하이트 핏)
   disabled = false,
   readOnly = false,
   error = false,
@@ -26,6 +33,7 @@ export function Input({
 }) {
   const interactive = !disabled && !readOnly;
   const widthStyle = typeof width === 'number' ? `${width}px` : width;
+  const sizeStyle = SIZE_STYLE[size] ?? SIZE_STYLE['32'];
 
   const textColor = disabled
     ? 'text-text-field-disabled-text'
@@ -40,7 +48,7 @@ export function Input({
   return (
     <div
       style={{ width: widthStyle }}
-      className={`relative flex min-h-[32px] items-center gap-spacing-3 rounded-round-4 bg-text-field-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
+      className={`relative flex items-center gap-spacing-3 rounded-round-4 bg-text-field-default-bg transition-shadow ${sizeStyle.box} ${
         interactive ? RING : 'cursor-not-allowed'
       } ${className}`}
       {...props}
@@ -53,7 +61,7 @@ export function Input({
         disabled={disabled}
         readOnly={readOnly}
         aria-invalid={error || undefined}
-        className={`min-w-0 flex-1 bg-transparent text-14 outline-none ${placeholderColor} disabled:cursor-not-allowed read-only:cursor-default ${textColor}`}
+        className={`min-w-0 flex-1 bg-transparent outline-none ${sizeStyle.text} ${placeholderColor} disabled:cursor-not-allowed read-only:cursor-default ${textColor}`}
         {...inputProps}
       />
 

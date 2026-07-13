@@ -97,7 +97,7 @@ import { Users } from 'lucide-react';
 const USAGE_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: '버튼 라벨/내용 (icon 전용일 땐 생략)' },
   { name: 'variant', type: "'fill' | 'line' | 'ghost' | 'underline'", default: "'fill'", desc: '주요(fill)·보조(line)·서브(ghost)·밑줄 텍스트(underline) 종류' },
-  { name: 'size', type: "'32' | '24'", default: "'32'", desc: '버튼 높이(px)' },
+  { name: 'size', type: "'32' | '24' | '18'", default: "'32'", desc: "버튼 높이(px). 18은 아이콘 전용 소형(버튼 18×18·아이콘 14×14)" },
   { name: 'leftIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 왼쪽 아이콘 (컴포넌트 자체를 전달)' },
   { name: 'rightIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 오른쪽 아이콘' },
   { name: 'icon', type: 'lucide 컴포넌트', default: 'null', desc: '아이콘 전용 버튼(텍스트 없음) — hover 시 명칭 툴팁 자동 표시(문구=tooltip ?? aria-label)' },
@@ -209,6 +209,12 @@ export function ButtonPage() {
         <div className="flex items-center gap-spacing-5">
           <Button variant="ghost" icon={Copy} aria-label="복사" showTooltip={false} />
           <Button variant="ghost" icon={Trash2} aria-label="삭제" showTooltip={false} />
+        </div>
+        <p className="mb-spacing-4 mt-spacing-7 text-12 text-font-icon-3">size — 32 / 24 / 18(소형, 버튼 18·아이콘 14)</p>
+        <div className="flex items-center gap-spacing-5">
+          <Button variant="ghost" size="32" icon={Trash2} aria-label="삭제 32" />
+          <Button variant="ghost" size="24" icon={Trash2} aria-label="삭제 24" />
+          <Button variant="ghost" size="18" icon={Trash2} aria-label="삭제 18" />
         </div>
       </div>
 

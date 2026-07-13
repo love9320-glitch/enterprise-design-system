@@ -21,6 +21,7 @@ const USAGE_PROPS = [
   { name: 'defaultValue', type: 'string', default: '—', desc: '초기값 (비제어로 쓸 때)' },
   { name: 'onChange', type: '(e) => void', default: '—', desc: '입력 변경 핸들러 (e.target.value)' },
   { name: 'placeholder', type: 'string', default: "'텍스트를 입력하세요'", desc: '플레이스홀더 문구' },
+  { name: 'size', type: "'32' | '22'", default: "'32'", desc: "높이 — 32(text-14) / 22(작게, text-12·leading-18 핏, 좁은 셀·인라인용)" },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 입력 차단(회색)' },
   { name: 'readOnly', type: 'boolean', default: 'false', desc: '읽기 전용 — 값은 보이되 편집 불가' },
   { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시' },
@@ -77,6 +78,30 @@ export function InputPage() {
         <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
           <p className="pt-spacing-4 text-12 text-font-icon-3">Error</p>
           <Input error errorMessage="필수 입력정보 입니다" />
+        </div>
+      </div>
+
+      {/* Size 옵션 — 32(기본) / 22(작게) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Size 옵션</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">size="32"</code>(기본, 높이 32·text-14) /{' '}
+          <code className="text-font-icon-5">size="22"</code>(작게, 높이 22·text-12·leading-18 — 좁은 셀·인라인용).
+        </p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">size="32" (기본)</p>
+            <Input width={160} defaultValue="기본 32" />
+          </div>
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">size="22" (작게)</p>
+            <Input size="22" width={160} defaultValue="작게 22" />
+          </div>
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">size="22" placeholder</p>
+            <Input size="22" width={160} placeholder="텍스트를 입력하세요" />
+          </div>
         </div>
       </div>
 
