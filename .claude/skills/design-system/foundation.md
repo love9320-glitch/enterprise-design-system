@@ -23,6 +23,7 @@
 - `black`(#000000), `white`(#ffffff)
 - 피드백 red: `red.25 ~ red.900` — **`red.400`(#e74a4a)이 error/danger 메인** (텍스트필드 에러 툴팁 등). red-400 알파: `red-400-00 ~ red-400-300`
 - 피드백 blue: `blue.25 ~ blue.900` — **`blue.400`(#0f85f2)이 info/링크 메인**. blue-400 알파: `blue-400-00 ~ blue-400-300`
+- 상태/분류 green·orange·violet·pink(2026-07-13 추가): 각 `25~900` 풀 스케일 + 400 알파 시리즈(`{color}-400-00 ~ 300`). 메인 = `green.400`(#0daf4e success)·`orange.400`(#f06e2d warning)·`violet.400`(#7c57ef 강조)·`pink.400`(#f246b9 강조). **pink는 400만 지정받고 25~900은 red/orange/violet의 밝기·채도 사다리를 pink hue로 채워 같은 톤으로 파생(scripts/gen-scale 방식)**. 컴포넌트는 시멘틱 경유(red/blue와 동일).
 
 ### Semantic — 폰트/아이콘 컬러 (`fontIconColors.js` → `fontIconColors`)
 Tailwind 클래스: `text-font-icon-{1~5}` / `bg-font-icon-{1~5}`

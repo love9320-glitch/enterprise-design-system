@@ -12,6 +12,14 @@ const redScale = Object.entries(baseColors.base.red);
 const red400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('red-400-'));
 const blueScale = Object.entries(baseColors.base.blue);
 const blue400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('blue-400-'));
+const greenScale = Object.entries(baseColors.base.green);
+const green400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('green-400-'));
+const orangeScale = Object.entries(baseColors.base.orange);
+const orange400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('orange-400-'));
+const violetScale = Object.entries(baseColors.base.violet);
+const violet400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('violet-400-'));
+const pinkScale = Object.entries(baseColors.base.pink);
+const pink400AlphaColors = Object.entries(baseColors.base).filter(([k]) => k.startsWith('pink-400-'));
 
 function ColorSwatch({ label, hex }) {
   return (
@@ -100,6 +108,46 @@ export function BaseColorsPage() {
 
       <Divider className="mt-spacing-9 mb-spacing-8" />
       <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
+        Green
+      </h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {greenScale.map(([key, hex]) => (
+          <ColorSwatch key={key} label={`green / ${key}`} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
+        Orange
+      </h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {orangeScale.map(([key, hex]) => (
+          <ColorSwatch key={key} label={`orange / ${key}`} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
+        Violet
+      </h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {violetScale.map(([key, hex]) => (
+          <ColorSwatch key={key} label={`violet / ${key}`} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
+        Pink
+      </h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {pinkScale.map(([key, hex]) => (
+          <ColorSwatch key={key} label={`pink / ${key}`} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Gray 900 Alpha
       </h3>
       <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
@@ -132,9 +180,41 @@ export function BaseColorsPage() {
       <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">
         Blue 400 Alpha
       </h3>
-      <div className="grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
         {blue400AlphaColors.map(([key, hex]) => (
           <AlphaColorSwatch key={key} label={key.replace('blue-400-', '400 / ')} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">Green 400 Alpha</h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {green400AlphaColors.map(([key, hex]) => (
+          <AlphaColorSwatch key={key} label={key.replace('green-400-', '400 / ')} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">Orange 400 Alpha</h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {orange400AlphaColors.map(([key, hex]) => (
+          <AlphaColorSwatch key={key} label={key.replace('orange-400-', '400 / ')} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">Violet 400 Alpha</h3>
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {violet400AlphaColors.map(([key, hex]) => (
+          <AlphaColorSwatch key={key} label={key.replace('violet-400-', '400 / ')} hex={hex} />
+        ))}
+      </div>
+
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">Pink 400 Alpha</h3>
+      <div className="grid grid-cols-2 gap-spacing-6 sm:grid-cols-4 lg:grid-cols-5">
+        {pink400AlphaColors.map(([key, hex]) => (
+          <AlphaColorSwatch key={key} label={key.replace('pink-400-', '400 / ')} hex={hex} />
         ))}
       </div>
     </section>
