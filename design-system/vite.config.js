@@ -1,12 +1,20 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+// 개발(쇼케이스) 사이트 설정 — 컴포넌트 데모/문서 페이지를 띄운다.
+// 루트는 showcase/. 라이브러리 소스(src)는 상위에서 import 하므로 fs 접근을 허용한다.
 export default defineConfig({
-  plugins: [react()],
+  root: 'showcase',
   base: '/enterprise-design-system/',
-  // 규칙 문서(.md)는 Vite 루트(design-system) 바깥의 .claude/skills에 있으므로
-  // ?raw import를 위해 상위 디렉터리 접근을 허용한다.
+  plugins: [react()],
+  build: {
+    outDir: '../dist-showcase',
+    emptyOutDir: true,
+  },
   server: {
-    fs: { allow: ['..'] },
+    fs: {
+      // '..'  = design-system(src 접근), '../..' = 규칙 문서(.claude/skills) ?raw import
+      allow: ['..', '../..'],
+    },
   },
 })

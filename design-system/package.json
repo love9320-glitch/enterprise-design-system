@@ -1,16 +1,84 @@
 {
-  "name": "design-system",
-  "private": true,
-  "version": "0.0.0",
+  "name": "@your-org/design-system",
+  "version": "0.1.0",
+  "description": "사내 디자인 시스템 — React 컴포넌트 + 디자인 토큰",
   "type": "module",
+  "license": "UNLICENSED",
+  "packageManager": "pnpm@9.15.9",
+  "sideEffects": [
+    "**/*.css"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "exports": {
+    ".": "./dist/index.js",
+    "./editor": "./dist/editor.js",
+    "./markdown": "./dist/markdown.js",
+    "./tokens": "./dist/tokens.js",
+    "./styles.css": "./dist/style.css",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "access": "restricted"
+  },
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
+    "build": "npm run build:js && npm run build:css",
+    "build:js": "vite build --config vite.lib.config.js",
+    "build:css": "tailwindcss -c tailwind.lib.config.js -i ./src/index.css -o ./dist/style.css --minify",
+    "build:showcase": "vite build",
     "preview": "vite preview",
-    "check:rules": "node scripts/check-rules.mjs"
+    "lint": "eslint .",
+    "check:rules": "node scripts/check-rules.mjs",
+    "prepublishOnly": "npm run build"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "react": ">=18",
+    "react-dom": ">=18",
+    "lucide-react": "^1.17.0",
+    "@tiptap/core": "^3.27.0",
+    "@tiptap/pm": "^3.27.0",
+    "@tiptap/react": "^3.27.0",
+    "@tiptap/starter-kit": "^3.27.0",
+    "@tiptap/extension-color": "^3.27.0",
+    "@tiptap/extension-highlight": "^3.27.0",
+    "@tiptap/extension-image": "^3.27.0",
+    "@tiptap/extension-link": "^3.27.0",
+    "@tiptap/extension-table": "^3.27.0",
+    "@tiptap/extension-table-cell": "^3.27.0",
+    "@tiptap/extension-table-header": "^3.27.0",
+    "@tiptap/extension-table-row": "^3.27.0",
+    "@tiptap/extension-text-align": "^3.27.0",
+    "@tiptap/extension-text-style": "^3.27.0",
+    "@tiptap/extension-underline": "^3.27.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
+  },
+  "peerDependenciesMeta": {
+    "@tiptap/core": { "optional": true },
+    "@tiptap/pm": { "optional": true },
+    "@tiptap/react": { "optional": true },
+    "@tiptap/starter-kit": { "optional": true },
+    "@tiptap/extension-color": { "optional": true },
+    "@tiptap/extension-highlight": { "optional": true },
+    "@tiptap/extension-image": { "optional": true },
+    "@tiptap/extension-link": { "optional": true },
+    "@tiptap/extension-table": { "optional": true },
+    "@tiptap/extension-table-cell": { "optional": true },
+    "@tiptap/extension-table-header": { "optional": true },
+    "@tiptap/extension-table-row": { "optional": true },
+    "@tiptap/extension-text-align": { "optional": true },
+    "@tiptap/extension-text-style": { "optional": true },
+    "@tiptap/extension-underline": { "optional": true },
+    "react-markdown": { "optional": true },
+    "remark-gfm": { "optional": true }
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@tiptap/core": "^3.27.0",
     "@tiptap/extension-color": "^3.27.0",
     "@tiptap/extension-highlight": "^3.27.0",
@@ -26,15 +94,6 @@
     "@tiptap/pm": "^3.27.0",
     "@tiptap/react": "^3.27.0",
     "@tiptap/starter-kit": "^3.27.0",
-    "clsx": "^2.1.1",
-    "lucide-react": "^1.17.0",
-    "react": "^19.2.6",
-    "react-dom": "^19.2.6",
-    "react-markdown": "^10.1.0",
-    "remark-gfm": "^4.0.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^10.0.1",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
@@ -43,7 +102,12 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.6.0",
+    "lucide-react": "^1.17.0",
     "postcss": "^8.5.15",
+    "react": "^19.2.6",
+    "react-dom": "^19.2.6",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "tailwindcss": "^3.4.19",
     "vite": "^8.0.12"
   }

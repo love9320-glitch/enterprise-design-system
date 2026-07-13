@@ -1,53 +1,14 @@
-import {
-  fontFamily, fontSize, lineHeight,
-  baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors,
-  listColors, tagColors, newTagColors, sideNavColors, conditionOrderSlotColors, segmentedColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
-  editorColors, calendarColors,
-  spacing, radius, borderWidth,
-} from './src/tokens/index.js';
+// 개발(쇼케이스) 사이트용 Tailwind 설정.
+// 컴포넌트(src)와 데모 페이지(showcase) 모두를 스캔한다.
+import { theme, safelist } from './tailwind.theme.js';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,jsx}'],
-  safelist: [
-    ...Object.keys(fontSize).map((size) => `text-${size}`),
-    ...Object.keys(lineHeight).map((key) => `leading-${key}`),
-    ...Object.keys(radius).map((key) => `rounded-${key}`),
-    ...Object.keys(borderWidth).map((key) => `border-${key}`),
+  content: [
+    './src/**/*.{js,jsx}',
+    './showcase/**/*.{js,jsx,html}',
   ],
-  theme: {
-    extend: {
-      fontFamily,
-      fontSize,
-      lineHeight,
-      colors: {
-        ...baseColors,
-        'font-icon': fontIconColors,
-        button: buttonColors,
-        'text-field': textFieldColors,
-        'label-field': labelFieldColors,
-        divider: dividerColors,
-        chip: chipColors,
-        list: listColors,
-        tag: tagColors,
-        'new-tag': newTagColors,
-        'side-nav': sideNavColors,
-        'condition-slot': conditionOrderSlotColors,
-        segmented: segmentedColors,
-        checkbox: checkboxColors,
-        radio: radioColors,
-        switch: switchColors,
-        tab: tabColors,
-        table: tableColors,
-        modal: modalColors,
-        editor: editorColors,
-        calendar: calendarColors,
-      },
-      spacing,
-      borderRadius: radius,
-      borderWidth,
-      ringWidth: borderWidth, // ring 두께도 border 토큰(border-1~4)을 그대로 사용
-    },
-  },
+  safelist,
+  theme,
   plugins: [],
-}
+};
