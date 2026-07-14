@@ -13,7 +13,7 @@ export const builderAreaColors = {
   'add-default-text': b.gray[900],    // #0d0d0d
   'add-hover-bg': b.gray[100],        // #e3e3e3 (드래그 오버)
   'add-hover-outline': b.gray[250],   // #999999
-  // 빌더 전체(카드+수식 영역)를 감싸는 라인 박스(2026-07-16 사용자 지정 — 흰 bg·gray.100 라인)ß
+  // 빌더 전체(카드+수식 영역)를 감싸는 라인 박스(2026-07-16 사용자 지정 — 흰 bg·gray.100 라인)
   'box-bg': b.white,
   'box-line': b.gray[100],            // #e3e3e3 (박스 외곽선 + 카드↔빌더 구분선 공용)
   'card-area-bg': b.gray[25],         // #fafafa (조건 카드 영역 배경 — 2026-07-16 지정)

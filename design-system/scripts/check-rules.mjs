@@ -30,6 +30,9 @@ const ARBITRARY_SPACING = /\b(p|px|py|pl|pr|pt|pb|m|mx|my|ml|mr|mt|mb|gap|gap-x|
 const DEFAULT_SPACING = /(?:^|["'`\s])(p|px|py|pl|pr|pt|pb|m|mx|my|ml|mr|mt|mb|gap|gap-x|gap-y|space-x|space-y)-\d+(?:\.\d+)?(?:["'`\s]|$)/;
 // ── 규칙 1b: 하드코딩 HEX (컴포넌트/페이지 — 데모 표기·주석 제외 후보라 경고) ──
 const HEX = /#[0-9a-fA-F]{6}\b/;
+// ── 이상 문자: 라틴 확장(ß·é 등 에디터 오입력) — 한글·ASCII·일반 기호만 쓰는 소스에선 항상 버그.
+//    ×(U+00D7)·÷(U+00F7)는 정상 기호라 제외. 2026-07-14 신설(ß 오입력 2회 — 1회는 흰 화면 장애).
+const STRAY_CHAR = /[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F]/;
 // ── 규칙 15: 카피 띄어쓰기 오류 후보 ──
 const COPY = /(할수|볼수|될수|만들수|쓸수|첫번째|두번째|세번째|여러개|몇개|선택시|입력시|클릭시)/;
 
@@ -41,6 +44,7 @@ for (const f of files) {
     const code = raw.replace(/\/\/.*$/, ''); // 주석 제거본(코드 검사용)
     if (ARBITRARY_SPACING.test(code)) push(errors, f, n, '2b 임의 간격/행간', raw);
     if (DEFAULT_SPACING.test(code)) push(errors, f, n, '2a 기본 스페이싱 클래스', raw);
+    if (STRAY_CHAR.test(raw)) push(errors, f, n, '이상 문자(라틴 확장 오입력)', raw);
     if (HEX.test(code) && !/tokens|swatch|checker/i.test(raw)) push(warnings, f, n, '1b HEX 하드코딩 후보', raw);
     if (COPY.test(raw) && !raw.trim().startsWith('//')) push(warnings, f, n, '15 카피 띄어쓰기 후보', raw);
     // ── 규칙 18: 모달 파일에서 페이지네이션 없는 고정 maxHeight 테이블 후보 ──

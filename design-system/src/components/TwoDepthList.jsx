@@ -176,7 +176,7 @@ export function TwoDepthList({
   return (
     <div
       style={{ width: widthStyle }}
-      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 outline outline-1 outline-list-popover-outline bg-list-popover-bg shadow-[0px_2px_4px_0px_rgba(13,13,13,0.12)] ${className}`}
+      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 outline outline-1 outline-list-popover-outline bg-list-popover-bg shadow-[0px_2px_5px_0px_rgba(13,13,13,0.12)] ${className}`}
       {...props}
     >
       {/* input area — 흰 배경, [좌 Input] 구분자 [우 Input] (gap 4px). popover(gray100)와 1px 틈이 구분선.

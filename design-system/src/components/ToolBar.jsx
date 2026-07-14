@@ -9,7 +9,7 @@ export function ToolBar({ children, className = '', ...props }) {
     <div
       role="toolbar"
       // 라인은 outline(바깥 얹기) — 알파 컬러라 border(안쪽)면 자기 그라데이션 배경과 합성돼 뒤 배경이 안 비친다
-      className={`inline-flex items-center gap-spacing-4 rounded-round-5 outline outline-1 outline-toolbar-line bg-gradient-to-b from-toolbar-bg-top to-toolbar-bg-bottom p-spacing-5-5 shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)] ${className}`}
+      className={`inline-flex items-center gap-spacing-4 rounded-round-5 outline outline-1 outline-toolbar-line bg-gradient-to-b from-toolbar-bg-top to-toolbar-bg-bottom p-spacing-5-5 shadow-[0px_2px_5px_0px_rgba(0,0,0,0.12)] ${className}`}
       {...props}
     >
       {children}

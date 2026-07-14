@@ -439,7 +439,7 @@ export function DatePicker({
   return (
     <div
       style={{ width: widthStyle }}
-      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 outline outline-1 outline-list-popover-outline bg-list-popover-bg shadow-[0px_2px_4px_0px_rgba(13,13,13,0.12)] ${className}`}
+      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 outline outline-1 outline-list-popover-outline bg-list-popover-bg shadow-[0px_2px_5px_0px_rgba(13,13,13,0.12)] ${className}`}
       {...props}
     >
       {/* 1) date area — 네비게이션 + 요일 헤더 */}

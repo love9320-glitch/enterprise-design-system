@@ -81,10 +81,24 @@ export function PopoverMenu({
     footerStartNode = <p className="text-14 text-font-icon-5">{footerText}</p>;
   }
 
+  // 푸터 확인 버튼 Enter 실행(2026-07-14 지시) — 푸터가 있고 확인이 활성일 때 Enter=확인 클릭.
+  // 내부 위젯(Select 옵션 확정 등)이 이미 처리한 Enter는 preventDefault돼 있어 건너뛴다(중복 실행 방지).
+  const onConfirmEnter = (e) => {
+    if (!footer || !showConfirm) return;
+    if (e.key !== 'Enter' || e.defaultPrevented) return;
+    if (confirmDisabled || confirmLoading) return;
+    e.preventDefault();
+    onConfirm?.();
+  };
+
   return (
     <div
       style={{ width: widthStyle }}
-      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 outline outline-1 outline-list-popover-outline bg-list-popover-bg shadow-[0px_2px_4px_0px_rgba(13,13,13,0.12)] ${className}`}
+      onKeyDown={onConfirmEnter}
+      // tabIndex -1: 비포커스 요소(라디오 행 여백 등) 클릭 시에도 패널이 포커스를 받아 Enter가 잡히게.
+      // 시각 변화 없음 — 이 outline은 항상 지정돼 있어 브라우저 기본 포커스 링을 대체한다.
+      tabIndex={footer && showConfirm ? -1 : undefined}
+      className={`flex flex-col gap-spacing-1 overflow-hidden rounded-round-4 outline outline-1 outline-list-popover-outline bg-list-popover-bg shadow-[0px_2px_5px_0px_rgba(13,13,13,0.12)] ${className}`}
       {...props}
     >
       {/* search area — 흰 배경. popover(gray100)와 gap-spacing-1(1px) 틈이 구분선이 된다. */}
