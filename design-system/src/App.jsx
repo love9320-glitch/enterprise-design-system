@@ -3,11 +3,11 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
   HomePage,
   TypographyPage, BaseColorsPage, FontIconColorsPage,
-  SpacingPage, IconsPage, ButtonPage, SegmentControlPage,
+  SpacingPage, IconsPage, ButtonPage, SegmentControlPage, ToolBarPage, AccordionPage,
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, ScreeningBuilderTemplatePage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
 } from './pages/index';
@@ -54,6 +54,7 @@ const NAV_GROUPS = [
         items: [
           { id: 'button',          label: 'Button',          Page: ButtonPage },
           { id: 'segment-control', label: 'Segment Control', Page: SegmentControlPage },
+          { id: 'tool-bar',        label: 'Tool Bar',        Page: ToolBarPage },
         ],
       },
       {
@@ -94,6 +95,7 @@ const NAV_GROUPS = [
           { id: 'tag',   label: 'Tag',  Page: TagPage },
           { id: 'chip',  label: 'Chip', Page: ChipPage },
           { id: 'tooltip-scrollbar', label: 'Tooltip / Scrollbar / Divider', Page: TooltipScrollbarPage },
+          { id: 'accordion', label: 'Accordion', Page: AccordionPage },
         ],
       },
       {
@@ -114,6 +116,7 @@ const NAV_GROUPS = [
       { id: 'side-nav-template', label: 'Side Navigation Template', Page: SideNavTemplatePage },
       { id: 'notice-template', label: 'Notice Writing Template', Page: NoticeTemplatePage },
       { id: 'job-position-template', label: 'Job Position Template', Page: JobPositionTemplatePage },
+      { id: 'screening-builder-template', label: 'Screening Builder Template', Page: ScreeningBuilderTemplatePage },
     ],
   },
   {
