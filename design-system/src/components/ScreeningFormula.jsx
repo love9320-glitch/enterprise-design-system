@@ -179,7 +179,11 @@ export function ScreeningFormula({
 // '조건 추가' 드롭 존은 평소엔 없고 + 버튼을 클릭했을 때만 나타난다(2026-07-16 지시).
 // 카드를 드롭하면 그 그룹에 수식이 추가되고 존은 다시 사라진다(+ 재클릭으로 닫기도 가능).
 function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, getDropLeaf, catalog, className }) {
-  const [showAdd, setShowAdd] = useState(false);
+  // 조건 추가 존 목록 — +는 누를 때마다 존을 하나씩 추가(토글 아님, 2026-07-14 지시), 닫기는 각 존의 X
+  const [addZoneIds, setAddZoneIds] = useState([]);
+  const addSeqRef = useRef(0);
+  const appendAddZone = () => setAddZoneIds((prev) => [...prev, `add-${++addSeqRef.current}`]);
+  const removeAddZone = (id) => setAddZoneIds((prev) => prev.filter((x) => x !== id));
   const patch = (p) => onChange?.({ ...node, ...p });
   const family = FORMULA_FN_FAMILY[node.fn];
   const replaceChild = (idx, next) => {
@@ -207,27 +211,21 @@ function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, 
           />
         </span>
       ))}
-      {/* 조건 추가 존은 + 클릭 시에만 나타난다 — 드롭되면 다시 사라짐. +는 존 토글 전용 별개 버튼 */}
-      {showAdd && (
-        <>
-          {node.children.length > 0 && <Comparison>,</Comparison>}
+      {/* 조건 추가 존 — + 클릭마다 하나씩 추가되고, 드롭되거나 X를 누르면 그 존만 사라진다 */}
+      {addZoneIds.map((zoneId, zi) => (
+        <span key={zoneId} className="inline-flex items-center gap-spacing-4">
+          {(node.children.length > 0 || zi > 0) && <Comparison>,</Comparison>}
           <FormulaAddZone
             getDropLeaf={getDropLeaf}
             onDropLeaf={(leaf) => {
               patch({ children: [...node.children, leaf] });
-              setShowAdd(false);
+              removeAddZone(zoneId);
             }}
-            onClose={() => setShowAdd(false)}
+            onClose={() => removeAddZone(zoneId)}
           />
-        </>
-      )}
-      <Button
-        variant="ghost"
-        size="18"
-        icon={Plus}
-        aria-label="조건 추가"
-        onClick={() => setShowAdd((s) => !s)}
-      />
+        </span>
+      ))}
+      <Button variant="ghost" size="18" icon={Plus} aria-label="조건 추가" onClick={appendAddZone} />
       <Paren>)</Paren>
       <Button variant="ghost" size="18" icon={X} aria-label="수식 삭제" onClick={onDelete} />
     </FormulaShell>
@@ -302,16 +300,26 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
         </button>
       ) : (
         <>
-          {/* 조건(기준) 칩 — 조건 종류(왼쪽 카드 리스트) 선택 + 검색창. 기준이 바뀌면 값·탭 리셋 */}
-          <SelectChip
-            options={criteriaOpts}
-            value={node.criteria}
-            onChange={(e) => patch({ criteria: e.target.value, value: null, valueTab: null })}
-            placeholder="조건"
-            searchable
-            searchPlaceholder="조건 카드 검색"
-            menuWidth={160}
-          />
+          {/* 조건(기준) 칩 — 조건 종류(왼쪽 카드 리스트) 선택 + 검색창. 기준이 바뀌면 값·탭 리셋.
+              Tab: 기준이 선택돼 있으면 바로 값 칩 팝오버로 이어간다(2026-07-14 지시) */}
+          <span
+            onKeyDown={(e) => {
+              if (e.key !== 'Tab' || e.shiftKey || e.defaultPrevented) return;
+              if (node.criteria == null) return;
+              e.preventDefault();
+              setCondOpen(true);
+            }}
+          >
+            <SelectChip
+              options={criteriaOpts}
+              value={node.criteria}
+              onChange={(e) => patch({ criteria: e.target.value, value: null, valueTab: null })}
+              placeholder="조건"
+              searchable
+              searchPlaceholder="조건 카드 검색"
+              menuWidth={160}
+            />
+          </span>
           <Comparison>==</Comparison>
           {/* 값 칩 — 클릭하면 카드의 조건 셀렉트와 동일한 설정 팝오버(탭+라디오), 저장 시 반영 */}
           <Popover
@@ -339,6 +347,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
                   patch({ value: v.option ?? null, valueTab: v.tab ?? null });
                   close();
                 }}
+                onTabNext={() => setScoreOpen(true)} // Tab: 값 저장 → 바로 점수 등록
               />
             )}
           </Popover>
@@ -357,6 +366,9 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
                 value={scoreText ?? (node.points ? `${node.points}점` : '')}
                 readOnly
                 placeholder="값"
+                // 팝오버 트리거 — 포인터 커서 + hover 링(readOnly라 Input 기본 hover가 꺼져 있어 직접 부여)
+                className="cursor-pointer ring-inset ring-text-field-hover-line transition-shadow hover:ring-2"
+                inputProps={{ style: { cursor: 'pointer' } }}
               />
             }
           >

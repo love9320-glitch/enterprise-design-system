@@ -189,6 +189,7 @@ export function ScreeningConditionCard({
               onSave={(v) => {
                 onConditionChange?.(v);
                 close();
+                setScoreOpen(true); // 저장(클릭·Enter·Tab 모두) → 바로 가/감점 셀렉트 열림(2026-07-14 지시)
               }}
             />
           )}
@@ -234,6 +235,7 @@ export function ConditionSettingMenu({
   initialOption = null,
   onSave,
   onCancel,
+  onTabNext,   // Tab 키 — 저장 후 다음 편집기(값/가감점 팝오버)로 이어가기(2026-07-14 지시)
   style,
 }) {
   const hasTabs = tabs.length > 0;
@@ -241,19 +243,29 @@ export function ConditionSettingMenu({
   const [opt, setOpt] = useState(initialOption);
   const rows = hasTabs ? (optionsByTab[tab] ?? []) : options;
   const tabDisables = hasTabs && !!tabs.find((t) => t.value === tab)?.disableOptions;
+  const payload = () => (hasTabs ? { tab, option: tabDisables ? null : opt } : { option: opt });
+  const complete = tabDisables ? true : !!opt;
+
+  // Tab = 저장하고 바로 다음(값) 등록으로 — 미완성이면 포커스 이탈만 막는다
+  const handleTabKey = (e) => {
+    if (e.key !== 'Tab' || e.shiftKey || e.defaultPrevented) return;
+    e.preventDefault();
+    if (!complete) return;
+    onSave?.(payload());
+    onTabNext?.();
+  };
 
   return (
+    <div onKeyDown={handleTabKey}>
     <PopoverMenu
       width="auto"
       style={style}
       footer
       footerButtonsFill
       confirmText="저장"
-      confirmDisabled={tabDisables ? false : !opt}
+      confirmDisabled={!complete}
       onCancel={onCancel}
-      onConfirm={() =>
-        onSave?.(hasTabs ? { tab, option: tabDisables ? null : opt } : { option: opt })
-      }
+      onConfirm={() => onSave?.(payload())}
     >
       {hasTabs && (
         <div className="w-full bg-list-group-bg p-spacing-5">
@@ -280,6 +292,7 @@ export function ConditionSettingMenu({
         ))}
       </ListGroup>
     </PopoverMenu>
+    </div>
   );
 }
 
@@ -287,7 +300,7 @@ export function ConditionSettingMenu({
 // ScreeningConditionCard(가/감점 셀렉트)와 ScreeningFormula(수식 점수 인풋)가 공유한다.
 // Popover children으로 열릴 때마다 마운트되므로 draft는 mount 시 initial*로 시드된다.
 // onSave 페이로드: { type: 'plus'|'minus'|'fit'|'unfit', points?: string(양수) }
-export function ScoreSettingMenu({ initialType = null, initialPoints = '', onSave, onCancel }) {
+export function ScoreSettingMenu({ initialType = null, initialPoints = '', onSave, onCancel, onTabNext }) {
   const [type, setType] = useState(initialType);
   const [points, setPoints] = useState({
     plus: initialType === 'plus' ? initialPoints : '',
@@ -295,6 +308,16 @@ export function ScoreSettingMenu({ initialType = null, initialPoints = '', onSav
   });
   const needsPoints = type === 'plus' || type === 'minus';
   const pointsValue = needsPoints ? points[type] : '';
+  const complete = !!type && (!needsPoints || !!pointsValue.trim());
+
+  // Tab = 저장(+다음이 있으면 이어가기) — 미완성이면 포커스 이탈만 막는다
+  const handleTabKey = (e) => {
+    if (e.key !== 'Tab' || e.shiftKey || e.defaultPrevented) return;
+    e.preventDefault();
+    if (!complete) return;
+    onSave?.(needsPoints ? { type, points: pointsValue.trim() } : { type });
+    onTabNext?.();
+  };
 
   // 가점 입력칸+단위 — 해당 라디오가 선택됐을 때만 활성(List rightSlot, 행 클릭과 분리)
   const pointsSlot = (key) => (
@@ -314,12 +337,13 @@ export function ScoreSettingMenu({ initialType = null, initialPoints = '', onSav
   );
 
   return (
+    <div onKeyDown={handleTabKey}>
     <PopoverMenu
       width="100%"
       footer
       footerButtonsFill
       confirmText="저장"
-      confirmDisabled={!type || (needsPoints && !pointsValue.trim())}
+      confirmDisabled={!complete}
       onCancel={onCancel}
       onConfirm={() =>
         onSave?.(needsPoints ? { type, points: pointsValue.trim() } : { type })
@@ -338,5 +362,6 @@ export function ScoreSettingMenu({ initialType = null, initialPoints = '', onSav
         ))}
       </ListGroup>
     </PopoverMenu>
+    </div>
   );
 }
