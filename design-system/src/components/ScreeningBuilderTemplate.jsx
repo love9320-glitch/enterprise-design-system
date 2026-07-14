@@ -8,7 +8,7 @@
 //   - 수식 체크박스 선택 + 함수 선택 + '선택 그룹핑' 클릭 → FN( 수식, 수식, … ) 그룹으로 묶인다
 //   - 그룹도 체크박스를 가지므로 다른 수식·그룹과 다시 그룹핑될 수 있다(중첩)
 // 데이터 계약(JobPositionTemplate과 동일 철학):
-//  - defaultCards: mount 1회 주입(리셋은 key 리마운트)ß
+//  - defaultCards: mount 1회 주입(리셋은 key 리마운트)
 //  - onChange(cards) / onFormulaChange(formulas): 변경 시 스냅샷 반출
 //  - ref: getCards() · addCard(card) · getFormulas()
 import { useState, useRef, forwardRef, useImperativeHandle } from 'react';
@@ -162,13 +162,12 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
   // 카드 → IF leaf 수식 치환(드롭 시). 카드에 세팅된 조건/가점이 있으면 이어받는다.
   // 감점은 수식에서 음수로 표시(가점 10 → 10, 감점 10 → -10), 적합/부적합은 점수 란에 글자로 표시.
   // 조건 칩 옵션/구성은 드롭 시점의 왼쪽 카드 리스트 전체(추가된 카드 포함)를 싣는다.
-  const cardToLeaf = (card) => {
-    const type = card.score?.type ?? null;
-    const raw = (card.score?.points ?? '').replace(/^-/, '');
-    const points = type === 'minus' && raw ? `-${raw}` : raw;
-    const criteriaOptions = cards.map((c) => ({ value: c.id, label: c.name }));
-    const valueOptionsByCriteria = Object.fromEntries(cards.map((c) => [c.id, flatOptions(c)]));
-    const conditionMetaByCriteria = Object.fromEntries(
+  // 수식 카탈로그 — 조건 칩·값 칩이 참조하는 '현재 카드 영역' 라이브 목록(렌더마다 최신).
+  // 카드가 추가/삭제되면 이미 만들어진 수식의 조건 칩 옵션에도 즉시 반영된다(2026-07-14 지시).
+  const formulaCatalog = {
+    criteriaOptions: cards.map((c) => ({ value: c.id, label: c.name })),
+    valueOptionsByCriteria: Object.fromEntries(cards.map((c) => [c.id, flatOptions(c)])),
+    conditionMetaByCriteria: Object.fromEntries(
       cards.map((c) => [
         c.id,
         {
@@ -177,18 +176,25 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
           options: c.conditionOptions ?? [],
         },
       ]),
-    );
+    ),
+  };
+
+  const cardToLeaf = (card) => {
+    const type = card.score?.type ?? null;
+    const raw = (card.score?.points ?? '').replace(/^-/, '');
+    const points = type === 'minus' && raw ? `-${raw}` : raw;
     return {
       id: newId('formula'),
       kind: 'leaf',
       criteria: card.id,
-      criteriaOptions,
-      valueOptionsByCriteria,
+      // 스냅샷은 폴백용(카드가 나중에 삭제돼도 라벨·옵션 유지) — 표시는 catalog(라이브) 우선
+      criteriaOptions: formulaCatalog.criteriaOptions,
+      valueOptionsByCriteria: formulaCatalog.valueOptionsByCriteria,
       value: card.condition?.option ?? null,
       valueTab: card.condition?.tab ?? null,
       points,
       scoreType: type, // 'fit'|'unfit'이면 점수 란에 적합/부적합 텍스트 표시
-      conditionMetaByCriteria, // 값 칩 클릭 시 기준 카드의 조건 설정 팝오버 구성(기준별 맵)
+      conditionMetaByCriteria: formulaCatalog.conditionMetaByCriteria,
     };
   };
   // 카드는 드롭해도 목록에 남는다 — 같은 조건을 여러 번 드롭해 수식을 계속 추가할 수 있다(2026-07-16 지시)
@@ -203,45 +209,48 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
     return card ? cardToLeaf(card) : null;
   };
 
-  // ── 선택 그룹핑 — 체크된 최상위 수식들을 FN(…)으로 묶는다(같은 존 안에서, 존별 2개 이상일 때) ──
-  const canGroup =
-    groupFn != null && zones.some((z) => z.formulas.filter((f) => checkedIds.includes(f.id)).length >= 2);
-  const groupChecked = () => {
-    if (!canGroup) return;
-    emitZones(
-      zones.map((z) => {
-        const picked = z.formulas.filter((f) => checkedIds.includes(f.id));
-        if (picked.length < 2) return z; // 그룹핑은 같은 존 안에서만(2개 미만 존은 그대로)
-        const rest = z.formulas.filter((f) => !checkedIds.includes(f.id));
-        const insertAt = z.formulas.findIndex((f) => checkedIds.includes(f.id)); // 첫 체크 위치에 삽입
-        const next = rest.slice();
-        next.splice(Math.min(insertAt, next.length), 0, {
-          id: newId('group'),
-          kind: 'group',
-          fn: groupFn,
-          children: picked,
-        });
-        return { ...z, formulas: next };
-      }),
-    );
-    setCheckedIds([]);
+  // ── 툴바 액션 — 전부 '그 존'의 체크만 보고 동작한다(다른 존 체크에 영향 주고받지 않음, 2026-07-14 지시) ──
+  const zoneCheckedIds = (zone) =>
+    zone.formulas.filter((f) => checkedIds.includes(f.id)).map((f) => f.id);
+
+  // 선택 그룹핑 — 이 존에서 체크된 최상위 수식 2개 이상을 FN(…)으로 묶는다
+  const groupCheckedInZone = (zoneId) => {
+    const zone = zones.find((z) => z.id === zoneId);
+    if (!zone || groupFn == null) return;
+    const pickedIds = zoneCheckedIds(zone);
+    if (pickedIds.length < 2) return;
+    const picked = zone.formulas.filter((f) => pickedIds.includes(f.id));
+    const rest = zone.formulas.filter((f) => !pickedIds.includes(f.id));
+    const insertAt = zone.formulas.findIndex((f) => pickedIds.includes(f.id)); // 첫 체크 위치에 삽입
+    const next = rest.slice();
+    next.splice(Math.min(insertAt, next.length), 0, {
+      id: newId('group'),
+      kind: 'group',
+      fn: groupFn,
+      children: picked,
+    });
+    emitZones(zones.map((z) => (z.id === zoneId ? { ...z, formulas: next } : z)));
+    setCheckedIds((prev) => prev.filter((x) => !pickedIds.includes(x))); // 이 존의 체크만 해제
   };
 
-  // ── 그룹 해제 — 체크된 그룹을 풀어 자식 수식들을 그 자리에 펼친다(한 겹만, 중첩 자식은 유지) ──
-  const canUngroup = zones.some((z) =>
-    z.formulas.some((f) => checkedIds.includes(f.id) && f.kind === 'group'),
-  );
-  const ungroupChecked = () => {
-    if (!canUngroup) return;
+  // 그룹 해제 — 이 존에서 체크된 그룹을 풀어 자식을 그 자리에 펼친다(한 겹만, 중첩 자식 유지)
+  const ungroupCheckedInZone = (zoneId) => {
+    const zone = zones.find((z) => z.id === zoneId);
+    if (!zone) return;
+    const pickedIds = zoneCheckedIds(zone);
     emitZones(
-      zones.map((z) => ({
-        ...z,
-        formulas: z.formulas.flatMap((f) =>
-          checkedIds.includes(f.id) && f.kind === 'group' ? f.children : [f],
-        ),
-      })),
+      zones.map((z) =>
+        z.id === zoneId
+          ? {
+              ...z,
+              formulas: z.formulas.flatMap((f) =>
+                pickedIds.includes(f.id) && f.kind === 'group' ? f.children : [f],
+              ),
+            }
+          : z,
+      ),
     );
-    setCheckedIds([]);
+    setCheckedIds((prev) => prev.filter((x) => !pickedIds.includes(x)));
   };
 
   return (
@@ -451,6 +460,7 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
                     setCheckedIds((prev) => prev.filter((x) => x !== f.id));
                   }}
                   getDropLeaf={getDropLeaf}
+                  catalog={formulaCatalog}
                 />
               ))}
               {/* 드롭 스트립 — 카드를 끌어다 놓는 대상. 드래그 오버 시 hover 상태(bg·라인 진해짐).
@@ -481,9 +491,8 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
                 >
                   + 다른 조건을 여기에 끌어다 놓기
                 </div>
-                {/* 플로팅 툴바 — 이 존의 수식이 체크됐을 때만, 드롭 영역 중앙에 표시
-                    (상단 인라인 컨트롤은 당분간 유지 — 2026-07-14 지시) */}
-                {zone.formulas.some((f) => checkedIds.includes(f.id)) && (
+                {/* 플로팅 툴바 — 이 존의 체크에만 반응(표시·활성·그룹핑·해제·선택 해제 전부 존 단위) */}
+                {zoneCheckedIds(zone).length > 0 && (
                   <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center">
                     <ToolBar className="pointer-events-auto">
                       <Select
@@ -492,17 +501,40 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
                         value={groupFn ?? ''}
                         onChange={(e) => setGroupFn(e.target.value)}
                         placeholder="함수 선택"
-                        disabled={checkedIds.length < 2}
+                        disabled={zoneCheckedIds(zone).length < 2}
                       />
-                      <Button variant="ghost" size="32" leftIcon={FolderInput} disabled={!canGroup} onClick={groupChecked}>
+                      <Button
+                        variant="ghost"
+                        size="32"
+                        leftIcon={FolderInput}
+                        disabled={groupFn == null || zoneCheckedIds(zone).length < 2}
+                        onClick={() => groupCheckedInZone(zone.id)}
+                      >
                         선택 그룹핑
                       </Button>
                       <ToolBarDivider />
-                      <Button variant="ghost" size="32" leftIcon={FolderOutput} disabled={!canUngroup} onClick={ungroupChecked}>
+                      <Button
+                        variant="ghost"
+                        size="32"
+                        leftIcon={FolderOutput}
+                        disabled={
+                          !zone.formulas.some((f) => checkedIds.includes(f.id) && f.kind === 'group')
+                        }
+                        onClick={() => ungroupCheckedInZone(zone.id)}
+                      >
                         그룹 해제
                       </Button>
                       <ToolBarDivider />
-                      <Button variant="ghost" icon={X} aria-label="선택 해제" showTooltip={false} onClick={() => setCheckedIds([])} />
+                      <Button
+                        variant="ghost"
+                        icon={X}
+                        aria-label="선택 해제"
+                        showTooltip={false}
+                        onClick={() => {
+                          const ids = zoneCheckedIds(zone);
+                          setCheckedIds((prev) => prev.filter((x) => !ids.includes(x))); // 이 존만 해제
+                        }}
+                      />
                     </ToolBar>
                   </div>
                 )}

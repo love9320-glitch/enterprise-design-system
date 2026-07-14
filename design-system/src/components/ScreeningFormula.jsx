@@ -140,6 +140,8 @@ export function ScreeningFormula({
   onChange,           // (nextNode) => void
   onDelete,           // () => void — X 버튼
   getDropLeaf,        // () => leafNode | null — 드래그 중인 카드의 leaf(없으면 null). '조건 추가' 드롭 존이 사용
+  catalog,            // { criteriaOptions, valueOptionsByCriteria, conditionMetaByCriteria } — 현재 카드 영역
+                      //   라이브 목록(템플릿이 렌더마다 계산). 지정 시 leaf의 스냅샷보다 우선한다.
   className = '',
 }) {
   if (node.kind === 'group') {
@@ -152,6 +154,7 @@ export function ScreeningFormula({
         onChange={onChange}
         onDelete={onDelete}
         getDropLeaf={getDropLeaf}
+        catalog={catalog}
         className={className}
       />
     );
@@ -166,6 +169,7 @@ export function ScreeningFormula({
       onChange={onChange}
       onDelete={onDelete}
       getDropLeaf={getDropLeaf}
+      catalog={catalog}
       className={className}
     />
   );
@@ -174,7 +178,7 @@ export function ScreeningFormula({
 // 그룹 수식 — FN( 자식 , … [, 조건 추가 존] + ) X
 // '조건 추가' 드롭 존은 평소엔 없고 + 버튼을 클릭했을 때만 나타난다(2026-07-16 지시).
 // 카드를 드롭하면 그 그룹에 수식이 추가되고 존은 다시 사라진다(+ 재클릭으로 닫기도 가능).
-function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, getDropLeaf, className }) {
+function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, getDropLeaf, catalog, className }) {
   const [showAdd, setShowAdd] = useState(false);
   const patch = (p) => onChange?.({ ...node, ...p });
   const family = FORMULA_FN_FAMILY[node.fn];
@@ -199,6 +203,7 @@ function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, 
             onChange={(next) => replaceChild(i, next)}
             onDelete={() => removeChild(i)}
             getDropLeaf={getDropLeaf}
+            catalog={catalog}
           />
         </span>
       ))}
@@ -249,7 +254,7 @@ function ChipTrigger({ children, open }) {
 }
 
 // leaf 수식 — IF( 기준 == 값 , 점수 ) / compact = IF( 요약칩 )
-function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, className }) {
+function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, catalog, className }) {
   const patch = (p) => onChange?.({ ...node, ...p });
   const isCompact = node.display === 'compact';
   const scoreText = SCORE_TEXT[node.scoreType]; // '적합'|'부적합'|undefined
@@ -260,15 +265,20 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
   // 값 칩 클릭 → 카드의 조건 셀렉트와 동일한 설정 팝오버(ConditionSettingMenu — 탭+라디오).
   // 조건(기준) 칩은 조건 종류 선택(SelectChip). 기준이 바뀌면 그 카드의 구성을 따라간다.
   const [condOpen, setCondOpen] = useState(false);
-  const condMeta = node.conditionMetaByCriteria?.[node.criteria] ?? {
-    tabs: [],
-    optionsByTab: {},
-    options: node.valueOptions ?? [],
-  };
-  // 값 옵션 — valueOptionsByCriteria(기준별 맵)가 있으면 선택된 기준을 따라가고, 없으면 고정 valueOptions
-  const valueOpts = node.valueOptionsByCriteria
-    ? (node.valueOptionsByCriteria[node.criteria] ?? [])
-    : (node.valueOptions ?? []);
+  const condMeta = catalog?.conditionMetaByCriteria?.[node.criteria] ??
+    node.conditionMetaByCriteria?.[node.criteria] ?? {
+      tabs: [],
+      optionsByTab: {},
+      options: node.valueOptions ?? [],
+    };
+  // 카탈로그(현재 카드 영역 라이브 목록) 우선, 없으면 leaf 스냅샷 폴백 — 카드 추가/삭제가 즉시 반영
+  const criteriaOpts = catalog?.criteriaOptions ?? node.criteriaOptions ?? [];
+  // 값 옵션 — 기준별 맵에서 선택된 기준을 따라간다(카탈로그 → 스냅샷 → 고정 valueOptions 순)
+  const valueOpts =
+    catalog?.valueOptionsByCriteria?.[node.criteria] ??
+    node.valueOptionsByCriteria?.[node.criteria] ??
+    node.valueOptions ??
+    [];
   return (
     <FormulaShell family="conditional" className={className}>
       {root && onCheckChange && (
@@ -284,7 +294,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
           className="inline-flex min-w-0 items-center gap-spacing-3 rounded-round-4 border border-formula-compact-chip-line bg-formula-default-bg py-spacing-1 pl-spacing-4 pr-spacing-3 text-12 text-formula-compact-chip-text"
         >
           <span className="truncate">
-            {[optLabel(node.criteriaOptions, node.criteria), optLabel(valueOpts, node.value), scoreText ?? node.points]
+            {[optLabel(criteriaOpts, node.criteria) || optLabel(node.criteriaOptions, node.criteria), optLabel(valueOpts, node.value), scoreText ?? node.points]
               .filter(Boolean)
               .join(', ')}
           </span>
@@ -294,7 +304,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
         <>
           {/* 조건(기준) 칩 — 조건 종류(왼쪽 카드 리스트) 선택 + 검색창. 기준이 바뀌면 값·탭 리셋 */}
           <SelectChip
-            options={node.criteriaOptions ?? []}
+            options={criteriaOpts}
             value={node.criteria}
             onChange={(e) => patch({ criteria: e.target.value, value: null, valueTab: null })}
             placeholder="조건"
