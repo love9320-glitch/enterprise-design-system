@@ -149,3 +149,49 @@ export function PopoverMenu({
     </div>
   );
 }
+
+// ── rich menu 조립 컴포넌트 (Figma popover menu type=rich menu, node 8416:38124) ──────────
+// 선택 항목이 아주 많을 때 쓰는 다중 컬럼 메뉴. PopoverMenu(넓은 width) 안에서
+// Columns(가로) > Column(세로) > Section(카테고리 타이틀+행들) 순으로 조립하고,
+// 행은 기존 List(rightButton 등)를 그대로 쓴다. 컬럼·섹션 사이 1px 틈(popover bg)이 구분선.
+//
+// <PopoverMenu width={804}>
+//   <PopoverMenuColumns>
+//     <PopoverMenuColumn>
+//       <PopoverMenuSection title="인적사항">
+//         <List title="현주소" rightButton rightButtonIcon={Plus} rightButtonAriaLabel="추가" ... />
+//       </PopoverMenuSection>
+//     </PopoverMenuColumn>
+//     …
+//   </PopoverMenuColumns>
+// </PopoverMenu>
+
+// 가로 컬럼 컨테이너 — 컬럼들을 균등 폭으로 나란히, 1px 틈이 세로 구분선
+export function PopoverMenuColumns({ children, className = '', ...props }) {
+  return (
+    <div className={`flex w-full items-stretch gap-spacing-1 ${className}`} {...props}>
+      {children}
+    </div>
+  );
+}
+
+// 세로 컬럼 — 섹션들을 위에서 아래로, 1px 틈이 가로 구분선. 마지막 섹션이 남는 높이를 채운다
+export function PopoverMenuColumn({ children, className = '', ...props }) {
+  return (
+    <div className={`flex min-w-0 flex-1 flex-col gap-spacing-1 ${className}`} {...props}>
+      {children}
+    </div>
+  );
+}
+
+// 카테고리 섹션 — 회색 타이틀 + 행(List)들. grow=true면 컬럼의 남는 높이를 채운다(마지막 섹션용)
+export function PopoverMenuSection({ title, children, grow = false, className = '', ...props }) {
+  return (
+    <div className={`w-full bg-list-group-bg py-spacing-4 ${grow ? 'min-h-0 flex-1' : ''} ${className}`} {...props}>
+      {title != null && (
+        <p className="px-spacing-6 py-spacing-2 text-12 text-font-icon-3">{title}</p>
+      )}
+      {children}
+    </div>
+  );
+}

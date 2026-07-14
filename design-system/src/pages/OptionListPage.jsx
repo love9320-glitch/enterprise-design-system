@@ -1,8 +1,13 @@
 import { useState } from 'react';
-import { User } from 'lucide-react';
+import { User, Plus } from 'lucide-react';
 import { List } from '../components/List';
 import { ListGroup } from '../components/ListGroup';
-import { PopoverMenu } from '../components/PopoverMenu';
+import {
+  PopoverMenu,
+  PopoverMenuColumns,
+  PopoverMenuColumn,
+  PopoverMenuSection,
+} from '../components/PopoverMenu';
 import { Checkbox } from '../components/Checkbox';
 import { SegmentedTabs } from '../components/SegmentedTabs';
 import { SelectGroup } from '../components/SelectGroup';
@@ -383,6 +388,62 @@ function TabRadioListPopover() {
   );
 }
 
+// rich menu — 선택 항목이 아주 많은 다중 컬럼 메뉴(Figma type=rich menu 8416:38124).
+// Columns > Column > Section(카테고리 타이틀) > List(rightButton=Plus 추가 버튼) 조립.
+const RICH_MENU = [
+  [
+    { title: '인적사항', items: ['현주소', '병역구분', '희망연봉', '직전연봉', '지방근무가능여부', '장애여부', '보훈여부', '저소득층여부', '흡연여부', '색약여부'] },
+  ],
+  [
+    { title: '경력사항', items: ['프로젝트', '총경력'] },
+    { title: '학력사항', items: ['최종학력'] },
+    { title: '고등학교', items: ['학교명', '졸업구분', '소재지'] },
+  ],
+  [
+    { title: '대학교', items: ['학위구분', '입학구분', '졸업구분', '학교명', '소재지', '성적', '전공명'] },
+  ],
+  [
+    { title: '대학원', items: ['학위구분', '졸업구분', '학교명', '소재지', '성적', '전공명'] },
+  ],
+  [
+    { title: '어학/자격/기타', items: ['공인외국어 보유여부', '공인외국어 취득점수', '자격증'] },
+    { title: '지원이력', items: ['과거지원이력', '불참이력', '블랙지원자', '관심지원자'] },
+  ],
+];
+
+function RichMenuPopover() {
+  const [added, setAdded] = useState([]);
+  return (
+    <div>
+      <PopoverMenu width={804}>
+        <PopoverMenuColumns>
+          {RICH_MENU.map((column, ci) => (
+            <PopoverMenuColumn key={ci}>
+              {column.map((section, si) => (
+                <PopoverMenuSection key={section.title} title={section.title} grow={si === column.length - 1}>
+                  {section.items.map((label) => (
+                    <List
+                      key={label}
+                      title={label}
+                      rightButton
+                      rightButtonIcon={Plus}
+                      rightButtonAriaLabel="추가"
+                      onButtonClick={() => setAdded((prev) => (prev.includes(label) ? prev : [...prev, label]))}
+                    />
+                  ))}
+                </PopoverMenuSection>
+              ))}
+            </PopoverMenuColumn>
+          ))}
+        </PopoverMenuColumns>
+      </PopoverMenu>
+      {added.length > 0 && (
+        <p className="mt-spacing-5 text-12 text-font-icon-4">추가됨: {added.join(', ')}</p>
+      )}
+    </div>
+  );
+}
+
 // tab select list — 상단 SegmentedTabs + 셀렉트 그룹(세로) + 푸터.
 // 미보유 탭이면 하단 셀렉트들을 비활성(disabled) + 값을 입력 전으로 리셋한다.
 function TabSelectListPopover() {
@@ -580,6 +641,19 @@ export function OptionListPage() {
             <TabSelectListPopover />
           </div>
         </div>
+      </div>
+
+      {/* PopoverMenu — rich menu (다중 컬럼 대형 메뉴) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <SectionTitle>PopoverMenu — rich menu (선택 항목이 많은 다중 컬럼 메뉴)</SectionTitle>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          항목이 아주 많을 때 쓰는 넓은 팝오버 —{' '}
+          <code className="text-font-icon-5">PopoverMenuColumns &gt; Column &gt; Section(카테고리)</code>{' '}
+          으로 조립하고 행은 <code className="text-font-icon-5">List</code>(우측 + 버튼)를 그대로 씁니다.
+          컬럼·섹션 사이 1px 틈이 구분선이 됩니다. + 버튼으로 항목을 추가해 보세요.
+        </p>
+        <RichMenuPopover />
       </div>
     </section>
   );
