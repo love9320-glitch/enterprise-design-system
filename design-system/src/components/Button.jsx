@@ -7,6 +7,8 @@ export function Button({
   children,
   size = '32',            // '32' | '24' | '18'(아이콘 전용 소형 — 버튼 18×18·아이콘 14×14)
   variant = 'fill',       // 'fill' | 'line' | 'ghost' | 'underline'(밑줄 텍스트 버튼)
+  color = 'black',        // underline 전용 색 — 'black'(기본) | 'red' | 'blue' | 'green' | 'violet' | 'pink' | 'orange'
+  weight = 'normal',      // underline 전용 두께 — 'normal'(기본) | 'semibold'
   leftIcon: LeftIcon = null,
   rightIcon: RightIcon = null,
   icon: Icon = null,
@@ -44,8 +46,11 @@ export function Button({
     el.style.width = el.offsetWidth + 'px';
   }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading, truncate, isFill]);
 
+  // 텍스트 두께 — underline 변형만 semibold 옵션 지원(2026-07-15), 그 외는 400 고정
+  const weightClass =
+    variant === 'underline' && weight === 'semibold' ? 'font-semibold' : 'font-normal';
   const base =
-    'inline-flex items-center justify-center relative font-pretendard font-normal ' +
+    `inline-flex items-center justify-center relative font-pretendard ${weightClass} ` +
     'whitespace-nowrap rounded-round-4 transition-colors select-none';
   // truncate: 버튼이 부모 폭 안에서 줄어들고(min-w-0/max-w-full) 라벨이 말줄임되게 한다.
   const truncStyle = truncate ? 'min-w-0 max-w-full' : '';
@@ -88,11 +93,20 @@ export function Button({
         'hover:bg-button-line-hover-bg hover:ring-button-line-hover-line ' +
         'active:bg-button-line-default-bg active:ring-button-line-default-line';
   } else if (variant === 'underline') {
-    // 밑줄 텍스트 버튼 — 배경 없이 ghost 텍스트색 재사용, hover 시 밑줄만(active=눌렸을 땐 밑줄 제거)
-    // 비활성은 세그먼트 컨트롤·ghost와 동일(font-icon-2 텍스트)
+    // 밑줄 텍스트 버튼 — 배경 없이 텍스트색만, hover 시 밑줄(active=눌렸을 땐 밑줄 제거).
+    // color 변형(2026-07-15): black 기본 + 칩 컬러 대응 6색(button-underline-* 토큰, 정적 맵=purge 안전)
+    const UNDERLINE_COLOR = {
+      black: 'text-button-underline-black-fg',
+      red: 'text-button-underline-red-fg',
+      blue: 'text-button-underline-blue-fg',
+      green: 'text-button-underline-green-fg',
+      violet: 'text-button-underline-violet-fg',
+      pink: 'text-button-underline-pink-fg',
+      orange: 'text-button-underline-orange-fg',
+    };
     colorStyle = inactive
       ? 'bg-transparent text-font-icon-2 cursor-not-allowed'
-      : 'bg-transparent text-button-ghost-default-fg cursor-pointer ' +
+      : `bg-transparent ${UNDERLINE_COLOR[color] ?? UNDERLINE_COLOR.black} cursor-pointer ` +
         'hover:underline active:no-underline';
   } else {
     // ghost — 비활성은 세그먼트 컨트롤과 동일(투명 배경 + font-icon-2 텍스트)

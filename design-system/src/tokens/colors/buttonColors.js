@@ -36,4 +36,15 @@ export const buttonColors = {
     'disabled-fg':  b.gray[150],        // line/gray disabled text/icon → #c9c9c9 (=font-icon-2)
     'disabled-line':b['gray-900-75'],   // line/gray disableld line → #0d0d0d54
   },
+  // underline(밑줄 텍스트 버튼) 색 변형(2026-07-15) — black(기본, 기존 색)=gray900,
+  // 유채색 6종은 칩 컬러와 짝(각 400). gray는 제외(사용자 지정).
+  underline: {
+    'black-fg':  b.gray[900],
+    'red-fg':    b.red[400],
+    'blue-fg':   b.blue[400],
+    'green-fg':  b.green[400],
+    'violet-fg': b.violet[400],
+    'pink-fg':   b.pink[400],
+    'orange-fg': b.orange[400],
+  },
 };

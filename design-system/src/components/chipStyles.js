@@ -7,4 +7,9 @@ export const CHIP_COLOR_CLASS = {
   red: 'text-chip-red-default-text border-chip-red-default-line bg-chip-red-default-bg hover:text-chip-red-hover-text hover:border-chip-red-hover-line hover:bg-chip-red-hover-bg',
   blue: 'text-chip-blue-default-text border-chip-blue-default-line bg-chip-blue-default-bg hover:text-chip-blue-hover-text hover:border-chip-blue-hover-line hover:bg-chip-blue-hover-bg',
   black: 'text-chip-black-default-text border-chip-black-default-line bg-chip-black-default-bg hover:text-chip-black-hover-text hover:border-chip-black-hover-line hover:bg-chip-black-hover-bg',
+  // 함수 계열 대응 색(2026-07-15) — green/violet/pink/orange
+  green: 'text-chip-green-default-text border-chip-green-default-line bg-chip-green-default-bg hover:text-chip-green-hover-text hover:border-chip-green-hover-line hover:bg-chip-green-hover-bg',
+  violet: 'text-chip-violet-default-text border-chip-violet-default-line bg-chip-violet-default-bg hover:text-chip-violet-hover-text hover:border-chip-violet-hover-line hover:bg-chip-violet-hover-bg',
+  pink: 'text-chip-pink-default-text border-chip-pink-default-line bg-chip-pink-default-bg hover:text-chip-pink-hover-text hover:border-chip-pink-hover-line hover:bg-chip-pink-hover-bg',
+  orange: 'text-chip-orange-default-text border-chip-orange-default-line bg-chip-orange-default-bg hover:text-chip-orange-hover-text hover:border-chip-orange-hover-line hover:bg-chip-orange-hover-bg',
 };

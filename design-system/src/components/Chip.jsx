@@ -1,4 +1,5 @@
-// Chip — 제거형 칩 (Figma chip: state Default/hover/pressed × size 22 × color gray/red/blue/black)
+// Chip — 제거형 칩 (Figma chip: state Default/hover/pressed × size 22 × color gray/red/blue/black
+//        + 함수 계열 대응 green/violet/pink/orange — 2026-07-15 추가)
 // 텍스트 + X(삭제) 버튼. 색은 chip 시멘틱 토큰 경유(default/hover, pressed=default 재사용).
 //  - color: gray(기본) · red · blue · black — 분류/의미 색(variant). recolor 금지, prop으로 표현(규칙 5)
 //  - onRemove가 있으면 X 노출(클릭 시 삭제, 칩 onClick과 분리)

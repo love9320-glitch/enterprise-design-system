@@ -11,6 +11,7 @@ const b = baseColors.base;
 
 export const formulaColors = {
   'default-bg': b.white,          // Formula/default bg
+  'default-text': b.gray[900],    // #0d0d0d (설명 코멘트 텍스트 — Formula/default-text)
   'hover-bg': b.gray[25],         // #fafafa (2026-07-16 사용자 지정 — hover 시 수식 배경)
   'default-outline': b.gray[100], // Formula/default * outline (#e3e3e3, 전 계열 공통)
   parentheses: b.gray[150],       // 괄호 ( ) — #c9c9c9

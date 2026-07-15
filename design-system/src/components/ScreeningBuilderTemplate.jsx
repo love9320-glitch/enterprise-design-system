@@ -413,11 +413,9 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
               onChange={setBuilderMode}
             />
           </div>
-          {builderMode === 'formula' && (
-            <Button variant="line" size="32" leftIcon={Plus} onClick={addZone} className="ml-auto">
-              수식 영역 추가
-            </Button>
-          )}
+          <Button variant="line" size="32" leftIcon={Plus} onClick={addZone} className="ml-auto">
+            수식 영역 추가
+          </Button>
         </div>
         </div>
         {/* 스크롤 영역은 박스 전체 — 콘텐츠가 헤더(60px) 아래로 지나가며 그라디언트에 페이드.
@@ -425,10 +423,9 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
         <ScrollArea maxHeight={boxHeight - 2}>
         <div data-scroll-sticky-top className="h-[60px]" />
         <div className="flex flex-col gap-spacing-5 px-spacing-7 pb-spacing-7">
-          {builderMode === 'formula' && (
-          <>
           {/* 존 = 아코디언 리스트(2026-07-14 전환) — 이름 편집·삭제는 AccordionItem 옵션,
-              바디에 수식 UI + 드롭 스트립(AddFormulaArea 8391:127196)이 들어간다 */}
+              바디에 수식 UI + 드롭 스트립. 수식/자연어 빌더는 같은 존 데이터를 공유하고
+              표기만 variant로 갈린다(2026-07-15) */}
           <Accordion>
           {zones.map((zone) => (
             <AccordionItem
@@ -461,6 +458,7 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
                   }}
                   getDropLeaf={getDropLeaf}
                   catalog={formulaCatalog}
+                  variant={builderMode === 'natural' ? 'natural' : 'formula'}
                 />
               ))}
               {/* 드롭 스트립 — 카드를 끌어다 놓는 대상. 드래그 오버 시 hover 상태(bg·라인 진해짐).
@@ -482,14 +480,15 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
                     setDropHoverId(null);
                     dropCardToZone(zone.id);
                   }}
-                  className={`flex h-[78px] w-full items-center justify-center rounded-round-4 border border-dashed p-spacing-6 text-14 text-builder-area-add-default-text transition-colors ${
+                  className={`flex h-[78px] w-full items-center justify-center gap-spacing-3 rounded-round-4 border border-dashed p-spacing-6 text-14 text-builder-area-add-default-text transition-colors ${
                     dropHoverId === zone.id ||
                     zone.formulas.some((f) => checkedIds.includes(f.id)) // 툴바 표시 중에도 드롭(hover) 상태 디자인
                       ? 'border-builder-area-add-hover-outline bg-builder-area-add-hover-bg'
                       : 'border-builder-area-add-default-outline bg-builder-area-add-default-bg'
                   }`}
                 >
-                  + 다른 조건을 여기에 끌어다 놓기
+                  <Plus size={16} strokeWidth={1.8} className="shrink-0" />
+                  다른 조건을 여기에 끌어다 놓기
                 </div>
                 {/* 플로팅 툴바 — 이 존의 체크에만 반응(표시·활성·그룹핑·해제·선택 해제 전부 존 단위) */}
                 {zoneCheckedIds(zone).length > 0 && (
@@ -543,8 +542,6 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
             </AccordionItem>
           ))}
           </Accordion>
-          </>
-          )}
         </div>
         </ScrollArea>
         </div>
