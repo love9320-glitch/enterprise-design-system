@@ -9,10 +9,10 @@
 ```
 design-system/
 ├── src/                  ← 배포되는 라이브러리 소스 (이것만 npm에 올라감)
-│   ├── index.js          ← 코어 진입점: 컴포넌트 + 토큰
-│   ├── editor.js         ← 에디터 서브패스 진입점 (Tiptap)
-│   ├── markdown.js       ← 마크다운 서브패스 진입점
-│   ├── components/       ← 컴포넌트 (index.js = 코어 배럴)
+│   ├── index.ts          ← 코어 진입점: 컴포넌트 + 토큰
+│   ├── editor.ts         ← 에디터 서브패스 진입점 (Tiptap)
+│   ├── markdown.ts       ← 마크다운 서브패스 진입점
+│   ├── components/       ← TypeScript 컴포넌트 (index.ts = 코어 배럴)
 │   ├── tokens/           ← 디자인 토큰
 │   ├── utils/            ← 내부 유틸
 │   └── index.css         ← Tailwind 소스 (→ dist/style.css로 컴파일)
@@ -36,6 +36,7 @@ design-system/
 pnpm install
 pnpm dev                 # 컴포넌트 데모 사이트
 pnpm build:showcase      # 정적 사이트 빌드 (→ dist-showcase, GitHub Pages용)
+pnpm typecheck           # 라이브러리 TypeScript 검사
 pnpm check:rules         # 규칙 자동 검사
 ```
 
@@ -46,7 +47,7 @@ pnpm build      # build:js(컴포넌트) + build:css(dist/style.css)
 pnpm publish    # prepublishOnly가 build를 자동 실행
 ```
 
-산출물: `dist/index.js`, `dist/editor.js`, `dist/markdown.js`, `dist/tokens.js`, `dist/style.css`.
+산출물: `dist/index.js`, `dist/editor.js`, `dist/markdown.js`, `dist/tokens.js`, `dist/style.css`와 각 공개 API의 `.d.ts` 타입 선언.
 
 ## 소비 앱에서 사용
 

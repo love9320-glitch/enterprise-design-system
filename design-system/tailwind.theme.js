@@ -6,7 +6,7 @@ import {
   listColors, tagColors, newTagColors, sideNavColors, conditionOrderSlotColors, segmentedColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors, calendarColors,
   spacing, radius, borderWidth,
-} from './src/tokens/index.js';
+} from './src/tokens/index.ts';
 
 export const safelist = [
   ...Object.keys(fontSize).map((size) => `text-${size}`),

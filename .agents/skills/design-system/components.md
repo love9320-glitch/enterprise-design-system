@@ -1,0 +1,187 @@
+# Components — 공통 컴포넌트 규칙
+
+`src/components/`에 두는 재사용 컴포넌트의 공통 규칙. 토큰 사용은 `foundation.md`를 따른다.
+
+## 컴포넌트는 완전 옵션화 (코드 전용 원칙 상세)
+
+- variant, size, state 등 **모든 시각 옵션을 props로 노출**한다.
+- **기본값(default props)** 을 명시한다.
+- 내부 스타일 분기는 **토큰 클래스 문자열 조합**으로 처리한다. 인라인 `style` 금지.
+- 복잡한 조합은 **상수 배열/객체로 추출**해 코드 수정이 쉽게 유지한다.
+- **Why:** 재사용성과 유지보수성. 옵션이 하드코딩되면 사용처마다 코드를 복사해야 한다.
+
+## 작성 패턴
+
+1. named export 함수 컴포넌트로 작성: `export function Xxx({ ... }) {}`
+2. props에서 기본값을 구조분해로 명시: `variant = 'fill', size = '32'`
+3. 공통 클래스는 `base` 문자열로, 분기 클래스는 변수(`sizeStyle`, `colorStyle`)로 조합
+4. 최종 `className`은 `` `${base} ${sizeStyle} ${colorStyle} ${className}` `` 형태로 합성
+5. 나머지 속성은 `...props`로 전달, `onClick` 등 핸들러는 비활성 상태 가드
+
+## 말줄임(truncate) 텍스트는 hover 툴팁 필수 (코드 전용 원칙 상세)
+
+영역이 좁아 텍스트가 잘릴 수 있는 곳(목록 항목명, 셀렉트 값, 칩, 표 셀 등)은 **`TruncatingText` 컴포넌트로 감싼다.** 단순히 `truncate` 클래스만 쓰지 말 것.
+
+- 실제로 잘렸을 때만(`scrollWidth > clientWidth`) hover 시 **normal Tooltip**으로 전체 텍스트를 보여준다.
+- 툴팁은 **portal(document.body) + fixed**로 부모의 `overflow`를 벗어나고, viewport 경계에서 **위→아래·오른쪽→왼쪽 자동 반전**한다.
+- **Why:** 좁은 영역의 말줄임은 정보 손실이다. 전체 값을 확인할 수단을 일관되게 제공한다.
+- **How to apply:** `<TruncatingText className="min-w-0 flex-1 text-14 ...">{text}</TruncatingText>` 형태로 사용(내부에서 `truncate` 적용). 레퍼런스: `components/List.tsx`의 옵션 제목.
+
+## 모범 예제 — 패턴 견본 (Button 구조를 표준으로 삼는다)
+
+> 이 예제는 **"이렇게 짜라"는 구조 견본 1개**다. 컴포넌트마다 전체 예제를 이 파일에 복붙하지 않는다(코드와 이중 관리되어 낡는다).
+> 각 컴포넌트의 **최신 전체 구현·props·기본값은 해당 `.jsx` 코드가 진실**이다. 작업 시 아래 카탈로그에서 파일을 찾아 코드를 직접 참고하라.
+
+```jsx
+export function Button({
+  children,
+  size = '32',            // '32' | '24'
+  variant = 'fill',       // 'fill' | 'line' | 'ghost'
+  leftIcon: LeftIcon = null,
+  rightIcon: RightIcon = null,
+  icon: Icon = null,      // 아이콘 전용
+  disabled = false,
+  loading = false,
+  onClick,
+  className = '',
+  ...props
+}) {
+  const inactive = disabled || loading;
+
+  const base =
+    'inline-flex items-center justify-center relative font-pretendard ' +
+    'font-normal rounded-round-4 transition-colors select-none';
+
+  // 사이즈 분기 — 토큰 클래스 문자열로
+  const sizeStyle = size === '24'
+    ? 'min-h-[24px] px-spacing-5 py-spacing-2 text-12'
+    : 'min-h-[32px] px-spacing-6 py-spacing-3 text-14';
+
+  // 컬러 분기 — 시멘틱 토큰 클래스로 (하드코딩 금지)
+  let colorStyle;
+  if (variant === 'fill') {
+    colorStyle = inactive
+      ? 'bg-button-fill-disabled-bg text-button-fill-disabled-fg cursor-not-allowed'
+      : 'bg-button-fill-default-bg text-button-fill-default-fg cursor-pointer hover:bg-button-fill-hover-bg';
+  } else if (variant === 'line') {
+    colorStyle = inactive
+      ? 'bg-button-line-disabled-bg text-button-line-disabled-fg cursor-not-allowed'
+      : 'bg-button-line-default-bg text-button-line-default-fg ring-1 ring-inset ring-button-line-default-line cursor-pointer hover:bg-button-line-hover-bg';
+  } else {
+    colorStyle = inactive
+      ? 'bg-button-ghost-disabled-bg text-button-ghost-disabled-fg cursor-not-allowed'
+      : 'bg-transparent text-button-ghost-default-fg cursor-pointer hover:bg-button-ghost-hover-bg';
+  }
+
+  return (
+    <button
+      className={`${base} ${sizeStyle} ${colorStyle} ${className}`}
+      disabled={inactive}
+      onClick={!inactive ? onClick : undefined}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+```
+
+선택지가 더 많아지면 분기 if문 대신 **lookup 객체**로 추출한다:
+
+```jsx
+const SIZE_STYLES = {
+  '24': 'min-h-[24px] px-spacing-5 py-spacing-2 text-12',
+  '32': 'min-h-[32px] px-spacing-6 py-spacing-3 text-14',
+};
+const sizeStyle = SIZE_STYLES[size];
+```
+
+## 컴포넌트 카탈로그
+
+컴포넌트의 명세(진실)는 코드에 있다. 여기에는 **어떤 컴포넌트가 있고 어디 있는지**만 한 줄로 적는다.
+새 컴포넌트를 만들면 이 표에 **한 줄 추가**한다 (개별 MD 파일은 만들지 않는다).
+
+| 컴포넌트 | 파일 | 주요 옵션 | 데모 페이지 |
+|----------|------|-----------|-------------|
+| Button | `components/Button.tsx` | variant(fill/line/ghost/underline) · size(32/24/**18=아이콘 전용 소형, 버튼 18×18·아이콘 14×14**) · width(hug/fill — fill=부모 전체 폭, underline 제외) · leftIcon/rightIcon/icon · **showTooltip(아이콘 전용 버튼 hover 명칭 툴팁 on/off, 기본 true)·tooltip(문구 커스텀 — 미지정 시 aria-label. `useHoverTooltip` 공용 훅=portal+자동반전, 아이콘 전용일 때만 자동 적용. Pagination 화살표 버튼도 동일 훅 사용)** · disabled · loading. **underline**=배경 없는 밑줄 텍스트 버튼(hover 시 밑줄, ghost 텍스트색 재사용) | `pages/ButtonPage.jsx` |
+| SegmentControl | `components/SegmentControl.tsx` | **SegmentControlButton**: children · size(32/24) · selected · disabled · leftIcon/rightIcon/icon — ghost 기반 토글 버튼(미선택=font-icon-3 회색 텍스트, 선택/hover=button-ghost-hover-bg+font-icon-5). **SegmentControlGroup**: items(`{value,label,leftIcon?,rightIcon?,icon?,disabled?,ariaLabel?}[]`) · value/defaultValue/onChange(controlled·uncontrolled 단일선택) · size(32/24) · gap(spacing 토큰 키, 기본 '5'=8px) · disabled(그룹 전체) — 버튼들을 묶어 단일 선택 관리 | `pages/SegmentControlPage.jsx` |
+| ButtonGroup | `components/ButtonGroup.tsx` | children · direction(horizontal/vertical) · gap(spacing 토큰 키, 기본 '5'=8px) · width(hug/fill — fill=부모 전체 폭, Button 자식들 균등 분할) — 버튼들을 일정 간격으로 묶는 flex 컨테이너. **자식에 Select가 섞이면 Select를 버튼보다 앞(선두)에 자동 배치** | `pages/ButtonPage.jsx` |
+| SelectGroup | `components/SelectGroup.tsx` | children · direction(horizontal/vertical) · gap(spacing 토큰 키 '3'~'7', 기본 '5'=8px — **ButtonGroup과 동일 간격 규칙**) · width(hug/fill — fill=부모 전체 폭, Select 자식들 flex-1 균등 분할 + width 100%) — 셀렉트들을 일정 간격으로 묶는 flex 컨테이너 | `pages/SelectPage.jsx` |
+| SearchBar | `components/SearchBar.tsx` | value/onChange · onSubmit · disabled · width — 좌측 검색 아이콘, hover/focus는 ring | `pages/SearchBarPage.jsx` |
+| Input | `components/Input.tsx` | value/onChange · **size(32 기본/22 — 22=높이22·text-12·leading-18 핏, 좁은 셀·인라인용)** · disabled · readOnly · error+errorMessage(툴팁) · width | `pages/InputPage.jsx` |
+| TextArea | `components/TextArea.tsx` | value/onChange · placeholder · rows(기본4, 고정 높이 또는 autoGrow 최소) · **autoGrow(입력량따라 높이 증가)** · **maxRows(autoGrow 시 최대 행, 초과 스크롤·없으면 무한)** · maxLength · showCount(글자수 카운터=Figma countTxt, maxLength 있으면 N/max) · disabled · readOnly · error+errorMessage(툴팁) · width(기본320) · textareaProps — Input의 멀티라인 버전(solid). **text-field-* 토큰 재사용(새 토큰 0)**, 에러=하단 absolute 툴팁. **내부 스크롤(규칙 9): 네이티브 스크롤(커서 추적) 유지 + `.hide-native-scroll` + ScrollArea식 오버레이 thumb를 textarea 스크롤에 동기화**(scroll-bar 토큰, hover/드래그). **Code Connect**(`text area` 셋 7963:1674) | `pages/TextAreaPage.jsx` |
+| Label | `components/Label.tsx` | children · htmlFor · size(12/13/14/15/16 — Figma `size` variant) · required(**빨강 점 ●** — `label-field-required-mark`) · disabled(**`label-field-disabled-text`**) — 폼 라벨 텍스트(Pretendard Regular). 색은 **label-field 시멘틱 토큰** 경유(default-text/required-mark/disabled-text). Figma는 size×state 변형, 코드는 htmlFor 등 추가(규칙 11). 단독 사용 + Field 내부 재사용. **Code Connect 연결**(Figma `label` 7942:2175) | `pages/LabelPage.jsx` |
+| Field | `components/Field.tsx` | label(string/node→내부 Label) · htmlFor · required · disabled · description(helper) · direction(vertical/horizontal — 라벨↔컨트롤) · **controlsDirection(column/row — 복합 필드: 한 필드에 컨트롤 2개+를 row면 한 줄 등분)** · labelWidth(가로 라벨폭) · labelSize(미지정 시 14 — 2026-07-06 세로도 12→14 통일) · gap(간격 토큰 키) · children(컨트롤) — 라벨+컨트롤(Input/Select/DateField 등)을 묶는 폼 행. 컨트롤은 children으로 그대로 조립(규칙4). **에러는 소유하지 않음** — 컨트롤 자체 error 툴팁 사용(중복 회피). 내부에서 Label 재사용 | `pages/FieldPage.jsx` |
+| SelectOrInput (+EmailField·PhoneField) | `components/SelectOrInput.tsx` | options(등록값: 문자열/`{value,label}`) · **showSelect/showInput(true — 한쪽 끄면 남은 컨트롤이 전체 폭, select 전용 모드에선 에러 툴팁도 Select가 담당, 값 출처는 남은 수단으로 고정)** · value/defaultValue/onChange(**최종 문자열 하나** + `e.target.source`='select'/'input'/null) · selectPlaceholder/inputPlaceholder · selectWidth(160)/width(400) · menuWidth/placement/searchable(Select 통과) · disabled/readOnly · error/errorMessage(Input 툴팁) · inputProps · **formatInput((raw)=>string — 직접 입력값 변환)** — **"등록된 값 선택 OR 직접 입력" 상호 배타 필드**(Select+Input 조립): 직접 입력하면 Select가 선택 전으로, 선택하면 Input이 입력 전으로 리셋. 표시 위치는 **마지막 사용 수단(lastSource) 우선**(controlled여도 추적 — 입력 중 값이 우연히 옵션과 일치해도 Select로 하이재킹 안 됨), 초기/외부 주입값만 options 포함 여부로 유도. **EmailField**=placeholder·inputMode(email) 래퍼 / **PhoneField**=inputMode(tel)+**하이픈 자동 삽입 기본**(`utils/phone.js formatPhoneNumber` — 3-3-4/3-4-4·02 2-3-4/2-4-4, formatInput=null로 끔) | `pages/FieldPage.jsx`(Field 페이지에 병합, 사용예시 별도) |
+| Select | `components/Select.tsx` | variant(box/text) · size(24/20, text 전용) · **label(내부 라벨, box 전용 — 값 선택 시 트리거에 '라벨 ⋮ 값' 표시. 구분자=점 2개 커스텀 SVG(lucide 미제공, Figma Ellipse path 인라인, currentColor+font-icon-3), 라벨·구분자 고정·값만 말줄임, 미선택 시 placeholder만. 외부 Label 못 쓸 때 대안. Figma select `type="solid label"` 변형 8종=2026-07-07 매핑 확인)** · options · **multiple(체크박스 다중 선택 — value/defaultValue/onChange 값이 배열, 행=List checkbox로 렌더·클릭=토글·메뉴 유지(바깥클릭/Esc로 닫음), 트리거엔 선택 라벨을 ', '로 연결해 표시하고 넘치면 말줄임(TruncatingText 재사용), Enter/Space도 토글)** · value/onChange · placeholder · disabled · readOnly · error+errorMessage(툴팁) · width(px/CSS/`'hug'`) · maxWidth · menuWidth · placement(auto/수동) · searchable — 커스텀 PopoverMenu 드롭다운(키보드 ↑↓/Enter/Esc, 외부클릭 닫기, 검색 필터, 너비 커스텀 + 위/아래·좌/우 자동 정렬). **variant="text"** = 박스 없는 인라인 텍스트형(필터·테이블 바디/헤더·문단 사이·폼용, 기본 hug+maxWidth, **width="fill"이면 부모 전체 폭=텍스트 왼쪽·chevron 오른쪽 끝(justify-between)**, 드롭다운 기본 너비 120px, hover 밑줄, disabled/readOnly/error 모두 지원) | `pages/SelectPage.jsx` |
+| ConditionSlotCard / ConditionOrderSlot | `components/ConditionOrderSlot.tsx` | **카드**: title · enabled/onEnabledChange(Switch) · dragging(**pressed=드래그 앤 드롭 중 유지 상태** — blue 라인·텍스트) · width(202) · children(**세부 Select 스택 — 필요만큼 추가, 2개 고정 아님**) — [⠿+조건 N.]…[Switch] 헤더+Select 스택, condition-slot-* 토큰(hover: gray.25 bg/gray.250 line). **컨테이너**: items(`{id, body}[]` — 배열로 조건 카드 추가) · direction(vertical=↓커넥터/horizontal=›커넥터 — 레이아웃 전환) · order/defaultOrder/onOrderChange(**grip 드래그 앤 드롭으로 순서 변경**, controlled·uncontrolled) · enabledIds/onEnabledChange(**미사용 카드는 적용 순번에서 빠지고 다음 조건이 번호를 당겨받음 — 카드 물리 위치는 유지**, 미사용 제목 "조건 -."+dim, **off 시 세부 컨트롤에 disabled 자동 주입 — Select disabled 상태로 표시**(fragment도 펴서 처리, 값 보존)) · titlePrefix('조건') · cardWidth — 회색 슬롯(gray.50, p12) 안 카드+커넥터 배치. (Figma ConditionSlotCard 8219:80364 / ConditionOrderSlot 8219:80583 매핑) | `pages/ConditionOrderSlotPage.jsx` |
+| SelectChip | `components/Select.tsx` | Select `variant="chip"` 별칭 — **칩 비주얼 트리거**(Chip과 동일 박스 규격·chip-* 토큰 재사용, chevron 12) + 클릭 시 동일 팝오버 옵션 메뉴. color(gray/red/blue/black, pressed=default) · 나머지 옵션·동작은 **Select와 완전 동일**(options/value/multiple/searchable/menuWidth 기본 120 등). disabled 변형은 Figma 미제공(동작만 차단). (Figma `select chip` 셋 8219:81717 → SelectChip 매핑) | `pages/SelectPage.jsx` |
+| InlineFieldTrigger | `components/InlineFieldTrigger.tsx` | icon(리딩 아이콘) · children(값 텍스트) · size(24=14px/20=12px) · open(텍스트 회색+chevron 회전) · disabled · readOnly · interactive · maxWidth(말줄임) — 박스 없는 **인라인 텍스트형 트리거 비주얼**(아이콘?+텍스트+chevron). 상호작용(클릭·키보드·anchor)은 사용처가 담당하는 순수 표현 프리미티브. **Select(variant="text")** 와 **DatePicker 연.월 선택**이 공유. (단독 데모 없음, TruncatingText처럼 내부 공용) | `pages/SelectPage.jsx`·`pages/DatePickerPage.jsx` 내부 사용 |
+| Tooltip | `components/Tooltip.tsx` | variant(error/normal) · beak(top/bottom/none) — 색은 토큰값 인라인 적용 | `pages/TooltipScrollbarPage.jsx` (Input·List 내부 사용) |
+| TruncatingText | `components/TruncatingText.tsx` | children · as · className — 말줄임 시 hover로 전체 텍스트 normal 툴팁(portal+자동반전) | `components/List.tsx` |
+| Tag | `components/Tag.tsx` | color(blue/red/gray/**black**) · width(hug/fill) · children — tag-* 토큰. black=gray500 솔리드+흰 텍스트(Chip black과 동일 값, Figma 변형명 'color4'). (Figma Tag color variant와 속성명 일치, color4 변형도 Code Connect Tag 매핑) | `pages/TagPage.jsx` |
+| NewTag | `components/Tag.tsx` | color(blue/red/black, 기본 blue — new-tag-* 토큰: blue.400/red.400/gray.500 배경+흰 텍스트) · children(기본 'N') — **18×18 원형 'N' 뱃지**(22→20→18)(rounded-round-00, semibold 12). 신규 항목 표시용 (Figma `new tag` 8187:40848) | `pages/TagPage.jsx` |
+| SideNavigation / SideNavigationButton | `components/SideNavigation.tsx` | **컨테이너**: width(180/220/260 또는 임의 px, 기본 180) · line(우측 1px 구분선 side-nav-right-line) · children(행 간격 spacing-2) · **showAdd(기본 true — 'add menu'(+) 내장 행, 메뉴 추가 기능 on/off)/addLabel/onAdd/addPosition(top/bottom)** · **메뉴 목록=ScrollArea — 상위 DOM이 높이를 제한하면(h-full 등) 내비만 독립 스크롤(추가 행은 스크롤 밖 고정), 제한 없으면 자연 높이(2026-07-06)** / **버튼**: children('side menu') · icon(lucide) · selected(파란 텍스트+blue-400-50 배경, **line=true면 우측 1px select-text 라인 — 컨테이너 구분선 위에 정확히 겹침**(컨테이너 구분선은 border가 아닌 내부 absolute 라인, 2026-07-06)) · disabled · showNewTag/newTagColor(NewTag 재사용) · showArrow(›) · **overflow('ellipsis' 기본=말줄임+hover 전체 툴팁(TruncatingText, 규칙 8) / 'wrap'=멀티라인)** · line(true=우측 라인 접합형·왼쪽만 라운드 / false=독립형 전체 라운드) · onClick — 행 32px(px spacing-6·py spacing-4·gap spacing-5·text-14 leading-20), hover는 CSS(side-nav-hover-*). 'add menu'는 컨테이너 내장(showAdd) — 내부적으로 같은 버튼 재사용. 색은 side-nav-* 토큰만 (Figma add side navi/* 매핑, 8200:51452·8200:51519) | `pages/SideNavigationPage.jsx` |
+| SideNavigationTemplate | `components/SideNavigationTemplate.tsx` | menus([{id,label,count?(0/미지정=숨김),icon?,showNewTag?,newTagColor?,disabled?}]) · selectedId/defaultSelectedId/onSelect(controlled·uncontrolled) · navWidth(기본 180) · line · showAdd/addLabel/onAdd/addPosition(top 기본·bottom — 추가 행 위치 선택, 스크롤 밖 고정) · overflow · **height(number/CSS=고정 / 'fill'=모달 본문 가용 높이(ModalBodyMaxContext)를 max-height '상한'으로 — 내용 적으면 자연 높이, 상한 도달 시 내비 독립 스크롤·바디 전체 스크롤 없음. 모달 밖 fill은 부모 100%)** · children(우측 콘텐츠 슬롯, 세로 gap spacing-6) — **좌 SideNavigation + gap spacing-7(16) + 우 콘텐츠 슬롯 2단 템플릿** (Figma side navigation Template 8202:61044) | `pages/SideNavTemplatePage.jsx` |
+| Checkbox | `components/Checkbox.tsx` | **Checkbox**: checked/onChange · defaultChecked · disabled · label — 6상태(unselected/selected×default/hover/disabled), checkbox-* 토큰. **CheckboxGroup**: items(`{value,label,disabled?}[]`) · value/defaultValue/onChange(controlled·uncontrolled **다중선택**, 선택값 **배열**; onChange=(nextValues,{value,checked})) · direction(vertical/horizontal, 기본 vertical) · gap(spacing 토큰 키, 기본 '7'=16px) · disabled(그룹 전체) | `pages/CheckboxPage.jsx` |
+| Switch | `components/Switch.tsx` | checked/onChange · defaultChecked · disabled · label — 6상태(off/on×default/hover/disabled), track 28×16 + thumb 12×10(translate 8px 슬라이드 애니메이션), switch-* 토큰(radio/checkbox와 값 공유하나 별도 파일). 그림자: default/hover thumb만. **off+disabled=진회색 thumb(#878787)** / on+disabled=blue thumb | `pages/SwitchPage.jsx` |
+| SegmentedTabs | `components/SegmentedTabs.tsx` | items(`{value,label,disabled?}[]` — 2개 이상 가변, 모두 균등 폭) · value/defaultValue/onChange(controlled·uncontrolled 단일선택) · width(px/CSS, 미지정 시 부모 전체 폭) — 회색 트랙(segmented-tab-bg) 안 흰색 pill이 선택 탭으로 **슬라이드**(absolute pill 폭 100/N%+translateX(index×100%)+transition-transform, 탭 균등 폭 전제). 방향키(←/→) 이동. 움직이는 pill엔 1px 아웃라인(outset ring — 트랙과 합성되게, segmented-select-line=gray-900-10). 색은 segmented-* 시멘틱 토큰(tab-bg=gray.50/select-bg=white/select-line=gray-900-10/select-text=gray.900/unselect-text=gray.300/hover-text=blue.400/disabled-text=gray.150). **Code Connect**(Figma segmented tab button 8241:88277 / Segmented Tabs 8241:88288) | `pages/SegmentedTabsPage.jsx` |
+| Tabs | `components/Tabs.tsx` | **TabMenu**: children · icon(LucideIcon) · tag/tagText/tagType(blue/red/gray) · selected · disabled · onClick — 탭 1개(default/hover/select/disabled, 선택 시 하단 2px underline). **Tabs**: items(`{value,label,icon?,tag?,tagText?,tagType?,disabled?}[]`) · value/defaultValue/onChange(controlled·uncontrolled 단일선택) · variant(hug=내용 폭 / fill=균등 분할 전체 폭) · rightSlot(우측 임의 요소, justify-between) — 그룹 하단 1px 구분선. tab-* 토큰 | `pages/TabsPage.jsx` |
+| Radio | `components/Radio.tsx` | **Radio**: checked/onChange · defaultChecked · disabled · label · name · value — 6상태(unselected/selected×default/hover/disabled), 원형+가운데 점, radio-* 토큰(체크박스와 값 동일하나 별도 파일). **RadioGroup**: items(`{value,label,disabled?}[]`) · value/defaultValue/onChange(controlled·uncontrolled 단일선택) · name(미지정 시 자동) · direction(vertical/horizontal, 기본 vertical) · gap(spacing 토큰 키, 기본 '7'=16px) · disabled(그룹 전체) | `pages/RadioPage.jsx` |
+| List | `components/List.tsx` | **left**: title · tag/tagText · icon(LucideIcon) · checkbox(다중)+checked/onCheckChange · **radio(단일 선택 — checkbox와 배타, checked/onCheckChange 공용, 행 클릭=선택·해제 없음)** · **rightSlot(우측 임의 콘텐츠 — 입력칸+단위 등, switch/버튼/chevron 앞에 배치. stopPropagation은 사용처가)**. **right**: showSwitch+switchChecked/onSwitchChange · rightButton/onButtonClick(고스트 ⋯) · endIcon(chevron). 공통: selected · highlighted · disabled · onClick — 옵션 목록 한 행(5상태). 체크박스·스위치는 공용 컴포넌트 재사용 + 행 클릭과 분리(stopPropagation), disabled 시 함께 비활성 | `pages/OptionListPage.jsx` |
+| Divider | `components/Divider.tsx` | direction(horizontal/vertical) · color(subtle/default/strong) — 1px 구분선(div fill), **divider-* 시멘틱 토큰**(subtle=gray.50/default=gray.100/strong=gray.150). 세로선은 self-stretch — flex 행 높이만큼 자동(부모 고정 높이 불필요, 2026-07-07 개선; flex 밖에선 className으로 높이 지정). **Code Connect**(Figma `Divider` 셋 7970:17558) | `pages/TooltipScrollbarPage.jsx` |
+| Chip | `components/Chip.tsx` | children · onRemove(있으면 X 노출, 클릭=삭제·stopPropagation) · onClick(칩 전체 선택) · **color(gray 기본/red/blue/black — 분류색 variant, `COLOR_CLASS` 맵)** · removeAriaLabel — 제거형 칩, 텍스트+X(lucide, 색은 text 상속). **chip-{color}-* 시멘틱 토큰**(color별 default/hover, pressed=default 재사용). gap-3·round-4·pl-4/pr-3/py-1·text-12(좌우 패딩 2px씩 축소됨). **disabled 변형 없음**(Figma 미제공, 필요 시 추후). **Code Connect**(Figma `chip` 셋 7977:31602, 12변형=4색×3상태 전부 매핑, color prop 일치) | `pages/ChipPage.jsx` |
+| ScrollArea | `components/ScrollArea.tsx` | children · maxHeight · horizontal(가로 오버레이 스크롤바 추가) · variant(default/light — light=어두운 배경 위 흰색 thumb, scroll-bar-light* 토큰) · contentClassName · **onViewport((el)=>void)**(내부 스크롤 요소 콜백 — 부모가 scrollTop 직접 제어) · **onScroll((e)=>void)**(스크롤 이벤트 패스스루) · **vScrollEl(el — 세로 thumb를 자기 viewport 대신 이 요소의 세로 스크롤에 연동. 가로 스크롤 콘텐츠 '안'에 세로 스크롤이 중첩될 때(표 바디) 세로 thumb가 가로 스크롤 영향 없이 항상 보이는 위치에 고정, 2026-07-06)** — 커스텀 오버레이 스크롤바(공용, 세로+가로). thumb 시각 6px+히트 10px. 스크롤 생기는 모든 곳에 사용 | `pages/TooltipScrollbarPage.jsx` |
+| ListGroup | `components/ListGroup.tsx` | children · maxVisible(기본 6) · **gap('2'=2px/'3'=4px, 미지정=0 붙여쌓음 — 라디오 리스트 등 행 간격)** · empty · emptyMessage — 내부 스크롤(ScrollArea 사용). 자식 0개 또는 empty=true면 그룹 안(스크롤 영역 내부)에 ListEmpty를 렌더해 빈 상태도 그룹의 패딩·배경을 따른다 | `pages/OptionListPage.jsx` |
+| ListEmpty | `components/ListEmpty.tsx` | message — 목록 빈 상태. **ListGroup이 빈 상태일 때 내부에서 렌더**(단독 사용도 가능) | `pages/OptionListPage.jsx` |
+| PopoverMenu | `components/PopoverMenu.tsx` | children · width. **상단 영역 topArea**('none'·'search'·'input' 중 택1): 'search'+searchValue/onSearchChange/searchPlaceholder/searchInputProps(검색바, SearchBar) · 'input'+inputValue/onInputChange/inputPlaceholder/inputProps(검색 아이콘 없는 일반 입력, Input 재사용). **footer**(하단 푸터 on/off). **푸터 좌측**(우선순위 footerStart>checkbox>reset>text): footerText(개수·가이드 문구) · footerCheckbox+footerChecked/onFooterCheckChange/footerCheckLabel(전체 선택) · footerReset+onFooterReset/footerResetLabel/footerResetIcon(초기화 언더라인 버튼) · footerStart(그 외 커스텀 범용 슬롯, 문자열=텍스트/노드=임의). **푸터 우측**: cancelText/onCancel · confirmText/onConfirm · confirmVariant · confirmDisabled/confirmLoading · showCancel/showConfirm · **footerButtonsFill**(좌측 슬롯 없이 버튼 그룹 fill 균등 분할 전체폭 — 링크/이미지 URL 입력형) — 옵션 목록 컨테이너. 푸터는 좌측 슬롯 + 우측 취소/확인 ButtonGroup, bg-list-group-bg에 gap-spacing-1 틈이 구분선(Modal 푸터와 동일 네이밍). **조립 타입(Figma popover menu, 전부 PopoverMenu 매핑): radio list(List radio 단일선택+푸터, 가점/감점 행은 rightSlot=입력+점이며 그 라디오 선택 시만 입력 활성) · tab radio list(SegmentedTabs 흰 블록+List radio) · tab select list(SegmentedTabs+SelectGroup 세로) — 탭/셀렉트 블록은 bg-list-group-bg div로 감싸 gap-1 구분선** | `pages/OptionListPage.jsx` |
+| FileUploadMenu | `components/FileUploadMenu.tsx` | files(`{name,size?,id?}[]` 컨트롤드) · guide(안내) · maxCount(기본5, 도달 시 푸터 비활성+안내) · accept · multiple · onAdd(FileList)/onDelete(file,index) · findText/maxText · width(420) — 파일 업로드 팝오버(Figma popover menu `type=upload file list`). **PopoverMenu 조립**: 안내 박스 + ListGroup/List 행(우측 삭제=List `rightButtonIcon`) + 전체폭 '파일 찾기'(footerButtonsFill). 프레젠테이셔널(파일 상태는 호출부). **⚠️ guide(표시 문구)와 accept(실제 필터)는 별개 prop이라 자동 연동 안 됨 — 확장자 표기·필터를 직접 일치시킬 것.** **Code Connect**(`file upload menu` 셋 7957:5287) | `pages/UploadMenuPage.jsx` |
+| FileUploadButton | `components/FileUploadButton.tsx` | files(컨트롤드) · triggerText('파일 업로드')/countSuffix('개 등록됨')/showCount — **파일 있으면 라벨에 `(N개 등록됨)` 표시** · buttonProps(**모든 Button 스타일 통과** — variant/size/leftIcon 등, 기본 line+Upload) · placement · menuWidth(420) · 나머지 FileUploadMenu props 전달 — Button 트리거 + Popover에 FileUploadMenu 조립(Figma butto+ file upload) | `pages/UploadMenuPage.jsx` |
+| ImageUploadButton | `components/ImageUploadButton.tsx` | triggerText('이미지 등록') · buttonProps(모든 Button 스타일 통과, 기본 line+Image) · placement · menuWidth(320) · 나머지 ImageUploadMenu props 전달 — Button 트리거 + Popover에 ImageUploadMenu 조립(Figma butto+ image upload) | `pages/UploadMenuPage.jsx` |
+| ImageUploadMenu | `components/ImageUploadMenu.tsx` | image(미리보기 URL — 없으면 empty) · guide · accept · onSelect(File)/onRemove() · findText/removeText · imageAlt · width(320) — 이미지 업로드 팝오버(Figma `type=upload image`). **PopoverMenu 조립**: 안내 + 미리보기 + 푸터(image면 삭제(line)+찾기(fill), empty면 찾기만). 프레젠테이셔널. **Code Connect**(`image upload menu` 셋 7959:5598) | `pages/UploadMenuPage.jsx` |
+| Popover | `components/Popover.tsx` | trigger · children((close)=>) · placement(auto/수동) · menuWidth · open/onOpenChange · disabled — 임의 트리거(버튼 등)에 PopoverMenu 등 패널을 띄움(위치 자동·외부클릭/Esc 닫기·portal). Select 드롭다운 로직의 범용 버전. **바깥 클릭/Esc는 '닫기 전용'**: `useOutsideDismiss` 공용 훅(Select와 공유)이 capture에서 클릭을 삼켜 아래 요소가 함께 클릭되지 않고(click-through 방지), Esc도 capture라 모달보다 우선. 중첩 시 맨 위 팝오버만 닫힘 | `pages/ButtonPage.jsx` |
+| Table | `components/Table.tsx` | columns(key/label/width/align/render/renderHeader/**filter**/**headerMenu**/**cellSpan((row,rowIndex,rows)=>n — 셀 세로 병합: n>1=아래로 n행 rowSpan, 0=위 병합 범위라 td 생략. 행 구분선은 셀이 끝나는 행 기준. 행 hover 배경은 시작 행에만 적용됨 주의)**) · rows · rowKey · selectable+selectedIds/onSelectChange(전체선택) · **filters/onFilterChange**(헤더 필터) · **sort/onSortChange**(헤더 메뉴 정렬) — 둘 다 controlled/내부 · bordered · wrap(본문 줄바꿈: false 말줄임+행고정 / true 늘어남) · maxHeight(세로 스크롤+헤더 고정) · minWidth(테이블 최소 너비; 실제 최소=max(minWidth, 컬럼최소폭합), fill 컬럼은 40px 유지, 좁아지면 가로 스크롤 자동) · scrollX(가로 스크롤 수동) — 세로·가로 모두 ScrollArea 오버레이 스크롤바 · loading · emptyMessage · onRowClick — table-* 토큰. **컬럼 filter={options,allLabel?,placeholder?}**=헤더 라벨 자리에 인라인 텍스트형 Select(size 20), 선택값으로 row[key] 기준 행 필터(맨 앞 전체 옵션=해제, 라벨 기본 '{컬럼명} 전체'). **컬럼 headerMenu={sortable?,items?,icon?,width?}**=헤더 우측 ghost 아이콘 버튼(24)+Popover 메뉴, sortable이면 오름/내림차순 정렬 자동(row[key] 기준 내부 정렬), items=[{label,onClick}]로 임의 기능 추가 **maxHeight(세로 스크롤)는 타입 무관 헤더를 스크롤 밖으로 분리(2026-07-06 — noneline도 통일, sticky 경로 제거) — 세로 스크롤 영역=바디만(알파 header-bg 뒤/위로 행 비침 방지), 컬럼 정렬은 동일 colgroup+table-fixed, 가로 스크롤은 헤더·바디 함께. maxHeight='fill'=바디 상한을 부모 flex 높이로(모달 ModalBody와 연동 — 호출부는 className='min-h-0'(flex-1 금지 — grow가 아니라 shrink로 상한 동작, 옆 요소가 길어도 hug 유지)), minHeight=바디 최소 높이(생략=hug: 내용만큼). 조합: fill=hug~모달 / fill+minHeight=고정min~모달 / 숫자=고정 상한** | `pages/TablePage.jsx` |
+| UsageExample | `components/UsageExample.tsx` | code(문자열) · title · note · props(`{name,type,default,desc}[]` 전체 옵션 표) — 데모 페이지 상단 "사용 예시 코드 + 전체 옵션 설명표" 블록(복사 버튼 포함). **문서용 헬퍼**(제품 컴포넌트 아님) | 각 컴포넌트 데모 페이지 상단 |
+| TableTemplate | `components/TableTemplate.tsx` | columns/rows · actions(ReactNode/`(ctx)=>` — null이면 버튼그룹 숨김. **선택 연관 버튼 순서 규칙: 삭제→추가→복사→붙여넣기, 없는 건 건너뜀·그 외 버튼은 뒤에 — templates/list-page.md**) · **rightActions(ReactNode/`(ctx)=>` — 우측 버튼그룹: 검색바 대신/함께 배치(검색바 오른쪽). actions처럼 ButtonGroup(buttonGroupGap)으로 감싸 여러 버튼·스타일 혼합 가능)** · **selects/rightSelects(ReactNode/`(ctx)=>` — 좌/우 셀렉트 그룹 슬롯: SelectGroup(selectGroupGap, 기본 '5'=8px)으로 감싸 배치. 좌=타이틀→셀렉트그룹→버튼그룹(셀렉트가 버튼그룹 앞) / 우=버튼그룹→셀렉트그룹→검색바(셀렉트가 버튼그룹과 검색바 사이))** · title(헤더 좌측 타이틀 — 버튼그룹 왼쪽, 함께 표시 가능) · searchable · pagination · bordered · selectable · selectedIds/onSelectChange · searchKeys/searchPlaceholder/searchWidth(검색바 너비, 기본 200) · buttonGroupGap(액션 버튼그룹 간격 토큰 키, 기본 '5'=8px — 셀렉트 그룹·그룹 간 간격과 8px 통일(2026-07-03)) · className · 페이지네이션 세부 제어(page/onPageChange · defaultPageSize/pageSize/onPageSizeChange/pageSizeOptions · showTotal · showPageSize · maxButtons · paginationClassName) · minWidth/maxHeight(페이지네이션 없을 때 표 높이) · emptyMessage — 버튼그룹+검색바+Table+Pagination을 묶은 목록 페이지 템플릿. 각 요소 on/off, 검색·페이지네이션·행 수·선택 내부 동작. **컬럼 filter/headerMenu(정렬)는 템플릿이 검색 후 전체 행에 먼저 적용한 뒤 페이지를 자른다**(현재 페이지 안에서만 동작하지 않게). 필터·정렬 공유 헬퍼는 `components/tableView.ts` (+`iconCellWidth(n, {buttonSize=24, gap=8})` — 고스트 아이콘만 단독으로 들어가는 셀의 width를 셀 좌우 패딩(spacing-5-5×2)+버튼 폭+간격 합산으로 산출, 임의 폭 금지. 예: 2개=76px) | `pages/TableTemplatePage.jsx` |
+| NoticeWritingTemplate | `components/NoticeWritingTemplate.tsx` | channel/defaultChannel(site/email/sms)·onChannelChange · **onChange((values)=>void — 작성 내용 반출 계약(2026-07-07 감사): `{channel, titles, bodies, attachments}` 스냅샷, attachments 항목의 원본 File은 `.file`. 저장/발송은 이 값 사용)** · **showTabs(true — 채널 탭 on/off)** · **tabVariant(fill 기본/hug — Tabs 너비 타입)** · **enabledChannels(['site','email','sms'] — 밖의 탭 disabled, 현재 채널이 비활성이면 첫 활성 채널로 표시 폴백(파생값))** · **showAttach(true — 첨부파일 버튼 on/off, false면 제목 입력만 전체 폭)** · mergeFields · **maxAttachments(5)/attachGuide/attachAccept** · editorMinHeight(360)/editorMaxHeight · className — 안내문 작성 템플릿(Figma "Notice Writing Template" state=site/email/sms). **Tabs(채널)+Input(제목)+FileUploadButton(첨부파일=버튼+업로드 메뉴 팝오버)+Editor 조립**(규칙 4). site·email=제목+첨부파일+풀 툴바 Editor(mergeFields), sms=바이트 안내문구 + 축약 툴바(`['undo','redo','mergefield']`) Editor. 채널/제목/본문/첨부 내부 상태(채널만 controlled). **Code Connect**(`Notice Writing Template` 셋 7977:31228 → NoticeWritingTemplate). Editor 포함이라 페이지는 lazy 로드, 데모는 Playground(showTabs/tabVariant 토글) | `pages/NoticeTemplatePage.jsx` |
+| JobPositionTemplate | `components/JobPositionTemplate.tsx` | criteriaOptions(기준 목록) · valueOptions(기준별 값 — 카드 값 Select·로우 SelectChip 공용) · conditionCount(4) · defaultDisabledIds([] — 초기 스위치 off 조건 id) · **multiLastValue(마지막='사용 중' 조건 중 순번 최대 카드 값을 체크박스 다중 선택으로 — 스위치로 활성 조건 수가 바뀌면 마지막 활성 카드로 이동. 추가 시 값마다 행 1개씩 생성, 각 행=단일 조합·중복 건너뜀)** · defaultRows/onChange(**로우 스냅샷 반출** `[{id, items:[{criteria,value}]}]`) · tableHeight('fill' 기본=내용만큼 계속 확장(모달 바디 스크롤)/숫자=고정 상한) · step1Title/step2Title/addLabel/orderLabel/jobLabel/manageLabel/inputPlaceholder/emptyMessage — **채용 직무 설정 템플릿**: 좌 Step 01=ConditionOrderSlot(기준+값 Select 카드 — 둘 다 내부 라벨 타입 "기준 ⋮ x"/"값 ⋮ y", 정렬·사용 전환, **다른 사용 중 카드가 고른 기준은 옵션 disabled(양방향)+재활성 시 중복 기준이면 양보 리셋 — 중복 조건 방지**) → 활성 조건 값이 우 Step 02 read-only Input에 " / " 연결 실시간 표시 → 추가 시 bordered 무한 스크롤 Table에 로우(최신 위, 순서 내림차순, **같은 조합(기준+값, 순서 무관 — 값 집합이 같으면 중복)이 이미 있으면 추가 차단+인풋 에러 툴팁**(duplicateMessage, 중복 해소 시 자동 소멸)) · **ref API(React 19 ref-as-prop): validate()=저장 검증(미선택 칩 에러 툴팁(emptyValueMessage)+false, 값 채우면 자동 해제) · getRows()=저장 시점 최신 로우 조회('변경 없이 저장'도 안전 — onChange 스냅샷 보관 불필요)** → 로우 SelectChip으로 즉시 값 변경(**다른 로우와 같은 조합이 되는 값은 옵션 disabled로 사전 차단**), 관리=복사+휴지통 ghost(32, iconCellWidth(2)) — **복사는 값 복제+마지막 칩만 미선택(중복 회피)으로 맨 위 추가**. 조립: ConditionOrderSlot+Select+SelectChip+Input+Button+Table+Divider (Figma `JobPositionTemplate` 8220:82935 매핑) | `pages/JobPositionTemplatePage.jsx` |
+| FormTemplate | `components/FormTemplate.tsx` | fields(`{key,label,required?,disabled?,description?,span?,control}[]` — control에 Input/Select/DateField/EmailField 등 주입) · columns(1/2/3 — 기본 폭=12/columns칸) · **columnGap/rowGap(16/20/24/28/32px — spacing 토큰 7~11 경유)** · **labelSize('12'~'16' — 전체 라벨 일괄)** · className — 폼 템플릿(Figma "form template" 1/2/3/mixed column). **12칸 그리드 + Field 조립**(규칙 4), 혼합 배치는 필드별 span(12칸 기준, 인라인 grid-column — purge 회피). **Code Connect**(셋 8071:35916 → FormTemplate) | `pages/FormTemplatePage.jsx`(Playground: layout·간격·라벨 크기) |
+| Modal | `components/Modal.tsx` | open/onClose · title · size(sm/md/lg/xl/2xl/3xl/4xl=360~1260 · fill=좌우16제외) · placement(top=상단정렬·여백16~화면½−150가변/center; 일반·Form 기본 top, Alert/Confirm 기본 center) · children(ModalBody, 70vh 초과 시 ScrollArea 내부 스크롤) · confirmText/onConfirm · cancelText/onCancel · confirmVariant · confirmDisabled/confirmLoading · showCancel/showClose/showHeader/showFooter · footer/footerStart(푸터 우측 커스텀/좌측 영역) · **footerStartType('text' 기본/'button' — 푸터 왼쪽 여백: 텍스트=16/버튼=12, 2026-07-06 지시)** · closeOnOverlayClick/closeOnEsc · bodyMaxHeight · onSubmit(주면 form 래핑+주동작 submit). ModalBox=modal-inline 배경+1px gap 구분선+modal-outline ring, 딤=modal-overlay. **변형**: FormModal(취소/저장, form+유효성)=기본 구조 그대로 · **AlertModal/ConfirmModal**=헤더 없이 본문 고정 슬롯 `title→description→descriptionDetail(회색 박스, modal-description-bg)→checkboxLabel(Confirm 전용 재확인 체크박스)`만 사용(슬롯 고정·텍스트만 자유), 푸터 버튼 전체폭(footerFullWidth), Confirm은 `requireCheck`(기본 true)로 체크해야 확인 활성화·`checked`/`onCheckChange` controlled 지원. base Modal에 `bodyPadding`/`footerPadding`/`footerFullWidth` 옵션. 푸터 버튼은 ButtonGroup, portal+body스크롤잠금+ESC/딤 닫기(**중첩 모달: ESC는 맨 위 모달만 닫고 스크롤 잠금은 참조 카운트 — 2026-07-07 감사**) — modal-* 토큰 **본문 가용 높이(px, 패딩 제외)를 `modalContext.js`의 ModalBodyMaxContext로 제공(2026-07-06) — height='fill' 자식(SideNavigationTemplate 등)이 소비** | `pages/ModalPage.jsx` |
+| Editor | `components/Editor.tsx` (+ `components/EditorToolbar.tsx`) | value/defaultValue/onChange(HTML 문자열) · mode(edit/source/preview)/onModeChange · **showSource(true — HTML 소스 탭 노출 여부, false면 편집/미리보기만. 소스 모드 중 false로 바뀌면 편집으로 자동 복귀)** · toolbar(노출 서식 키 배열) · **mergeFields(문자열/`{label,value}`[] — 있으면 툴바에 '머지필드' 드롭다운=search list PopoverMenu(width180) 추가, +아이콘 목록 클릭 시 커서에 삽입. 삽입 결과는 삭제 가능한 인라인 **칩**(`MergeFieldNode.js` = Tiptap 인라인 atom, **plain DOM NodeView**(chip-blue-* 토큰 클래스, X 버튼=노드 삭제). React 인라인-atom NodeView는 빈 렌더가 잦아 DOM으로 구성). HTML 직렬화=`<span data-merge-field="{값}">{값}</span>`(재오픈 시 칩 복원 + 원문 텍스트로 백엔드 머지 치환 그대로 동작). preview 모드는 `index.css`의 `[data-merge-field]` 규칙으로 칩 표시)** · readOnly · allowSourceEdit · placeholder · minHeight/maxHeight · width(fill 기본/px/CSS) · className — **Tiptap v3 기반** 리치 텍스트 에디터(엔진은 내부 격리). 편집(WYSIWYG)/HTML 소스/미리보기 3모드. 풀 툴바: 블록(본문·H1~3)·강조(굵게/기울임/밑줄/취소선)·글자색/형광(토큰 팔레트)·목록/인용·정렬·링크·표·이미지(URL)·구분선·코드. 본문/미리보기 스타일은 `index.css`의 `.tiptap-prose`(@apply 토큰)·색은 `editor-*` 토큰. StarterKit에 link/underline 포함되어 별도 등록 안 함 | `pages/EditorPage.jsx` |
+| DateField | `components/DateField.tsx` | mode(single/range) · value/defaultValue/onChange · showTime · startTime/endTime(+onChange) · placeholder('날짜를 선택하세요') · disabled/readOnly · error/errorMessage(필드 아래 툴팁) · **formatErrorMessage**(직접 입력 형식 오류) · closeOnSelect(선택 완료 시 자동 닫기 — 기본: 단일 true(클릭 즉시 닫힘)·범위 false(배경 클릭으로만 닫힘), showTime이면 true여도 유지) · width('hug'/'fill'/px/CSS, 미지정 시 showTime?260:180, 좁으면 말줄임…) · disablePast/minDate/maxDate/disabledDate/weekStartsOn/minYear/maxYear(DatePicker 패스스루) — **DatePicker 트리거 + 직접 입력 필드**(Figma date picker/Input). 캘린더 아이콘+값(input), text-field-* 토큰으로 default·hover·focused·filled·disabled·readOnly·error 상태. 아이콘/필드 클릭 시 Popover로 DatePicker를 띄우고, **입력칸에 직접 타이핑 후 Enter/blur로 파싱·정규화**(날짜: 250520/20250520/0520(올해)/25.05.20, 시간(공백 뒤): 00:10/0010/011, 숫자·구분자·괄호만 입력 허용). **범위에서 마감일 미입력 후 확정 시 end=null → "마감일 없음"**. 값 표기는 utils/datetime로 통일 | `pages/DatePickerPage.jsx` |
+| TimeField | `components/TimeField.tsx` | value/defaultValue/onChange('HH:MM'\|null) · placeholder('시간을 선택하세요') · disabled/readOnly · error/errorMessage/formatErrorMessage · width('hug'/'fill'/px, 기본 120, 좁으면 말줄임) — **시간 트리거 + 직접 입력 필드**(DateField의 시간 버전). 시계 아이콘+값(input), 누르면 **인풋 영역 없는** 시/분 2depth 목록(TwoDepthList `showInput={false}`)을 Popover로 띄움. 직접 입력: 12:34/1:1/1230/011(→01:01) → Enter/blur로 'HH:MM' 정규화, 숫자·콜론만 허용. text-field-* 토큰 | `pages/DatePickerPage.jsx` |
+| DatePicker | `components/DatePicker.tsx` | mode(single/range) · value/defaultValue/onChange(single=Date·range={start,end}) · disablePast(오늘 이전 선택 불가, 오늘은 가능)/disableFuture(오늘 이후 선택 불가, 오늘은 가능)/minDate/maxDate/disabledDate((date)=>bool 커스텀 비활성) · month/defaultMonth/onMonthChange(표시 월) · showTime(하단 시간 영역 — **범위=시작/마감 2칸(가운데 정렬) · 단일=시간 1칸(마감 없음, 값=startTime, 라벨 '시간 입력' 왼쪽·셀렉터 오른쪽 정렬, timeLabel로 라벨 변경)**) · startTime/endTime/onStartTimeChange/onEndTimeChange('HH:MM') · weekStartsOn(0=일) · weekdayLabels · todayLabel · scrollNavigate(날짜 영역을 ScrollArea 오버레이 스크롤바로 주 단위 무한 세로 스크롤 — 페이지처럼 연속 이동·스크롤 따라 헤더 연.월 자동 갱신, 기본 true; false면 정적 6주 그리드) · rangeTooltip(범위 모드 날짜 hover 시 "시작일/마감일" 안내 툴팁, 기본 true)/rangeStartLabel/rangeEndLabel · minYear/maxYear(연도 범위, 기본 ±12) · width(기본 276) — 캘린더 날짜 선택 패널(Figma date picker). 상단 네비(캘린더 아이콘+연.월 selected-text→연/월 TwoDepthList, 이전/오늘/다음 ghost Button)+요일 헤더+6주 그리드(CalendarDayButton)+(showTime)시간 영역. 패널 자체이므로 트리거엔 Popover로 감쌈. native Date(무라이브러리), controlled/uncontrolled. calendar-* 토큰 | `pages/DatePickerPage.jsx` |
+| CalendarDayButton | `components/CalendarDayButton.tsx` | children(날짜 텍스트) · state(default/muted/today/selected/range-start/range-end/in-range) · disabled · onClick — 캘린더 날짜 한 칸(36×24). 뒤쪽 좌/우 반쪽 배경으로 범위(start~end) 연속 칠 + 중앙 24px 원형 하이라이트. calendar-* 시멘틱 토큰 | `pages/DatePickerPage.jsx` |
+| TwoDepthList | `components/TwoDepthList.tsx` | inputValue(상단 현재값 — 합성 문자열 '2026.7'·'01:23') · **separator(':' 기본 — 좌/우 분리 인풋 사이 구분자 표시·합성 기준, 연/월은 '.', 아래 정렬)** · showInput(상단 입력 영역 표시, 기본 true; false면 좌/우 컬럼만 — 트리거가 따로 입력 가질 때) · editable(직접 입력 허용, 기본 true) · onInputApply((text)=>string \| null \| **{error:'left'\|'right', message?}** — 합성 텍스트로 좌/우 값 **즉시(라이브) 적용** 후 정규화 문자열 반환; **실패 시 {error:파트, message}면 해당 인풋 아래에 그 문구로 툴팁**(null이면 마지막 편집 인풋+errorMessage); 포커스 중엔 텍스트 안 덮어씀·영역 이탈 시 정규화 보정·포커스 시 전체선택, 파싱은 호출부) · errorMessage(파트 미지정 기본 메시지) · allowedChars(기본 **숫자만** /\d/ — 구분자는 UI가 표시) · onInputChange · inputPlaceholder('YYYY.MM'처럼 구분자 포함 — 쪼개 좌/우 placeholder) /inputProps · leftOptions/rightOptions(`{value,label,disabled?}[]`) · leftValue/rightValue · onLeftChange/onRightChange · maxVisible(각 컬럼 행 수, 기본 5) · **width(기본 160 — 연/월 160·시/분 140)** — **[좌 Input] 구분자 [우 Input]** + 좌/우 2컬럼 목록 팝오버(Figma 2depth list, 2026-07-02 분리 인풋 개정). 각 컬럼 ListGroup(초과 시 내부 스크롤), 선택 행 List selected+자동 스크롤. DatePicker의 연.월·시간 선택 내부에서도 사용 | `pages/DatePickerPage.jsx` |
+| Pagination | `components/Pagination.tsx` | page/onChange(controlled) · defaultPage · totalCount/totalPages · pageSize/onPageSizeChange · pageSizeOptions(기본 5/10/20/50) · maxButtons(번호 윈도우, 기본 10) · showTotal · showPageSize(**totalPages 지정+onPageSizeChange 없으면 무반응 UI라 자동 숨김 — 2026-07-07**) — « ‹ 번호 › » + 총 N개 + 페이지 행 Select, 현재페이지 ghost-select 토큰 | `pages/PaginationPage.jsx` |
+
+> **오버레이 패턴 참고:** 필드 아래 메시지(에러 등)는 레이아웃 공간을 차지하지 않도록, 래퍼를 `relative`로 두고 메시지를 `absolute top-full`로 띄운다. `Input`의 에러 툴팁이 이 방식이다.
+
+> **예외:** 특정 컴포넌트가 공통 규칙으로 안 덮이는 **고유의 복잡한 규약**(예: 데이터 테이블의 정렬·페이지네이션·가상 스크롤)을 가질 때만, 그 컴포넌트 하나를 위한 별도 MD를 추가한다. 그 외에는 이 카탈로그 한 줄로 충분하다.
+
+## 데모 페이지 등록
+
+새 컴포넌트를 만들면 데모 페이지도 추가한다 (페이지 추가는 '새 페이지 절차' 규칙, 각 templates 참고):
+1. `src/pages/XxxPage.jsx` — variant × size × state 조합을 표로 보여줌 (`ButtonPage.jsx` 참고)
+2. `src/pages/index.js`에 export
+3. `App.jsx`의 `NAV_GROUPS` '컴포넌트' 그룹에 항목 추가
+
+### 규칙 — 섹션 사이에는 구분선을 넣는다
+
+페이지를 여러 섹션(`<h3>` 단위 블록)으로 구성할 때, **첫 섹션을 제외한 각 섹션 위에 구분선**을 둬 시각적으로 분리한다.
+
+- 표준: 섹션 앞에 **`<Divider className="mt-spacing-9 mb-spacing-8" />`** 를 둔다(2026-06-30부터 — 손수 `border-t`가 아니라 DS `Divider` 컴포넌트 사용). 위 간격은 `mt-spacing-9`, 아래 간격은 `mb-spacing-8`(섹션마다 기존 mt/pt가 다르면 그 값을 옮긴다).
+- 첫 섹션(보통 `UsageExample` 바로 다음)은 구분선 없이 시작한다.
+- **Why:** 항목이 여백만으로 나열되면 경계가 모호하다. 구분선은 하드코딩 border가 아닌 `Divider`(divider-* 토큰)로 통일해 DS 자산을 재사용한다.
+- 레퍼런스: `ButtonPage.jsx` · `TagPage.jsx` · `EditorPage.jsx`.
+
+## 컴포넌트 완료 체크리스트
+
+- [ ] 모든 시각 옵션(variant/size/state 등)이 props로 노출되고 기본값이 있는가
+- [ ] 컬러가 시멘틱 토큰 클래스(`bg-button-*`, `text-font-icon-*`)만 쓰는가 (하드코딩 X)
+- [ ] 간격/라운드/보더가 `spacing-*`/`round-*`/`border-*` 토큰만 쓰는가
+- [ ] 인라인 `style`을 쓰지 않았는가
+- [ ] `disabled`/`loading` 등 비활성 상태에서 이벤트가 차단되는가
+- [ ] 아이콘은 lucide-react 컴포넌트를 props로 받는가 (`<Icon/>`이 아닌 `Icon`)
+- [ ] 데모 페이지를 추가/갱신했는가
+- [ ] 데모 페이지의 섹션 사이에 구분선(`<Divider className="mt-spacing-9 mb-spacing-8" />`)을 넣었는가 (첫 섹션 제외)

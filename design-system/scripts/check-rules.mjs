@@ -15,7 +15,7 @@ const files = [];
     const p = join(dir, name);
     if (statSync(p).isDirectory()) {
       if (!p.includes('/tokens')) walk(p);
-    } else if (/\.(jsx|js)$/.test(name)) files.push(p);
+    } else if (/\.(tsx|ts|jsx|js)$/.test(name)) files.push(p);
   }
 })(SRC);
 
