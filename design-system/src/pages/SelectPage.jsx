@@ -67,7 +67,8 @@ const USAGE_PROPS = [
   { name: 'className', type: 'string', default: "''", desc: '트리거 추가 클래스' },
   // SelectChip
   { name: 'SelectChip', type: '컴포넌트', default: '—', desc: '칩 비주얼 트리거의 Select(variant="chip" 별칭) — 클릭하면 동일한 팝오버 옵션 메뉴. 옵션·동작은 Select와 완전 동일' },
-  { name: 'SelectChip · color', type: "'gray' | 'red' | 'blue' | 'black'", default: "'gray'", desc: '칩 분류색 — Chip과 동일한 chip-* 토큰 재사용(default/hover, pressed=default)' },
+  { name: 'SelectChip · color', type: "'gray' | 'red' | 'blue' | 'black' | 'green' | 'violet' | 'pink' | 'orange'", default: "'gray'", desc: '칩 분류색 — Chip과 동일한 chip-* 토큰 재사용(default/hover, pressed=default). green/violet/pink/orange는 수식 함수 계열 대응(2026-07-15)' },
+  { name: 'SelectChip · weight', type: "'normal' | 'semibold'", default: "'normal'", desc: '칩 텍스트 두께' },
   // SelectGroup
   { name: 'SelectGroup · children', type: 'ReactNode', default: '—', desc: '묶을 Select들 (fragment·조건부 렌더 평탄화)' },
   { name: 'SelectGroup · direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '배치 방향' },
@@ -134,16 +135,30 @@ export function SelectPage() {
           클릭하면 동일한 팝오버 옵션 메뉴가 열리고, <code className="text-font-icon-5">options</code>·
           <code className="text-font-icon-5">value/onChange</code>·<code className="text-font-icon-5">multiple</code>·
           <code className="text-font-icon-5">searchable</code> 등 모든 옵션이 Select와 같습니다.
-          색은 Chip과 동일한 <code className="text-font-icon-5">color</code>(chip-* 토큰) 4종입니다.
+          색은 Chip과 동일한 <code className="text-font-icon-5">color</code>(chip-* 토큰) 8종이고,{' '}
+          <code className="text-font-icon-5">weight</code>로 텍스트 두께(normal/semibold)를 바꿀 수 있습니다.
         </p>
         <div className="space-y-spacing-7">
           <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
-            <p className="text-12 text-font-icon-3">color 4종</p>
-            <div className="flex items-center gap-spacing-5">
+            <p className="text-12 text-font-icon-3">color 8종</p>
+            <div className="flex flex-wrap items-center gap-spacing-5">
               <SelectChip options={OPTIONS} placeholder="gray" />
               <SelectChip options={OPTIONS} color="red" placeholder="red" />
               <SelectChip options={OPTIONS} color="blue" placeholder="blue" />
               <SelectChip options={OPTIONS} color="black" placeholder="black" />
+              <SelectChip options={OPTIONS} color="green" placeholder="green" />
+              <SelectChip options={OPTIONS} color="violet" placeholder="violet" />
+              <SelectChip options={OPTIONS} color="pink" placeholder="pink" />
+              <SelectChip options={OPTIONS} color="orange" placeholder="orange" />
+            </div>
+          </div>
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">weight 두께</p>
+            <div className="flex flex-wrap items-center gap-spacing-5">
+              <SelectChip options={OPTIONS} placeholder="normal (기본)" />
+              <SelectChip options={OPTIONS} weight="semibold" placeholder="semibold" />
+              <SelectChip options={OPTIONS} color="blue" weight="semibold" placeholder="blue semibold" />
+              <SelectChip options={OPTIONS} color="violet" weight="semibold" placeholder="violet semibold" />
             </div>
           </div>
           <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">

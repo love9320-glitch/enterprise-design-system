@@ -97,6 +97,8 @@ import { Users } from 'lucide-react';
 const USAGE_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: '버튼 라벨/내용 (icon 전용일 땐 생략)' },
   { name: 'variant', type: "'fill' | 'line' | 'ghost' | 'underline'", default: "'fill'", desc: '주요(fill)·보조(line)·서브(ghost)·밑줄 텍스트(underline) 종류' },
+  { name: 'color', type: "'black' | 'red' | 'blue' | 'green' | 'violet' | 'pink' | 'orange'", default: "'black'", desc: 'underline 전용 색 — 칩 컬러 대응(gray 제외), black=기존 색' },
+  { name: 'weight', type: "'normal' | 'semibold'", default: "'normal'", desc: 'underline 전용 텍스트 두께' },
   { name: 'size', type: "'32' | '24' | '18'", default: "'32'", desc: "버튼 높이(px). 18은 아이콘 전용 소형(버튼 18×18·아이콘 14×14)" },
   { name: 'leftIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 왼쪽 아이콘 (컴포넌트 자체를 전달)' },
   { name: 'rightIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 오른쪽 아이콘' },
@@ -187,6 +189,31 @@ export function ButtonPage() {
       <VariantBlock variant="ghost" label="Ghost (Third Button)" tinted />
       {/* Underline — 배경 없이 밑줄(hover) 텍스트 버튼. 아이콘 전용은 의미가 없어 제외 */}
       <VariantBlock variant="underline" label="Underline (Text Button)" rows={BUTTON_ROWS.slice(0, 3)} />
+
+      {/* Underline 컬러 — black(기본)+칩 컬러 대응 6색(2026-07-15, gray 제외) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Underline — 컬러</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">color</code>로 밑줄 텍스트 버튼 색을 지정합니다 —
+          black(기본) + 칩 컬러 대응 6색(red/blue/green/violet/pink/orange).
+        </p>
+        <div className="flex flex-wrap items-center gap-spacing-7">
+          {['black', 'red', 'blue', 'green', 'violet', 'pink', 'orange'].map((c) => (
+            <Button key={c} variant="underline" color={c}>
+              {c}
+            </Button>
+          ))}
+        </div>
+        <p className="mb-spacing-4 mt-spacing-7 text-12 text-font-icon-3">weight="semibold"</p>
+        <div className="flex flex-wrap items-center gap-spacing-7">
+          {['black', 'blue', 'violet'].map((c) => (
+            <Button key={c} variant="underline" color={c} weight="semibold">
+              {c} semibold
+            </Button>
+          ))}
+        </div>
+      </div>
 
       {/* 아이콘 전용 버튼 — hover 툴팁 */}
       <Divider className="mt-spacing-9 mb-spacing-8" />

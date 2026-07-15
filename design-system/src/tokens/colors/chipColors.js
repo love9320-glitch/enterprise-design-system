@@ -28,4 +28,10 @@ export const chipColors = {
   blue: make(b.blue[400], b.white, b.blue[100], b.blue[400], b.blue[50], b.blue[150]),
   // black : text/icon white · bg/line gray500 / hover text/icon gray150 · bg/line gray400
   black: make(b.white, b.gray[500], b.gray[500], b.gray[150], b.gray[400], b.gray[400]),
+  // ── 함수 계열 대응 색(2026-07-15 추가) — 수식 함수 컬러(formula-*)와 짝: green=AND·OR /
+  //    violet=SUM계열 / pink=CAPMAX계열 / orange=FITBYSCORE계열 (blue=IF는 기존). 사다리 동일(400/100/50/150).
+  green: make(b.green[400], b.white, b.green[100], b.green[400], b.green[50], b.green[150]),
+  violet: make(b.violet[400], b.white, b.violet[100], b.violet[400], b.violet[50], b.violet[150]),
+  pink: make(b.pink[400], b.white, b.pink[100], b.pink[400], b.pink[50], b.pink[150]),
+  orange: make(b.orange[400], b.white, b.orange[100], b.orange[400], b.orange[50], b.orange[150]),
 };

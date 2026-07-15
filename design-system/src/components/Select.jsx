@@ -54,6 +54,7 @@ export function Select({
   variant = 'box',         // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 필터·문단 사이용)
                            //   | 'chip'(칩형 트리거 — Figma select chip 8219:81717, SelectChip으로 export)
   size = '24',             // text variant 전용: '24'(14px) | '20'(12px) — box는 항상 14px
+  weight = 'normal',       // chip variant 전용 텍스트 두께 — 'normal'(기본) | 'semibold'
   color = 'gray',          // chip variant 전용: 'gray' | 'red' | 'blue' | 'black' — Chip과 동일한
                            //   chip-* 시멘틱 토큰(CHIP_COLOR_CLASS) 재사용. pressed=default(Figma 동일)
   label = null,            // 내부 라벨(box 전용, Figma type="solid label") — 값 선택 시 트리거에
@@ -347,7 +348,11 @@ export function Select({
             CHIP_COLOR_CLASS[color] ?? CHIP_COLOR_CLASS.gray
           } ${interactive ? 'cursor-pointer' : 'cursor-not-allowed'}`}
         >
-          <TruncatingText className="min-w-0 text-12 font-normal">{displayLabel}</TruncatingText>
+          <TruncatingText
+            className={`min-w-0 text-12 ${weight === 'semibold' ? 'font-semibold' : 'font-normal'}`}
+          >
+            {displayLabel}
+          </TruncatingText>
           <ChevronDown
             size={12}
             strokeWidth={1.8}

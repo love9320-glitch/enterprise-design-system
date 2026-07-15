@@ -16,5 +16,6 @@ export const FORMULA_FN_FAMILY = {
   UNFITBYSCORE: 'evaluation',
 };
 
-// 그룹핑에 쓰는 함수 목록(IF는 leaf 전용) — 템플릿 함수 셀렉트가 사용
-export const FORMULA_GROUP_FUNCTIONS = Object.keys(FORMULA_FN_FAMILY).filter((f) => f !== 'IF');
+// 그룹핑에 쓰는 함수 목록 — 템플릿 함수 셀렉트·함수 변경 팝오버·자연어 함수 칩이 공용.
+// IF 포함(2026-07-15 지시 — 기존엔 leaf 전용으로 제외했었음)
+export const FORMULA_GROUP_FUNCTIONS = Object.keys(FORMULA_FN_FAMILY);

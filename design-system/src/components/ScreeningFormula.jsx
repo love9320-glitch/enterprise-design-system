@@ -4,32 +4,38 @@
 //
 // 노드 모델(재귀 트리):
 //  - leaf : { id, kind:'leaf', criteria, criteriaOptions, value, valueOptions, points, display?('full'|'compact') }
-//           → IF( 기준칩 == 값칩 , 점수입력 )  /  compact = IF( "기준, 값, 점수" 요약칩 ) — 클릭 시 펼침
+//           → [조건칩] = [값칩] → +N점  /  compact = "기준, 값, 점수" 요약칩 — 클릭 시 펼침(2026-07-15 표기 개정)
 //  - group: { id, kind:'group', fn:'SUM'…, children:[node…] }
 //           → FN( 자식수식 , 자식수식 [, 조건 추가 존] + )  — + 클릭 시에만 '조건 추가' 드롭 존이 나타나고
 //             카드를 드롭하면 그 그룹에 수식이 추가된다. 그룹은 다른 수식·그룹과 다시 그룹핑될 수 있다
 // 함수 계열별 고유 텍스트 컬러(formula-* 토큰): AND·OR=green / IF=blue / SUM·MAX·MIN·COUNTIF=violet /
 // CAPMAX·CAPMIN=pink / FITBYSCORE·UNFITBYSCORE=orange. hover 아웃라인도 계열 색을 따른다.
 // 체크박스는 최상위(root)에서만 노출 — 그룹핑 대상 선택용(ScreeningBuilderTemplate이 관리).
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { X, Plus, ChevronDown } from 'lucide-react';
 import { Checkbox } from './Checkbox';
 import { SelectChip } from './Select';
 import { Input } from './Input';
 import { Button } from './Button';
 import { Popover } from './Popover';
+import { PopoverMenu } from './PopoverMenu';
+import { ListGroup } from './ListGroup';
+import { List } from './List';
+import { Tag } from './Tag';
+import { Divider } from './Divider';
 import { useHoverTooltip } from './useHoverTooltip';
 import { ScoreSettingMenu, ConditionSettingMenu } from './ScreeningConditionCard';
 import { CHIP_COLOR_CLASS } from './chipStyles';
-import { FORMULA_FN_FAMILY } from './formulaFunctions';
+import { FORMULA_FN_FAMILY, FORMULA_GROUP_FUNCTIONS } from './formulaFunctions';
 
 // 계열별 정적 클래스 매핑 (Tailwind purge 안전)
-const FAMILY_TEXT = {
-  logical: 'text-formula-logical',
-  conditional: 'text-formula-conditional',
-  aggregate: 'text-formula-aggregate',
-  'score-limit': 'text-formula-score-limit',
-  evaluation: 'text-formula-evaluation',
+// 함수 계열 → 칩 color(2026-07-15 — 자연어 그룹 함수 셀렉트 칩 채색)
+const FAMILY_CHIP_COLOR = {
+  logical: 'green',
+  conditional: 'blue',
+  aggregate: 'violet',
+  'score-limit': 'pink',
+  evaluation: 'orange',
 };
 const FAMILY_HOVER_BORDER = {
   logical: 'border-formula-hover-logical-outline',
@@ -43,25 +49,52 @@ const FAMILY_HOVER_BORDER = {
 // hover는 CSS :hover 대신 마우스 이벤트로 추적한다 — :hover는 자식 수식 위에 있어도 부모에 걸려
 // 중첩 그룹에서 아웃라인이 겹친다(2026-07-16 지시). mouseover/out은 버블되므로 안쪽 셸이
 // stopPropagation으로 끊으면 가장 안쪽 수식 하나만 호버 상태를 가진다.
-function FormulaShell({ family, className = '', children }) {
+function FormulaShell({ family, dense = false, comment = null, className = '', children }) {
   const [hovered, setHovered] = useState(false);
+  const shellRef = useRef(null);
+  // 호버 추적은 네이티브 리스너로 — React 합성 이벤트는 portal(팝오버 패널)에서도 컴포넌트 트리로
+  // 버블돼, 패널 위 이동이 셸 hover를 갱신하고 패널이 닫히면 mouseout이 없어 hover가 고착된다
+  // (조건/값 저장 후 호버 잔류 버그, 2026-07-15). 네이티브는 DOM 트리 기준이라 패널 이벤트가 안 닿는다.
+  useEffect(() => {
+    const el = shellRef.current;
+    if (!el) return;
+    // stopPropagation 금지 — 네이티브에서 전파를 끊으면 React 루트 위임까지 막혀
+    // 수식 내부 툴팁(useHoverTooltip 등) mouseenter가 전부 죽는다(2026-07-15 회귀).
+    // 대신 '이벤트 지점의 가장 가까운 셸이 나인가'로 판정해 가장 안쪽 셸만 hover.
+    const over = (e) => setHovered(e.target.closest('[data-formula-shell]') === el);
+    const out = (e) => {
+      if (!el.contains(e.relatedTarget)) setHovered(false);
+    };
+    el.addEventListener('mouseover', over);
+    el.addEventListener('mouseout', out);
+    return () => {
+      el.removeEventListener('mouseover', over);
+      el.removeEventListener('mouseout', out);
+    };
+  }, []);
   return (
     <div
-      onMouseOver={(e) => {
-        e.stopPropagation();
-        setHovered(true);
-      }}
-      onMouseOut={(e) => {
-        e.stopPropagation();
-        setHovered(false);
-      }}
-      className={`inline-flex max-w-full flex-wrap items-center gap-spacing-4 rounded-round-4 border px-spacing-6 py-spacing-5 transition-colors ${
+      ref={shellRef}
+      data-formula-shell
+      className={`inline-flex max-w-full flex-col gap-spacing-4 rounded-round-4 border py-spacing-5 transition-colors ${
+        dense ? 'px-spacing-5-5' : 'px-spacing-6' /* 그룹핑된 조건 수식은 좌우 10, 최상위는 12(2026-07-15) */
+      } ${
         hovered
           ? `bg-formula-hover-bg ${FAMILY_HOVER_BORDER[family] ?? 'border-formula-default-outline'}`
           : 'border-formula-default-outline bg-formula-default-bg'
       } ${className}`}
     >
-      {children}
+      <div className="flex max-w-full flex-wrap items-center gap-spacing-4">{children}</div>
+      {/* 설명 코멘트(Figma commet 옵션, 2026-07-15) — Divider 아래 [설명] 태그 + 요약 텍스트 */}
+      {comment && (
+        <>
+          <Divider />
+          <div className="flex w-full flex-wrap items-start gap-x-spacing-4 gap-y-spacing-5">
+            <Tag color="black">설명</Tag>
+            <p className="min-w-0 flex-1 text-12 leading-22 text-formula-default-text">{comment}</p>
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -72,10 +105,9 @@ const Paren = ({ children }) => (
 const Comparison = ({ children }) => (
   <span className="shrink-0 text-12 font-semibold text-formula-comparison">{children}</span>
 );
-const FnName = ({ fn }) => (
-  <span className={`shrink-0 text-12 font-semibold ${FAMILY_TEXT[FORMULA_FN_FAMILY[fn]] ?? 'text-formula-comparison'}`}>
-    {fn}
-  </span>
+// 자연어 빌더 연결어 — 레귤러 웨이트(Figma Language 8466:6316)
+const NaturalText = ({ children }) => (
+  <span className="shrink-0 text-12 text-formula-comparison">{children}</span>
 );
 
 const optLabel = (options, v) => options?.find((o) => o.value === v)?.label ?? '';
@@ -131,6 +163,39 @@ function FormulaAddZone({ onDropLeaf, getDropLeaf, onClose }) {
   );
 }
 
+// 자연어 그룹의 상시 드롭 스트립(컴팩트 h38, builder-area 토큰 — Figma 8466:6494 하단)
+function NaturalGroupDropStrip({ getDropLeaf, onDropLeaf }) {
+  const [over, setOver] = useState(false);
+  return (
+    <div
+      onDragOver={(e) => {
+        if (!getDropLeaf || !getDropLeaf()) return;
+        e.preventDefault();
+        e.stopPropagation(); // 바깥 존 드롭과 분리
+        e.dataTransfer.dropEffect = 'move';
+        setOver(true);
+      }}
+      onDragLeave={() => setOver(false)}
+      onDrop={(e) => {
+        if (!getDropLeaf) return;
+        e.preventDefault();
+        e.stopPropagation();
+        setOver(false);
+        const leaf = getDropLeaf();
+        if (leaf) onDropLeaf(leaf);
+      }}
+      className={`flex h-[38px] w-full items-center justify-center gap-spacing-3 rounded-round-4 border border-dashed text-14 text-builder-area-add-default-text transition-colors ${
+        over
+          ? 'border-builder-area-add-hover-outline bg-builder-area-add-hover-bg'
+          : 'border-builder-area-add-default-outline bg-builder-area-add-default-bg'
+      }`}
+    >
+      <Plus size={16} strokeWidth={1.8} className="shrink-0" />
+      다른 조건을 여기에 끌어다 놓기
+    </div>
+  );
+}
+
 // 재귀 수식 렌더러 — root에서만 체크박스, onChange(nextNode)로 불변 갱신을 위로 올린다.
 export function ScreeningFormula({
   node,               // leaf | group 노드(위 모델)
@@ -142,6 +207,7 @@ export function ScreeningFormula({
   getDropLeaf,        // () => leafNode | null — 드래그 중인 카드의 leaf(없으면 null). '조건 추가' 드롭 존이 사용
   catalog,            // { criteriaOptions, valueOptionsByCriteria, conditionMetaByCriteria } — 현재 카드 영역
                       //   라이브 목록(템플릿이 렌더마다 계산). 지정 시 leaf의 스냅샷보다 우선한다.
+  variant = 'formula', // 'formula'(수식 표기) | 'natural'(자연어 문장 표기 — 같은 노드 모델·기능, 8466:6316)
   className = '',
 }) {
   if (node.kind === 'group') {
@@ -155,6 +221,7 @@ export function ScreeningFormula({
         onDelete={onDelete}
         getDropLeaf={getDropLeaf}
         catalog={catalog}
+        variant={variant}
         className={className}
       />
     );
@@ -170,6 +237,7 @@ export function ScreeningFormula({
       onDelete={onDelete}
       getDropLeaf={getDropLeaf}
       catalog={catalog}
+      variant={variant}
       className={className}
     />
   );
@@ -178,7 +246,7 @@ export function ScreeningFormula({
 // 그룹 수식 — FN( 자식 , … [, 조건 추가 존] + ) X
 // '조건 추가' 드롭 존은 평소엔 없고 + 버튼을 클릭했을 때만 나타난다(2026-07-16 지시).
 // 카드를 드롭하면 그 그룹에 수식이 추가되고 존은 다시 사라진다(+ 재클릭으로 닫기도 가능).
-function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, getDropLeaf, catalog, className }) {
+function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, getDropLeaf, catalog, variant = 'formula', className }) {
   // 조건 추가 존 목록 — +는 누를 때마다 존을 하나씩 추가(토글 아님, 2026-07-14 지시), 닫기는 각 존의 X
   const [addZoneIds, setAddZoneIds] = useState([]);
   const addSeqRef = useRef(0);
@@ -192,12 +260,83 @@ function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, 
     patch({ children });
   };
   const removeChild = (idx) => patch({ children: node.children.filter((_, i) => i !== idx) });
+  // 설명 코멘트 — 최상위에서만, 자식(중첩 포함) 요약을 하나로 합쳐 표시
+  const groupComment = root ? nodeSummary(node, catalog) : null;
+
+  // ── 자연어 표기(8466:6494/6621) — "다음 조건들 중 [FN ▾] 반영" + 자식 문장 스택 + 상시 드롭 스트립.
+  //    함수도 셀렉트 칩으로 변경 가능(수식 빌더와 기능 동일, 표기만 다름)
+  if (variant === 'natural') {
+    return (
+      <FormulaShell family={family} className={`w-full ${className}`}>
+        <div className="flex w-full items-center gap-spacing-4">
+          {root && onCheckChange && (
+            <Checkbox checked={checked} onChange={(e) => onCheckChange(e.target.checked)} />
+          )}
+          <NaturalText>다음 조건들 중</NaturalText>
+          <SelectChip
+            options={FORMULA_GROUP_FUNCTIONS.map((f) => ({ value: f, label: f }))}
+            value={node.fn}
+            onChange={(e) => patch({ fn: e.target.value })}
+            menuWidth={140}
+            color={FAMILY_CHIP_COLOR[family] ?? 'gray'}
+            weight="semibold"
+          />
+          <NaturalText>반영</NaturalText>
+          <Button variant="ghost" size="18" icon={X} aria-label="수식 삭제" onClick={onDelete} />
+        </div>
+        {node.children.map((child, i) => (
+          <ScreeningFormula
+            key={child.id}
+            node={child}
+            onChange={(next) => replaceChild(i, next)}
+            onDelete={() => removeChild(i)}
+            getDropLeaf={getDropLeaf}
+            catalog={catalog}
+            variant={variant}
+            className="w-full"
+          />
+        ))}
+        {/* 상시 드롭 스트립(컴팩트 h38) — 카드를 끌어다 놓으면 이 그룹에 조건 추가 */}
+        <NaturalGroupDropStrip
+          getDropLeaf={getDropLeaf}
+          onDropLeaf={(leaf) => patch({ children: [...node.children, leaf] })}
+        />
+      </FormulaShell>
+    );
+  }
+
   return (
-    <FormulaShell family={family} className={className}>
+    <FormulaShell family={family} comment={groupComment} className={className}>
       {root && onCheckChange && (
         <Checkbox checked={checked} onChange={(e) => onCheckChange(e.target.checked)} />
       )}
-      <FnName fn={node.fn} />
+      {/* 함수명 — underline 텍스트 버튼(계열 색·semibold), 클릭하면 함수 변경 팝오버(2026-07-15) */}
+      <Popover
+        menuWidth={140}
+        trigger={
+          <Button variant="underline" size="24" weight="semibold" color={FAMILY_CHIP_COLOR[family] ?? 'black'}>
+            {node.fn}
+          </Button>
+        }
+      >
+        {(close) => (
+          <PopoverMenu width="100%">
+            <ListGroup>
+              {FORMULA_GROUP_FUNCTIONS.map((fn) => (
+                <List
+                  key={fn}
+                  title={fn}
+                  selected={fn === node.fn}
+                  onClick={() => {
+                    patch({ fn });
+                    close();
+                  }}
+                />
+              ))}
+            </ListGroup>
+          </PopoverMenu>
+        )}
+      </Popover>
       <Paren>(</Paren>
       {node.children.map((child, i) => (
         <span key={child.id} className="inline-flex max-w-full flex-wrap items-center gap-spacing-4">
@@ -208,6 +347,7 @@ function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, 
             onDelete={() => removeChild(i)}
             getDropLeaf={getDropLeaf}
             catalog={catalog}
+            variant={variant}
           />
         </span>
       ))}
@@ -235,6 +375,47 @@ function FormulaGroup({ node, root, checked, onCheckChange, onChange, onDelete, 
 // 적합/부적합 라벨 — scoreType이 fit/unfit인 leaf는 점수 입력 대신 글자 표시
 const SCORE_TEXT = { fit: '적합', unfit: '부적합' };
 
+// ── 설명 코멘트 요약(2026-07-15) — 표시는 최상위 수식에서만 하나. 그룹은 자식 요약을 합쳐 한 문장으로. ──
+// 형식: "{조건명}가 {값}일 경우 가점 N점 부여" (2026-07-15 문구 지정 — 조사 이/가는 받침 자동 판별)
+const subjectParticle = (word) => {
+  const ch = word?.charCodeAt(word.length - 1) ?? 0;
+  if (ch < 0xac00 || ch > 0xd7a3) return '가'; // 한글 음절이 아니면 기본 '가'
+  return (ch - 0xac00) % 28 > 0 ? '이' : '가';
+};
+function leafSummary(node, catalog) {
+  const condMeta =
+    catalog?.conditionMetaByCriteria?.[node.criteria] ??
+    node.conditionMetaByCriteria?.[node.criteria] ?? { tabs: [] };
+  const valueOpts =
+    catalog?.valueOptionsByCriteria?.[node.criteria] ??
+    node.valueOptionsByCriteria?.[node.criteria] ??
+    node.valueOptions ??
+    [];
+  const criteriaOpts = catalog?.criteriaOptions ?? node.criteriaOptions ?? [];
+  const criteriaLabel = optLabel(criteriaOpts, node.criteria);
+  const tabLabel = condMeta.tabs?.find((t) => t.value === node.valueTab)?.label;
+  const valueLabel = node.value != null ? optLabel(valueOpts, node.value) : tabLabel;
+  const scoreText = SCORE_TEXT[node.scoreType];
+  const scoreDesc = scoreText
+    ? `${scoreText} 처리`
+    : node.points
+      ? String(node.points).startsWith('-')
+        ? `감점 ${String(node.points).slice(1)}점 부여`
+        : `가점 ${node.points}점 부여`
+      : null;
+  // 값이 정해지면 설명 표시(점수는 정해진 경우에만 문장에 이어 붙음).
+  // 탭 라벨(대상 등)은 생략해도 이해에 문제없어 값만 쓴다 — 옵션 없는 탭(미보유 등)은 탭 라벨이 곧 값.
+  if (!criteriaLabel || !valueLabel) return null;
+  return `${criteriaLabel}${subjectParticle(criteriaLabel)} ${valueLabel}일 경우${scoreDesc ? ` ${scoreDesc}` : ''}`;
+}
+function nodeSummary(node, catalog) {
+  if (node.kind === 'group') {
+    const parts = node.children.map((c) => nodeSummary(c, catalog)).filter(Boolean);
+    return parts.length ? parts.join(', ') : null;
+  }
+  return leafSummary(node, catalog);
+}
+
 // 칩 모양 팝오버 트리거 — SelectChip 트리거와 동일한 비주얼(chip-* 토큰), 클릭 토글은 Popover가 담당
 function ChipTrigger({ children, open }) {
   return (
@@ -252,7 +433,7 @@ function ChipTrigger({ children, open }) {
 }
 
 // leaf 수식 — IF( 기준 == 값 , 점수 ) / compact = IF( 요약칩 )
-function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, catalog, className }) {
+function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, catalog, variant = 'formula', className }) {
   const patch = (p) => onChange?.({ ...node, ...p });
   const isCompact = node.display === 'compact';
   const scoreText = SCORE_TEXT[node.scoreType]; // '적합'|'부적합'|undefined
@@ -277,13 +458,14 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
     node.valueOptionsByCriteria?.[node.criteria] ??
     node.valueOptions ??
     [];
+  // 설명 코멘트 — 단독(최상위) 조건일 때만 자기 요약 표시. 그룹핑되면 그룹이 합쳐진 설명 하나를 담당.
+  // 자연어 표기는 문장 자체가 설명이라 코멘트 생략.
+  const leafComment = variant === 'natural' ? null : root ? leafSummary(node, catalog) : null;
   return (
-    <FormulaShell family="conditional" className={className}>
+    <FormulaShell family="conditional" dense={!root} comment={leafComment} className={className}>
       {root && onCheckChange && (
         <Checkbox checked={checked} onChange={(e) => onCheckChange(e.target.checked)} />
       )}
-      <FnName fn="IF" />
-      <Paren>(</Paren>
       {isCompact ? (
         // compact 요약칩 — 파란 텍스트·연파랑 라인. 클릭하면 full로 펼침
         <button
@@ -303,6 +485,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
           {/* 조건(기준) 칩 — 조건 종류(왼쪽 카드 리스트) 선택 + 검색창. 기준이 바뀌면 값·탭 리셋.
               Tab: 기준이 선택돼 있으면 바로 값 칩 팝오버로 이어간다(2026-07-14 지시) */}
           <span
+            className="inline-flex min-w-0 items-center" /* 인라인 baseline 정렬로 칩이 내려앉는 것 방지 */
             onKeyDown={(e) => {
               if (e.key !== 'Tab' || e.shiftKey || e.defaultPrevented) return;
               if (node.criteria == null) return;
@@ -320,7 +503,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
               menuWidth={160}
             />
           </span>
-          <Comparison>==</Comparison>
+          {variant === 'natural' ? <NaturalText>이(가)</NaturalText> : <Comparison>=</Comparison>}
           {/* 값 칩 — 클릭하면 카드의 조건 셀렉트와 동일한 설정 팝오버(탭+라디오), 저장 시 반영 */}
           <Popover
             className="min-w-0"
@@ -329,9 +512,15 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
             onOpenChange={setCondOpen}
             trigger={
               <ChipTrigger open={condOpen}>
-                {(node.value != null
-                  ? optLabel(valueOpts, node.value)
-                  : condMeta.tabs.find((t) => t.value === node.valueTab)?.label) || '조건'}
+                {(() => {
+                  // 표시 형식은 카드의 조건 셀렉트와 동일 — 탭이 있으면 "대상, 심한 장애인"처럼 탭+옵션
+                  const tabLabel = condMeta.tabs.find((t) => t.value === node.valueTab)?.label;
+                  if (node.value != null) {
+                    const opt = optLabel(valueOpts, node.value);
+                    return (tabLabel ? `${tabLabel}, ${opt}` : opt) || '조건';
+                  }
+                  return tabLabel || '조건'; // disableOptions 탭(미보유 등)은 탭 라벨만
+                })()}
               </ChipTrigger>
             }
           >
@@ -351,7 +540,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
               />
             )}
           </Popover>
-          <Comparison>,</Comparison>
+          {variant === 'natural' ? <NaturalText>이면,</NaturalText> : <Comparison>→</Comparison>}
           {/* 점수 란 — Input 형태 유지(적합/부적합은 글자 표시). 클릭하면 카드와 동일한
               가/감점 설정 팝오버(ScoreSettingMenu)가 열리고 저장 시에만 반영된다 */}
           <Popover
@@ -363,7 +552,12 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
               <Input
                 size="22"
                 width={scoreText ? 56 : 48}
-                value={scoreText ?? (node.points ? `${node.points}점` : '')}
+                value={
+                  scoreText ??
+                  (node.points
+                    ? `${String(node.points).startsWith('-') ? '' : '+'}${node.points}점`
+                    : '')
+                }
                 readOnly
                 placeholder="값"
                 // 팝오버 트리거 — 포인터 커서 + hover 링(readOnly라 Input 기본 hover가 꺼져 있어 직접 부여)
@@ -388,12 +582,9 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
               />
             )}
           </Popover>
-          {/* 거짓(불일치) 값 — 항상 0점 고정 텍스트: IF( 조건 == 값 , 점수 , 0점 ) */}
-          <Comparison>,</Comparison>
-          <span className="shrink-0 text-12 text-formula-comparison">0점</span>
+          {variant === 'natural' && <NaturalText>{scoreText ? '처리' : '부여'}</NaturalText>}
         </>
       )}
-      <Paren>)</Paren>
       <Button variant="ghost" size="18" icon={X} aria-label="수식 삭제" onClick={onDelete} />
     </FormulaShell>
   );
