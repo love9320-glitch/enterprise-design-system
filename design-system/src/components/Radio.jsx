@@ -38,13 +38,15 @@ export function Radio({
 
   // hover ring은 원 바깥에 간격(offset)을 두고 표시
   const HOVER_RING = 'group-hover:ring-2 group-hover:ring-offset-1';
+  // 키보드 포커스 링(2026-07-15) — sr-only input이 포커스를 가지므로 peer로 원에 표시(hover 링과 동일 색)
+  const FOCUS_RING = 'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1';
   let boxClass;
   if (disabled) {
     boxClass = isChecked ? 'bg-radio-selected-disabled-bg' : 'bg-radio-disabled-bg';
   } else if (isChecked) {
-    boxClass = `bg-radio-selected-bg ${HOVER_RING} group-hover:ring-radio-selected-hover-outline`;
+    boxClass = `bg-radio-selected-bg ${HOVER_RING} group-hover:ring-radio-selected-hover-outline ${FOCUS_RING} peer-focus-visible:ring-radio-selected-hover-outline`;
   } else {
-    boxClass = `bg-radio-unselected-bg ${HOVER_RING} group-hover:ring-radio-hover-outline`;
+    boxClass = `bg-radio-unselected-bg ${HOVER_RING} group-hover:ring-radio-hover-outline ${FOCUS_RING} peer-focus-visible:ring-radio-hover-outline`;
   }
 
   const pointColor = disabled ? 'bg-radio-disabled-point' : 'bg-radio-point';
@@ -58,7 +60,7 @@ export function Radio({
     >
       <input
         type="radio"
-        className="sr-only"
+        className="peer sr-only"
         checked={isChecked}
         onChange={handleChange}
         disabled={disabled}

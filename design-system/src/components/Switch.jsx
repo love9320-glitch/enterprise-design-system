@@ -27,13 +27,15 @@ export function Switch({
 
   // hover ring은 track 바깥에 간격(offset)을 두고 표시
   const HOVER_RING = 'group-hover:ring-2 group-hover:ring-offset-1';
+  // 키보드 포커스 = hover와 동일 디자인(2026-07-16 지시) — peer-focus-visible로 track에 hover 링
+  const FOCUS_RING = 'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1';
   let trackClass;
   if (disabled) {
     trackClass = isOn ? 'bg-switch-selected-disabled-bg' : 'bg-switch-disabled-bg';
   } else if (isOn) {
-    trackClass = `bg-switch-selected-bg ${HOVER_RING} group-hover:ring-switch-selected-hover-outline`;
+    trackClass = `bg-switch-selected-bg ${HOVER_RING} group-hover:ring-switch-selected-hover-outline ${FOCUS_RING} peer-focus-visible:ring-switch-selected-hover-outline`;
   } else {
-    trackClass = `bg-switch-unselected-bg ${HOVER_RING} group-hover:ring-switch-hover-outline`;
+    trackClass = `bg-switch-unselected-bg ${HOVER_RING} group-hover:ring-switch-hover-outline ${FOCUS_RING} peer-focus-visible:ring-switch-hover-outline`;
   }
 
   // thumb 색 — disabled는 그림자 없음(on=blue, off=진회색), 그 외 흰 thumb + 그림자
@@ -54,7 +56,7 @@ export function Switch({
       <input
         type="checkbox"
         role="switch"
-        className="sr-only"
+        className="peer sr-only"
         checked={isOn}
         onChange={handleChange}
         disabled={disabled}

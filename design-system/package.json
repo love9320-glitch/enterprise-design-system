@@ -8,7 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check:rules": "node scripts/check-rules.mjs"
+    "check:rules": "node scripts/check-rules.mjs",
+    "check:render": "npx esbuild scripts/smoke-render.jsx --bundle --format=cjs --jsx=automatic --platform=node --outfile=node_modules/.cache/smoke-render.cjs --log-level=error && node node_modules/.cache/smoke-render.cjs"
   },
   "dependencies": {
     "@tiptap/core": "^3.27.0",

@@ -28,14 +28,49 @@ const USAGE_PROPS = [
   { name: 'cardMenu', type: 'column[][]', default: '[]', desc: "'추가' 버튼의 rich menu — 컬럼>섹션{title, items}>항목{name, 조건 구성}. 항목 클릭=카드 등록(팝오버 유지, 배경 클릭으로만 닫힘)" },
   { name: 'ref (getCards / addCard / getFormulas)', type: '{ getCards(), addCard(card), getFormulas() }', default: '—', desc: '저장 시점 스냅샷 / 카드 추가(맨 위) / 수식 존 배열 조회 — [{ id, formulas }]' },
   { name: 'formulaArea / onFormulaChange', type: 'boolean / (zones) => void', default: 'true / —', desc: '수식 영역 표시 · 존 배열 스냅샷 [{id, formulas}] — leaf={kind, criteria, value, points} / group={kind, fn, children}. 수식 영역 추가 버튼으로 존 확장' },
-  { name: '(카드) conditionTabs', type: '{ value, label, disableOptions? }[]', default: '[]', desc: '조건 팝오버 상단 탭 — 비우면 탭 없는 radio list. disableOptions 탭(미보유/비대상)은 옵션 disabled + 옵션 없이 저장(값 {tab, option:null}, 표시=탭 라벨)' },
+  { name: '(카드) conditionTabs', type: '{ value, label, disableOptions?, multiSelect?, placeholder?, searchPlaceholder? }[]', default: '[]', desc: '조건 팝오버 상단 탭 — 비우면 탭 없는 radio list. disableOptions 탭(미보유/비대상)은 옵션 disabled + 옵션 없이 저장(값 {tab, option:null}, 표시=탭 라벨). multiSelect 탭(지정)은 라디오 대신 다중 선택 Select(검색+전체 선택/확인) — 저장 값 {tab, items:[…]}, 카드의 가/감점 자리가 개별설정 버튼으로 바뀌고 드롭 시 함수 그룹으로 등록' },
   { name: '(카드) conditionOptionsByTab', type: '{ [tab]: { value, label }[] }', default: '{}', desc: '탭별 조건 옵션(라디오)' },
   { name: '(카드) conditionOptions', type: '{ value, label }[]', default: '[]', desc: '탭 없이 쓸 때의 평면 조건 옵션' },
-  { name: '(카드) condition / score', type: 'object', default: 'null', desc: "설정값 — condition={tab?, option} / score={type: 'plus'|'minus'|'fit'|'unfit', points?}" },
+  { name: '(카드) condition / score', type: 'object', default: 'null', desc: "설정값 — condition={tab?, option}(복수 조건은 {tab, items:[…]}) / score={type: 'plus'|'minus'|'fit'|'unfit', points?} 또는 개별설정 {type:'individual', mode:'points'|'fitness', items:{[항목]:{type, points?}}}" },
 ];
+
+// 복수 조건(지정) 카드 — 어학/자격/기타 보유여부(Figma 8532:4188~8535:11183).
+// 보유/미보유 = 종류 상관없이 적용(기존 개별 조건과 동일), 지정 = 자격증 다중 선택 후 개별설정.
+const CERT_OPTIONS = [
+  { value: 'toeic-writing', label: '(구)Toeic Writing test' },
+  { value: 'toeic-writing-ov', label: '(구)Toeic Writing test (해외)' },
+  { value: 'cell', label: 'CELL' },
+  { value: 'ceipe-bras', label: 'Ceipe-Bras' },
+  { value: 'cet4', label: 'CET 4' },
+  { value: 'cet6', label: 'CET 6' },
+  { value: 'cpt', label: 'CPT' },
+  { value: 'dalf', label: 'DALF' },
+  { value: 'dele', label: 'DELE' },
+  { value: 'hsk', label: 'HSK' },
+  { value: 'jlpt', label: 'JLPT' },
+  { value: 'opic', label: 'OPIc' },
+];
+const CERT_CARD = {
+  name: '공인외국어 보유여부',
+  conditionTabs: [
+    { value: 'have', label: '보유', disableOptions: true },
+    {
+      value: 'designate',
+      label: '지정보유',
+      multiSelect: true,
+      placeholder: '공인외국어 선택',
+      searchPlaceholder: '공인외국어명 검색',
+      bundleLabel: '지정보유', // 수식 묶음 칩 표기 — "지정보유, N개 조건 묶음"(Figma 8535:11956)
+    },
+    { value: 'none', label: '미보유', disableOptions: true },
+  ],
+  conditionOptionsByTab: { designate: CERT_OPTIONS },
+  conditionPlaceholder: '공인외국어 보유여부',
+};
 
 // 데모 카드 — Figma 플로우 컷(장애 여부) + 인적사항/외국어 예시
 const DEMO_CARDS = [
+  { id: 'certificate', ...CERT_CARD },
   {
     id: 'disability',
     name: '장애 여부',
@@ -152,14 +187,7 @@ const CARD_MENU = [
   ],
   [
     { title: '어학/자격/기타', items: [
-      {
-        name: '공인외국어 보유여부',
-        conditionTabs: [
-          { value: 'have', label: '보유' },
-          { value: 'none', label: '미보유', disableOptions: true },
-        ],
-        conditionOptionsByTab: { have: OPT('영어', '일본어', '중국어'), none: OPT('영어', '일본어', '중국어') },
-      },
+      CERT_CARD, // 복수 조건(보유/지정/미보유) — 지정=공인외국어 다중 선택 + 개별설정
       { name: '공인외국어 취득점수', conditionOptions: OPT('900 이상', '800~899', '800 미만') },
       { name: '자격증', conditionOptions: OPT('보유', '미보유') },
     ] },
@@ -189,7 +217,7 @@ export function ScreeningBuilderTemplatePage() {
         가·감점/적합·부적합(라디오 팝오버)을 세팅합니다.
         카드를 우측 수식 영역에 드롭하면 <span className="font-semibold">IF 수식이 추가</span>되고(카드는
         남아 있어 같은 조건을 반복 드롭 가능),
-        수식 체크박스 + 함수 선택 + 선택 그룹핑으로 <span className="font-semibold">FN( 수식, 수식 )</span> 그룹을
+        수식 체크박스(1개 이상) + 함수 선택 + 함수 적용으로 <span className="font-semibold">FN( 수식, 수식 )</span> 그룹을
         만들 수 있습니다(그룹끼리 다시 그룹핑 가능 — 중첩). 함수 계열별 고유 색:{' '}
         <span className="font-semibold text-formula-logical">AND·OR</span> ·{' '}
         <span className="font-semibold text-formula-conditional">IF</span> ·{' '}
@@ -212,11 +240,15 @@ export function ScreeningBuilderTemplatePage() {
         <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">데모</h3>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
           조건 셀렉트를 눌러 탭+라디오로 조건을 고르고 저장 → 가/감점 셀렉트에서 가점(점수 입력)·감점·적합·부적합을
-          설정합니다. 카드는 grip(⠿)을 잡고 수식 영역으로만 드래그합니다(카드끼리 순서 변경 없음), 휴지통으로 삭제합니다.
+          설정합니다. <span className="font-semibold">공인외국어 보유여부</span> 카드는 복수 조건 카드입니다 —
+          지정 탭에서 공인외국어를 다중 선택(검색+전체 선택)하고 저장하면 가/감점 자리가{' '}
+          <span className="font-semibold">개별설정</span> 버튼으로 바뀌어, 모달에서 항목별
+          가점/감점(또는 적합/부적합)과 적용 함수를 설정합니다. 드롭하면 단수 수식과 같은 골격의 묶음
+          수식([조건] = [지정보유, N개 조건 묶음] → [개별설정]) 한 줄로 등록됩니다. 카드는 grip(⠿)을 잡고 수식 영역으로만 드래그합니다(카드끼리 순서 변경 없음), 휴지통으로 삭제합니다.
           <br />
           카드를 <span className="font-semibold">우측 수식 영역에 드롭</span>하면 IF 수식이 추가됩니다(카드는
-          남아 있어 같은 조건을 계속 추가 가능) — 수식 2개 이상 체크 + 함수 선택 + 선택 그룹핑으로 그룹을
-          만들어 보세요(그룹도 체크해 다시 그룹핑 가능). 그룹을 체크하고 그룹 해제를 누르면 그룹이 풀려
+          남아 있어 같은 조건을 계속 추가 가능) — 수식 체크(1개 이상) + 함수 선택 + 함수 적용으로 그룹을
+          만들어 보세요(그룹도 체크해 다시 그룹핑 가능). 그룹을 체크하고 함수 해제를 누르면 그룹이 풀려
           자식 수식들이 그 자리에 펼쳐집니다.
         </p>
         <div className="mb-spacing-7 flex items-center gap-spacing-5">

@@ -37,7 +37,7 @@ export function SegmentControlButton({
 
   const base =
     'inline-flex items-center justify-center relative font-pretendard font-normal ' +
-    'whitespace-nowrap rounded-round-4 transition-colors select-none';
+    'whitespace-nowrap rounded-round-4 transition-colors select-none focus:outline-none';
 
   // 사이즈·레이아웃 — Button과 동일한 패딩 규약(토큰만 사용)
   let sizeStyle;
@@ -63,7 +63,8 @@ export function SegmentControlButton({
     // 미선택 — 회색 텍스트, hover 시 ghost 배경 + 진한 텍스트(active=눌렀을 땐 배경 제거)
     colorStyle =
       'bg-transparent text-font-icon-3 cursor-pointer ' +
-      'hover:bg-button-ghost-hover-bg hover:text-font-icon-5 active:bg-transparent';
+      'hover:bg-button-ghost-hover-bg hover:text-font-icon-5 active:bg-transparent ' +
+      'focus-visible:bg-button-ghost-hover-bg focus-visible:text-font-icon-5'; // 포커스=호버(2026-07-16)
   }
 
   return (

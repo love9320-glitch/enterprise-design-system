@@ -47,7 +47,7 @@ export const InlineFieldTrigger = forwardRef(function InlineFieldTrigger(
       <TruncatingText
         style={maxWidth ? { maxWidth } : undefined}
         className={`min-w-0 font-normal ${fill ? 'flex-1' : ''} ${sizeTextClass} ${textColor} ${
-          canInteract ? 'group-hover:underline' : ''
+          canInteract ? 'group-hover:underline group-focus-visible:underline' : '' /* 포커스=호버 */
         }`}
       >
         {children}

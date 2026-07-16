@@ -51,13 +51,16 @@ export function Checkbox({
 
   // hover ring은 박스 바깥에 간격(offset)을 두고 둥글게 표시
   const HOVER_RING = 'group-hover:ring-2 group-hover:ring-offset-1';
+  // 키보드 포커스 = hover와 동일 디자인(2026-07-16 지시) — sr-only input이 포커스를 가지므로
+  // peer-focus-visible로 박스에 hover와 같은 링 표시(마우스 클릭에는 없음, Radio와 동일 패턴)
+  const FOCUS_RING = 'peer-focus-visible:ring-2 peer-focus-visible:ring-offset-1';
   let boxClass;
   if (disabled) {
     boxClass = isChecked ? 'bg-checkbox-selected-disabled-bg' : 'bg-checkbox-disabled-bg';
   } else if (isChecked) {
-    boxClass = `bg-checkbox-selected-bg ${HOVER_RING} group-hover:ring-checkbox-selected-hover-outline`;
+    boxClass = `bg-checkbox-selected-bg ${HOVER_RING} group-hover:ring-checkbox-selected-hover-outline ${FOCUS_RING} peer-focus-visible:ring-checkbox-selected-hover-outline`;
   } else {
-    boxClass = `bg-checkbox-unselected-bg ${HOVER_RING} group-hover:ring-checkbox-hover-outline`;
+    boxClass = `bg-checkbox-unselected-bg ${HOVER_RING} group-hover:ring-checkbox-hover-outline ${FOCUS_RING} peer-focus-visible:ring-checkbox-hover-outline`;
   }
 
   const checkColor = disabled ? 'text-checkbox-disabled-check' : 'text-checkbox-check';
@@ -71,7 +74,7 @@ export function Checkbox({
     >
       <input
         type="checkbox"
-        className="sr-only"
+        className="peer sr-only"
         checked={isChecked}
         onChange={handleChange}
         disabled={disabled}

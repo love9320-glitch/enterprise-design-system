@@ -4,8 +4,9 @@
 //  좌측 카드 목록 —
 //   - 카드마다 조건(tab radio list)·가/감점(radio list)을 세팅, grip 드래그 앤 드롭 순서 변경, 삭제
 //  우측 수식 영역 —
-//   - 카드를 수식 영역에 드롭하면 카드가 IF 수식으로 치환된다(카드 목록에서 제거)
-//   - 수식 체크박스 선택 + 함수 선택 + '선택 그룹핑' 클릭 → FN( 수식, 수식, … ) 그룹으로 묶인다
+//   - 카드를 수식 영역에 드롭하면 수식이 추가된다(카드는 목록에 남아 반복 드롭 가능).
+//     일반 카드=IF leaf, 복수 조건 카드(지정 items)=묶음 leaf 한 줄(그룹 감싸기 없음 — 2026-07-16 개정)
+//   - 수식 체크박스 선택(1개 이상) + 함수 선택 + '함수 적용' 클릭 → FN( 수식, … ) 그룹으로 묶인다
 //   - 그룹도 체크박스를 가지므로 다른 수식·그룹과 다시 그룹핑될 수 있다(중첩)
 // 데이터 계약(JobPositionTemplate과 동일 철학):
 //  - defaultCards: mount 1회 주입(리셋은 key 리마운트)
@@ -28,6 +29,7 @@ import { SegmentedTabs } from './SegmentedTabs';
 import { ScreeningConditionCard } from './ScreeningConditionCard';
 import { ScreeningFormula } from './ScreeningFormula';
 import { FORMULA_GROUP_FUNCTIONS } from './formulaFunctions';
+import { hasPointsScore } from './ScreeningFormula';
 import { Select } from './Select';
 import { Button } from './Button';
 
@@ -118,6 +120,7 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
         conditionTabs: item.conditionTabs,
         conditionOptionsByTab: item.conditionOptionsByTab,
         conditionOptions: item.conditionOptions,
+        conditionPlaceholder: item.conditionPlaceholder,
         condition: null,
         score: null,
       },
@@ -179,46 +182,88 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
     ),
   };
 
+  // leaf 공통 골격 — 스냅샷은 폴백용(카드가 나중에 삭제돼도 라벨·옵션 유지), 표시는 catalog(라이브) 우선
+  const baseLeaf = (card) => ({
+    id: newId('formula'),
+    kind: 'leaf',
+    criteria: card.id,
+    criteriaOptions: formulaCatalog.criteriaOptions,
+    valueOptionsByCriteria: formulaCatalog.valueOptionsByCriteria,
+    conditionMetaByCriteria: formulaCatalog.conditionMetaByCriteria,
+  });
+  const signedPoints = (type, points) => {
+    const raw = (points ?? '').replace(/^-/, '');
+    return type === 'minus' && raw ? `-${raw}` : type === 'plus' ? raw : '';
+  };
   const cardToLeaf = (card) => {
     const type = card.score?.type ?? null;
-    const raw = (card.score?.points ?? '').replace(/^-/, '');
-    const points = type === 'minus' && raw ? `-${raw}` : raw;
     return {
-      id: newId('formula'),
-      kind: 'leaf',
-      criteria: card.id,
-      // 스냅샷은 폴백용(카드가 나중에 삭제돼도 라벨·옵션 유지) — 표시는 catalog(라이브) 우선
-      criteriaOptions: formulaCatalog.criteriaOptions,
-      valueOptionsByCriteria: formulaCatalog.valueOptionsByCriteria,
+      ...baseLeaf(card),
       value: card.condition?.option ?? null,
       valueTab: card.condition?.tab ?? null,
-      points,
+      points: signedPoints(type, card.score?.points),
       scoreType: type, // 'fit'|'unfit'이면 점수 란에 적합/부적합 텍스트 표시
-      conditionMetaByCriteria: formulaCatalog.conditionMetaByCriteria,
     };
+  };
+  // 복수 조건(지정) 카드 → '묶음 leaf'로 치환(2026-07-16 개정 — 함수 그룹 감싸기 취소, 단수 수식과 동일 골격):
+  // [조건] = [지정보유, N개 조건 묶음] → [개별설정] 한 줄(조건이 100개여도 한 줄).
+  // 항목별 점수·적용 함수는 leaf의 individual(개별설정 값)에 담는다. 그룹핑은 일반 수식처럼 툴바로.
+  const cardToNode = (card) => {
+    const items = card.condition?.items;
+    if (items?.length) {
+      return {
+        ...baseLeaf(card),
+        valueTab: card.condition.tab ?? null,
+        items: [...items], // 묶음 leaf 마커 — 지정된 항목 배열
+        individual: card.score?.type === 'individual' ? card.score : null,
+      };
+    }
+    return cardToLeaf(card);
   };
   // 카드는 드롭해도 목록에 남는다 — 같은 조건을 여러 번 드롭해 수식을 계속 추가할 수 있다(2026-07-16 지시)
   const dropCardToZone = (zoneId) => {
     const card = cards.find((c) => c.id === dragId);
     if (!card) return;
-    patchZone(zoneId, (fs) => [...fs, cardToLeaf(card)]);
+    patchZone(zoneId, (fs) => [...fs, cardToNode(card)]);
   };
-  // 그룹 '조건 추가' 드롭 존용 — 드래그 중인 카드의 leaf(없으면 null)
+  // 그룹 '조건 추가' 드롭 존용 — 드래그 중인 카드의 노드(없으면 null).
+  // 복수 조건 카드는 여기서도 함수 그룹으로 들어간다(그룹 안 그룹 — 모델이 중첩 지원)
   const getDropLeaf = () => {
     const card = cards.find((c) => c.id === dragId);
-    return card ? cardToLeaf(card) : null;
+    return card ? cardToNode(card) : null;
   };
 
   // ── 툴바 액션 — 전부 '그 존'의 체크만 보고 동작한다(다른 존 체크에 영향 주고받지 않음, 2026-07-14 지시) ──
   const zoneCheckedIds = (zone) =>
     zone.formulas.filter((f) => checkedIds.includes(f.id)).map((f) => f.id);
+  // IF 적용 가능 판정 — 조건 1개 + 적합/부적합(또는 미설정) 값일 때만(가점/감점·복수 체크는 불가, 2026-07-16)
+  const ifAllowedInZone = (zone) => {
+    const picked = zone.formulas.filter((f) => checkedIds.includes(f.id));
+    return picked.length === 1 && !hasPointsScore(picked[0]);
+  };
+  // CAPMAX/CAPMIN·FITBYSCORE/UNFITBYSCORE 적용 가능 판정(2026-07-16) — 점수(가/감점)가 있어야 한다.
+  // 가/감점이면 단독 조건 수식 하나에도 적용 가능(2026-07-16 지시), 여러 개면 전부 점수 값일 때.
+  const capAllowedInZone = (zone) => {
+    const picked = zone.formulas.filter((f) => checkedIds.includes(f.id));
+    return picked.length >= 1 && picked.every(hasPointsScore);
+  };
+  // 함수별 선택 가능 여부 — 툴바 함수 셀렉트·함수 적용 버튼이 공유.
+  // FITBYSCORE/UNFITBYSCORE도 점수가 반환되는 수식 전용이라 CAP과 같은 판정(2026-07-16)
+  const fnAllowedInZone = (fn, zone) => {
+    if (fn === 'IF') return ifAllowedInZone(zone);
+    if (fn === 'CAPMAX' || fn === 'CAPMIN' || fn === 'FITBYSCORE' || fn === 'UNFITBYSCORE')
+      return capAllowedInZone(zone);
+    return true;
+  };
 
-  // 선택 그룹핑 — 이 존에서 체크된 최상위 수식 2개 이상을 FN(…)으로 묶는다
+  // 함수 적용 — 이 존에서 체크된 최상위 수식(1개 이상)을 FN(…)으로 묶는다
+  // (2026-07-16 지시: 하나만 체크해도 적용 가능 — 단일 수식에 함수를 씌우는 용도)
   const groupCheckedInZone = (zoneId) => {
     const zone = zones.find((z) => z.id === zoneId);
     if (!zone || groupFn == null) return;
+    if (!fnAllowedInZone(groupFn, zone)) return; // IF·CAPMAX·CAPMIN — 함수별 적용 조건 확인
     const pickedIds = zoneCheckedIds(zone);
-    if (pickedIds.length < 2) return;
+    if (pickedIds.length < 1) return;
     const picked = zone.formulas.filter((f) => pickedIds.includes(f.id));
     const rest = zone.formulas.filter((f) => !pickedIds.includes(f.id));
     const insertAt = zone.formulas.findIndex((f) => pickedIds.includes(f.id)); // 첫 체크 위치에 삽입
@@ -231,9 +276,10 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
     });
     emitZones(zones.map((z) => (z.id === zoneId ? { ...z, formulas: next } : z)));
     setCheckedIds((prev) => prev.filter((x) => !pickedIds.includes(x))); // 이 존의 체크만 해제
+    setGroupFn(null); // 그룹핑 완료 — 함수 셀렉트를 플레이스홀더로 리셋(이전 선택 잔류 방지)
   };
 
-  // 그룹 해제 — 이 존에서 체크된 그룹을 풀어 자식을 그 자리에 펼친다(한 겹만, 중첩 자식 유지)
+  // 함수 그룹 해제 — 이 존에서 체크된 그룹을 풀어 자식을 그 자리에 펼친다(한 겹만, 중첩 자식 유지)
   const ungroupCheckedInZone = (zoneId) => {
     const zone = zones.find((z) => z.id === zoneId);
     if (!zone) return;
@@ -341,8 +387,14 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
             conditionTabs={card.conditionTabs ?? []}
             conditionOptionsByTab={card.conditionOptionsByTab ?? {}}
             conditionOptions={card.conditionOptions ?? []}
+            conditionPlaceholder={card.conditionPlaceholder}
             conditionValue={card.condition}
-            onConditionChange={(v) => patchCard(card.id, { condition: v })}
+            onConditionChange={(v) => {
+              // 단일(가/감점)↔복수(개별설정) 조건 전환 시 기존 점수 설정은 무효 — 함께 리셋
+              const wasMulti = card.score?.type === 'individual';
+              const isMulti = !!v?.items?.length;
+              patchCard(card.id, { condition: v, ...(wasMulti !== isMulti ? { score: null } : {}) });
+            }}
             scoreValue={card.score}
             onScoreChange={(v) => patchCard(card.id, { score: v })}
             onDelete={() => removeCard(card.id)}
@@ -496,20 +548,29 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
                     <ToolBar className="pointer-events-auto">
                       <Select
                         width={200}
-                        options={FORMULA_GROUP_FUNCTIONS.map((f) => ({ value: f, label: f }))}
+                        options={FORMULA_GROUP_FUNCTIONS.map((f) => ({
+                          value: f,
+                          label: f,
+                          // IF=단일·적합/부적합 조건만 / CAPMAX·CAPMIN=점수 있는 묶음·그룹·복수 조건만
+                          disabled: !fnAllowedInZone(f, zone),
+                        }))}
                         value={groupFn ?? ''}
                         onChange={(e) => setGroupFn(e.target.value)}
                         placeholder="함수 선택"
-                        disabled={zoneCheckedIds(zone).length < 2}
+                        disabled={zoneCheckedIds(zone).length < 1}
                       />
                       <Button
                         variant="ghost"
                         size="32"
                         leftIcon={FolderInput}
-                        disabled={groupFn == null || zoneCheckedIds(zone).length < 2}
+                        disabled={
+                          groupFn == null ||
+                          zoneCheckedIds(zone).length < 1 ||
+                          !fnAllowedInZone(groupFn, zone) /* 선택 후 조건이 어긋나면 실행도 차단 */
+                        }
                         onClick={() => groupCheckedInZone(zone.id)}
                       >
-                        선택 그룹핑
+                        함수 적용
                       </Button>
                       <ToolBarDivider />
                       <Button
@@ -521,7 +582,7 @@ export const ScreeningBuilderTemplate = forwardRef(function ScreeningBuilderTemp
                         }
                         onClick={() => ungroupCheckedInZone(zone.id)}
                       >
-                        그룹 해제
+                        함수 해제
                       </Button>
                       <ToolBarDivider />
                       <Button

@@ -48,7 +48,11 @@ export function CalendarDayButton({
 }) {
   const half = HALF_FILL[state] ?? HALF_FILL.default;
   const circle = CIRCLE_STYLE[state] ?? CIRCLE_STYLE.default;
-  const hover = !disabled && HOVERABLE.has(state) ? 'group-hover:bg-calendar-hover-bg' : '';
+  // 포커스=호버(2026-07-16) — group=버튼 자신이므로 group-focus-visible로 같은 배경
+  const hover =
+    !disabled && HOVERABLE.has(state)
+      ? 'group-hover:bg-calendar-hover-bg group-focus-visible:bg-calendar-hover-bg'
+      : '';
   // muted는 이미 회색(비활성)으로 읽히므로, disabled여도 추가 dimming(opacity)을 주지 않는다.
   const dimmed = disabled && state !== 'muted';
   // 행 가장자리 + 해당 반쪽이 범위색일 때만 바깥 모서리를 둥글게(줄바꿈으로 각지게 끊기는 것 방지)
@@ -63,7 +67,7 @@ export function CalendarDayButton({
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       aria-disabled={disabled || undefined}
-      className={`group relative flex h-[24px] w-[36px] items-center justify-center ${
+      className={`group relative flex h-[24px] w-[36px] items-center justify-center focus:outline-none ${
         disabled ? 'cursor-not-allowed' : 'cursor-pointer'
       } ${dimmed ? 'opacity-40' : ''} ${className}`}
       {...props}

@@ -22,9 +22,11 @@ import { List } from './List';
 import { ListEmpty } from './ListEmpty';
 import { usePopoverPosition } from './usePopoverPosition';
 import { useOutsideDismiss } from './useOutsideDismiss';
+import { pushPopoverLayer, removePopoverLayer, isTopPopoverLayer } from './popoverLayers';
 
-// 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰).
-const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus:ring-2 focus:ring-text-field-focused-line';
+// 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰), 색은 hover-line(gray-900 알파) 공통.
+// 포커스 링은 focus-visible(키보드 포커스)에만 — 마우스 클릭/프레스 후 링이 남지 않게(2026-07-16 지시)
+const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-visible:ring-2';
 
 // 내부 라벨(label) 구분자 아이콘 — 세로 점 2개(2×7). lucide에 없는 커스텀 셰이프라
 // Figma 원본(Ellipse, 8219:76216) path를 인라인 SVG로 가져왔다(2026-07-07 개정 — 콜론 텍스트 대체).
@@ -51,10 +53,14 @@ export function Select({
   onChange,
   options = [],            // [{ value, label, disabled? }] — disabled 옵션은 목록에 비활성 행으로 표시(선택 불가)
   multiple = false,        // 체크박스 다중 선택 — value/defaultValue/onChange 값은 배열([value])
+  confirm = false,         // multiple 전용 — 선택을 draft로 들고 푸터(전체 선택+취소/확인)에서
+                           //   확인을 눌러야 onChange 반영(취소·외부 클릭은 폐기). Figma 8535:9239
   variant = 'box',         // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 필터·문단 사이용)
                            //   | 'chip'(칩형 트리거 — Figma select chip 8219:81717, SelectChip으로 export)
   size = '24',             // text variant 전용: '24'(14px) | '20'(12px) — box는 항상 14px
   weight = 'normal',       // chip variant 전용 텍스트 두께 — 'normal'(기본) | 'semibold'
+  defaultOpen = false,     // 마운트 시 드롭다운을 연 상태로 시작(1회성 — 이후는 일반 동작)
+  tabOpens = false,        // 트리거 포커스 상태에서 Tab=메뉴 열기(수식 키보드 체인용 — 일반 폼은 기본 꺼짐)
   color = 'gray',          // chip variant 전용: 'gray' | 'red' | 'blue' | 'black' — Chip과 동일한
                            //   chip-* 시멘틱 토큰(CHIP_COLOR_CLASS) 재사용. pressed=default(Figma 동일)
   label = null,            // 내부 라벨(box 전용, Figma type="solid label") — 값 선택 시 트리거에
@@ -87,7 +93,17 @@ export function Select({
     () => (multiple && Array.isArray(current) ? current : []),
     [multiple, current],
   );
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen); // defaultOpen: 마운트 시 메뉴 열림(키보드 체인 시작점 등)
+  const isConfirm = multiple && confirm;
+  const [draft, setDraft] = useState([]); // confirm 모드 — 열려 있는 동안의 임시 선택(확인 시에만 반영)
+  const searchInputRef = useRef(null);
+  const skipTabOpenRef = useRef(false); // 옵션 순회 종료 직후의 Tab은 다시 열지 않고 통과(체인 진행)
+  useEffect(() => {
+    if (!open || !searchable) return undefined;
+    // 패널이 위치 계산 전 hidden이라 autoFocus가 실패한다 — 한 틱 뒤 검색 인풋 포커스
+    const t = setTimeout(() => searchInputRef.current?.focus(), 0);
+    return () => clearTimeout(t);
+  }, [open, searchable]);
   const [highlight, setHighlight] = useState(-1);
   const [query, setQuery] = useState('');
   // 트리거 텍스트 최대 너비(px) — 크롬 flex/grid truncate 보강용으로 명시 지정
@@ -141,16 +157,32 @@ export function Select({
   );
 
   // multiple: 값 토글 — 메뉴는 닫지 않는다(연속 체크). 배열 순서는 옵션 순서를 따르지 않고 토글 순서.
+  // confirm 모드는 draft만 토글하고, 확인 버튼에서 한 번에 반영한다.
   const toggleValue = useCallback(
     (val) => {
+      if (isConfirm) {
+        setDraft((d) => (d.includes(val) ? d.filter((v) => v !== val) : [...d, val]));
+        return;
+      }
       const next = selectedValues.includes(val)
         ? selectedValues.filter((v) => v !== val)
         : [...selectedValues, val];
       if (!isControlled) setInternal(next);
       onChange?.({ target: { value: next } });
     },
-    [isControlled, onChange, selectedValues],
+    [isConfirm, isControlled, onChange, selectedValues],
   );
+  const commitDraft = useCallback(
+    (next) => {
+      if (!isControlled) setInternal(next);
+      onChange?.({ target: { value: next } });
+      setOpen(false);
+      triggerRef.current?.focus();
+    },
+    [isControlled, onChange],
+  );
+  // 체크 표시 기준 — confirm 모드는 draft, 아니면 확정값
+  const checkedValues = isConfirm ? draft : selectedValues;
 
   // 행 확정 동작 — 단일=선택 후 닫기 / multiple=토글 후 유지. disabled 옵션은 확정 불가(키보드 포함)
   const commitOption = (opt) => {
@@ -181,11 +213,21 @@ export function Select({
     return () => ro.disconnect();
   }, [width, isText, isChip]);
 
+  // 열린 동안 드롭다운을 팝오버 레이어 스택에 등록 — 팝오버 패널 안에서 열렸을 때
+  // 바깥 팝오버가 이 메뉴 안 클릭을 '외부'로 오인해 닫히지 않게 한다(2026-07-16, 복수 조건 설정).
+  useEffect(() => {
+    if (!open) return undefined;
+    pushPopoverLayer(menuRef);
+    return () => removePopoverLayer(menuRef);
+  }, [open]);
+
   // 외부 클릭 닫기 (트리거·드롭다운 둘 다 바깥일 때 — 드롭다운은 portal).
   // 공용 훅 useOutsideDismiss — 바깥 클릭은 "닫기 전용"으로 삼켜 아래 요소가 함께 클릭되지 않는다.
+  // guard: 맨 위 레이어일 때만 닫는다(위에 다른 패널이 떠 있으면 그쪽 차례).
   useOutsideDismiss({
     open,
     refs: [rootRef, menuRef],
+    guard: () => isTopPopoverLayer(menuRef),
     onDismiss: () => setOpen(false),
   });
 
@@ -194,11 +236,11 @@ export function Select({
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        setOpen(false);
-        triggerRef.current?.focus();
-      }
+      if (e.key !== 'Escape') return;
+      if (!isTopPopoverLayer(menuRef)) return; // 맨 위 레이어만 — 중첩 시 위 패널부터
+      e.stopPropagation();
+      setOpen(false);
+      triggerRef.current?.focus();
     };
     document.addEventListener('keydown', onKey, true);
     return () => document.removeEventListener('keydown', onKey, true);
@@ -209,6 +251,7 @@ export function Select({
     if (!open) return;
     // 열릴 때 1회 리셋 — 의도된 effect 내 setState
     setQuery(''); // eslint-disable-line react-hooks/set-state-in-effect
+    if (isConfirm) setDraft(selectedValues); // confirm 모드 — 확정값으로 draft 시드
     const idx = options.findIndex((o) =>
       multiple ? selectedValues.includes(o.value) : o.value === current,
     );
@@ -254,9 +297,26 @@ export function Select({
         if (opt) commitOption(opt);
         break;
       }
-      case 'Tab':
-        setOpen(false);
+      case 'Tab': {
+        // 열린 메뉴에서 Tab=옵션 순회(2026-07-15) — 하이라이트가 끝에 닿으면 닫고 다음 요소로 자연 이동
+        if (!e.shiftKey && highlight < filtered.length - 1) {
+          e.preventDefault();
+          setHighlight((h) => Math.min(h + 1, filtered.length - 1));
+        } else if (e.shiftKey && highlight > 0) {
+          e.preventDefault();
+          setHighlight((h) => Math.max(h - 1, 0));
+        } else {
+          setOpen(false);
+          if (searchable) {
+            // 검색 인풋이 포커스를 쥔 채 닫히면 포커스가 유실된다 — 트리거로 복귀,
+            // 다음 Tab은 skip 플래그로 재오픈 없이 다음 요소로 진행
+            e.preventDefault();
+            skipTabOpenRef.current = true;
+            triggerRef.current?.focus();
+          }
+        }
         break;
+      }
       default:
         break;
     }
@@ -266,6 +326,14 @@ export function Select({
     if (!interactive) return;
     if (!open) {
       if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        setOpen(true);
+      } else if (tabOpens && e.key === 'Tab' && !e.shiftKey) {
+        if (skipTabOpenRef.current) {
+          skipTabOpenRef.current = false; // 순회를 마친 직후 — 열지 않고 다음 요소로 자연 이동
+          return;
+        }
+        // 키보드 체인(수식): 포커스된 트리거에서 Tab → 메뉴 열기(이후 Tab은 옵션 순회)
         e.preventDefault();
         setOpen(true);
       }
@@ -345,7 +413,7 @@ export function Select({
           onKeyDown={onTriggerKeyDown}
           style={maxWidthStyle ? { maxWidth: maxWidthStyle } : undefined}
           className={`inline-flex min-w-0 items-center gap-spacing-3 rounded-round-4 border pl-spacing-4 pr-spacing-3 py-spacing-1 font-pretendard text-12 font-normal transition-colors focus:outline-none ${
-            CHIP_COLOR_CLASS[color] ?? CHIP_COLOR_CLASS.gray
+            CHIP_COLOR_CLASS[color] ?? CHIP_COLOR_CLASS.gray /* 포커스 표시=hover 색 전환(맵에 포함) */
           } ${interactive ? 'cursor-pointer' : 'cursor-not-allowed'}`}
         >
           <TruncatingText
@@ -422,7 +490,27 @@ export function Select({
                 setHighlight(0);
               }}
               searchPlaceholder={searchPlaceholder}
-              searchInputProps={searchable ? { autoFocus: true, onKeyDown: handleListNav } : {}}
+              searchInputProps={searchable ? { ref: searchInputRef, onKeyDown: handleListNav } : {}}
+              {...(isConfirm
+                ? {
+                    // confirm 모드 푸터 — 전체 선택(비활성 옵션 제외) + 취소/확인(확인 시에만 반영)
+                    footer: true,
+                    footerCheckbox: true,
+                    footerChecked:
+                      options.filter((o) => !o.disabled).length > 0 &&
+                      options.filter((o) => !o.disabled).every((o) => draft.includes(o.value)),
+                    onFooterCheckChange: () =>
+                      setDraft((d) => {
+                        const all = options.filter((o) => !o.disabled).map((o) => o.value);
+                        return all.every((v) => d.includes(v)) ? [] : all;
+                      }),
+                    onCancel: () => {
+                      setOpen(false);
+                      triggerRef.current?.focus();
+                    },
+                    onConfirm: () => commitDraft(draft),
+                  }
+                : {})}
             >
               {filtered.length > 0 ? (
                 <ListGroup>
@@ -434,7 +522,7 @@ export function Select({
                         title={opt.label}
                         checkbox
                         disabled={opt.disabled}
-                        checked={selectedValues.includes(opt.value)}
+                        checked={checkedValues.includes(opt.value)}
                         onCheckChange={opt.disabled ? undefined : () => toggleValue(opt.value)}
                         highlighted={!opt.disabled && i === highlight}
                         onMouseEnter={() => !opt.disabled && setHighlight(i)}

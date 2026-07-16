@@ -22,7 +22,7 @@ export function TabMenu({
   const base =
     'relative inline-flex h-[32px] items-center justify-center gap-spacing-4 ' +
     'px-spacing-5 border-b-2 -mb-px font-pretendard text-14 whitespace-nowrap ' +
-    'transition-colors select-none';
+    'transition-colors select-none focus:outline-none';
 
   let colorStyle;
   if (disabled) {
@@ -32,7 +32,8 @@ export function TabMenu({
   } else {
     colorStyle =
       'text-tab-default-text border-transparent cursor-pointer ' +
-      'hover:text-tab-hover-text hover:border-tab-hover-underline';
+      'hover:text-tab-hover-text hover:border-tab-hover-underline ' +
+      'focus-visible:text-tab-hover-text focus-visible:border-tab-hover-underline'; // 포커스=호버(2026-07-16)
   }
 
   return (

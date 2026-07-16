@@ -12,7 +12,7 @@ const USAGE = `import { ToolBar, ToolBarDivider } from '../components/ToolBar';
 // 체크 선택 시 나타나는 플로팅 액션 툴바 — 내용은 children 슬롯(DS 컴포넌트 배치)
 {checkedCount > 0 && (
   <ToolBar>
-    <Select width={200} options={FUNCTIONS} placeholder="선택하세요" />
+    <Select width={200} options={FUNCTIONS} placeholder="함수 선택" />
     <Button variant="ghost" size="32" leftIcon={FolderInput}>선택 그룹핑</Button>
     <ToolBarDivider />
     <Button variant="ghost" size="32" leftIcon={FolderOutput}>그룹 해제</Button>
@@ -58,7 +58,7 @@ export function ToolBarPage() {
                   { value: 'sum', label: 'SUM' },
                   { value: 'and', label: 'AND' },
                 ]}
-                placeholder="선택하세요"
+                placeholder="함수 선택"
               />
               <Button variant="ghost" size="32" leftIcon={FolderInput}>
                 선택 그룹핑
