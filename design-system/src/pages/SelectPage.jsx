@@ -69,6 +69,7 @@ const USAGE_PROPS = [
   { name: 'SelectChip', type: '컴포넌트', default: '—', desc: '칩 비주얼 트리거의 Select(variant="chip" 별칭) — 클릭하면 동일한 팝오버 옵션 메뉴. 옵션·동작은 Select와 완전 동일' },
   { name: 'SelectChip · color', type: "'gray' | 'red' | 'blue' | 'black' | 'green' | 'violet' | 'pink' | 'orange'", default: "'gray'", desc: '칩 분류색 — Chip과 동일한 chip-* 토큰 재사용(default/hover, pressed=default). green/violet/pink/orange는 수식 함수 계열 대응(2026-07-15)' },
   { name: 'SelectChip · weight', type: "'normal' | 'semibold'", default: "'normal'", desc: '칩 텍스트 두께' },
+  { name: 'defaultOpen', type: 'boolean', default: 'false', desc: '마운트 시 드롭다운 열림(1회성) — 생성 직후 바로 선택 시작하는 플로우용(스크리닝 수식 드롭 등)' },
   // SelectGroup
   { name: 'SelectGroup · children', type: 'ReactNode', default: '—', desc: '묶을 Select들 (fragment·조건부 렌더 평탄화)' },
   { name: 'SelectGroup · direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '배치 방향' },

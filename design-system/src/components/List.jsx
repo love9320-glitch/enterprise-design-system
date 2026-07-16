@@ -123,7 +123,7 @@ export function List({
                 e.stopPropagation();
                 onButtonClick?.(e);
               }}
-              className="flex min-h-[24px] min-w-[24px] items-center justify-center rounded-round-4 p-spacing-2 opacity-80 transition-colors hover:bg-button-ghost-hover-bg disabled:cursor-not-allowed"
+              className="flex min-h-[24px] min-w-[24px] items-center justify-center rounded-round-4 p-spacing-2 opacity-80 transition-colors hover:bg-button-ghost-hover-bg focus:outline-none focus-visible:bg-button-ghost-hover-bg disabled:cursor-not-allowed"
               aria-label={rightButtonAriaLabel}
             >
               <RightButtonIcon size={14} strokeWidth={1.8} className={ellipsisColor} />

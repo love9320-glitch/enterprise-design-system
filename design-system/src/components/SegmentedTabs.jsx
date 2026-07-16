@@ -69,7 +69,7 @@ export function SegmentedTabs({
               role="tab"
               aria-selected={isSel}
               disabled={it.disabled}
-              tabIndex={isSel ? 0 : -1}
+              tabIndex={it.disabled ? -1 : 0}
               onClick={() => !it.disabled && select(it.value)}
               onKeyDown={(e) => {
                 if (e.key === 'ArrowRight') {
@@ -80,12 +80,14 @@ export function SegmentedTabs({
                   move(-1);
                 }
               }}
-              className={`relative z-[1] flex min-h-[24px] min-w-0 flex-1 items-center justify-center rounded-round-3 px-spacing-5-5 font-pretendard text-14 leading-24 transition-colors ${
+              className={`relative z-[1] flex min-h-[24px] min-w-0 flex-1 items-center justify-center rounded-round-3 px-spacing-5-5 font-pretendard text-14 leading-24 transition-colors focus:outline-none ${
                 it.disabled
                   ? 'cursor-not-allowed text-segmented-disabled-text'
                   : isSel
-                    ? 'cursor-pointer text-segmented-select-text'
-                    : 'cursor-pointer text-segmented-unselect-text hover:text-segmented-hover-text'
+                    ? /* 선택 탭이 Tab 포커스를 받는다(roving tabindex) — 포커스=호버(파란 텍스트)로 표시,
+                         없으면 아웃라인 제거와 겹쳐 Tab이 건너뛰는 것처럼 보인다(2026-07-16) */
+                      'cursor-pointer text-segmented-select-text focus-visible:text-segmented-hover-text'
+                    : 'cursor-pointer text-segmented-unselect-text hover:text-segmented-hover-text focus-visible:text-segmented-hover-text' /* 포커스=호버 */
               }`}
             >
               <TruncatingText as="span" className="min-w-0">

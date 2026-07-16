@@ -3,7 +3,10 @@
     "allow": [
       "Bash(curl -s -o /tmp/select-overview.png \"https://www.figma.com/api/mcp/asset/bd4b3e10-5d69-4e7d-af5a-dab686608968\")",
       "Edit(/.claude/skills/design-system/**)",
-      "mcp__claude_ai_Figma__add_code_connect_map"
+      "mcp__claude_ai_Figma__add_code_connect_map",
+      "Bash(python3 -)",
+      "Bash(grep -n \"className={\\\\`relative z-\\\\[1\\\\]\" SegmentedTabs.jsx)",
+      "Bash(grep -n \"className={\\\\`group relative flex h-\\\\[24px\\\\]\" CalendarDayButton.jsx)"
     ]
   }
 }

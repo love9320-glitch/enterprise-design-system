@@ -19,7 +19,8 @@ import { TruncatingText } from './TruncatingText';
 
 const STATE_STYLE = {
   default:
-    'text-side-nav-default-text hover:bg-side-nav-hover-bg hover:text-side-nav-hover-text cursor-pointer',
+    'text-side-nav-default-text hover:bg-side-nav-hover-bg hover:text-side-nav-hover-text cursor-pointer ' +
+    'focus-visible:bg-side-nav-hover-bg focus-visible:text-side-nav-hover-text', // 포커스=호버(2026-07-16)
   select: 'bg-side-nav-select-bg text-side-nav-select-text cursor-pointer',
   disabled: 'text-side-nav-disabled-text cursor-not-allowed',
 };
@@ -47,7 +48,7 @@ export function SideNavigationButton({
       disabled={disabled}
       onClick={onClick}
       aria-current={selected || undefined}
-      className={`relative flex min-h-[32px] w-full items-center px-spacing-6 py-spacing-4 text-left transition-colors ${rounding} ${STATE_STYLE[state]} ${className}`}
+      className={`relative flex min-h-[32px] w-full items-center px-spacing-6 py-spacing-4 text-left transition-colors focus:outline-none ${rounding} ${STATE_STYLE[state]} ${className}`}
       {...props}
     >
       {selectLine && (

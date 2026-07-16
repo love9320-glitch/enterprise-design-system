@@ -18,11 +18,12 @@ const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 50];
 // 고정폭이 아니라 내용폭만큼 좌우로 늘어난다.
 const BTN_BASE =
   'inline-flex items-center justify-center min-w-[24px] min-h-[24px] px-spacing-3 ' +
-  'rounded-round-10 font-pretendard font-normal text-14 transition-colors select-none';
+  'rounded-round-10 font-pretendard font-normal text-14 transition-colors select-none focus:outline-none';
 
 // hover = ghost-hover-bg, pressed(active) = 투명. 색은 기존 ghost 버튼 시멘틱 토큰 재사용.
 const BTN_INTERACTIVE =
-  'cursor-pointer hover:bg-button-ghost-hover-bg active:bg-transparent';
+  'cursor-pointer hover:bg-button-ghost-hover-bg active:bg-transparent ' +
+  'focus-visible:bg-button-ghost-hover-bg'; // 포커스=호버(2026-07-16)
 
 // 현재 페이지가 속한 '블록'의 번호 목록 계산.
 // maxButtons 단위로 페이지를 고정 그룹핑한다(슬라이딩 X) — 같은 블록 안의 번호를
@@ -46,7 +47,7 @@ const STATE_STYLES = {
 // default 상태 텍스트색 — 번호는 pagination 토큰(연함)에서 hover/pressed 시 default-fg로 진해지고,
 // 아이콘은 항상 default-fg(진함). (Figma: ghost/gray default text (pagination) = gray.300)
 const DEFAULT_TEXT = {
-  number: 'text-button-ghost-pagination-fg hover:text-button-ghost-default-fg active:text-button-ghost-default-fg',
+  number: 'text-button-ghost-pagination-fg hover:text-button-ghost-default-fg active:text-button-ghost-default-fg focus-visible:text-button-ghost-default-fg',
   icon: 'text-button-ghost-default-fg',
 };
 

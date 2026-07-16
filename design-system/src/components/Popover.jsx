@@ -16,11 +16,10 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { usePopoverPosition } from './usePopoverPosition';
 import { useOutsideDismiss } from './useOutsideDismiss';
-
-// 열려 있는 popover 패널들(menuRef)을 연 순서대로 보관 — 중첩 popover 외부클릭 판정에 사용.
+// 열려 있는 패널 레이어 스택 — 중첩 popover·팝오버 안 Select 외부클릭/Esc 판정에 사용.
 // 패널은 각자 portal이라 DOM이 분리되므로, "나보다 나중에 열린(위) 패널 안 클릭"은 바깥으로 보지 않는다
-// (예: DatePicker 팝오버 안에서 연/월·시간 선택 팝오버를 열어 클릭해도 바깥 팝오버가 닫히지 않게).
-const openPopoverPanels = [];
+// (예: 조건 팝오버 안 어학/자격 Select 메뉴 클릭에 조건 팝오버가 닫히지 않게). 공용 모듈로 추출(2026-07-16).
+import { pushPopoverLayer, removePopoverLayer, isTopPopoverLayer } from './popoverLayers';
 
 export function Popover({
   trigger,                 // 트리거 ReactNode (예: <Button>) — 클릭 시 패널 토글
@@ -52,11 +51,8 @@ export function Popover({
   // 열린 동안 패널을 스택에 등록(연 순서 유지) — open 전환에만 의존해 재정렬 방지.
   useEffect(() => {
     if (!open) return undefined;
-    openPopoverPanels.push(menuRef);
-    return () => {
-      const i = openPopoverPanels.indexOf(menuRef);
-      if (i >= 0) openPopoverPanels.splice(i, 1);
-    };
+    pushPopoverLayer(menuRef);
+    return () => removePopoverLayer(menuRef);
   }, [open]);
 
   // 외부 클릭 닫기 (트리거·패널 둘 다 바깥일 때 — 패널은 portal). 공용 훅 useOutsideDismiss:
@@ -66,7 +62,7 @@ export function Popover({
   useOutsideDismiss({
     open,
     refs: [anchorRef, menuRef],
-    guard: () => openPopoverPanels[openPopoverPanels.length - 1] === menuRef,
+    guard: () => isTopPopoverLayer(menuRef),
     onDismiss: close,
   });
 
@@ -75,10 +71,10 @@ export function Popover({
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => {
-      if (e.key === 'Escape') {
-        e.stopPropagation();
-        close();
-      }
+      if (e.key !== 'Escape') return;
+      if (!isTopPopoverLayer(menuRef)) return; // Esc도 맨 위 레이어만 — 안의 Select가 먼저 닫힌다
+      e.stopPropagation();
+      close();
     };
     document.addEventListener('keydown', onKey, true);
     return () => document.removeEventListener('keydown', onKey, true);

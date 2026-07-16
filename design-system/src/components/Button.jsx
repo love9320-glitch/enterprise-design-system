@@ -49,9 +49,11 @@ export function Button({
   // 텍스트 두께 — underline 변형만 semibold 옵션 지원(2026-07-15), 그 외는 400 고정
   const weightClass =
     variant === 'underline' && weight === 'semibold' ? 'font-semibold' : 'font-normal';
+  // 포커스 디자인 = 호버 디자인(2026-07-16 지시) — 기본 아웃라인을 끄고, 변형별로
+  // focus-visible(키보드 포커스)에 hover와 같은 효과를 준다(마우스 클릭에는 표시 없음).
   const base =
     `inline-flex items-center justify-center relative font-pretendard ${weightClass} ` +
-    'whitespace-nowrap rounded-round-4 transition-colors select-none';
+    'whitespace-nowrap rounded-round-4 transition-colors select-none focus:outline-none';
   // truncate: 버튼이 부모 폭 안에서 줄어들고(min-w-0/max-w-full) 라벨이 말줄임되게 한다.
   const truncStyle = truncate ? 'min-w-0 max-w-full' : '';
   // fill: 부모 전체 폭(inline-flex라도 width:100% 적용됨).
@@ -84,13 +86,14 @@ export function Button({
     colorStyle = inactive
       ? 'bg-button-fill-disabled-bg text-button-fill-disabled-fg cursor-not-allowed'
       : 'bg-button-fill-default-bg text-button-fill-default-fg cursor-pointer ' +
-        'hover:bg-button-fill-hover-bg ' +
+        'hover:bg-button-fill-hover-bg focus-visible:bg-button-fill-hover-bg ' +
         'active:bg-button-fill-default-bg';
   } else if (variant === 'line') {
     colorStyle = inactive
       ? 'bg-button-line-disabled-bg text-button-line-disabled-fg cursor-not-allowed'
       : 'bg-button-line-default-bg text-button-line-default-fg ring-1 ring-inset ring-button-line-default-line cursor-pointer ' +
         'hover:bg-button-line-hover-bg hover:ring-button-line-hover-line ' +
+        'focus-visible:bg-button-line-hover-bg focus-visible:ring-button-line-hover-line ' +
         'active:bg-button-line-default-bg active:ring-button-line-default-line';
   } else if (variant === 'underline') {
     // 밑줄 텍스트 버튼 — 배경 없이 텍스트색만, hover 시 밑줄(active=눌렸을 땐 밑줄 제거).
@@ -107,13 +110,13 @@ export function Button({
     colorStyle = inactive
       ? 'bg-transparent text-font-icon-2 cursor-not-allowed'
       : `bg-transparent ${UNDERLINE_COLOR[color] ?? UNDERLINE_COLOR.black} cursor-pointer ` +
-        'hover:underline active:no-underline';
+        'hover:underline focus-visible:underline active:no-underline';
   } else {
     // ghost — 비활성은 세그먼트 컨트롤과 동일(투명 배경 + font-icon-2 텍스트)
     colorStyle = inactive
       ? 'bg-transparent text-font-icon-2 cursor-not-allowed'
       : 'bg-transparent text-button-ghost-default-fg cursor-pointer ' +
-        'hover:bg-button-ghost-hover-bg ' +
+        'hover:bg-button-ghost-hover-bg focus-visible:bg-button-ghost-hover-bg ' +
         'active:bg-transparent';
   }
 
