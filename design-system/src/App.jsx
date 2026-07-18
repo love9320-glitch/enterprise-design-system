@@ -13,6 +13,9 @@ import {
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { Select } from './components/Select';
+import { Tag } from './components/Tag';
+import { NavContext } from './navContext';
 
 // Editor는 Tiptap 엔진이 무거워 초기 번들에서 분리(지연 로드). 컴포넌트 자체는 변경 없음.
 const EditorPage = lazy(() =>
@@ -147,12 +150,12 @@ function NavItem({ item, active, onSelect, indent = false }) {
     <li>
       <button
         onClick={() => onSelect(item.id)}
-        className={`w-full cursor-pointer rounded-round-4 py-spacing-4 text-left text-sm transition-colors ${
+        className={`w-full cursor-pointer rounded-round-4 py-spacing-4 text-left text-sm transition-colors focus:outline-none focus-visible:bg-button-ghost-hover-bg ${
           indent ? 'pl-spacing-9 pr-spacing-4' : 'px-spacing-4'
         } ${
           active === item.id
-            ? 'bg-gray-100 font-semibold text-font-icon-5'
-            : 'text-font-icon-4 hover:bg-gray-50 hover:text-font-icon-5'
+            ? 'bg-side-nav-select-bg font-semibold text-side-nav-select-text' /* 활성 = side-nav 토큰(도그푸딩) */
+            : 'text-font-icon-4 hover:bg-button-ghost-hover-bg hover:text-font-icon-5'
         }`}
       >
         {item.label}
@@ -175,7 +178,7 @@ function Sidebar({ active, onSelect }) {
   const toggle = (sub) => setOpenMap((m) => ({ ...m, [sub.label]: !isOpen(sub) }));
 
   return (
-    <aside className="relative w-56 shrink-0 border-r border-gray-200">
+    <aside className="relative w-56 shrink-0 border-r border-divider-default">
       <ScrollArea className="absolute inset-0" contentClassName="h-full px-spacing-6 py-spacing-7">
       {NAV_GROUPS.map((group) => (
         <div key={group.label || groupItems(group)[0].id} className="mb-spacing-9">
@@ -200,7 +203,7 @@ function Sidebar({ active, onSelect }) {
                     <button
                       onClick={() => toggle(sub)}
                       aria-expanded={open}
-                      className="flex w-full cursor-pointer items-center gap-spacing-3 rounded-round-4 px-spacing-4 py-spacing-4 text-left text-sm text-font-icon-5 transition-colors hover:bg-gray-50"
+                      className="flex w-full cursor-pointer items-center gap-spacing-3 rounded-round-4 px-spacing-4 py-spacing-4 text-left text-sm text-font-icon-5 transition-colors hover:bg-button-ghost-hover-bg focus:outline-none focus-visible:bg-button-ghost-hover-bg"
                     >
                       {open ? (
                         <ChevronDown size={14} strokeWidth={1.8} className="shrink-0 text-font-icon-3" />
@@ -270,9 +273,29 @@ export default function App() {
   const { Page } = ALL_ITEMS.find((item) => item.id === activeId) ?? {};
 
   return (
+    <NavContext.Provider value={{ navigate, groups: NAV_GROUPS }}>
     <div className="flex h-screen flex-col overflow-hidden">
-      <header className="flex shrink-0 items-center border-b border-gray-200 px-spacing-7 py-spacing-6">
-        <h1 className="text-lg font-semibold">Design System</h1>
+      <header className="flex shrink-0 items-center justify-between border-b border-divider-default px-spacing-7 py-spacing-5">
+        <div className="flex items-center gap-spacing-5">
+          {/* 심볼 — font-icon-5 사각 + 흰 이니셜(임시 로고, 추후 브랜드 자산으로 교체 가능) */}
+          <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-round-4 bg-font-icon-5 text-12 font-semibold text-font-icon-1">
+            DS
+          </span>
+          <h1 className="text-16 font-semibold text-font-icon-5">ATS Design System</h1>
+          <Tag color="gray">v0.1.0</Tag>
+        </div>
+        {/* 전역 컴포넌트 검색 — 선택 즉시 해당 데모 페이지로 이동(선택 후 트리거는 비움) */}
+        <Select
+          width={240}
+          searchable
+          placeholder="컴포넌트 검색"
+          searchPlaceholder="이름으로 검색"
+          options={ALL_ITEMS.map((it) => ({ value: it.id, label: it.label }))}
+          value={null}
+          onChange={(e) => {
+            window.location.hash = e.target.value;
+          }}
+        />
       </header>
 
       {/* min-h-0: 헤더 아래 영역이 남은 높이만큼만 차지하고, 그 안에서 LNB·본문이 각각 스크롤되도록 한다. */}
@@ -311,5 +334,6 @@ export default function App() {
         </main>
       </div>
     </div>
+    </NavContext.Provider>
   );
 }

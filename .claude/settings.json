@@ -16,11 +16,16 @@
       "Bash(git -C . status --short)",
       "Bash(xargs kill)",
       "Bash(git commit -q -m 'feat\\(design-system\\): TypeScript 전환 완료 — 컴포넌트 67개 + 토큰 + 유틸 전체 *)",
+<<<<<<< Updated upstream
       "Bash(npm pack *)",
       "Bash(node -e \"import\\('./dist-lib/index.js'\\).then\\(m => console.log\\('lib import OK — exports:', Object.keys\\(m\\).length\\)\\).catch\\(e => { console.error\\('FAIL', e.message\\); process.exit\\(1\\); }\\)\")",
       "Bash(node -e \"import\\('./dist-lib/tokens.js'\\).then\\(m => console.log\\('tokens OK:', Object.keys\\(m\\).length\\)\\).catch\\(e => { console.error\\('FAIL', e.message\\); process.exit\\(1\\); }\\)\")",
       "Bash(node --input-type=module -e \"import p from './dist-lib/tailwind-preset.mjs'; console.log\\('preset OK — theme keys:', Object.keys\\(p.theme.extend\\).length, 'safelist:', p.safelist.length\\)\")",
       "Bash(node -e \"import\\('./dist-lib/editor.js'\\).then\\(m => console.log\\('editor OK:', Object.keys\\(m\\).join\\(','\\)\\)\\).catch\\(e => { console.error\\('FAIL', e.message\\); process.exit\\(1\\); }\\)\")"
+=======
+      "Bash(git rebase *)",
+      "Bash(git stash *)"
+>>>>>>> Stashed changes
     ]
   }
 }
