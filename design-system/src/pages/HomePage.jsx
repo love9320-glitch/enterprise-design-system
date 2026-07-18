@@ -2,6 +2,8 @@
 // 내용은 프로젝트 목적(코드↔Figma 동기화 + 규칙 기반 UI 생산·진화)을 요약한다.
 
 import { Divider } from '../components/Divider';
+import { Tag } from '../components/Tag';
+import { useNav } from '../navContext';
 
 const PURPOSE = [
   {
@@ -28,9 +30,10 @@ const PURPOSE = [
 
 // 현황 요약 — 소개 하단이 아닌 히어로 바로 아래에서 시스템 규모를 보여준다.
 const STATS = [
-  { value: '40+', label: '컴포넌트' },
-  { value: '3종', label: '템플릿 (Table · Form · Notice)' },
-  { value: '4축', label: '토큰 (컬러 · 간격 · 라운드 · 행간)' },
+  { value: '60+', label: '컴포넌트 (TypeScript strict)' },
+  { value: '6종', label: '템플릿 (Table · Form · Notice · Job · SideNav · Screening)' },
+  { value: '30+', label: '시멘틱 토큰 그룹 (컬러 · 간격 · 라운드 · 행간)' },
+  { value: 'npm', label: '@love9320-glitch/design-system 패키지' },
 ];
 
 export function HomePage() {
@@ -49,7 +52,7 @@ export function HomePage() {
       </p>
 
       {/* 현황 요약 */}
-      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-5 sm:grid-cols-3">
+      <div className="mb-spacing-9 grid grid-cols-2 gap-spacing-5 sm:grid-cols-4">
         {STATS.map((s) => (
           <div key={s.label} className="rounded-round-4 border border-base-gray-100 px-spacing-6 py-spacing-5">
             <p className="mb-spacing-2 text-15 font-semibold text-font-icon-5">{s.value}</p>
@@ -80,20 +83,53 @@ export function HomePage() {
         </div>
       </div>
 
-      {/* 안내 */}
+      {/* 둘러보기 — 전체 데모 페이지 갤러리(카테고리별 카드, 클릭 시 이동) */}
       <Divider className="mt-spacing-9 mb-spacing-8" />
       <div>
         <h2 className="mb-spacing-4 text-16 font-semibold text-font-icon-5">둘러보기</h2>
-        <p className="text-14 text-font-icon-4">
-          좌측 메뉴에서 <strong className="font-semibold text-font-icon-5">파운데이션</strong>(토큰),{' '}
-          <strong className="font-semibold text-font-icon-5">컴포넌트</strong>,{' '}
-          <strong className="font-semibold text-font-icon-5">템플릿</strong>을 확인하고,{' '}
-          <strong className="font-semibold text-font-icon-5">디자인시스템 규칙</strong>에서 규칙서와
-          사용 원장(규칙 튜닝 기록)을 볼 수 있습니다. 각 데모 페이지는 빌드·린트를 통과하는{' '}
-          <strong className="font-semibold text-font-icon-5">실행 예제</strong>이며, 모든 변경은 실제
-          브라우저 실측(E2E)으로 검증한 뒤 반영합니다.
+        <p className="mb-spacing-7 max-w-3xl text-14 text-font-icon-4">
+          각 데모 페이지는 빌드·린트를 통과하는{' '}
+          <strong className="font-semibold text-font-icon-5">실행 예제</strong>입니다. 카드를 클릭하면
+          해당 페이지로 이동합니다.
         </p>
+        <Gallery />
       </div>
     </section>
+  );
+}
+
+// 컴포넌트 갤러리 — 셸(App)의 NAV_GROUPS를 컨텍스트로 받아 카테고리별 카드 그리드로 나열.
+// 서브그룹(컴포넌트 2뎁스)은 카드에 서브그룹명을 태그로 표기한다.
+function Gallery() {
+  const { navigate, groups } = useNav();
+  const sections = groups
+    .filter((g) => g.label && g.label !== 'test')
+    .map((g) => ({
+      label: g.label,
+      items: g.items
+        ? g.items.map((it) => ({ ...it }))
+        : g.subgroups.flatMap((sg) => sg.items.map((it) => ({ ...it, sub: sg.label }))),
+    }));
+  return (
+    <div className="flex flex-col gap-spacing-8">
+      {sections.map((sec) => (
+        <div key={sec.label}>
+          <h3 className="mb-spacing-5 text-14 font-semibold text-font-icon-3">{sec.label}</h3>
+          <div className="grid grid-cols-2 gap-spacing-5 sm:grid-cols-3 lg:grid-cols-4">
+            {sec.items.map((it) => (
+              <button
+                key={it.id}
+                type="button"
+                onClick={() => navigate(it.id)}
+                className="flex cursor-pointer flex-col items-start gap-spacing-3 rounded-round-4 border border-base-gray-100 bg-base-white p-spacing-6 text-left transition-colors hover:border-base-gray-150 hover:bg-base-gray-25 focus:outline-none focus-visible:border-base-gray-150 focus-visible:bg-base-gray-25"
+              >
+                <span className="text-14 font-semibold text-font-icon-5">{it.label}</span>
+                {it.sub && <Tag color="gray">{it.sub}</Tag>}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
