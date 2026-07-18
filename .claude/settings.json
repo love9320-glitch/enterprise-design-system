@@ -12,7 +12,10 @@
       "Bash(git pull *)",
       "Bash(npm install *)",
       "Bash(npx tsc *)",
-      "Bash(git commit -q -m 'chore\\(design-system\\): TS 마이그레이션 1단계 — 기반 + 토큰·유틸·훅 전환 *)"
+      "Bash(git commit -q -m 'chore\\(design-system\\): TS 마이그레이션 1단계 — 기반 + 토큰·유틸·훅 전환 *)",
+      "Bash(git -C . status --short)",
+      "Bash(xargs kill)",
+      "Bash(git commit -q -m 'feat\\(design-system\\): TypeScript 전환 완료 — 컴포넌트 67개 + 토큰 + 유틸 전체 *)"
     ]
   }
 }
