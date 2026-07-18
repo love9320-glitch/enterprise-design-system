@@ -4,7 +4,7 @@ import {
   listColors, tagColors, newTagColors, sideNavColors, conditionOrderSlotColors, conditionCardColors, formulaColors, builderAreaColors, toolbarColors, accordionColors, segmentedColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors, calendarColors,
   spacing, radius, borderWidth,
-} from './src/tokens/index.js';
+} from './src/tokens/index';
 
 /** @type {import('tailwindcss').Config} */
 export default {
