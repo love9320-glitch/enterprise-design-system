@@ -12,7 +12,7 @@
 //  - 두 팝오버 모두 저장 시에만 값이 반영된다(취소/외부 클릭은 폐기).
 // 상태: default / hover(CSS) / dragging(drop — 파란 아웃라인·텍스트, DnD 중 유지)
 // 색은 condition-card-* 시멘틱 토큰만 사용. 트리거 비주얼은 Select 박스형과 동일 토큰(text-field-*).
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { GripVertical, Trash2, ChevronDown, Settings } from 'lucide-react';
 import { Popover } from './Popover';
 import { PopoverMenu } from './PopoverMenu';
@@ -24,7 +24,8 @@ import { Button } from './Button';
 import { TruncatingText } from './TruncatingText';
 import { Select } from './Select';
 import { ScreeningIndividualSettingModal } from './ScreeningIndividualSettingModal';
-import { focusNextChainStop } from './formulaFunctions';
+import { focusNextChainStop, chainTriggerKey } from './formulaFunctions';
+import { usePanelKeyboard } from './usePanelKeyboard';
 
 // 가/감점 라디오 항목 — 고정 4종(Figma 플로우 컷 기준)
 const SCORE_TYPES = [
@@ -194,13 +195,7 @@ export function ScreeningConditionCard({
         <Popover
           className="group/fieldstop w-full rounded-round-4 focus:outline-none"
           tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.defaultPrevented) return; // 열린 패널(포털)이 처리한 키는 무시
-            if (e.key === 'Enter' || e.key === ' ' || (e.key === 'Tab' && !e.shiftKey && !condOpen)) {
-              e.preventDefault();
-              openCondition(true);
-            }
-          }}
+          onKeyDown={(e) => chainTriggerKey(e, condOpen, () => openCondition(true))}
           menuWidth={multiTab ? 351 : 'max-content'} /* 복수 조건 카드는 고정 폭(2026-07-16 지시) */
           open={condOpen}
           onOpenChange={openCondition}
@@ -259,13 +254,7 @@ export function ScreeningConditionCard({
         <Popover
           className="group/fieldstop w-[100px] shrink-0 rounded-round-4 focus:outline-none"
           tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.defaultPrevented) return;
-            if (e.key === 'Enter' || e.key === ' ' || (e.key === 'Tab' && !e.shiftKey && !scoreOpen)) {
-              e.preventDefault();
-              setScoreOpen(true);
-            }
-          }}
+          onKeyDown={(e) => chainTriggerKey(e, scoreOpen, () => setScoreOpen(true))}
           menuWidth={200}
           placement="auto-right"
           open={scoreOpen}
@@ -334,55 +323,15 @@ export function ConditionSettingMenu({
         ? { tab, option: tabDisables ? null : opt }
         : { option: opt };
   const complete = multiTab ? (onMultiTab ? items.length > 0 : true) : tabDisables ? true : !!opt;
-  // 열릴 때 패널에 포커스 — Tab/Enter 체인이 포커스 없이는 패널에 닿지 않는다(2026-07-15 수정)
-  const menuRef = useRef(null);
-  useEffect(() => {
-    // 패널은 위치 계산 전 visibility:hidden이라 즉시 focus()가 실패한다 — 한 틱 뒤에 포커스
-    const t = setTimeout(() => menuRef.current?.focus(), 0);
-    return () => clearTimeout(t);
-  }, []);
-
-  // Tab = 패널 내부 DOM(탭 버튼·라디오·취소/저장) 자연 이동(2026-07-15 개정 — 커스텀 순회 제거).
-  // 경계에서만 개입: 마지막 요소에서 Tab → 완성 시 저장+다음(미완성이면 처음으로 순환),
-  // 처음에서 Shift+Tab → 끝으로 순환(팝오버 밖 이탈 방지). 라디오 선택은 Space(네이티브), 확인은 Enter.
-  // disabled 버튼(비활성 저장 등)은 포커스 불가라 수집에서 제외 — 포함하면 실제 마지막 요소에서
-  // 경계 처리가 안 걸려 포커스가 패널 밖(GNB)으로 샌다(2026-07-15 수정)
-  const focusablesIn = () =>
-    Array.from(
-      menuRef.current?.querySelectorAll(
-        "button:not([disabled]), input:not([disabled]), [tabindex='0']",
-      ) ?? [],
-    ).filter((el) => el.offsetParent !== null);
-  const handleTabKey = (e) => {
-    if (e.key !== 'Tab' || e.defaultPrevented) return;
-    const els = focusablesIn();
-    if (!els.length) {
-      e.preventDefault();
-      if (complete) {
-        onSave?.(payload());
-        onTabNext?.();
-      } else {
-        onSkip?.();
-      }
-      return;
-    }
-    const i = els.indexOf(e.target);
-    if (!e.shiftKey && i === els.length - 1) {
-      e.preventDefault();
-      if (complete) {
-        onSave?.(payload());
-        onTabNext?.();
-      } else if (onSkip) {
-        onSkip(); // 값 미선택 이탈 — 저장 없이 닫고 다음 정거장(다음 카드/수식)으로
-      } else {
-        els[0].focus();
-      }
-    } else if (e.shiftKey && i <= 0) {
-      e.preventDefault();
-      els[els.length - 1].focus();
-    }
-    // 그 외는 브라우저 기본 이동(패널 내부 순서대로)
-  };
+  // 패널 포커스 + 경계 Tab 처리(규칙 20 ⑶⑷) — 공용 훅. 라디오 선택은 Space(네이티브), 확인은 Enter.
+  const { menuRef, handleTabKey } = usePanelKeyboard({
+    complete,
+    onCommit: () => {
+      onSave?.(payload());
+      onTabNext?.();
+    },
+    onSkip, // 값 미선택 이탈 — 저장 없이 닫고 다음 정거장(다음 카드/수식)으로
+  });
 
   return (
     <div ref={menuRef} tabIndex={-1} className="outline-none" onKeyDown={handleTabKey}>
@@ -465,45 +414,21 @@ export function ScoreSettingMenu({
   const needsPoints = type === 'plus' || type === 'minus';
   const pointsValue = needsPoints ? points[type] : '';
   const complete = !!type && (!needsPoints || !!pointsValue.trim());
-  const menuRef = useRef(null);
-  useEffect(() => {
-    const t = setTimeout(() => menuRef.current?.focus(), 0); // hidden 단계 회피(위와 동일)
-    return () => clearTimeout(t);
-  }, []);
+  // 패널 포커스 + 경계 Tab 처리(규칙 20 ⑶⑷) — 공용 훅
+  const { menuRef, handleTabKey } = usePanelKeyboard({
+    complete,
+    onCommit: () => {
+      onSave?.(needsPoints ? { type, points: pointsValue.trim() } : { type });
+      onTabNext?.();
+    },
+    onSkip, // 미선택 이탈 — 닫고 다음 정거장으로
+  });
 
   // 가점/감점 라디오 선택 시 점수 입력 자동 포커스(선택 직후 바로 타이핑)
   const onTypeSelect = (value, hasPoints) => {
     setType(value);
     if (hasPoints) {
       setTimeout(() => menuRef.current?.querySelector('input[inputmode]:not([disabled])')?.focus(), 0);
-    }
-  };
-
-  // Tab = 패널 내부 DOM 자연 이동 + 경계 처리(ConditionSettingMenu와 동일 패턴, 2026-07-15 개정)
-  const focusablesIn = () =>
-    Array.from(
-      menuRef.current?.querySelectorAll(
-        "button:not([disabled]), input:not([disabled]), [tabindex='0']",
-      ) ?? [],
-    ).filter((el) => el.offsetParent !== null);
-  const handleTabKey = (e) => {
-    if (e.key !== 'Tab' || e.defaultPrevented) return;
-    const els = focusablesIn();
-    if (!els.length) return;
-    const i = els.indexOf(e.target);
-    if (!e.shiftKey && i === els.length - 1) {
-      e.preventDefault();
-      if (complete) {
-        onSave?.(needsPoints ? { type, points: pointsValue.trim() } : { type });
-        onTabNext?.();
-      } else if (onSkip) {
-        onSkip(); // 미선택 이탈 — 닫고 다음 정거장으로
-      } else {
-        els[0].focus();
-      }
-    } else if (e.shiftKey && i <= 0) {
-      e.preventDefault();
-      els[els.length - 1].focus();
     }
   };
 

@@ -38,7 +38,7 @@ import { useHoverTooltip } from './useHoverTooltip';
 import { ScoreSettingMenu, ConditionSettingMenu } from './ScreeningConditionCard';
 import { ScreeningIndividualSettingModal } from './ScreeningIndividualSettingModal';
 import { CHIP_COLOR_CLASS } from './chipStyles';
-import { FORMULA_FN_FAMILY, FORMULA_GROUP_FUNCTIONS, focusNextChainStop } from './formulaFunctions';
+import { FORMULA_FN_FAMILY, FORMULA_GROUP_FUNCTIONS, focusNextChainStop, chainTriggerKey, hasPointsScore } from './formulaFunctions';
 
 // 계열별 정적 클래스 매핑 (Tailwind purge 안전)
 // 함수 계열 → 칩 color(2026-07-15 — 자연어 그룹 함수 셀렉트 칩 채색)
@@ -124,13 +124,6 @@ const NaturalText = ({ children }) => (
 
 const optLabel = (options, v) => options?.find((o) => o.value === v)?.label ?? '';
 
-// 가점/감점 값 보유 여부(재귀) — IF 함수는 적합/부적합 조건만 허용(2026-07-16).
-// 툴바(IF 선택 가능 판정)와 IF 드롭 존(값 정리)이 공유한다.
-export function hasPointsScore(node) {
-  if (node.kind === 'group') return node.children.some(hasPointsScore);
-  if (node.items?.length) return node.individual?.mode === 'points';
-  return node.scoreType === 'plus' || node.scoreType === 'minus' || !!node.points;
-}
 // IF 안으로 들어가는 노드에서 가점/감점 값을 제거(적합/부적합·미설정은 유지)
 function stripPointsScore(node) {
   if (node.kind === 'group') return { ...node, children: node.children.map(stripPointsScore) };
@@ -784,13 +777,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
               <Popover
                 className="group/chipstop min-w-0 rounded-round-4 focus:outline-none"
                 tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.defaultPrevented) return;
-                  if (e.key === 'Enter' || e.key === ' ' || (e.key === 'Tab' && !e.shiftKey && !critOpen)) {
-                    e.preventDefault();
-                    setCritOpen(true);
-                  }
-                }}
+                onKeyDown={(e) => chainTriggerKey(e, critOpen, () => setCritOpen(true))}
                 menuWidth={condMenuWidth}
                 open={critOpen}
                 onOpenChange={setCritOpen}
@@ -854,13 +841,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
                   <Popover
                     className="group/chipstop min-w-0 rounded-round-4 focus:outline-none"
                     tabIndex={0}
-                    onKeyDown={(e) => {
-                      if (e.defaultPrevented) return;
-                      if (e.key === 'Enter' || e.key === ' ' || (e.key === 'Tab' && !e.shiftKey && !condOpen)) {
-                        e.preventDefault();
-                        setCondOpen(true);
-                      }
-                    }}
+                    onKeyDown={(e) => chainTriggerKey(e, condOpen, () => setCondOpen(true))}
                     menuWidth={condMenuWidth}
                     open={condOpen}
                     onOpenChange={setCondOpen}
@@ -926,13 +907,7 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
           <Popover
             className="group/chipstop min-w-0 rounded-round-4 focus:outline-none"
             tabIndex={0}
-            onKeyDown={(e) => {
-              if (e.defaultPrevented) return; // 열린 패널(포털)이 처리한 키는 무시
-              if (e.key === 'Enter' || e.key === ' ' || (e.key === 'Tab' && !e.shiftKey && !condOpen)) {
-                e.preventDefault();
-                setCondOpen(true); // 포커스 상태에서 Enter/Space/Tab으로 값 팝오버 열기(키보드 체인)
-              }
-            }}
+            onKeyDown={(e) => chainTriggerKey(e, condOpen, () => setCondOpen(true))}
             menuWidth={condMenuWidth}
             open={condOpen}
             onOpenChange={setCondOpen}
@@ -973,13 +948,8 @@ function FormulaLeaf({ node, root, checked, onCheckChange, onChange, onDelete, c
           <Popover
             className="shrink-0"
             data-score-for={node.id}
-            onKeyDown={(e) => {
-              if (e.defaultPrevented) return; // 열린 패널(포털)이 처리한 키는 무시
-              if (e.key === 'Enter' || e.key === ' ' || (e.key === 'Tab' && !e.shiftKey && !scoreOpen)) {
-                e.preventDefault();
-                setScoreOpen(true); // 포커스 상태에서 Enter/Space/Tab으로 점수 팝오버 열기(키보드 체인)
-              }
-            }}
+            /* tabIndex 없음 — 포커스는 안의 readOnly 인풋이 받는다(체인 keydown만 공유) */
+            onKeyDown={(e) => chainTriggerKey(e, scoreOpen, () => setScoreOpen(true))}
             menuWidth={200}
             open={scoreOpen}
             onOpenChange={setScoreOpen}
