@@ -6,7 +6,13 @@
       "mcp__claude_ai_Figma__add_code_connect_map",
       "Bash(python3 -)",
       "Bash(grep -n \"className={\\\\`relative z-\\\\[1\\\\]\" SegmentedTabs.jsx)",
-      "Bash(grep -n \"className={\\\\`group relative flex h-\\\\[24px\\\\]\" CalendarDayButton.jsx)"
+      "Bash(grep -n \"className={\\\\`group relative flex h-\\\\[24px\\\\]\" CalendarDayButton.jsx)",
+      "Bash(gh pr *)",
+      "Bash(git checkout *)",
+      "Bash(git pull *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(git commit -q -m 'chore\\(design-system\\): TS 마이그레이션 1단계 — 기반 + 토큰·유틸·훅 전환 *)"
     ]
   }
 }
