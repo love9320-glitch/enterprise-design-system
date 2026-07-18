@@ -8,7 +8,7 @@ import {
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ['./index.html', './src/**/*.{js,jsx}'],
+  content: ['./index.html', './src/**/*.{js,jsx,ts,tsx}'], // TS 전환(2026-07-19) — .ts/.tsx 스캔 필수
   safelist: [
     ...Object.keys(fontSize).map((size) => `text-${size}`),
     ...Object.keys(lineHeight).map((key) => `leading-${key}`),
