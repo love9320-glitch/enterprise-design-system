@@ -28,8 +28,7 @@ import { List } from './List';
 import { SegmentedTabs } from './SegmentedTabs';
 import { ScreeningConditionCard } from './ScreeningConditionCard';
 import { ScreeningFormula } from './ScreeningFormula';
-import { FORMULA_GROUP_FUNCTIONS } from './formulaFunctions';
-import { hasPointsScore } from './ScreeningFormula';
+import { FORMULA_GROUP_FUNCTIONS, hasPointsScore } from './formulaFunctions';
 import { Select } from './Select';
 import { Button } from './Button';
 

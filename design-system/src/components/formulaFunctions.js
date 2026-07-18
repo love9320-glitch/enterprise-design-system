@@ -39,6 +39,26 @@ export function focusNextChainStop(currentEl) {
     target.addEventListener('blur', () => target.removeAttribute('data-chain-focus'), { once: true });
   }, 0);
 }
+// 체인 트리거 공용 keydown(규칙 20 ⑵) — 포커스 상태에서 Enter/Space/Tab이면 팝오버를 연다.
+// 열린 패널(포털)이 처리한 키(defaultPrevented)는 무시. 카드 조건/가·감점, 수식 값·묶음·조건명 칩이 공유.
+// 사용: onKeyDown={(e) => chainTriggerKey(e, open, () => setOpen(true))} — 이벤트 시점 호출
+// (렌더 중 팩토리 호출은 react-compiler lint가 클로저의 ref 접근을 렌더 접근으로 판정한다)
+export function chainTriggerKey(e, open, onOpen) {
+  if (e.defaultPrevented) return;
+  if (e.key === 'Enter' || e.key === ' ' || (e.key === 'Tab' && !e.shiftKey && !open)) {
+    e.preventDefault();
+    onOpen();
+  }
+}
+
+// 가점/감점 값 보유 여부(재귀) — IF 함수는 적합/부적합 조건만, CAP·BYSCORE는 점수 조건만 허용.
+// 툴바(함수별 적용 판정)·수식(함수 변경 게이팅·IF 드롭 값 정리)이 공유(2026-07-18 컴포넌트 파일에서 이동).
+export function hasPointsScore(node) {
+  if (node.kind === 'group') return node.children.some(hasPointsScore);
+  if (node.items?.length) return node.individual?.mode === 'points';
+  return node.scoreType === 'plus' || node.scoreType === 'minus' || !!node.points;
+}
+
 // 정거장 공용 링(2026-07-16 개정) — 마우스 클릭/프레스에는 링을 내지 않는다:
 //  · focus-visible = 키보드 Tab 포커스(클릭의 :focus에는 미매칭 → 트리거 hover 링과 겹쳐
 //    4px처럼 보이던 프레스 현상 제거)
