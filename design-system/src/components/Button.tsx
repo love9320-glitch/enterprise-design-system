@@ -1,6 +1,7 @@
-import { useLayoutEffect, useRef } from 'react';
-import type { ComponentPropsWithoutRef, ElementType, ReactNode } from 'react';
+import { useLayoutEffect, useRef, isValidElement } from 'react';
+import type { ComponentPropsWithoutRef, ElementType, MouseEvent as ReactMouseEvent, ReactElement, ReactNode, Ref } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import { Slot } from './Slot';
 import { TruncatingText } from './TruncatingText';
 import { useHoverTooltip } from './useHoverTooltip';
 
@@ -17,6 +18,9 @@ interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   width?: 'hug' | 'fill';          // 'hug'(콘텐츠 폭) | 'fill'(부모 전체 폭) — underline 변형엔 미적용
   showTooltip?: boolean;           // 아이콘 전용 버튼 hover 명칭 툴팁 on/off (기본 켬)
   tooltip?: ReactNode;             // 툴팁 문구 커스텀. 미지정 시 aria-label 사용
+  asChild?: boolean;               // true면 <button> 대신 자식 엘리먼트(단일)를 루트로 렌더하고
+                                   //   버튼 스타일·동작을 그 엘리먼트에 머지(예: 링크를 버튼처럼 — Slot).
+                                   //   이때 children은 유효한 단일 엘리먼트여야 하며, 그 내용이 라벨이 된다.
 }
 
 export function Button({
@@ -34,6 +38,7 @@ export function Button({
   width = 'hug',          // 'hug'(콘텐츠 폭) | 'fill'(부모 전체 폭) — underline 변형엔 미적용
   showTooltip = true,     // 아이콘 전용 버튼 hover 명칭 툴팁 on/off (기본 켬)
   tooltip,                // 툴팁 문구 커스텀. 미지정 시 aria-label 사용
+  asChild = false,        // <button> 대신 자식 엘리먼트를 루트로(Slot 합성)
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -49,7 +54,11 @@ export function Button({
   const iconSize = size === '18' || size === '24' ? 14 : 16;
   // fill: 부모 폭을 100% 채운다(밑줄 텍스트 버튼은 박스가 없어 제외).
   const isFill = width === 'fill' && variant !== 'underline';
-  const ref = useRef<HTMLButtonElement | null>(null);
+  const ref = useRef<HTMLElement | null>(null);
+  // asChild 유효성 — 자식이 단일 엘리먼트일 때만 Slot 합성(아니면 일반 <button> 폴백)
+  const slotChild = asChild && isValidElement(children) ? (children as ReactElement<{ children?: ReactNode }>) : null;
+  // 라벨 소스 — Slot이면 자식 엘리먼트의 내용, 아니면 children prop
+  const label = slotChild ? slotChild.props.children : children;
 
   useLayoutEffect(() => {
     const el = ref.current;
@@ -136,23 +145,9 @@ export function Button({
         'active:bg-transparent';
   }
 
-  return (
+  // 내부 콘텐츠(로딩 스피너 + 아이콘·라벨 레이아웃) — button/Slot 두 경로 공통
+  const innerContent = (
     <>
-    <button
-      ref={ref}
-      className={`${base} ${sizeStyle} ${colorStyle} ${truncStyle} ${widthStyle} ${className}`}
-      disabled={inactive}
-      onClick={!inactive ? onClick : undefined}
-      onMouseEnter={(e) => {
-        onMouseEnter?.(e);
-        hoverTip.onMouseEnter(e);
-      }}
-      onMouseLeave={(e) => {
-        onMouseLeave?.(e);
-        hoverTip.onMouseLeave();
-      }}
-      {...props}
-    >
       {loading && (
         <span className="absolute inset-0 flex items-center justify-center">
           <LoaderCircle
@@ -169,15 +164,57 @@ export function Button({
           <>
             {LeftIcon && <LeftIcon size={iconSize} strokeWidth={1.8} className="shrink-0" />}
             {truncate ? (
-              <TruncatingText as="span" className="min-w-0">{children}</TruncatingText>
+              <TruncatingText as="span" className="min-w-0">{label}</TruncatingText>
             ) : (
-              children
+              label
             )}
             {RightIcon && <RightIcon size={iconSize} strokeWidth={1.8} className="shrink-0" />}
           </>
         )}
       </span>
-    </button>
+    </>
+  );
+
+  const rootClassName = `${base} ${sizeStyle} ${colorStyle} ${truncStyle} ${widthStyle} ${className}`;
+  const handleMouseEnter = (e: ReactMouseEvent<HTMLButtonElement>) => {
+    onMouseEnter?.(e);
+    hoverTip.onMouseEnter(e);
+  };
+  const handleMouseLeave = (e: ReactMouseEvent<HTMLButtonElement>) => {
+    onMouseLeave?.(e);
+    hoverTip.onMouseLeave();
+  };
+
+  return (
+    <>
+    {slotChild ? (
+      // asChild — 자식 엘리먼트를 루트로, 버튼 스타일·동작을 머지(래퍼 없음).
+      // <a>엔 disabled 속성이 없으므로 aria-disabled로 대체하고 onClick은 비활성 시 차단.
+      <Slot
+        ref={ref}
+        content={innerContent}
+        className={rootClassName}
+        aria-disabled={inactive || undefined}
+        onClick={!inactive ? onClick : undefined}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        {...props}
+      >
+        {slotChild}
+      </Slot>
+    ) : (
+      <button
+        ref={ref as Ref<HTMLButtonElement>}
+        className={rootClassName}
+        disabled={inactive}
+        onClick={!inactive ? onClick : undefined}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        {...props}
+      >
+        {innerContent}
+      </button>
+    )}
     {hoverTip.tooltip}
     </>
   );

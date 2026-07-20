@@ -94,11 +94,32 @@ import { Users } from 'lucide-react';
 <Button disabled>비활성</Button>
 <Button loading onClick={save}>저장</Button>`;
 
+const ASCHILD_USAGE = `import { Button } from '@love9320-glitch/design-system';
+
+// 1) 외부 링크를 버튼처럼 — <a>가 루트로 렌더되고 버튼 스타일·동작을 입는다
+<Button asChild variant="fill">
+  <a href="/docs">문서 보기</a>
+</Button>
+
+// 2) 아이콘 + 라우터 Link (react-router 등)
+<Button asChild variant="line" leftIcon={ChevronDown}>
+  <Link to="/settings">설정으로</Link>
+</Button>
+
+// 3) 밑줄 링크
+<Button asChild variant="underline" color="blue">
+  <a href="/more">더 보기</a>
+</Button>
+
+// asChild 없이 쓰면 기존과 동일하게 <button>으로 렌더된다(기본값 false)
+<Button variant="fill" onClick={save}>저장</Button>`;
+
 const USAGE_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: '버튼 라벨/내용 (icon 전용일 땐 생략)' },
   { name: 'variant', type: "'fill' | 'line' | 'ghost' | 'underline'", default: "'fill'", desc: '주요(fill)·보조(line)·서브(ghost)·밑줄 텍스트(underline) 종류' },
   { name: 'color', type: "'black' | 'red' | 'blue' | 'green' | 'violet' | 'pink' | 'orange'", default: "'black'", desc: 'underline 전용 색 — 칩 컬러 대응(gray 제외), black=기존 색' },
   { name: 'weight', type: "'normal' | 'semibold'", default: "'normal'", desc: 'underline 전용 텍스트 두께' },
+  { name: 'asChild', type: 'boolean', default: 'false', desc: 'true면 <button> 대신 자식 엘리먼트(단일)를 루트로 렌더하고 스타일·동작을 머지 — 링크를 버튼처럼(Slot 합성). children이 유효한 단일 엘리먼트여야 하고 그 내용이 라벨이 됨' },
   { name: 'size', type: "'32' | '24' | '18'", default: "'32'", desc: "버튼 높이(px). 18은 아이콘 전용 소형(버튼 18×18·아이콘 14×14)" },
   { name: 'leftIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 왼쪽 아이콘 (컴포넌트 자체를 전달)' },
   { name: 'rightIcon', type: 'lucide 컴포넌트', default: 'null', desc: '텍스트 오른쪽 아이콘' },
@@ -384,6 +405,36 @@ export function ButtonPage() {
               )}
             </Popover>
           </div>
+        </div>
+      </div>
+
+      {/* asChild — 링크를 버튼처럼(Slot 합성) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">asChild — 링크를 버튼처럼</h3>
+        <p className="mb-spacing-6 text-13 text-font-icon-4">
+          <code className="rounded-round-3 bg-base-gray-50 px-spacing-3 py-spacing-1 text-12">asChild</code>를 주면
+          <code className="mx-spacing-2 rounded-round-3 bg-base-gray-50 px-spacing-3 py-spacing-1 text-12">&lt;button&gt;</code> 대신
+          자식 엘리먼트(예: <code className="rounded-round-3 bg-base-gray-50 px-spacing-3 py-spacing-1 text-12">&lt;a&gt;</code>)를 루트로
+          렌더하고 버튼 스타일·동작을 그 엘리먼트에 머지합니다. 유효하지 않은 중첩(<code className="rounded-round-3 bg-base-gray-50 px-spacing-3 py-spacing-1 text-12">&lt;a&gt;&lt;button&gt;</code>) 없이
+          &ldquo;버튼처럼 보이는 링크&rdquo;를 만들 수 있습니다.
+        </p>
+        <div className="flex flex-wrap items-center gap-spacing-5">
+          <Button asChild variant="fill">
+            <a href="#button" onClick={(e) => e.preventDefault()}>fill 링크</a>
+          </Button>
+          <Button asChild variant="line" leftIcon={ChevronDown}>
+            <a href="#button" onClick={(e) => e.preventDefault()}>line 링크(아이콘)</a>
+          </Button>
+          <Button asChild variant="underline" color="blue">
+            <a href="#button" onClick={(e) => e.preventDefault()}>underline 링크</a>
+          </Button>
+        </div>
+        <div className="mt-spacing-7">
+          <UsageExample
+            code={ASCHILD_USAGE}
+            note="asChild를 주면 children(단일 엘리먼트)이 루트가 되고, 그 내용이 라벨이 됩니다. 라우터 Link·외부 링크에 그대로 적용됩니다."
+          />
         </div>
       </div>
     </section>
