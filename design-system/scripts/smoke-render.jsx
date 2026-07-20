@@ -8,6 +8,8 @@ import { ScreeningFormula } from '../src/components/ScreeningFormula';
 import { ScreeningConditionCard } from '../src/components/ScreeningConditionCard';
 import { ScreeningIndividualSettingModal } from '../src/components/ScreeningIndividualSettingModal';
 import { ScreeningBuilderTemplate } from '../src/components/ScreeningBuilderTemplate';
+import { Button } from '../src/components/Button';
+import { Slot } from '../src/components/Slot';
 
 const CERT_TABS = [
   { value: 'have', label: '보유', disableOptions: true },
@@ -95,6 +97,22 @@ run('개별설정 모달(적합/부적합)', () =>
   renderToString(<ScreeningIndividualSettingModal items={CERT_OPTS} value={{ type: 'individual', mode: 'fitness', fn: 'SUM', items: { cell: { type: 'fit' } } }} onClose={() => {}} onConfirm={() => {}} />));
 run('빌더 템플릿', () =>
   renderToString(<ScreeningBuilderTemplate defaultCards={[{ id: 'cert', name: '공인외국어 보유여부', conditionTabs: CERT_TABS, conditionOptionsByTab: { designate: CERT_OPTS } }]} />));
+
+// Button asChild — <a>로 렌더되고 버튼 클래스가 <a>에 머지되는지(래퍼 <button> 없음)
+run('Button asChild → <a>', () => {
+  const html = renderToString(<Button asChild variant="fill"><a href="/docs">문서</a></Button>);
+  if (!/^<a /.test(html)) throw new Error('루트가 <a>가 아님: ' + html.slice(0, 40));
+  if (!/href="\/docs"/.test(html)) throw new Error('href 유실');
+  if (!/문서/.test(html)) throw new Error('라벨 유실');
+});
+run('Button 일반 → <button>', () => {
+  const html = renderToString(<Button variant="fill">저장</Button>);
+  if (!/^<button /.test(html)) throw new Error('루트가 <button>이 아님');
+});
+run('Slot 단독 — className 이어붙이기', () => {
+  const html = renderToString(<Slot className="ours"><a className="theirs" href="/x">L</a></Slot>);
+  if (!/class="theirs ours"/.test(html)) throw new Error('className 병합 실패: ' + html);
+});
 
 if (fail === 0) {
   console.log('✅ 렌더 스모크 통과');

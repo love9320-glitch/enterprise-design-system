@@ -5,6 +5,7 @@
 export * from './components/Accordion';
 export * from './components/Button';
 export * from './components/ButtonGroup';
+export * from './components/Slot';
 export * from './components/CalendarDayButton';
 export * from './components/Checkbox';
 export * from './components/Chip';
