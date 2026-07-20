@@ -94,6 +94,26 @@ import { Users } from 'lucide-react';
 <Button disabled>비활성</Button>
 <Button loading onClick={save}>저장</Button>`;
 
+const ASCHILD_USAGE = `import { Button } from '@love9320-glitch/design-system';
+
+// 1) 외부 링크를 버튼처럼 — <a>가 루트로 렌더되고 버튼 스타일·동작을 입는다
+<Button asChild variant="fill">
+  <a href="/docs">문서 보기</a>
+</Button>
+
+// 2) 아이콘 + 라우터 Link (react-router 등)
+<Button asChild variant="line" leftIcon={ChevronDown}>
+  <Link to="/settings">설정으로</Link>
+</Button>
+
+// 3) 밑줄 링크
+<Button asChild variant="underline" color="blue">
+  <a href="/more">더 보기</a>
+</Button>
+
+// asChild 없이 쓰면 기존과 동일하게 <button>으로 렌더된다(기본값 false)
+<Button variant="fill" onClick={save}>저장</Button>`;
+
 const USAGE_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: '버튼 라벨/내용 (icon 전용일 땐 생략)' },
   { name: 'variant', type: "'fill' | 'line' | 'ghost' | 'underline'", default: "'fill'", desc: '주요(fill)·보조(line)·서브(ghost)·밑줄 텍스트(underline) 종류' },
@@ -409,6 +429,12 @@ export function ButtonPage() {
           <Button asChild variant="underline" color="blue">
             <a href="#button" onClick={(e) => e.preventDefault()}>underline 링크</a>
           </Button>
+        </div>
+        <div className="mt-spacing-7">
+          <UsageExample
+            code={ASCHILD_USAGE}
+            note="asChild를 주면 children(단일 엘리먼트)이 루트가 되고, 그 내용이 라벨이 됩니다. 라우터 Link·외부 링크에 그대로 적용됩니다."
+          />
         </div>
       </div>
     </section>
