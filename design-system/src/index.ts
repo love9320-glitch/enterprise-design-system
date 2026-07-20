@@ -65,6 +65,7 @@ export * from './components/popoverLayers';
 export * from './components/tableView';
 export * from './components/useOutsideDismiss';
 export * from './components/usePanelKeyboard';
+export * from './components/useFocusTrap';
 export * from './components/usePopoverPosition';
 export * from './tokens/index';
 export * from './utils/datetime';
