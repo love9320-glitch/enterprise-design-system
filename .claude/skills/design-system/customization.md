@@ -51,7 +51,19 @@ export function AppButton(props: ComponentProps<typeof Button>) {
 
 `className`으로 레이아웃(margin·너비 등)을 덧붙이는 것도 안전하다 — 컴포넌트가 마지막에 `${className}`을 병합한다. 단 **색·간격 토큰을 className으로 덮어쓰지는 말 것**(1단계로 처리 — 토큰 우회 채색은 디자인 출처와 어긋난다).
 
-**언제**: 기본값·조합만 다를 때, 컴포넌트에 얇은 팀 규약을 얹을 때.
+**`asChild`로 태그 자체를 바꾸기** — Button은 `asChild`를 주면 `<button>` 대신 자식 엘리먼트를 루트로 렌더하고 스타일·동작을 머지한다(Radix Slot 패턴). "버튼처럼 보이는 링크·라우터 Link"를 유효하지 않은 중첩 없이 만들 때 쓴다.
+
+```tsx
+import { Button } from '@love9320-glitch/design-system';
+
+// <a>가 Button의 스타일·동작을 그대로 입고 렌더(래퍼 <button> 없음)
+<Button asChild variant="fill"><a href="/docs">문서 보기</a></Button>
+// 라우터 Link도 동일 — <Button asChild><Link to="/x">이동</Link></Button>
+```
+
+공용 `Slot`도 export되어, 직접 만든 컴포넌트에서 같은 합성(className 이어붙이기·핸들러 합성·ref 병합)을 쓸 수 있다.
+
+**언제**: 기본값·조합만 다를 때, 컴포넌트에 얇은 팀 규약을 얹을 때, 또는 태그(a/button/Link)만 바꾸고 싶을 때.
 
 ## 3단계 — 동작(기능 훅)만 가져다 새 UI 조립 ★ 핵심
 
