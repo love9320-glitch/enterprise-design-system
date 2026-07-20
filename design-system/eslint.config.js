@@ -6,7 +6,7 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  globalIgnores(['dist', 'dist-lib']),
   // TS 전환분(.ts/.tsx) — typescript-eslint recommended + 동일 react 규칙(2026-07-18 TS 마이그레이션)
   {
     files: ['**/*.{ts,tsx}'],

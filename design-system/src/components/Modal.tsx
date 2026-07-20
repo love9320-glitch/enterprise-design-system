@@ -26,6 +26,7 @@ import type {
   ReactNode,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { useFocusTrap } from './useFocusTrap';
 import { X } from 'lucide-react';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
@@ -189,10 +190,9 @@ export function Modal({
     };
   }, [open]);
 
-  // 열릴 때 패널로 포커스 이동(포커스 트랩 진입점)
-  useEffect(() => {
-    if (open) boxRef.current?.focus();
-  }, [open]);
+  // 포커스 트랩 + 복원(접근성) — 열릴 때 박스로 진입, Tab을 박스 안에 가두고, 닫힐 때 원래 포커스 복원.
+  // 중첩 모달은 각자 자기 박스에 트랩(스택 조율 불필요), 내부 위젯이 처리한 Tab은 존중한다.
+  useFocusTrap(open, boxRef);
 
   // 레이아웃 계산 — header/footer/본문 자연 높이를 측정해 top 여백과 ModalBody maxHeight를 정한다.
   useLayoutEffect(() => {

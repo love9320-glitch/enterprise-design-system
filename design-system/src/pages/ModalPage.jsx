@@ -28,7 +28,7 @@ const [open, setOpen] = useState(false);
   본문에 컴포넌트·텍스트를 자유롭게 주입합니다.
 </Modal>`;
 const MODAL_PROPS = [
-  { name: 'open / onClose', type: 'boolean / () => void', default: '—', desc: '열림 상태와 닫기 핸들러(딤 클릭·ESC·X 버튼이 모두 호출)' },
+  { name: 'open / onClose', type: 'boolean / () => void', default: '—', desc: '열림 상태와 닫기 핸들러(딤 클릭·ESC·X 버튼이 모두 호출). 열리면 포커스가 모달로 진입·Tab이 모달 안에 갇히고(포커스 트랩), 닫히면 열기 직전 위치로 복원됩니다(useFocusTrap)' },
   { name: 'title', type: 'ReactNode', default: '—', desc: '헤더 타이틀' },
   { name: 'children', type: 'ReactNode', default: '—', desc: 'ModalBody 내용(외부 주입). 길면 내부 스크롤' },
   { name: 'size', type: "'sm'|'md'|'lg'|'xl'|'2xl'|'3xl'|'4xl'|'fill'", default: "'md'", desc: 'ModalBox 너비 360/480/600/720/840/960/1260, fill=좌우 16씩 제외(최소 1260)' },
