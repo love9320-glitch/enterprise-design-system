@@ -12,6 +12,7 @@ import tplListMd from '../../../.claude/skills/design-system/templates/list-page
 import tplDetailMd from '../../../.claude/skills/design-system/templates/detail-page.md?raw';
 import tplFormMd from '../../../.claude/skills/design-system/templates/form-page.md?raw';
 import ruleUsageMd from '../../../.claude/skills/design-system/rule-usage.md?raw';
+import customizationMd from '../../../.claude/skills/design-system/customization.md?raw';
 
 const templatesMd = [tplModalMd, tplListMd, tplDetailMd, tplFormMd].join('\n\n');
 
@@ -41,4 +42,8 @@ export function RuleTemplatesPage() {
 
 export function RuleUsagePage() {
   return <DocPage source={ruleUsageMd} />;
+}
+
+export function CustomizationGuidePage() {
+  return <DocPage source={customizationMd} />;
 }
