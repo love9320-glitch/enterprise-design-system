@@ -6,7 +6,9 @@ import { JSDOM } from 'jsdom';
 const dom = new JSDOM('<!doctype html><html><body></body></html>', { pretendToBeVisual: true });
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;
-// navigator는 Node 22에서 read-only — 스텁 불필요(jsdom window가 자체 보유)
+// navigator — Node 21+는 전역으로 이미 존재(재할당 불가), Node 20 이하는 없으므로 jsdom 것으로 채운다.
+// (react-dom이 navigator.userAgent를 참조 — 없으면 ReferenceError)
+if (typeof globalThis.navigator === 'undefined') globalThis.navigator = dom.window.navigator;
 globalThis.HTMLElement = dom.window.HTMLElement;
 globalThis.Node = dom.window.Node;
 // jsdom은 offsetParent를 항상 null로 준다 → 보임 판정(el.offsetParent !== null)이 실패하므로
