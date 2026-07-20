@@ -9,7 +9,7 @@ import {
   UploadMenuPage,
   ConditionOrderSlotPage, JobPositionTemplatePage, ScreeningBuilderTemplatePage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
-  RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage,
+  RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -130,6 +130,7 @@ const NAV_GROUPS = [
       { id: 'rule-components', label: '컴포넌트 규칙',    Page: RuleComponentsPage },
       { id: 'rule-templates',  label: '템플릿 규칙',      Page: RuleTemplatesPage },
       { id: 'rule-usage',      label: '규칙 사용 원장',   Page: RuleUsagePage },
+      { id: 'customization',   label: '커스텀 가이드',    Page: CustomizationGuidePage },
     ],
   },
   {

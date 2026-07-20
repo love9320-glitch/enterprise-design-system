@@ -66,7 +66,7 @@ export function SegmentedTabs<V extends string | number>({
     <div
       role="tablist"
       style={{ width: widthStyle }}
-      className={`flex ${width == null ? 'w-full' : ''} rounded-round-4 bg-segmented-tab-bg p-spacing-3 ${className}`}
+      className={`flex ${width == null ? 'w-full' : ''} rounded-round-4 bg-segmented-tab-bg p-spacing-2 ${className}`}
       {...props}
     >
       <div className="relative flex min-w-0 flex-1">
