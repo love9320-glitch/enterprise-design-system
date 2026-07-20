@@ -1,0 +1,49 @@
+name: CI
+
+# main으로의 PR과 push마다 검증 스위트를 돌린다.
+# 이 job(verify)을 브랜치 보호의 'required status check'로 지정하면 통과해야만 머지된다.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+
+      - name: Install
+        working-directory: design-system
+        run: npm ci
+
+      - name: Lint (eslint)
+        working-directory: design-system
+        run: npm run lint
+
+      - name: Type check (tsc --noEmit)
+        working-directory: design-system
+        run: npm run check:types
+
+      - name: Build (demo SPA)
+        working-directory: design-system
+        run: npm run build
+
+      - name: Rules check
+        working-directory: design-system
+        run: npm run check:rules
+
+      - name: Render smoke (SSR)
+        working-directory: design-system
+        run: npm run check:render
+
+      - name: Focus trap (jsdom)
+        working-directory: design-system
+        run: npm run check:focus
