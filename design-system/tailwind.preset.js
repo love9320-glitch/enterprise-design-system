@@ -8,7 +8,7 @@ import {
 
 // Tailwind preset — 디자인 시스템 토큰 theme+safelist(2026-07-19 패키지화).
 // 이 저장소의 tailwind.config.js와 소비 팀의 config가 함께 사용하는 단일 진실.
-// 소비 팀: presets: [require('@love9320-glitch/design-system/preset')] + content에 자기 소스 지정.
+// 소비 팀: presets: [require('@gusun/design-system/preset')] + content에 자기 소스 지정.
 /** @type {Partial<import('tailwindcss').Config>} */
 export default {
   safelist: [
