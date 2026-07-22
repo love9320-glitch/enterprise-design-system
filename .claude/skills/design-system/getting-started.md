@@ -124,31 +124,66 @@ VS Code에 [Claude Code](https://claude.com/claude-code) 확장을 설치하면,
 ```markdown
 # 이 프로젝트의 UI 규칙 — @gusun/design-system
 
-모든 응답은 한국어로. 이 프로젝트의 UI는 전부 디자인 시스템 `@gusun/design-system`으로 조립한다.
+모든 응답은 한국어로. 이 프로젝트의 UI는 전부 디자인 시스템 `@gusun/design-system`으로 조립하고,
+아래 규칙으로 **데모 사이트와 같은 간격·구성 감각**을 유지한다.
 
-## 필수 규칙
+## 1. 컴포넌트 규칙
 
 1. **UI 요소는 반드시 디자인 시스템 컴포넌트로 만든다.** `<button>`·`<input>`·`<select>`·`<table>` 등을
    직접 마크업하지 말고 `import { Button, Input, Select, Table, ... } from '@gusun/design-system'`로 조립한다.
-   페이지를 만들 땐 템플릿(TableTemplate·FormTemplate 등)이 먼저 — 템플릿으로 덮이면 그걸 쓰고,
-   안 되는 부분만 개별 컴포넌트로 내려간다.
-2. **색·간격·라운드 하드코딩 금지.** 색 차이·상태는 컴포넌트 props(`variant`·`color`·`size`·`disabled` 등)로
-   표현한다. className이나 인라인 스타일로 컴포넌트의 색·모양을 덮어쓰지 않는다.
-   페이지 레이아웃(배치·여백·정렬)만 자유롭게 작성한다.
-3. **props를 추측하지 않는다.** 컴포넌트 옵션의 진실은 타입(.d.ts — 에디터 자동완성)과
-   데모 사이트 각 페이지의 props 표다: https://love9320-glitch.github.io/enterprise-design-system/
-   존재가 불확실한 prop은 타입을 확인한 뒤 쓴다.
-4. **Select의 onChange 페이로드는 `(e) => e.target.value`** 형태다(합성 이벤트).
-   Modal 계열은 `open`/`onClose`를 호출부 state로 제어한다.
-5. **에디터류는 서브패스에서만.** `Editor`·`NoticeWritingTemplate`은
-   `@gusun/design-system/editor`에서 import하고 `@tiptap/react @tiptap/pm @tiptap/starter-kit`
-   peer 설치가 필요하다. 쓰지 않는 화면에서는 절대 import하지 않는다(번들·의존성 오염).
-6. **컴포넌트 소스를 복사(fork)해서 고치지 않는다.** 일부 다르게 쓰고 싶으면 커스텀 가이드의
-   5단계 순서를 따른다(① 토큰 오버라이드 → ② 래퍼 컴포넌트 → ③ 기능 훅 재사용 →
-   ④ 토큰만 가져다 자체 제작 → ⑤ 디자인 시스템 저장소에 PR):
+2. **색은 하드코딩 금지.** 색 차이·상태는 컴포넌트 props(`variant`·`color`·`size`·`disabled` 등)로 표현하고,
+   className·인라인 스타일로 컴포넌트의 색·모양을 덮어쓰지 않는다.
+3. **props를 추측하지 않는다.** 옵션의 진실은 타입(.d.ts — 에디터 자동완성)과 데모 사이트 각 페이지의
+   props 표다: https://love9320-glitch.github.io/enterprise-design-system/
+4. **관례**: Select의 onChange 페이로드는 `(e) => e.target.value`(합성 이벤트). Modal 계열은
+   `open`/`onClose`를 호출부 state로 제어. 폼 검증은 Input의 `error`+`errorMessage`(인라인 툴팁)로.
+5. **에디터류는 서브패스에서만.** `Editor`·`NoticeWritingTemplate`은 `@gusun/design-system/editor`에서
+   import하고 `@tiptap/react @tiptap/pm @tiptap/starter-kit` 설치가 필요하다. 쓰지 않는 화면에서는 import 금지.
+6. **컴포넌트 소스 복사(fork) 금지.** 일부 다르게 쓰려면 커스텀 가이드 5단계 순서를 따른다:
    https://love9320-glitch.github.io/enterprise-design-system/#customization
-7. **스타일 연결은 한 번만.** `@gusun/design-system/styles.css`(또는 tailwind preset)가
-   이미 연결돼 있으면 중복 추가하지 않는다. 폰트는 Pretendard(index.html의 CDN link).
+7. **스타일 연결은 한 번만.** `styles.css`(또는 tailwind preset)가 이미 연결돼 있으면 중복 추가 금지.
+   폰트는 Pretendard(index.html의 CDN link).
+
+## 2. 페이지를 만드는 절차 — 바로 만들지 말 것
+
+요청을 받으면 이 순서로 조립한다:
+① **분석** — 필요한 요소·상태를 목록화한다.
+② **템플릿 매칭** — 큰 단위부터: 목록/표 화면=`TableTemplate`(검색·버튼·표·페이지네이션 일체) ·
+   폼=`Field` 세로 스택(모달 폼=`FormModal`) · 확인창=`ConfirmModal` · 알림=`AlertModal` ·
+   좌측 내비 화면=`SideNavigationTemplate`. 템플릿으로 덮이면 그걸 쓴다.
+③ **조합** — 템플릿이 안 덮는 부분만 개별 컴포넌트로 채운다.
+④ **정리** — 간격은 아래 3번 규칙으로 통일한다.
+
+## 3. 간격 규칙 — 일관성의 핵심
+
+레이아웃(배치·여백)은 자유 영역이지만 **값은 반드시 디자인 시스템 스케일에서만** 고른다.
+허용 값(px): **1 · 2 · 4 · 6 · 8 · 10 · 12 · 16 · 20 · 24 · 28 · 32 · 36** — 이 밖의 값(13px, 15px 등) 금지.
+(tailwind preset을 쓰면 같은 값이 `p-spacing-7`·`gap-spacing-5` 같은 토큰 클래스로 제공된다 — Tailwind
+기본 유틸(`p-4`)·임의값(`p-[13px]`)은 금지. CSS 한 장 방식이면 인라인/자체 CSS에 위 px 값만 사용.)
+
+용도별 기본값:
+
+| 용도 | 값 | preset 클래스 |
+|---|---|---|
+| 페이지 컨테이너 | 좌우 16 · 상하 28, 가운데 정렬(목록·상세 max-w-5xl / 폼 max-w-xl) | `mx-auto max-w-5xl px-spacing-7 py-spacing-10` |
+| 섹션 사이 | 24 (구분선 쓰면 위아래 20) | `spacing-9` / `spacing-8` |
+| 제목 → 본문/설명 | 12~16 | `spacing-6`~`7` |
+| 폼 필드 세로 스택 | 16 | `space-y-spacing-7` |
+| 나란한 컨트롤(버튼끼리, 인풋+버튼) | 8 | `gap-spacing-5` |
+| 아이콘 ↔ 라벨 | 4~6 | `gap-spacing-3`~`4` |
+
+## 4. 페이지 유형별 기본형
+
+- **목록 화면**: 컨테이너 → 타이틀(`18~20px semibold`)+설명(14px 회색) → `TableTemplate`.
+  컬럼은 상수 배열로 정의해 props로. 표 색·간격은 컴포넌트가 처리 — 다시 칠하지 않는다.
+- **폼 화면**: 좁은 컨테이너(max-w-xl) → `Field`(라벨+컨트롤 조립, `<label>`·`*` 손으로 만들지 말 것)
+  세로 스택 16 → 하단 우측 [취소 `line` + 저장 `fill`], 제출 중엔 저장 버튼 `loading`.
+- **확인/알림**: `ConfirmModal`(위험 액션 재확인 체크 내장) / `AlertModal`. 입력이 있으면 `FormModal`.
+
+## 5. 카피(문구) 규칙
+
+한글 맞춤법 띄어쓰기를 따르고, 같은 화면 안에서 같은 용어의 표기를 통일한다.
+한 단위 개념으로 읽히는 필드명은 붙인다(예: "발신주소"), 서술형은 띄운다(예: "안내 및 발표 명칭").
 
 ## 참고 링크
 
