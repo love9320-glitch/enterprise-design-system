@@ -5,6 +5,7 @@
 - **데모·문서 사이트**: https://love9320-glitch.github.io/enterprise-design-system/ — 모든 컴포넌트의 실행 예제·props 표·복사 가능한 코드
 - **처음이라면**: [시작 가이드](https://love9320-glitch.github.io/enterprise-design-system/#getting-started) — 개발 경험이 없어도 0부터 실행까지
 - **고쳐 쓰고 싶다면**: [커스텀 가이드](https://love9320-glitch.github.io/enterprise-design-system/#customization) — 토큰 오버라이드부터 기능 훅 재사용까지 5단계
+- **Claude Code(AI)로 개발한다면**: 시작 가이드의 "Claude Code와 함께 쓰기" — 프로젝트 루트에 넣을 소비자용 `CLAUDE.md` 제공
 
 ## 설치
 
