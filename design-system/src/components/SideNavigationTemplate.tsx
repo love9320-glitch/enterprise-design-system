@@ -95,7 +95,9 @@ export function SideNavigationTemplate({
           </SideNavigationButton>
         ))}
       </SideNavigation>
-      {/* 우측 콘텐츠 슬롯 — 세로 스택(gap 12 = Figma 슬롯 규격) */}
+      {/* 우측 콘텐츠 슬롯 — 세로 스택(gap 12 = Figma 슬롯 규격). min-h-0로 높이 제한이 전파되므로
+          내용이 상한을 따르려면 fill형 컴포넌트로 구성한다(예: Table maxHeight='fill' + min-h-0 — 규칙 18.
+          일반 div만 넣으면 상한을 넘겨 흐른다 — 의도된 슬롯 자율성) */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-spacing-6">{children}</div>
     </div>
   );
