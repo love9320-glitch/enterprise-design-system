@@ -1,5 +1,6 @@
 // @gusun/design-system — 공개 API 배럴(2026-07-19 패키지화)
-// 에디터(Tiptap)는 번들 무게 때문에 ./editor 서브패스로 분리, 데모 전용(MarkdownDoc/UsageExample)은 제외.
+// 에디터(Tiptap)는 번들 무게 때문에 ./editor 서브패스로 분리(NoticeWritingTemplate 포함 — Editor 정적 의존),
+// 데모 전용(MarkdownDoc/UsageExample)은 제외.
 // 토큰·유틸·훅 포함 — 컴포넌트가 export하는 타입(Props·모델)도 함께 재수출된다.
 
 export * from './components/Accordion';
@@ -28,7 +29,6 @@ export * from './components/List';
 export * from './components/ListEmpty';
 export * from './components/ListGroup';
 export * from './components/Modal';
-export * from './components/NoticeWritingTemplate';
 export * from './components/Pagination';
 export * from './components/Popover';
 export * from './components/PopoverMenu';
