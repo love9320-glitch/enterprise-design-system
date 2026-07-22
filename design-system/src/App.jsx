@@ -9,7 +9,7 @@ import {
   UploadMenuPage,
   ConditionOrderSlotPage, JobPositionTemplatePage, ScreeningBuilderTemplatePage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
-  RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage,
+  RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
 import { ErrorBoundary } from './components/ErrorBoundary';
@@ -125,6 +125,7 @@ const NAV_GROUPS = [
   {
     label: '디자인시스템 규칙',
     items: [
+      { id: 'getting-started', label: '시작 가이드',     Page: GettingStartedPage },
       { id: 'rule-overview',   label: '규칙 개요',       Page: RuleOverviewPage },
       { id: 'rule-foundation', label: 'Foundation 규칙', Page: RuleFoundationPage },
       { id: 'rule-components', label: '컴포넌트 규칙',    Page: RuleComponentsPage },

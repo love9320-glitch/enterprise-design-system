@@ -45,4 +45,5 @@ export {
   RuleTemplatesPage,
   RuleUsagePage,
   CustomizationGuidePage,
+  GettingStartedPage,
 } from './RulePages';
