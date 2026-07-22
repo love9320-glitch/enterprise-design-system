@@ -3,3 +3,6 @@
 export * from './components/Editor';
 export * from './components/EditorToolbar';
 export * from './components/MergeFieldNode';
+// Editor를 정적으로 내장한 템플릿 — 메인 엔트리에 두면 Tiptap 미설치 소비자의 import가 깨진다
+// (0.1.0에서 발견된 버그 — 설치 스모크로 검출, 2026-07-22)
+export * from './components/NoticeWritingTemplate';
