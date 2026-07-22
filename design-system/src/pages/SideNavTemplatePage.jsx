@@ -70,9 +70,16 @@ function Demo({ navWidth = 180, line = true, showAdd = true, addPosition = 'top'
   const [rows, setRows] = useState(INITIAL_ROWS);
   const [menu, setMenu] = useState('all');
   const [draft, setDraft] = useState('');
+  const [userCats, setUserCats] = useState([]); // '카테고리 추가'로 사용자가 더한 카테고리명들
 
   // 메뉴 id → 필터할 카테고리명(추가 더미 메뉴는 라벨 자체를 카테고리로 사용)
-  const catNameOf = (id) => CATEGORY_BY_MENU[id] ?? (id.startsWith('extra-') ? `카테고리 ${Number(id.slice(6)) + 6}` : null);
+  const catNameOf = (id) =>
+    CATEGORY_BY_MENU[id] ??
+    (id.startsWith('extra-')
+      ? `카테고리 ${Number(id.slice(6)) + 6}`
+      : id.startsWith('user-')
+        ? userCats[Number(id.slice(5))]
+        : null);
   const visible = menu === 'all' ? rows : rows.filter((r) => r.category === catNameOf(menu));
   const countOf = (key) => (key === 'all' ? rows.length : rows.filter((r) => r.category === catNameOf(key)).length);
   const menus = [
@@ -84,7 +91,18 @@ function Demo({ navWidth = 180, line = true, showAdd = true, addPosition = 'top'
     { id: 'long', label: '아주 길어서 잘리는 카테고리 명칭 예시', count: 0 },
     // 스크롤 데모용 더미 카테고리 — extraMenus 개수만큼
     ...Array.from({ length: extraMenus }, (_, i) => ({ id: `extra-${i}`, label: `카테고리 ${i + 6}`, count: countOf(`extra-${i}`) })),
+    // '카테고리 추가'로 사용자가 더한 카테고리
+    ...userCats.map((name, i) => ({ id: `user-${i}`, label: name, count: countOf(`user-${i}`) })),
   ];
+
+  // '카테고리 추가'(+) — 새 카테고리를 만들고 바로 선택해 추가된 것이 즉시 보이게
+  const addCategory = () => {
+    setUserCats((prev) => {
+      const next = [...prev, `새 카테고리 ${prev.length + 1}`];
+      setMenu(`user-${next.length - 1}`);
+      return next;
+    });
+  };
 
   const addCode = () => {
     const name = draft.trim();
@@ -106,7 +124,7 @@ function Demo({ navWidth = 180, line = true, showAdd = true, addPosition = 'top'
       overflow={overflow}
       height={height}
       addLabel="카테고리 추가"
-      onAdd={() => {}}
+      onAdd={addCategory}
     >
       {/* Figma 구조 그대로: field 인스턴스(label=채용 코드 생성, slot=인풋+추가 버튼) + table 인스턴스 (규칙 4) */}
       <Field label="채용 코드 생성">
