@@ -115,6 +115,54 @@ npm run dev
 - **일부 고쳐 쓰고 싶을 때**: 같은 사이트의 **디자인시스템 규칙 → 커스텀 가이드** — 토큰만 바꾸기부터 기능 훅 재사용까지 단계별로 정리돼 있다.
 - **에디터(글쓰기 도구)가 필요하면**: Editor·공지 작성 템플릿은 별도 서브패스라 추가 설치가 필요하다 — `npm install @tiptap/react @tiptap/pm @tiptap/starter-kit` 후 `import { Editor } from '@gusun/design-system/editor'`.
 
+## Claude Code(AI)와 함께 쓰기
+
+VS Code에 [Claude Code](https://claude.com/claude-code) 확장을 설치하면, "로그인 화면 만들어줘"처럼 말로 요청해서 이 디자인 시스템 컴포넌트로 화면을 조립하게 할 수 있다. 그 전에 **프로젝트 루트에 `CLAUDE.md` 파일 하나**를 만들어 두면 Claude가 우리 규칙을 지키며 작업한다.
+
+`my-app` 폴더 바로 아래(=`package.json` 옆)에 **`CLAUDE.md`** 파일을 새로 만들고 아래 내용을 통째로 붙여넣는다:
+
+```markdown
+# 이 프로젝트의 UI 규칙 — @gusun/design-system
+
+모든 응답은 한국어로. 이 프로젝트의 UI는 전부 디자인 시스템 `@gusun/design-system`으로 조립한다.
+
+## 필수 규칙
+
+1. **UI 요소는 반드시 디자인 시스템 컴포넌트로 만든다.** `<button>`·`<input>`·`<select>`·`<table>` 등을
+   직접 마크업하지 말고 `import { Button, Input, Select, Table, ... } from '@gusun/design-system'`로 조립한다.
+   페이지를 만들 땐 템플릿(TableTemplate·FormTemplate 등)이 먼저 — 템플릿으로 덮이면 그걸 쓰고,
+   안 되는 부분만 개별 컴포넌트로 내려간다.
+2. **색·간격·라운드 하드코딩 금지.** 색 차이·상태는 컴포넌트 props(`variant`·`color`·`size`·`disabled` 등)로
+   표현한다. className이나 인라인 스타일로 컴포넌트의 색·모양을 덮어쓰지 않는다.
+   페이지 레이아웃(배치·여백·정렬)만 자유롭게 작성한다.
+3. **props를 추측하지 않는다.** 컴포넌트 옵션의 진실은 타입(.d.ts — 에디터 자동완성)과
+   데모 사이트 각 페이지의 props 표다: https://love9320-glitch.github.io/enterprise-design-system/
+   존재가 불확실한 prop은 타입을 확인한 뒤 쓴다.
+4. **Select의 onChange 페이로드는 `(e) => e.target.value`** 형태다(합성 이벤트).
+   Modal 계열은 `open`/`onClose`를 호출부 state로 제어한다.
+5. **에디터류는 서브패스에서만.** `Editor`·`NoticeWritingTemplate`은
+   `@gusun/design-system/editor`에서 import하고 `@tiptap/react @tiptap/pm @tiptap/starter-kit`
+   peer 설치가 필요하다. 쓰지 않는 화면에서는 절대 import하지 않는다(번들·의존성 오염).
+6. **컴포넌트 소스를 복사(fork)해서 고치지 않는다.** 일부 다르게 쓰고 싶으면 커스텀 가이드의
+   5단계 순서를 따른다(① 토큰 오버라이드 → ② 래퍼 컴포넌트 → ③ 기능 훅 재사용 →
+   ④ 토큰만 가져다 자체 제작 → ⑤ 디자인 시스템 저장소에 PR):
+   https://love9320-glitch.github.io/enterprise-design-system/#customization
+7. **스타일 연결은 한 번만.** `@gusun/design-system/styles.css`(또는 tailwind preset)가
+   이미 연결돼 있으면 중복 추가하지 않는다. 폰트는 Pretendard(index.html의 CDN link).
+
+## 참고 링크
+
+- 컴포넌트 카탈로그(실행 예제·props 표): https://love9320-glitch.github.io/enterprise-design-system/
+- 시작 가이드: https://love9320-glitch.github.io/enterprise-design-system/#getting-started
+- 커스텀 가이드: https://love9320-glitch.github.io/enterprise-design-system/#customization
+```
+
+저장 후 Claude Code를 열고(사이드바 아이콘) 이렇게 요청해 보자:
+
+> "회원 목록 화면 만들어줘 — 검색, 테이블(이름/이메일/상태 태그), 페이지네이션"
+
+Claude가 위 규칙에 따라 TableTemplate·Tag 등 우리 컴포넌트로 조립해 준다. 결과물의 색·간격이 데모 사이트와 똑같으면 규칙이 잘 작동하는 것이다.
+
 ## 막혔을 때 (자주 나는 문제)
 
 | 증상 | 원인·해결 |
