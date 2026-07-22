@@ -40,7 +40,7 @@ const USAGE_PROPS = [
   { name: 'showAdd / addLabel / onAdd', type: "boolean / string / (e)=>void", default: "true / 'add menu' / —", desc: '추가(+) 행 — 메뉴 추가 기능 on/off' },
   { name: 'addPosition', type: "'top' | 'bottom'", default: "'top'", desc: '추가 행 위치 — 최상위/최하위(어느 쪽이든 스크롤 밖 고정)' },
   { name: 'overflow', type: "'ellipsis' | 'wrap'", default: "'ellipsis'", desc: '긴 메뉴 라벨 처리(버튼 패스스루)' },
-  { name: 'height', type: "number | string | 'fill'", default: '—', desc: "템플릿 높이 — 숫자/CSS=고정. 'fill'=모달 본문 가용 높이를 '최대치'로(내용 적으면 자연 높이, 상한 도달 시 내비 독립 스크롤. 밖에선 부모 100%)" },
+  { name: 'height', type: "number | string | 'fill'", default: '—', desc: "템플릿 높이 — 숫자/CSS=고정. 'fill'=모달 본문 가용 높이를 '최대치'로(내용 적으면 자연 높이, 상한 도달 시 내비 독립 스크롤. 밖에선 부모 100%). 우측 콘텐츠도 상한을 따르려면 fill형으로(예: Table maxHeight='fill' + min-h-0 — 규칙 18)" },
   { name: 'children', type: 'ReactNode', default: '—', desc: '우측 콘텐츠 슬롯(세로 스택, gap 12)' },
 ];
 
@@ -150,7 +150,9 @@ function Demo({ navWidth = 180, line = true, showAdd = true, addPosition = 'top'
           </Button>
         </div>
       </Field>
-      <Table columns={COLUMNS} rows={visible} bordered minWidth={0} />
+      {/* 높이 제한(height) 시 우측도 상한을 따르도록 표는 fill(부모 가용 높이 상한, 규칙 18) —
+          제한 없으면 자연 높이 그대로라 항상 켜 둬도 안전 */}
+      <Table columns={COLUMNS} rows={visible} bordered minWidth={0} maxHeight="fill" className="min-h-0" />
     </SideNavigationTemplate>
   );
 }
