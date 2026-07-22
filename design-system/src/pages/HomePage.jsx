@@ -33,7 +33,7 @@ const STATS = [
   { value: '60+', label: '컴포넌트 (TypeScript strict)' },
   { value: '6종', label: '템플릿 (Table · Form · Notice · Job · SideNav · Screening)' },
   { value: '30+', label: '시멘틱 토큰 그룹 (컬러 · 간격 · 라운드 · 행간)' },
-  { value: 'npm', label: '@love9320-glitch/design-system 패키지' },
+  { value: 'npm', label: '@gusun/design-system 패키지' },
 ];
 
 export function HomePage() {

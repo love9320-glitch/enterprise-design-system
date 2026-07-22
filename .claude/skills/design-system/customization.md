@@ -12,13 +12,13 @@
 
 ```js
 // tailwind.config.js (소비 팀)
-import preset from '@love9320-glitch/design-system/preset';
+import preset from '@gusun/design-system/preset';
 
 export default {
   presets: [preset],
   content: [
     './src/**/*.{ts,tsx}',
-    './node_modules/@love9320-glitch/design-system/dist-lib/*.js',
+    './node_modules/@gusun/design-system/dist-lib/*.js',
   ],
   theme: {
     extend: {
@@ -31,7 +31,7 @@ export default {
 };
 ```
 
-Tailwind를 안 쓰는 팀은 `import '@love9320-glitch/design-system/styles.css'` 한 장을 쓰되, 이 경우 토큰 오버라이드는 CSS 변수 재정의로 처리한다.
+Tailwind를 안 쓰는 팀은 `import '@gusun/design-system/styles.css'` 한 장을 쓰되, 이 경우 토큰 오버라이드는 CSS 변수 재정의로 처리한다.
 
 **언제**: 브랜드 색·간격만 다를 때. 가장 흔한 케이스.
 
@@ -41,7 +41,7 @@ Tailwind를 안 쓰는 팀은 `import '@love9320-glitch/design-system/styles.css
 
 ```tsx
 // 소비 팀 — 우리 팀 기본값을 입힌 Button 래퍼
-import { Button } from '@love9320-glitch/design-system';
+import { Button } from '@gusun/design-system';
 import type { ComponentProps } from 'react';
 
 export function AppButton(props: ComponentProps<typeof Button>) {
@@ -54,7 +54,7 @@ export function AppButton(props: ComponentProps<typeof Button>) {
 **`asChild`로 태그 자체를 바꾸기** — Button은 `asChild`를 주면 `<button>` 대신 자식 엘리먼트를 루트로 렌더하고 스타일·동작을 머지한다(Radix Slot 패턴). "버튼처럼 보이는 링크·라우터 Link"를 유효하지 않은 중첩 없이 만들 때 쓴다.
 
 ```tsx
-import { Button } from '@love9320-glitch/design-system';
+import { Button } from '@gusun/design-system';
 
 // <a>가 Button의 스타일·동작을 그대로 입고 렌더(래퍼 <button> 없음)
 <Button asChild variant="fill"><a href="/docs">문서 보기</a></Button>
@@ -88,7 +88,7 @@ import { Button } from '@love9320-glitch/design-system';
 ```tsx
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { usePopoverPosition, useOutsideDismiss } from '@love9320-glitch/design-system';
+import { usePopoverPosition, useOutsideDismiss } from '@gusun/design-system';
 
 export function MyDropdown({ trigger, children }) {
   const [open, setOpen] = useState(false);
@@ -121,7 +121,7 @@ export function MyDropdown({ trigger, children }) {
 동작까지 다르면, 최소한 **디자인 값(토큰)** 이라도 공유해 시각 일관성은 유지한다.
 
 ```ts
-import { spacing, baseColors, radius } from '@love9320-glitch/design-system/tokens';
+import { spacing, baseColors, radius } from '@gusun/design-system/tokens';
 // 자체 컴포넌트를 만들되 간격·색·라운드는 시스템 토큰에서 — 룩앤필은 어긋나지 않게
 ```
 

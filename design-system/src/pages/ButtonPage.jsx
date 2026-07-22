@@ -94,7 +94,7 @@ import { Users } from 'lucide-react';
 <Button disabled>비활성</Button>
 <Button loading onClick={save}>저장</Button>`;
 
-const ASCHILD_USAGE = `import { Button } from '@love9320-glitch/design-system';
+const ASCHILD_USAGE = `import { Button } from '@gusun/design-system';
 
 // 1) 외부 링크를 버튼처럼 — <a>가 루트로 렌더되고 버튼 스타일·동작을 입는다
 <Button asChild variant="fill">
