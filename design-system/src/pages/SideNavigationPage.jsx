@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { Users, FolderOpen, Settings } from 'lucide-react';
+import { Users, FolderOpen, Settings, Pencil, Trash2 } from 'lucide-react';
 import { SideNavigation, SideNavigationButton } from '../components/SideNavigation';
+import { Button } from '../components/Button';
+import { Input } from '../components/Input';
 import { Divider } from '../components/Divider';
 import { UsageExample } from '../components/UsageExample';
 
@@ -17,7 +19,15 @@ import { Users, Plus } from 'lucide-react';
 // add menu 끄기 · 독립형(우측 라인 없음)
 <SideNavigation width={220} line={false} showAdd={false}>
   <SideNavigationButton icon={Users} line={false}>side menu</SideNavigationButton>
-</SideNavigation>`;
+</SideNavigation>
+
+// 행 hover 액션(actions) — chevron 왼쪽에 아이콘 전용 버튼(hover/키보드 포커스 시 표시, 화살표 유지)
+<SideNavigationButton
+  actions={<>
+    <Button variant="ghost" size="18" icon={Pencil} aria-label="이름 수정" tooltip="수정" onClick={rename} />
+    <Button variant="ghost" size="18" icon={Trash2} aria-label="삭제" tooltip="삭제" onClick={remove} />
+  </>}
+>side menu</SideNavigationButton>`;
 
 const USAGE_PROPS = [
   { name: 'SideNavigation · width', type: "number | string", default: '180', desc: '컨테이너 너비 — Figma variants 180/220/260 또는 임의 px/CSS' },
@@ -32,6 +42,7 @@ const USAGE_PROPS = [
   { name: 'Button · disabled', type: 'boolean', default: 'false', desc: '비활성(#c9c9c9, hover 없음)' },
   { name: 'Button · showNewTag / newTagColor', type: "boolean / 'blue'|'red'|'black'", default: "false / 'blue'", desc: "라벨 오른쪽 NewTag(N) 표시" },
   { name: 'Button · showArrow', type: 'boolean', default: 'true', desc: '우측 chevron(›) 표시' },
+  { name: 'Button · actions', type: 'ReactNode', default: '—', desc: '행 hover/키보드 포커스 시 우측에 나타나는 아이콘 전용 버튼들(이름 수정·삭제 등) — chevron(›)은 유지되고 액션은 그 왼쪽에 표시. 디폴트 상태에선 라벨이 액션 자리까지 확장, hover 시 액션이 펼쳐지며 라벨 축소. 활용 예: Side Navigation Template의 editable 모드' },
   { name: 'Button · line', type: 'boolean', default: 'true', desc: 'true=우측 라인 접합형(왼쪽만 라운드) / false=독립형(전체 라운드)' },
   { name: 'Button · onClick', type: '(e) => void', default: '—', desc: '클릭 핸들러' },
 ];
@@ -44,38 +55,170 @@ const MENUS = [
 ];
 
 function Playground({ width, line, showAdd = true }) {
+  const [menus, setMenus] = useState(MENUS); // 인스턴스별 자기 상태 — 수정·삭제·추가가 실제 반영
   const [active, setActive] = useState('a');
-  const [added, setAdded] = useState([]);
+  const [editingId, setEditingId] = useState(null); // 이름 수정 중인 메뉴 id
+  const [draft, setDraft] = useState('');
+  const [seq, setSeq] = useState(1);
+
+  const addMenu = () => {
+    setMenus((prev) => [...prev, { id: `new-${seq}`, label: `new menu ${seq}`, icon: FolderOpen }]);
+    setSeq((n) => n + 1);
+  };
+  const confirmRename = (id) => {
+    const name = draft.trim();
+    if (!name) return;
+    setMenus((prev) => prev.map((m) => (m.id === id ? { ...m, label: name } : m)));
+    setEditingId(null);
+  };
+  const removeMenu = (id) => {
+    const rest = menus.filter((m) => m.id !== id);
+    setMenus(rest);
+    if (active === id) setActive(rest[0]?.id ?? null);
+  };
+
   return (
-    <SideNavigation
-      width={width}
-      line={line}
-      showAdd={showAdd}
-      onAdd={() => setAdded((prev) => [...prev, `new menu ${prev.length + 1}`])}
-    >
-      {MENUS.map((m) => (
-        <SideNavigationButton
-          key={m.id}
-          icon={m.icon}
-          selected={active === m.id}
-          showNewTag={m.tag}
-          line={line}
-          onClick={() => setActive(m.id)}
-        >
-          {m.label}
-        </SideNavigationButton>
-      ))}
-      {added.map((label) => (
-        <SideNavigationButton
-          key={label}
-          icon={FolderOpen}
-          selected={active === label}
-          line={line}
-          onClick={() => setActive(label)}
-        >
-          {label}
-        </SideNavigationButton>
-      ))}
+    <SideNavigation width={width} line={line} showAdd={showAdd} onAdd={addMenu}>
+      {menus.map((m) =>
+        editingId === m.id ? (
+          <div key={m.id} className="w-full">
+            <Input
+              width="100%"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="이름 입력"
+              inputProps={{
+                autoFocus: true,
+                onKeyDown: (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    confirmRename(m.id);
+                  } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    setEditingId(null);
+                  }
+                },
+                onBlur: () => setEditingId(null),
+              }}
+            />
+          </div>
+        ) : (
+          <SideNavigationButton
+            key={m.id}
+            icon={m.icon}
+            selected={active === m.id}
+            showNewTag={m.tag}
+            line={line}
+            onClick={() => setActive(m.id)}
+            actions={
+              <>
+                <Button
+                  variant="ghost"
+                  size="18"
+                  icon={Pencil}
+                  aria-label={`${m.label} 이름 수정`}
+                  tooltip="수정"
+                  onClick={() => {
+                    setDraft(m.label);
+                    setEditingId(m.id);
+                  }}
+                />
+                <Button
+                  variant="ghost"
+                  size="18"
+                  icon={Trash2}
+                  aria-label={`${m.label} 삭제`}
+                  tooltip="삭제"
+                  onClick={() => removeMenu(m.id)}
+                />
+              </>
+            }
+          >
+            {m.label}
+          </SideNavigationButton>
+        ),
+      )}
+    </SideNavigation>
+  );
+}
+
+// actions 데모 — 연필(이름 수정: 행이 인풋으로 바뀜, Enter 확정·Esc/blur 취소)·휴지통(삭제)
+function ActionsDemo() {
+  const [menus, setMenus] = useState([
+    { id: 1, label: '지역' },
+    { id: 2, label: '직책' },
+    { id: 3, label: '직무' },
+  ]);
+  const [active, setActive] = useState(1);
+  const [editingId, setEditingId] = useState(null);
+  const [draft, setDraft] = useState('');
+
+  const confirmRename = (id) => {
+    const name = draft.trim();
+    if (!name) return;
+    setMenus((prev) => prev.map((m) => (m.id === id ? { ...m, label: name } : m)));
+    setEditingId(null);
+  };
+
+  return (
+    <SideNavigation width={220} line={false} showAdd={false}>
+      {menus.map((m) =>
+        editingId === m.id ? (
+          <div key={m.id} className="w-full">
+            <Input
+              width="100%"
+              value={draft}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="이름 입력"
+              inputProps={{
+                autoFocus: true,
+                onKeyDown: (e) => {
+                  if (e.key === 'Enter') {
+                    e.preventDefault();
+                    confirmRename(m.id);
+                  } else if (e.key === 'Escape') {
+                    e.preventDefault();
+                    setEditingId(null);
+                  }
+                },
+                onBlur: () => setEditingId(null),
+              }}
+            />
+          </div>
+        ) : (
+          <SideNavigationButton
+            key={m.id}
+            line={false}
+            selected={active === m.id}
+            onClick={() => setActive(m.id)}
+            actions={
+              <>
+                <Button
+                  variant="ghost"
+                  size="18"
+                  icon={Pencil}
+                  aria-label={`${m.label} 이름 수정`}
+                  tooltip="수정"
+                  onClick={() => {
+                    setDraft(m.label);
+                    setEditingId(m.id);
+                  }}
+                />
+                <Button
+                  variant="ghost"
+                  size="18"
+                  icon={Trash2}
+                  aria-label={`${m.label} 삭제`}
+                  tooltip="삭제"
+                  onClick={() => setMenus((prev) => prev.filter((x) => x.id !== m.id))}
+                />
+              </>
+            }
+          >
+            {m.label}
+          </SideNavigationButton>
+        ),
+      )}
     </SideNavigation>
   );
 }
@@ -121,6 +264,18 @@ export function SideNavigationPage() {
           <SideNavigationButton icon={Users} showNewTag overflow="wrap">아주 길어서 반드시 잘리는 사이드 메뉴 명칭</SideNavigationButton>
         </div>
       </div>
+
+      {/* 행 hover 액션 — actions */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">행 hover 액션 — actions (이름 수정·삭제)</h3>
+      <p className="mb-spacing-6 text-12 text-font-icon-4">
+        <code className="text-font-icon-5">actions</code>에 아이콘 전용 버튼들을 주면 행 hover/키보드 포커스 시
+        우측에 나타납니다(chevron ›는 유지되고 액션은 그 왼쪽에 표시). 디폴트 상태에선 라벨이 액션 자리까지
+        확장되고, hover하면 액션이 펼쳐지며 라벨이 그만큼 줄어듭니다(말줄임 텍스트로 확인해 보세요).
+        아래는 연필=이름 수정(Enter 확정·Esc 취소)·휴지통=삭제를 연결한 예 —
+        같은 조립이 Side Navigation Template의 <code className="text-font-icon-5">editable</code> 모드입니다.
+      </p>
+      <ActionsDemo />
 
       {/* 독립 스크롤 — 부모 높이 제한 */}
       <Divider className="mt-spacing-9 mb-spacing-8" />

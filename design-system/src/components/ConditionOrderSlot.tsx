@@ -13,9 +13,16 @@
 //     자동 부여, 미사용 카드는 "조건 -."로 표기.
 //   - items 배열로 조건 카드를 필요만큼 추가한다.
 import { Children, Fragment, cloneElement, isValidElement, useRef, useState } from 'react';
-import type { ComponentPropsWithoutRef, HTMLAttributes, ReactElement, ReactNode } from 'react';
+import type {
+  ComponentPropsWithoutRef,
+  DragEvent as ReactDragEvent,
+  HTMLAttributes,
+  ReactElement,
+  ReactNode,
+} from 'react';
 import { ChevronDown, ChevronRight, GripVertical } from 'lucide-react';
 import { Switch } from './Switch';
+import { useHoverTooltip } from './useHoverTooltip';
 
 // 미사용(스위치 off) 카드의 세부 컨트롤에 disabled를 강제 주입한다(2026-07-07 지시).
 // body를 <>…</>(fragment)로 감싸 넘기는 경우가 많아 fragment는 한 겹씩 펴서 내려간다.
@@ -39,6 +46,9 @@ interface ConditionSlotCardProps extends ComponentPropsWithoutRef<'div'> {
   title?: string; // 헤더 제목 — 컨테이너가 활성 순번으로 자동 부여
   enabled?: boolean; // 사용/미사용(Switch) — 미사용이면 제목 dim + 세부 영역 반투명
   onEnabledChange?: (checked: boolean) => void;
+  switchDisabled?: boolean; // 사용/미사용 스위치 잠금 — 현재 상태 그대로 변경 불가(2026-07-23)
+  switchDisabledTooltip?: ReactNode; // 잠금 사유 — 잠긴 스위치 hover 시 툴팁으로 표시
+  dragDisabled?: boolean; // 드래그 잠금(2026-07-23) — grip 아이콘 disabled 색 + 드래그 시작 안 됨
   dragging?: boolean; // pressed 상태(드래그 앤 드롭 중 유지)
   width?: number | string; // Figma 기본 202px — 숫자(px) | CSS 길이
   dragHandleProps?: HTMLAttributes<HTMLSpanElement> | null; // grip에 붙는 핸들러(컨테이너가 주입 — 드래그 시작 허용 판정)
@@ -49,6 +59,9 @@ export function ConditionSlotCard({
   title = '조건 1.',
   enabled = true,
   onEnabledChange,
+  switchDisabled = false,
+  switchDisabledTooltip,
+  dragDisabled = false,
   dragging = false,
   width = 202,
   dragHandleProps = null,
@@ -56,26 +69,62 @@ export function ConditionSlotCard({
   className = '',
   ...props
 }: ConditionSlotCardProps) {
+  // 잠금 사유 툴팁 — 잠겨 있을 때만 활성(disabled input은 이벤트가 안 나가므로 감싼 span에서 감지)
+  const lockTip = useHoverTooltip(switchDisabled ? switchDisabledTooltip : null);
+
+  // 드래그 고스트(2026-07-23 지시 — 수식 조건 카드와 동일 스타일): 전체 카드 스냅샷 대신
+  // 헤더(grip+제목)만 남긴 축약형·파란 아웃라인/텍스트(condition-card drop 토큰 공유).
+  // dragstart에서 setDragImage로 오프스크린 원본을 고스트로 지정(ScreeningConditionCard와 같은 패턴).
+  const ghostRef = useRef<HTMLDivElement | null>(null);
+  const handleDragStart = (e: ReactDragEvent<HTMLDivElement>) => {
+    if (ghostRef.current && e.dataTransfer) {
+      try {
+        e.dataTransfer.setDragImage(ghostRef.current, 16, 20);
+      } catch {
+        /* setDragImage 미지원 브라우저 무시 — 기본 고스트 사용 */
+      }
+    }
+    props.onDragStart?.(e);
+  };
   return (
     <div
       style={{ width: typeof width === 'number' ? `${width}px` : width }}
-      className={`flex shrink-0 flex-col gap-spacing-6 rounded-round-4 border p-spacing-6 shadow-[0_2px_2px_0_rgba(0,0,0,0.12)] transition-colors ${
+      // 상단 패딩 8(pt-spacing-5, 나머지 12)·헤더↔셀렉트 gap 8(spacing-5) — 2026-07-23 지시(구 12/12)
+      className={`flex shrink-0 flex-col gap-spacing-5 rounded-round-4 border p-spacing-6 pt-spacing-5 shadow-[0_2px_2px_0_rgba(0,0,0,0.12)] transition-colors ${
         dragging ? CARD_PRESSED : CARD_DEFAULT
       } ${className}`}
       {...props}
+      onDragStart={handleDragStart}
     >
+      {/* 드래그 고스트 원본 — 화면 밖 고정 배치(display:none이면 setDragImage가 안 먹음) */}
+      <div
+        ref={ghostRef}
+        style={{ position: 'fixed', top: -9999, left: -9999 }}
+        className="inline-flex w-fit items-center gap-spacing-4 rounded-round-4 border border-condition-card-drop-outline bg-condition-card-hover-card-bg px-spacing-6 py-spacing-4 text-condition-card-drop-text shadow-[0_2px_2px_0_rgba(0,0,0,0.12)]"
+      >
+        <GripVertical size={16} strokeWidth={1.8} className="shrink-0" />
+        <span className="whitespace-nowrap text-14">{title}</span>
+      </div>
       <div className="flex w-full items-center justify-between gap-spacing-4">
         <div className="flex min-w-0 items-center gap-spacing-4">
           <span
             aria-label="순서 변경"
-            className="flex shrink-0 cursor-grab items-center active:cursor-grabbing"
-            {...(dragHandleProps || {})}
+            aria-disabled={dragDisabled || undefined}
+            className={`flex shrink-0 items-center ${
+              dragDisabled
+                ? 'cursor-not-allowed text-condition-slot-card-disabled-icon'
+                : 'cursor-grab active:cursor-grabbing'
+            }`}
+            {...(dragDisabled ? {} : dragHandleProps || {})}
           >
             <GripVertical size={16} strokeWidth={1.8} />
           </span>
           <span className={`truncate text-14 ${enabled ? '' : 'text-font-icon-3'}`}>{title}</span>
         </div>
-        <Switch checked={enabled} onChange={(e) => onEnabledChange?.(e.target.checked)} />
+        <span className="flex shrink-0" onMouseEnter={lockTip.onMouseEnter} onMouseLeave={lockTip.onMouseLeave}>
+          <Switch checked={enabled} disabled={switchDisabled} onChange={(e) => onEnabledChange?.(e.target.checked)} />
+        </span>
+        {lockTip.tooltip}
       </div>
       {/* 세부 select 스택(gap 4px=spacing-3, Figma Slot) —
           미사용(스위치 off)이면 자식 컨트롤에 disabled를 주입해 Select 자체 disabled 상태로 표시(값은 보존) */}
@@ -100,6 +149,9 @@ interface ConditionOrderSlotProps extends ComponentPropsWithoutRef<'div'> {
   onOrderChange?: (ids: string[]) => void;
   enabledIds?: string[]; // id[] — 사용 중 조건(controlled)
   onEnabledChange?: (nextEnabledIds: string[], info: { id: string; enabled: boolean }) => void;
+  switchesDisabled?: boolean; // 모든 카드의 사용/미사용 스위치 잠금(현재 상태 유지 — 2026-07-23)
+  switchesDisabledTooltip?: ReactNode; // 잠금 사유 — 잠긴 스위치 hover 시 툴팁
+  dragDisabled?: boolean; // 카드 드래그 정렬 잠금(2026-07-23) — grip disabled 색·드래그 시작 안 됨
   titlePrefix?: string; // 카드 제목 접두("조건 N.")
   cardWidth?: number | string;
 }
@@ -112,6 +164,9 @@ export function ConditionOrderSlot({
   onOrderChange,
   enabledIds,
   onEnabledChange,
+  switchesDisabled = false,
+  switchesDisabledTooltip,
+  dragDisabled = false,
   titlePrefix = '조건',
   cardWidth = 202,
   className = '',
@@ -195,6 +250,9 @@ export function ConditionOrderSlot({
             <ConditionSlotCard
               title={title}
               enabled={enabled}
+              switchDisabled={switchesDisabled}
+              switchDisabledTooltip={switchesDisabledTooltip}
+              dragDisabled={dragDisabled}
               onEnabledChange={(next) => toggleEnabled(id, next)}
               dragging={dragId === id}
               width={cardWidth}
@@ -206,7 +264,7 @@ export function ConditionOrderSlot({
                   allowDragRef.current = false;
                 },
               }}
-              draggable
+              draggable={!dragDisabled}
               onDragStart={(e) => {
                 // grip 밖에서 시작한 드래그(텍스트 등)는 차단 — 핸들에서만 이동
                 if (!allowDragRef.current) {

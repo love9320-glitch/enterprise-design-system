@@ -31,7 +31,7 @@ import { X } from 'lucide-react';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import { ScrollArea } from './ScrollArea';
-import { ModalBodyMaxContext } from './modalContext';
+import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
 import { Checkbox } from './Checkbox';
 
 // 중첩 모달 전역 관리(2026-07-07 감사) —
@@ -150,6 +150,12 @@ export function Modal({
     bodyMax: number | null;
     bodyInner: number | null;
   }>({ top: null, bodyMax: null, bodyInner: null });
+
+  // 푸터 좌측 슬롯 주입(2026-07-23) — 본문 자식이 ModalFooterStartContext로 버튼 등을 넣는다.
+  // footerStart prop이 있으면 prop 우선. 주입분은 버튼 용도이므로 footerStartType='button' 취급.
+  const [injectedFooterStart, setInjectedFooterStart] = useState<ReactNode>(null);
+  const effFooterStart = footerStart ?? injectedFooterStart;
+  const effFooterStartType = footerStart != null ? footerStartType : injectedFooterStart != null ? 'button' : footerStartType;
 
   // ESC 닫기 — 열린 모달 스택의 '맨 위'일 때만 닫는다(중첩 모달 동시 닫힘 방지).
   // closeOnEsc/onClose는 ref로 읽어 effect 재실행(스택 순서 뒤틀림)을 피한다.
@@ -339,22 +345,24 @@ export function Modal({
             <ScrollArea maxHeight={layout.bodyMax ?? bodyMaxHeight}>
               <div ref={contentRef} className={`${bodyPadding} text-14 text-font-icon-4 ${bodyClassName}`}>
                 <ModalBodyMaxContext.Provider value={layout.bodyInner ?? null}>
-                  {children}
+                  <ModalFooterStartContext.Provider value={setInjectedFooterStart}>
+                    {children}
+                  </ModalFooterStartContext.Provider>
                 </ModalBodyMaxContext.Provider>
               </div>
             </ScrollArea>
           </div>
 
           {/* Footer — 좌측 여백은 footerStart 내용 유형(footerStartType)에 따라 text=16/button=12 */}
-          {showFooter && (footer || footerStart || confirmText) && (
+          {showFooter && (footer || effFooterStart || confirmText) && (
             <footer
               ref={footerRef}
               className={`flex shrink-0 items-center bg-modal-panel-bg ${
                 footerPadding ??
-                `${footerStartType === 'button' ? 'pl-spacing-6' : 'pl-spacing-7'} pr-spacing-6 py-spacing-6`
+                `${effFooterStartType === 'button' ? 'pl-spacing-6' : 'pl-spacing-7'} pr-spacing-6 py-spacing-6`
               } ${footerFullWidth ? '' : 'justify-between'}`}
             >
-              {!footerFullWidth && <div className="min-w-0 flex-1 text-14 text-font-icon-5">{footerStart}</div>}
+              {!footerFullWidth && <div className="min-w-0 flex-1 text-14 text-font-icon-5">{effFooterStart}</div>}
               {footer ?? defaultFooterEnd}
             </footer>
           )}
