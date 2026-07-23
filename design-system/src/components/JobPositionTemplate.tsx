@@ -556,6 +556,8 @@ export function JobPositionTemplate({
                       options={valueOptions[sel.criteria] ?? []}
                       label="값" // 내부 라벨 — 선택 시 "값 ⋮ 서울"으로 표시(2026-07-07 지시)
                       placeholder="값 선택"
+                      searchable // 값 목록이 길 수 있어 팝오버 상단 검색 제공(2026-07-23 지시 — 로우 칩과 동일)
+                      searchPlaceholder="검색어 입력"
                       // 기준 미선택 또는 앞 조건 미완성이면 비활성(순차 입력)
                       disabled={!sel.criteria || prevIncomplete(id)}
                       // 마지막 조건은 체크박스 다중 선택(값 여러 개) — multiple이 동적 boolean이라
