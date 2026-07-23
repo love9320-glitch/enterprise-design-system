@@ -23,6 +23,7 @@ const USAGE_PROPS = [
   { name: 'defaultRows / onChange', type: 'rows / (rows) => void', default: '[] / —', desc: '로우 스냅샷 반출 — [{ id, items: [{ criteria, value }] }] (추가/삭제/칩 변경 시)' },
   { name: 'tableHeight', type: "'fill' | number", default: "'fill'", desc: "테이블 세로 — 'fill'=내용만큼 계속 확장(모달에선 바디 전체 스크롤) / 숫자=고정 상한(px, 바디만 스크롤)" },
   { name: 'ref (validate / getRows)', type: '{ validate(): boolean, getRows(): rows }', default: '—', desc: '저장 API — validate()=미선택 칩 에러 표시+통과 여부, getRows()=저장 시점 최신 로우(변경 없이 저장해도 안전)' },
+  { name: 'onRegisterCode', type: '() => void', default: '—', desc: "'1. 조건 조합 설정' 하단 '채용 분야 코드 등록' 버튼 클릭 — 코드 등록 모달 열기 등은 소비자가 연결(registerCodeLabel로 문구 변경)" },
   { name: 'step1Title / step2Title / addLabel / 라벨들', type: 'string', default: "'1. 조건 조합 설정' 등", desc: '카피 커스텀(orderLabel/jobLabel/manageLabel/inputPlaceholder/emptyMessage)' },
 ];
 
@@ -73,6 +74,8 @@ const VALUES = {
 export function JobPositionTemplatePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [saved, setSaved] = useState(null);
+  // '채용 분야 코드 등록' 클릭 데모 — 실제 화면에선 여기서 코드 등록 모달을 연다
+  const [registerClicks, setRegisterClicks] = useState(0);
   // 리셋 — key 리마운트로 템플릿 내부 상태(조건 선택·정렬·사용·로우)를 통째로 초기화(모달은 유지)
   const [resetKey, setResetKey] = useState(0);
   // 저장 검증 — 미선택 칩이 있으면 템플릿이 에러 툴팁을 걸고 false 반환(모달 유지)
@@ -96,10 +99,19 @@ export function JobPositionTemplatePage() {
         <code className="text-font-icon-5">multiLastValue</code>를 켜면 맨 아래 조건 카드의 값이 체크박스
         다중 선택이 됩니다. 여러 값을 고르고 추가하면 값마다 행이 하나씩 생깁니다(각 행은 단일 조합, 중복은 건너뜀).
       </p>
-      <JobPositionTemplate criteriaOptions={CRITERIA} valueOptions={VALUES} multiLastValue defaultDisabledIds={['cond-4']} onChange={setSaved} />
-      {saved && (
+      <JobPositionTemplate
+        criteriaOptions={CRITERIA}
+        valueOptions={VALUES}
+        multiLastValue
+        defaultDisabledIds={['cond-4']}
+        onChange={setSaved}
+        onRegisterCode={() => setRegisterClicks((n) => n + 1)}
+      />
+      {(saved || registerClicks > 0) && (
         <p className="mt-spacing-5 text-12 text-font-icon-4">
-          onChange 스냅샷: 로우 {saved.length}건
+          {saved && <>onChange 스냅샷: 로우 {saved.length}건</>}
+          {saved && registerClicks > 0 && ' · '}
+          {registerClicks > 0 && <>onRegisterCode 호출 {registerClicks}회 — 실제 화면에선 코드 등록 모달을 여는 자리</>}
         </p>
       )}
 
