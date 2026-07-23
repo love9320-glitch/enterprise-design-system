@@ -14,9 +14,6 @@ import { Select } from '../components/Select';
 import { DateField } from '../components/DateField';
 import { EmailField, PhoneField } from '../components/SelectOrInput';
 import { iconCellWidth } from '../components/tableView';
-import { SideNavigationTemplate } from '../components/SideNavigationTemplate';
-import { Field } from '../components/Field';
-import { Table } from '../components/Table';
 import { NOTICE_SAMPLE_BODIES, NOTICE_TEMPLATE_BODIES } from './noticeSampleBodies';
 import { CodeCreateModal } from './CodeCreateModal';
 
