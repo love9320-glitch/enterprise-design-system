@@ -10,7 +10,7 @@
 //   - 드래그 앤 드롭(grip에서만 시작)으로 카드 순서 변경
 //   - 카드별 Switch로 사용/미사용 — 미사용 카드는 적용 순번에서 빠지고 다음 조건이 번호를
 //     당겨받는다(카드의 물리적 위치는 유지). 제목 번호는 표시 순서상 '사용 중' 카드 기준 1..k
-//     자동 부여, 미사용 카드는 "조건 -."로 표기.
+//     자동 부여, 미사용 카드는 "조건 미사용"으로 표기(2026-07-23, 구 "조건 -.").
 //   - items 배열로 조건 카드를 필요만큼 추가한다.
 import { Children, Fragment, cloneElement, isValidElement, useRef, useState } from 'react';
 import type {
@@ -237,7 +237,9 @@ export function ConditionOrderSlot({
         const item = items.find((it) => it.id === id);
         if (!item) return null;
         const enabled = isEnabled(id);
-        const title = enabled ? `${titlePrefix} ${++seq}.` : `${titlePrefix} -.`;
+        const title = enabled ? `${titlePrefix} ${++seq}.` : `${titlePrefix} 미사용`; // 2026-07-23 지시(구 "조건 -.")
+        // 미사용 카드는 드래그도 비활성(grip disabled 색·드래그 시작 안 됨, 2026-07-23 지시)
+        const cardDragDisabled = dragDisabled || !enabled;
         return (
           <div key={id} className={`flex ${vertical ? 'flex-col' : 'flex-row'} items-center gap-spacing-2`}>
             {i > 0 && (
@@ -252,7 +254,7 @@ export function ConditionOrderSlot({
               enabled={enabled}
               switchDisabled={switchesDisabled}
               switchDisabledTooltip={switchesDisabledTooltip}
-              dragDisabled={dragDisabled}
+              dragDisabled={cardDragDisabled}
               onEnabledChange={(next) => toggleEnabled(id, next)}
               dragging={dragId === id}
               width={cardWidth}
@@ -264,7 +266,7 @@ export function ConditionOrderSlot({
                   allowDragRef.current = false;
                 },
               }}
-              draggable={!dragDisabled}
+              draggable={!cardDragDisabled}
               onDragStart={(e) => {
                 // grip 밖에서 시작한 드래그(텍스트 등)는 차단 — 핸들에서만 이동
                 if (!allowDragRef.current) {
