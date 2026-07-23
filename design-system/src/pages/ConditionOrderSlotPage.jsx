@@ -120,7 +120,7 @@ export function ConditionOrderSlotPage() {
         <div className="flex flex-wrap items-start gap-spacing-7">
           <ConditionSlotCard title="조건 1.">{cardBody()}</ConditionSlotCard>
           <ConditionSlotCard title="조건 1." dragging>{cardBody()}</ConditionSlotCard>
-          <ConditionSlotCard title="조건 -." enabled={false}>{cardBody()}</ConditionSlotCard>
+          <ConditionSlotCard title="조건 미사용" enabled={false}>{cardBody()}</ConditionSlotCard>
         </div>
       </div>
     </section>
