@@ -74,6 +74,8 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   emptyMessage?: string;
   duplicateMessage?: string; // 중복 추가 시도 시 인풋 에러 툴팁 문구
   emptyValueMessage?: string; // 저장 검증 — 미선택 칩 에러 툴팁 문구
+  registerCodeLabel?: string; // Step 01 하단 버튼 문구
+  onRegisterCode?: () => void; // Step 01 하단 '채용 분야 코드 등록' 클릭(모달 열기 등은 소비자 몫)
   ref?: Ref<JobPositionTemplateHandle>; // (선택) 저장 API(React 19 ref-as-prop)
 }
 
@@ -96,6 +98,8 @@ export function JobPositionTemplate({
   emptyMessage = '추가된 채용 직무가 없습니다.',
   duplicateMessage = '이미 추가된 조건 조합입니다.',
   emptyValueMessage = '값을 선택하세요.',
+  registerCodeLabel = '채용 분야 코드 등록',
+  onRegisterCode,
   ref,
   className = '',
   ...props
@@ -374,6 +378,9 @@ export function JobPositionTemplate({
             }
           }}
         />
+        <Button variant="line" width="fill" leftIcon={Plus} onClick={onRegisterCode}>
+          {registerCodeLabel}
+        </Button>
       </div>
 
       <Divider direction="vertical" />
