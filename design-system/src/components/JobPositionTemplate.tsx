@@ -564,6 +564,9 @@ export function JobPositionTemplate({
                       // 판별 유니언(SelectProps)에 스프레드로 한 번 좁혀 전달(런타임 동일)
                       {...({
                         multiple: isMultiCard(id),
+                        // 체크박스 팝오버는 confirm 모드(2026-07-23 지시) — PopoverMenu 푸터 영역
+                        // (전체 선택 footerCheckbox + 취소/확인). 확인 시에만 행 반영.
+                        confirm: isMultiCard(id),
                         // 다중 카드 체크 상태는 rows 파생(현재 조합의 행 존재 여부) — 조합 복귀 시 체크 복원
                         value: isMultiCard(id) ? derivedMultiValues(id) : valueOf(id),
                         // 다중=체크 즉시 행 추가/제거, 단일=조합 완성 시 자동 추가(2026-07-23)
