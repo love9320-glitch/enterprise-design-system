@@ -26,6 +26,17 @@ const STATE_STYLE = {
   disabled: 'text-side-nav-disabled-text cursor-not-allowed',
 };
 
+// actions(호버 액션 버튼) 지정 시 — 버튼 안에 버튼을 중첩할 수 없으므로 행 스타일을 wrapper(span)가
+// 갖고, 본체 버튼과 액션 버튼들을 형제로 나란히 둔다. hover/키보드 포커스(has-[:focus-visible],
+// 포커스=호버 정책 — 클릭 포커스 무표시)에 같은 행 스타일을 적용한다.
+const WRAP_STATE_STYLE = {
+  default:
+    'text-side-nav-default-text hover:bg-side-nav-hover-bg hover:text-side-nav-hover-text cursor-pointer ' +
+    'has-[:focus-visible]:bg-side-nav-hover-bg has-[:focus-visible]:text-side-nav-hover-text',
+  select: 'bg-side-nav-select-bg text-side-nav-select-text cursor-pointer',
+  disabled: 'text-side-nav-disabled-text cursor-not-allowed',
+};
+
 export interface SideNavigationButtonProps extends ComponentPropsWithoutRef<'button'> {
   /** 좌측 아이콘(lucide 컴포넌트) — 없으면 생략 */
   icon?: ElementType; // lucide 외 커스텀 아이콘 컴포넌트도 허용
@@ -41,6 +52,10 @@ export interface SideNavigationButtonProps extends ComponentPropsWithoutRef<'but
   overflow?: 'ellipsis' | 'wrap';
   /** true=컨테이너 우측 라인에 붙는 형태(왼쪽만 라운드) / false=전체 라운드 */
   line?: boolean;
+  /** 행 hover/키보드 포커스 시 우측에 나타나는 아이콘 전용 버튼들(이름 수정·삭제 등).
+   *  chevron(›)은 그대로 유지되고 액션은 그 왼쪽에 놓인다(2026-07-23 지시 — 화살표 유지).
+   *  디폴트 상태에선 라벨이 액션 자리까지 확장되고, hover/포커스 시 액션이 펼쳐지며 라벨이 줄어든다. */
+  actions?: ReactNode;
 }
 
 export function SideNavigationButton({
@@ -53,6 +68,7 @@ export function SideNavigationButton({
   showArrow = true,
   overflow = 'ellipsis',
   line = true,
+  actions,
   onClick,
   className = '',
   ...props
@@ -60,6 +76,64 @@ export function SideNavigationButton({
   const state = disabled ? 'disabled' : selected ? 'select' : 'default';
   const rounding = line ? 'rounded-l-round-4' : 'rounded-round-4';
   const selectLine = state === 'select' && line;
+
+  const content = (
+    <span className="flex min-w-0 flex-1 items-center gap-spacing-5">
+      {Icon && <Icon size={16} strokeWidth={1.8} className="shrink-0" />}
+      {overflow === 'wrap' ? (
+        <span className="min-w-0 whitespace-normal break-words text-14 leading-20">{children}</span>
+      ) : (
+        <TruncatingText as="span" className="truncate text-14 leading-20">
+          {children}
+        </TruncatingText>
+      )}
+      {showNewTag && <NewTag color={newTagColor} />}
+    </span>
+  );
+
+  // actions 지정 — 행 스타일은 wrapper가 갖고 본체/액션 버튼을 형제로 배치(버튼 중첩 불가).
+  // 우측 순서: [액션(hover 시 표시)] → [chevron]. 액션 영역은 기본 폭 0(디폴트 상태에선 라벨이
+  // 그 자리까지 확장)이고 hover/키보드 포커스 시에만 펼쳐져 라벨이 그만큼 줄어든다(2026-07-23 지시).
+  // display:none이 아니라 w-0 + overflow-hidden이라 Tab으로 액션 버튼에 진입 가능(진입하면 펼쳐짐).
+  // chevron 영역 클릭도 행 선택으로 동작해야 하므로 wrapper가 클릭을 받되,
+  // 본체/액션 버튼에서 버블된 클릭은 무시한다(중복 방지).
+  if (actions) {
+    return (
+      <span
+        className={`group relative flex min-h-[32px] w-full items-center pr-spacing-6 transition-colors ${rounding} ${WRAP_STATE_STYLE[state]} ${className}`}
+        onClick={
+          disabled
+            ? undefined
+            : (e) => {
+                if ((e.target as HTMLElement).closest('button')) return; // 버튼 클릭은 각자 처리
+                (onClick as unknown as ((ev: unknown) => void) | undefined)?.(e);
+              }
+        }
+      >
+        {selectLine && (
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 right-0 w-spacing-1 bg-side-nav-select-text"
+          />
+        )}
+        <button
+          type="button"
+          disabled={disabled}
+          onClick={onClick}
+          aria-current={selected || undefined}
+          className={`flex min-h-[32px] min-w-0 flex-1 items-center py-spacing-4 pl-spacing-6 pr-spacing-2 text-left focus:outline-none ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+          {...props}
+        >
+          {content}
+        </button>
+        <span className="pointer-events-none flex w-0 shrink-0 items-center gap-spacing-2 overflow-hidden opacity-0 group-hover:pointer-events-auto group-hover:w-auto group-hover:pr-spacing-4 group-hover:opacity-100 group-has-[:focus-visible]:pointer-events-auto group-has-[:focus-visible]:w-auto group-has-[:focus-visible]:pr-spacing-4 group-has-[:focus-visible]:opacity-100">
+          {actions}
+        </span>
+        {showArrow && <ChevronRight size={16} strokeWidth={1.8} className="shrink-0" />}
+      </span>
+    );
+  }
+
   return (
     <button
       type="button"
@@ -75,17 +149,7 @@ export function SideNavigationButton({
           className="pointer-events-none absolute inset-y-0 right-0 w-spacing-1 bg-side-nav-select-text"
         />
       )}
-      <span className="flex min-w-0 flex-1 items-center gap-spacing-5">
-        {Icon && <Icon size={16} strokeWidth={1.8} className="shrink-0" />}
-        {overflow === 'wrap' ? (
-          <span className="min-w-0 whitespace-normal break-words text-14 leading-20">{children}</span>
-        ) : (
-          <TruncatingText as="span" className="truncate text-14 leading-20">
-            {children}
-          </TruncatingText>
-        )}
-        {showNewTag && <NewTag color={newTagColor} />}
-      </span>
+      {content}
       {showArrow && <ChevronRight size={16} strokeWidth={1.8} className="shrink-0" />}
     </button>
   );

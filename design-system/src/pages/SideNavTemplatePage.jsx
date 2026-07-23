@@ -23,7 +23,13 @@ const MENUS = [
   defaultSelectedId="all"
   onSelect={(id) => setFilter(id)}
   addLabel="카테고리 추가"
-  onAdd={() => addCategory()}
+  onAdd={() => setAdding(true)}      // (+) 클릭 → 이름 입력 행 열기
+  editable                           // hover 시 메뉴 우측에 이름 수정·삭제 아이콘
+  adding={adding}
+  onAddSubmit={(name) => addCategory(name)}  // 입력 후 Enter → 생성
+  onAddCancel={() => setAdding(false)}
+  onRenameMenu={(id, name) => renameCategory(id, name)}
+  onDeleteMenu={(id) => deleteCategory(id)}
 >
   {/* 우측 콘텐츠 슬롯 — Figma 구조 그대로 Field+Table 조립 */}
   <Field label="채용 코드 생성">
@@ -33,11 +39,14 @@ const MENUS = [
 </SideNavigationTemplate>`;
 
 const USAGE_PROPS = [
-  { name: 'menus', type: '{ id, label, count?, icon?, showNewTag?, newTagColor?, disabled? }[]', default: '[]', desc: '좌측 메뉴 목록 — count는 라벨 뒤에 표시(0 또는 미지정이면 숨김)' },
+  { name: 'menus', type: '{ id, label, count?, icon?, showNewTag?, newTagColor?, disabled?, editable? }[]', default: '[]', desc: "좌측 메뉴 목록 — count는 라벨 뒤에 표시(0 또는 미지정이면 숨김). editable: false면 편집 모드에서 그 메뉴만 수정·삭제 제외('전체' 같은 고정 메뉴)" },
   { name: 'selectedId / defaultSelectedId / onSelect', type: 'string / string / (id)=>void', default: '— / 첫 메뉴 / —', desc: '선택 제어(controlled) 또는 초기값(uncontrolled)' },
   { name: 'navWidth', type: 'number | string', default: '180', desc: '좌측 내비 너비 (Figma 180/220/260)' },
   { name: 'line', type: 'boolean', default: 'true', desc: '내비 우측 1px 구분선' },
   { name: 'showAdd / addLabel / onAdd', type: "boolean / string / (e)=>void", default: "true / 'add menu' / —", desc: '추가(+) 행 — 메뉴 추가 기능 on/off' },
+  { name: 'showArrow', type: 'boolean', default: 'true', desc: '메뉴 우측 chevron(›) 표시 — 전체 기본값. 메뉴별 menus[].showArrow로 재정의 가능' },
+  { name: 'editable / onRenameMenu / onDeleteMenu', type: 'boolean / (id, label)=>void / (id)=>void', default: 'false / — / —', desc: '메뉴 편집 모드 — hover 시 메뉴 우측에 이름 수정(연필)·삭제(휴지통) 아이콘 버튼(chevron 왼쪽, 화살표 유지). 연필 클릭 시 그 행이 이름 입력으로 바뀌고 Enter로 확정' },
+  { name: 'adding / onAddSubmit / onAddCancel', type: 'boolean / (label)=>void / ()=>void', default: 'false / — / —', desc: '이름 먼저 입력하는 추가 플로우(editable 전용) — adding=true면 목록 끝에 입력 행 표시, Enter=onAddSubmit(이름), Esc·blur=onAddCancel (addPlaceholder로 플레이스홀더 변경)' },
   { name: 'addPosition', type: "'top' | 'bottom'", default: "'top'", desc: '추가 행 위치 — 최상위/최하위(어느 쪽이든 스크롤 밖 고정)' },
   { name: 'overflow', type: "'ellipsis' | 'wrap'", default: "'ellipsis'", desc: '긴 메뉴 라벨 처리(버튼 패스스루)' },
   { name: 'height', type: "number | string | 'fill'", default: '—', desc: "템플릿 높이 — 숫자/CSS=고정. 'fill'=모달 본문 가용 높이를 '최대치'로(내용 적으면 자연 높이, 상한 도달 시 내비 독립 스크롤. 밖에선 부모 100%). 우측 콘텐츠도 상한을 따르려면 fill형으로(예: Table maxHeight='fill' + min-h-0 — 규칙 18)" },
@@ -66,42 +75,54 @@ const COLUMNS = [
 
 const CATEGORY_BY_MENU = { area: '지역', rank: '직책', duty: '직무', career: '경력' };
 
-function Demo({ navWidth = 180, line = true, showAdd = true, addPosition = 'top', overflow = 'ellipsis', height, extraMenus = 0 }) {
+function Demo({ navWidth = 180, line = true, showAdd = true, showArrow = true, addPosition = 'top', overflow = 'ellipsis', height, extraMenus = 0 }) {
   const [rows, setRows] = useState(INITIAL_ROWS);
   const [menu, setMenu] = useState('all');
   const [draft, setDraft] = useState('');
-  const [userCats, setUserCats] = useState([]); // '카테고리 추가'로 사용자가 더한 카테고리명들
+  const [userCats, setUserCats] = useState([]); // 사용자가 더한 카테고리 — [{ id, name }] (id 고정: 삭제해도 안 밀림)
+  const [adding, setAdding] = useState(false); // '카테고리 추가' 클릭 → 이름 입력 행 표시
 
   // 메뉴 id → 필터할 카테고리명(추가 더미 메뉴는 라벨 자체를 카테고리로 사용)
   const catNameOf = (id) =>
     CATEGORY_BY_MENU[id] ??
     (id.startsWith('extra-')
       ? `카테고리 ${Number(id.slice(6)) + 6}`
-      : id.startsWith('user-')
-        ? userCats[Number(id.slice(5))]
-        : null);
+      : userCats.find((c) => c.id === id)?.name ?? null);
   const visible = menu === 'all' ? rows : rows.filter((r) => r.category === catNameOf(menu));
   const countOf = (key) => (key === 'all' ? rows.length : rows.filter((r) => r.category === catNameOf(key)).length);
   const menus = [
-    { id: 'all', label: '전체', count: countOf('all') },
-    { id: 'area', label: '지역', count: countOf('area') },
-    { id: 'rank', label: '직책', count: countOf('rank'), showNewTag: true },
-    { id: 'duty', label: '직무', count: countOf('duty') },
-    { id: 'career', label: '경력', count: countOf('career') },
-    { id: 'long', label: '아주 길어서 잘리는 카테고리 명칭 예시', count: 0 },
+    // 기본 카테고리는 편집 제외(editable: false) — 수정·삭제 아이콘은 사용자가 추가한 카테고리에만
+    { id: 'all', label: '전체', count: countOf('all'), editable: false },
+    { id: 'area', label: '지역', count: countOf('area'), editable: false },
+    { id: 'rank', label: '직책', count: countOf('rank'), showNewTag: true, editable: false },
+    { id: 'duty', label: '직무', count: countOf('duty'), editable: false },
+    { id: 'career', label: '경력', count: countOf('career'), editable: false },
+    { id: 'long', label: '아주 길어서 잘리는 카테고리 명칭 예시', count: 0, editable: false },
     // 스크롤 데모용 더미 카테고리 — extraMenus 개수만큼
-    ...Array.from({ length: extraMenus }, (_, i) => ({ id: `extra-${i}`, label: `카테고리 ${i + 6}`, count: countOf(`extra-${i}`) })),
-    // '카테고리 추가'로 사용자가 더한 카테고리
-    ...userCats.map((name, i) => ({ id: `user-${i}`, label: name, count: countOf(`user-${i}`) })),
+    ...Array.from({ length: extraMenus }, (_, i) => ({ id: `extra-${i}`, label: `카테고리 ${i + 6}`, count: countOf(`extra-${i}`), editable: false })),
+    // '카테고리 추가'로 사용자가 더한 카테고리 — hover 시 이름 수정·삭제 가능
+    ...userCats.map((c) => ({ id: c.id, label: c.name, count: countOf(c.id) })),
   ];
 
-  // '카테고리 추가'(+) — 새 카테고리를 만들고 바로 선택해 추가된 것이 즉시 보이게
-  const addCategory = () => {
-    setUserCats((prev) => {
-      const next = [...prev, `새 카테고리 ${prev.length + 1}`];
-      setMenu(`user-${next.length - 1}`);
-      return next;
-    });
+  // '카테고리 추가'(+) 클릭 → 이름 입력 행(adding), Enter로 확정 시 생성 + 바로 선택
+  const addCategory = (name) => {
+    setAdding(false);
+    const id = `user-${Date.now()}`;
+    setUserCats((prev) => [...prev, { id, name }]);
+    setMenu(id);
+  };
+  // 이름 수정 — 그 카테고리로 추가된 코드 행들의 카테고리명도 함께 바꿔 필터 연결 유지
+  const renameCategory = (id, name) => {
+    const old = userCats.find((c) => c.id === id)?.name;
+    setUserCats((prev) => prev.map((c) => (c.id === id ? { ...c, name } : c)));
+    if (old) setRows((prev) => prev.map((r) => (r.category === old ? { ...r, category: name } : r)));
+  };
+  // 삭제 — 그 카테고리의 코드 행도 함께 정리, 보고 있던 카테고리면 '전체'로 이동
+  const deleteCategory = (id) => {
+    const old = userCats.find((c) => c.id === id)?.name;
+    setUserCats((prev) => prev.filter((c) => c.id !== id));
+    if (old) setRows((prev) => prev.filter((r) => r.category !== old));
+    if (menu === id) setMenu('all');
   };
 
   const addCode = () => {
@@ -123,8 +144,18 @@ function Demo({ navWidth = 180, line = true, showAdd = true, addPosition = 'top'
       addPosition={addPosition}
       overflow={overflow}
       height={height}
+      showArrow={showArrow}
       addLabel="카테고리 추가"
-      onAdd={addCategory}
+      onAdd={() => setAdding(true)}
+      editable
+      onRenameMenu={renameCategory}
+      onDeleteMenu={deleteCategory}
+      adding={adding}
+      onAddSubmit={addCategory}
+      onAddCancel={() => setAdding(false)}
+      addPlaceholder="카테고리명 입력"
+      renameLabel="카테고리명 수정"
+      deleteLabel="카테고리 삭제"
     >
       {/* Figma 구조 그대로: field 인스턴스(label=채용 코드 생성, slot=인풋+추가 버튼) + table 인스턴스 (규칙 4) */}
       <Field label="채용 코드 생성">
@@ -180,7 +211,7 @@ const HEIGHT_OPTIONS = [
 
 // 내비 옵션 실시간 토글 플레이그라운드 — TableTemplatePage와 동일 패턴
 function Playground() {
-  const [opts, setOpts] = useState({ line: true, showAdd: true, manyMenus: false });
+  const [opts, setOpts] = useState({ line: true, showAdd: true, showArrow: true, manyMenus: false });
   const [navWidth, setNavWidth] = useState(180);
   const [overflow, setOverflow] = useState('ellipsis');
   const [height, setHeight] = useState('none');
@@ -197,6 +228,7 @@ function Playground() {
           </label>
           <Checkbox checked={opts.line} onChange={() => toggle('line')} label="우측 구분선(line)" />
           <Checkbox checked={opts.showAdd} onChange={() => toggle('showAdd')} label="카테고리 추가(+) 행" />
+          <Checkbox checked={opts.showArrow} onChange={() => toggle('showArrow')} label="화살표(›)" />
           <label className="inline-flex items-center gap-spacing-4 text-14 text-font-icon-5">
             추가 행 위치
             <Select options={ADD_POSITION_OPTIONS} value={addPosition} onChange={(e) => setAddPosition(e.target.value)} width={170} />
@@ -216,13 +248,14 @@ function Playground() {
       {height === 'fill' ? (
         // fill은 '부모가 높이를 줄 때' 동작 — 데모에선 200px 박스가 부모(모달에선 ModalBody 가용 높이) 역할
         <div className="h-[200px]">
-          <Demo navWidth={navWidth} line={opts.line} showAdd={opts.showAdd} addPosition={addPosition} overflow={overflow} height="fill" extraMenus={opts.manyMenus ? 14 : 0} />
+          <Demo navWidth={navWidth} line={opts.line} showAdd={opts.showAdd} showArrow={opts.showArrow} addPosition={addPosition} overflow={overflow} height="fill" extraMenus={opts.manyMenus ? 14 : 0} />
         </div>
       ) : (
         <Demo
           navWidth={navWidth}
           line={opts.line}
           showAdd={opts.showAdd}
+          showArrow={opts.showArrow}
           addPosition={addPosition}
           overflow={overflow}
           height={height === 'none' ? undefined : height}
