@@ -405,19 +405,12 @@ export function DatePicker({
   };
 
   // ── 날짜 클릭 ────────────────────────────────────────────────
-  // 범위 클릭 규칙 — 완성된 범위는 풀리지 않고 한쪽만 이동한다:
-  //   시작일 앞을 찍으면 시작일만 이동(마감 유지), 마감일 뒤를 찍으면 마감일만 이동(시작 유지),
-  //   범위 안(시작~마감, 경계 포함)은 첫 클릭=시작일 이동, 두 번째 클릭=마감일 이동(교대).
-  // 미완성(시작만) 상태는 기존대로 — 시작 앞을 찍으면 시작 재지정, 뒤를 찍으면 마감 확정.
-  const insideNextRef = useRef<'start' | 'end'>('start'); // 범위 안 클릭이 다음에 잡을 쪽(교대 상태)
+  // 범위 클릭 규칙 — 완성된 범위(시작+마감)에서 다시 찍으면 범위를 리셋하고 새 시작일로 잡는다
+  //   (→ "시작일 ~ 마감일 없음" 상태). 어디를 찍든 동일(범위 안/밖 구분 없음).
+  // 미완성(시작만) 상태 — 시작 앞을 찍으면 시작 재지정, 뒤를 찍으면 마감 확정.
   const nextRange = (d: Date): DateRange => {
     const { start, end } = range as DateRange;
-    if (!start) return { start: d, end: null };
-    if (end) {
-      if (d < start) return { start: d, end };
-      if (d > end) return { start, end: d };
-      return insideNextRef.current === 'start' ? { start: d, end } : { start, end: d };
-    }
+    if (!start || end) return { start: d, end: null };
     if (d < start) return { start: d, end: null };
     return { start, end: d };
   };
@@ -429,11 +422,7 @@ export function DatePicker({
       commit(d);
       return;
     }
-    const { start, end } = range as DateRange;
-    const inside = !!(start && end) && d >= (start as Date) && d <= (end as Date);
     commit(nextRange(d));
-    // 교대 상태 갱신 — 범위 안 클릭이면 다음 쪽으로 토글, 그 외 클릭은 처음(시작)으로 리셋
-    insideNextRef.current = inside && insideNextRef.current === 'start' ? 'end' : 'start';
   };
 
   // 이 날짜를 클릭하면 시작일을 잡는지 마감일을 잡는지 — nextRange와 동일한 분기.
@@ -441,12 +430,7 @@ export function DatePicker({
   const dayRole = (date: Date, r: DateRange = range as DateRange) => {
     const d = startOfDay(date);
     const { start, end } = r;
-    if (!start) return 'start';
-    if (end) {
-      if (d < start) return 'start';
-      if (d > end) return 'end';
-      return insideNextRef.current;
-    }
+    if (!start || end) return 'start'; // 빈 상태·완성된 범위 → 다음 클릭은 새 시작일
     return d < start ? 'start' : 'end';
   };
 
