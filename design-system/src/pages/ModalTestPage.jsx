@@ -1,7 +1,7 @@
 // 모달 테스트 구현 (test 카테고리 — 확인 후 삭제할 임시 데모)
 // Figma 모달들을 실제 컴포넌트(Modal + TableTemplate)로 구현한 데모.
 import { useRef, useState } from 'react';
-import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight, Pencil, RotateCcw } from 'lucide-react';
+import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight, Pencil } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { JobPositionTemplate } from '../components/JobPositionTemplate';
 import { Button } from '../components/Button';
@@ -586,7 +586,7 @@ function ItemAddModal({ open, onClose }) {
   );
 }
 
-// ───────── 모달: 채용 직무 설정 (JobPositionTemplate 조립) ─────────
+// ───────── 모달: 채용 분야 설정 (JobPositionTemplate 조립) ─────────
 const POS_CRITERIA = [
   { value: 'region', label: '지역' },
   { value: 'employ', label: '고용형태' },
@@ -621,35 +621,49 @@ const POS_VALUES = {
   ],
 };
 
+// Jobda 직군/직무 매칭 샘플 — 직군 선택 후 그 직군의 직무만 선택 가능(종속)
+const POS_JOBDA_GROUPS = [
+  { value: 'dev', label: '개발' },
+  { value: 'design', label: '디자인' },
+  { value: 'mkt', label: '마케팅' },
+];
+const POS_JOBDA_DUTIES = {
+  dev: [
+    { value: 'fe', label: '프론트엔드 개발자' },
+    { value: 'be', label: '서버 개발자' },
+  ],
+  design: [
+    { value: 'ux', label: 'UX 디자이너' },
+    { value: 'ui', label: 'UI/GUI 디자이너' },
+  ],
+  mkt: [
+    { value: 'perf', label: '퍼포먼스 마케터' },
+    { value: 'content', label: '콘텐츠 마케터' },
+  ],
+};
+
 function JobPositionModal({ open, onClose, onRegisterCode }) {
-  const [resetKey, setResetKey] = useState(0); // 리셋 = key 리마운트(모달 유지)
   const templateRef = useRef(null);
   return (
     <Modal
       open={open}
       onClose={onClose}
-      title="채용 직무 설정"
-      size="3xl"
+      title="채용 분야 설정"
+      size="4xl"
       cancelText="취소"
       confirmText="저장"
       onConfirm={() => {
         if (!templateRef.current?.validate()) return; // 빈 칩 있으면 저장 중단(에러 툴팁)
         onClose(); // 실무에선 templateRef.current.getRows()로 저장 API 호출
       }}
-      footerStart={
-        <Button variant="line" leftIcon={RotateCcw} onClick={() => setResetKey((k) => k + 1)}>
-          리셋
-        </Button>
-      }
-      footerStartType="button"
     >
       <JobPositionTemplate
-        key={resetKey}
         ref={templateRef}
         criteriaOptions={POS_CRITERIA}
         valueOptions={POS_VALUES}
         multiLastValue
-        defaultDisabledIds={['cond-4']}
+        jobdaGroupOptions={POS_JOBDA_GROUPS}
+        jobdaDutyOptions={POS_JOBDA_DUTIES}
         onRegisterCode={onRegisterCode}
       />
     </Modal>
@@ -699,7 +713,7 @@ export function ModalTestPage() {
           메세지 템플릿 생성 모달 열기
         </Button>
         <Button variant="fill" onClick={() => setPosOpen(true)}>
-          채용 직무 설정 모달 열기
+          채용 분야 설정 모달 열기
         </Button>
       </div>
       <BackgroundModal open={bgOpen} onClose={() => setBgOpen(false)} />
