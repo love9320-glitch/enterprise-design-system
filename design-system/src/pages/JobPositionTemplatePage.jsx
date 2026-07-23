@@ -5,6 +5,7 @@ import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
 import { UsageExample } from '../components/UsageExample';
 import { Divider } from '../components/Divider';
+import { CodeCreateModal } from './CodeCreateModal';
 
 const USAGE = `import { JobPositionTemplate } from '../components/JobPositionTemplate';
 
@@ -74,8 +75,8 @@ const VALUES = {
 export function JobPositionTemplatePage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [saved, setSaved] = useState(null);
-  // '채용 분야 코드 등록' 클릭 데모 — 실제 화면에선 여기서 코드 등록 모달을 연다
-  const [registerClicks, setRegisterClicks] = useState(0);
+  // '채용 분야 코드 등록' 클릭 → 채용 코드 생성 모달(테스트 페이지에서 추출한 조립) 열기
+  const [codeOpen, setCodeOpen] = useState(false);
   // 리셋 — key 리마운트로 템플릿 내부 상태(조건 선택·정렬·사용·로우)를 통째로 초기화(모달은 유지)
   const [resetKey, setResetKey] = useState(0);
   // 저장 검증 — 미선택 칩이 있으면 템플릿이 에러 툴팁을 걸고 false 반환(모달 유지)
@@ -105,13 +106,11 @@ export function JobPositionTemplatePage() {
         multiLastValue
         defaultDisabledIds={['cond-4']}
         onChange={setSaved}
-        onRegisterCode={() => setRegisterClicks((n) => n + 1)}
+        onRegisterCode={() => setCodeOpen(true)}
       />
-      {(saved || registerClicks > 0) && (
+      {saved && (
         <p className="mt-spacing-5 text-12 text-font-icon-4">
-          {saved && <>onChange 스냅샷: 로우 {saved.length}건</>}
-          {saved && registerClicks > 0 && ' · '}
-          {registerClicks > 0 && <>onRegisterCode 호출 {registerClicks}회 — 실제 화면에선 코드 등록 모달을 여는 자리</>}
+          onChange 스냅샷: 로우 {saved.length}건
         </p>
       )}
 
@@ -150,9 +149,13 @@ export function JobPositionTemplatePage() {
             valueOptions={VALUES}
             multiLastValue
             defaultDisabledIds={['cond-4']}
+            onRegisterCode={() => setCodeOpen(true)}
           />
         </Modal>
       </div>
+
+      {/* 채용 코드 생성 모달 — 단독/모달 조립 양쪽의 '채용 분야 코드 등록' 버튼이 연다(모달 위 모달 스택 지원) */}
+      <CodeCreateModal open={codeOpen} onClose={() => setCodeOpen(false)} />
     </section>
   );
 }
