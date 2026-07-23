@@ -6,7 +6,7 @@ import { baseColors } from '../colors';
 const b = baseColors.base;
 
 export const segmentedColors = {
-  'tab-bg':        b.gray[50],   // #f2f2f2 (트랙 배경, segmented/tab bg)
+  'tab-bg':        b['gray-900-25'], // #0d0d0d12 (트랙 배경, segmented/tab bg — 불투명 회색→알파, 2026-07-23 지시)
   'select-bg':     b.white,      // #ffffff (선택 배경 pill, segmented/select bg)
   'select-line':   b['gray-900-10'], // #0d0d0d08 (선택 pill 1px 아웃라인 — 한 단계 더 투명, 2026-07-08 지시)
   'select-text':   b.gray[900],  // #0d0d0d (선택 탭 텍스트, segmented/select text)
