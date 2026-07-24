@@ -396,7 +396,7 @@ export function Table({
           </tr>
         ) : displayRows.length === 0 ? (
           <tr className="bg-table-row-bg">
-            <td colSpan={totalCols} className={`${stateLine} px-spacing-5-5 py-spacing-12 text-center text-14 text-font-icon-3`}>
+            <td colSpan={totalCols} className={`${stateLine} px-spacing-5-5 py-spacing-12 text-center align-middle text-14 text-font-icon-3`}>
               {emptyMessage}
             </td>
           </tr>
@@ -489,14 +489,18 @@ export function Table({
   let body;
   if (splitHeader) {
     // 빈 상태/로딩은 스크롤 영역 자체를 두지 않는다(빈 목록에 세로 썸이 뜨는 아티팩트 방지)
+    const scrollableBody = !loading && displayRows.length > 0;
+    const fillActive = fillV && scrollableBody; // 데이터 없을 땐 최대 높이(fill) 미적용 — 자연 높이(2026-07-06)
+    // 빈 상태 + fill — 소비자가 컨테이너를 늘렸을 때(flex-1) 빈 영역이 그 높이를 채워
+    // 엠티 텍스트가 가로·세로 중앙에 오도록 스트레치(2026-07-23). 소비자가 안 늘리면
+    // 추가 공간이 없어 기존 자연 높이(hug) 그대로 — 2026-07-06 결정과 충돌 없음.
+    const emptyFill = fillV && !loading && displayRows.length === 0;
     const bodyTable = (
-      <table className={tableClass} style={tableStyle}>
+      <table className={`${tableClass} ${emptyFill ? 'h-full' : ''}`} style={tableStyle}>
         {colgroupEl}
         {tbodyEl}
       </table>
     );
-    const scrollableBody = !loading && displayRows.length > 0;
-    const fillActive = fillV && scrollableBody; // 데이터 없을 땐 최대 높이(fill) 미적용 — 자연 높이(2026-07-06)
     const minHStyle = minHeight
       ? { minHeight: typeof minHeight === 'number' ? `${minHeight}px` : minHeight }
       : undefined;
@@ -530,11 +534,12 @@ export function Table({
         <ScrollArea maxHeight={vMax} style={minHStyle}>{bodyTable}</ScrollArea>
       )
     ) : (
-      <div>{bodyTable}</div> // 빈/로딩 상태 — minHeight도 미적용(무조건 hug)
+      // 빈/로딩 상태 — minHeight 미적용. 빈 상태 + fill이면 남는 높이를 채워 엠티 텍스트 중앙 정렬
+      <div className={emptyFill ? 'flex min-h-0 flex-1 flex-col' : undefined}>{bodyTable}</div>
     );
     const split = (
       <div
-        className={fillActive ? 'flex min-h-0 flex-1 flex-col' : undefined}
+        className={fillActive || emptyFill ? 'flex min-h-0 flex-1 flex-col' : undefined}
         style={tableMinWidth ? { minWidth: tableMinWidth } : undefined}
       >
         <table className={`${tableClass} shrink-0`} style={tableStyle}>
@@ -548,8 +553,8 @@ export function Table({
       <ScrollArea
         horizontal
         vScrollEl={bodyScrollEl}
-        className={fillActive ? 'min-h-0 flex-1' : ''}
-        contentClassName={fillActive ? 'flex h-full min-h-0 flex-col' : ''}
+        className={fillActive || emptyFill ? 'min-h-0 flex-1' : ''}
+        contentClassName={fillActive || emptyFill ? 'flex h-full min-h-0 flex-col' : ''}
       >
         {split}
       </ScrollArea>
@@ -567,7 +572,7 @@ export function Table({
   }
 
   return (
-    <div className={`${shell} ${fillV && !loading && displayRows.length > 0 ? 'flex min-h-0 flex-col' : ''} ${className}`} {...props}>
+    <div className={`${shell} ${fillV && !loading ? 'flex min-h-0 flex-col' : ''} ${className}`} {...props}>
       {body}
     </div>
   );

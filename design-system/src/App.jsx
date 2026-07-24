@@ -7,7 +7,8 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage, ScreeningBuilderTemplatePage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, JobPositionTemplateBPage, ScreeningBuilderTemplatePage,
+  JobPositionModalAPage, JobPositionModalBPage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
@@ -118,7 +119,8 @@ const NAV_GROUPS = [
       { id: 'form-template', label: 'Form Template', Page: FormTemplatePage },
       { id: 'side-nav-template', label: 'Side Navigation Template', Page: SideNavTemplatePage },
       { id: 'notice-template', label: 'Notice Writing Template', Page: NoticeTemplatePage },
-      { id: 'job-position-template', label: 'Job Position Template', Page: JobPositionTemplatePage },
+      { id: 'job-position-template', label: 'Job Position Template A', Page: JobPositionTemplatePage },
+      { id: 'job-position-template-b', label: 'Job Position Template B', Page: JobPositionTemplateBPage },
       { id: 'screening-builder-template', label: 'Screening Builder Template', Page: ScreeningBuilderTemplatePage },
     ],
   },
@@ -138,6 +140,8 @@ const NAV_GROUPS = [
     label: 'test',
     items: [
       { id: 'modal-test', label: '모달 테스트 구현', Page: ModalTestPage },
+      { id: 'job-position-modal-a', label: '채용 분야 설정 모달 A', Page: JobPositionModalAPage },
+      { id: 'job-position-modal-b', label: '채용 분야 설정 모달 B', Page: JobPositionModalBPage },
     ],
   },
 ];

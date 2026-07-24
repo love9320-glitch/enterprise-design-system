@@ -42,6 +42,50 @@ export type SelectPlacement = 'auto' | `${'top' | 'bottom' | 'auto'}-${'left' | 
 // 내부 라벨(label) 구분자 아이콘 — 세로 점 2개(2×7). lucide에 없는 커스텀 셰이프라
 // Figma 원본(Ellipse, 8219:76216) path를 인라인 SVG로 가져왔다(2026-07-07 개정 — 콜론 텍스트 대체).
 // 색은 currentColor — 사용처에서 시멘틱 토큰 클래스(text-font-icon-3 = #878787, Figma 값)로 지정.
+// 에러 툴팁 포털(2026-07-24) — 필드 아래 absolute 오버레이는 테이블 바디 등 스크롤/클립
+// 컨테이너 안에서 잘리거나 스크롤을 만든다(규칙 12의 코드 등가). TruncatingText와 같은
+// 패턴으로 body 포털 + fixed 배치, 스크롤(capture)·리사이즈 시 rAF 코얼레싱으로 위치 갱신.
+function ErrorTipPortal({
+  anchorRef,
+  children,
+}: {
+  anchorRef: RefObject<HTMLElement | null>;
+  children: ReactNode;
+}) {
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  useLayoutEffect(() => {
+    const measure = () => {
+      const r = anchorRef.current?.getBoundingClientRect();
+      if (r) setPos({ top: r.bottom + 2, left: r.left }); // +2 = 기존 mt-spacing-2 간격
+    };
+    measure();
+    let raf = 0;
+    const schedule = () => {
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = 0;
+        measure();
+      });
+    };
+    window.addEventListener('resize', schedule);
+    window.addEventListener('scroll', schedule, true);
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      window.removeEventListener('resize', schedule);
+      window.removeEventListener('scroll', schedule, true);
+    };
+  }, [anchorRef]);
+  if (!pos) return null;
+  return createPortal(
+    <div style={{ position: 'fixed', top: pos.top, left: pos.left }} className="z-[1000]">
+      <Tooltip variant="error" beak="top">
+        {children}
+      </Tooltip>
+    </div>,
+    document.body,
+  );
+}
+
 function LabelSeparatorIcon({ className = '' }: { className?: string }) {
   return (
     <svg
@@ -61,6 +105,10 @@ function LabelSeparatorIcon({ className = '' }: { className?: string }) {
 // 공통 props — ...props는 루트 컨테이너(div)로 전달된다.
 interface SelectBaseProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChange' | 'defaultValue'> {
   options?: OptionItem[];  // [{ value, label, disabled? }] — disabled 옵션은 목록에 비활성 행으로 표시(선택 불가)
+  selectAllLabel?: ReactNode; // confirm 전용 — 푸터 전체 선택 체크박스 라벨(기본 '전체 선택')
+  // confirm 전용 — 팝오버가 열릴 때 체크 초기값(미지정 시 현재 선택값). 표시값(value)과
+  // 체크 상태를 분리하고 싶을 때 사용(예: B타입 마지막 칩 — 표시=자기 행 값, 체크=그룹 전체 값)
+  confirmSeed?: string[];
   confirm?: boolean;       // multiple 전용 — 선택을 draft로 들고 푸터(전체 선택+취소/확인)에서
                            //   확인을 눌러야 onChange 반영(취소·외부 클릭은 폐기). Figma 8535:9239
   variant?: 'box' | 'text' | 'chip'; // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 필터·문단 사이용)
@@ -110,6 +158,8 @@ export function Select({
   onChange: onChangeProp,
   options = [],            // [{ value, label, disabled? }] — disabled 옵션은 목록에 비활성 행으로 표시(선택 불가)
   multiple = false,        // 체크박스 다중 선택 — value/defaultValue/onChange 값은 배열([value])
+  selectAllLabel = '전체 선택', // confirm 전용 — 푸터 전체 선택 체크박스 라벨
+  confirmSeed,             // confirm 전용 — 열릴 때 체크 초기값(미지정 시 현재 선택값)
   confirm = false,         // multiple 전용 — 선택을 draft로 들고 푸터(전체 선택+취소/확인)에서
                            //   확인을 눌러야 onChange 반영(취소·외부 클릭은 폐기). Figma 8535:9239
   variant = 'box',         // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 필터·문단 사이용)
@@ -311,7 +361,7 @@ export function Select({
     if (!open) return;
     // 열릴 때 1회 리셋 — 의도된 effect 내 setState
     setQuery(''); // eslint-disable-line react-hooks/set-state-in-effect
-    if (isConfirm) setDraft(selectedValues); // confirm 모드 — 확정값으로 draft 시드
+    if (isConfirm) setDraft(confirmSeed ?? selectedValues); // confirm 모드 — 시드(미지정 시 확정값)로 draft 시작
     const idx = options.findIndex((o) =>
       multiple ? selectedValues.includes(o.value) : o.value === current,
     );
@@ -561,6 +611,7 @@ export function Select({
                     // confirm 모드 푸터 — 전체 선택(비활성 옵션 제외) + 취소/확인(확인 시에만 반영)
                     footer: true,
                     footerCheckbox: true,
+                    footerCheckLabel: selectAllLabel,
                     footerChecked:
                       options.filter((o) => !o.disabled).length > 0 &&
                       options.filter((o) => !o.disabled).every((o) => draft.includes(o.value)),
@@ -615,14 +666,8 @@ export function Select({
           document.body,
         )}
 
-      {/* 에러 툴팁 — 닫혔을 때 필드 아래 오버레이 (box·text 공통) */}
-      {error && errorMessage && !open && (
-        <div className="absolute left-0 top-full z-10 mt-spacing-2">
-          <Tooltip variant="error" beak="top">
-            {errorMessage}
-          </Tooltip>
-        </div>
-      )}
+      {/* 에러 툴팁 — 닫혔을 때 필드 아래(포털·fixed — 테이블 등 클립/스크롤 컨테이너 영향 없음) */}
+      {error && errorMessage && !open && <ErrorTipPortal anchorRef={rootRef}>{errorMessage}</ErrorTipPortal>}
     </div>
   );
 }

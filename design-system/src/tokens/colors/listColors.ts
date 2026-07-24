@@ -13,6 +13,7 @@ export const listColors = {
   'default-icon': b.gray[900],  // #0d0d0d
   'hover-bg':     b.gray[50],   // #f2f2f2
   'pressed-bg':   b.white,      // #ffffff (default와 동일 — 눌림은 순간 효과)
+  'selected-bg':    b['blue-400-50'], // #0f85f229 — 단일 선택 팝오버 선택 행 배경(2026-07-24 사용자 확정, side nav select bg 계열)
   'selected-text':  b.blue[400],  // #0f85f2 (선택 시 텍스트 파란색)
   'selected-icon':  b.blue[400],  // #0f85f2 (선택 시 chevron 파란색)
   'disabled-text': b.gray[150], // #c9c9c9
