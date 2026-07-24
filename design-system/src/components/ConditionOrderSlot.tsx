@@ -49,8 +49,9 @@ interface ConditionSlotCardProps extends ComponentPropsWithoutRef<'div'> {
   switchDisabled?: boolean; // 사용/미사용 스위치 잠금 — 현재 상태 그대로 변경 불가(2026-07-23)
   switchDisabledTooltip?: ReactNode; // 잠금 사유 — 잠긴 스위치 hover 시 툴팁으로 표시
   dragDisabled?: boolean; // 드래그 잠금(2026-07-23) — grip 아이콘 disabled 색 + 드래그 시작 안 됨
+  showHeader?: boolean; // false면 헤더 행(grip·제목·스위치) 전체 숨김 — 기준만 고르는 단순 카드(2026-07-24, B타입)
   dragging?: boolean; // pressed 상태(드래그 앤 드롭 중 유지)
-  width?: number | string; // Figma 기본 202px — 숫자(px) | CSS 길이
+  width?: number | string; // Figma 기본 202px — 숫자(px) | CSS 길이 | 'fill'(부모 flex에서 균등 분할, 2026-07-24)
   dragHandleProps?: HTMLAttributes<HTMLSpanElement> | null; // grip에 붙는 핸들러(컨테이너가 주입 — 드래그 시작 허용 판정)
   children?: ReactNode; // 세부 Select들(세로 스택 gap 4=spacing-3) — 필요만큼 추가
 }
@@ -62,6 +63,7 @@ export function ConditionSlotCard({
   switchDisabled = false,
   switchDisabledTooltip,
   dragDisabled = false,
+  showHeader = true,
   dragging = false,
   width = 202,
   dragHandleProps = null,
@@ -88,9 +90,10 @@ export function ConditionSlotCard({
   };
   return (
     <div
-      style={{ width: typeof width === 'number' ? `${width}px` : width }}
-      // 상단 패딩 8(pt-spacing-5, 나머지 12)·헤더↔셀렉트 gap 8(spacing-5) — 2026-07-23 지시(구 12/12)
-      className={`flex shrink-0 flex-col gap-spacing-5 rounded-round-4 border p-spacing-6 pt-spacing-5 shadow-[0_2px_2px_0_rgba(0,0,0,0.12)] transition-colors ${
+      style={width === 'fill' ? undefined : { width: typeof width === 'number' ? `${width}px` : width }}
+      // 헤더 있는 카드: 상단 패딩 8(pt-spacing-5, 나머지 12)·헤더↔셀렉트 gap 8 — 2026-07-23 지시(구 12/12).
+      // 헤더 없는 카드(B타입): 4 균일(구 12→8→4)·그림자 없음 — 2026-07-24 지시. width='fill'이면 flex-1 균등 분할
+      className={`flex ${width === 'fill' ? 'min-w-0 flex-1' : 'shrink-0'} flex-col gap-spacing-5 rounded-round-4 border ${showHeader ? 'p-spacing-6 pt-spacing-5 shadow-[0_2px_2px_0_rgba(0,0,0,0.12)]' : 'p-spacing-3'} transition-colors ${
         dragging ? CARD_PRESSED : CARD_DEFAULT
       } ${className}`}
       {...props}
@@ -105,6 +108,7 @@ export function ConditionSlotCard({
         <GripVertical size={16} strokeWidth={1.8} className="shrink-0" />
         <span className="whitespace-nowrap text-14">{title}</span>
       </div>
+      {showHeader && (
       <div className="flex w-full items-center justify-between gap-spacing-4">
         <div className="flex min-w-0 items-center gap-spacing-4">
           <span
@@ -126,6 +130,7 @@ export function ConditionSlotCard({
         </span>
         {lockTip.tooltip}
       </div>
+      )}
       {/* 세부 select 스택(gap 4px=spacing-3, Figma Slot) —
           미사용(스위치 off)이면 자식 컨트롤에 disabled를 주입해 Select 자체 disabled 상태로 표시(값은 보존) */}
       <div className="flex w-full flex-col gap-spacing-3">
@@ -152,6 +157,7 @@ interface ConditionOrderSlotProps extends ComponentPropsWithoutRef<'div'> {
   switchesDisabled?: boolean; // 모든 카드의 사용/미사용 스위치 잠금(현재 상태 유지 — 2026-07-23)
   switchesDisabledTooltip?: ReactNode; // 잠금 사유 — 잠긴 스위치 hover 시 툴팁
   dragDisabled?: boolean; // 카드 드래그 정렬 잠금(2026-07-23) — grip disabled 색·드래그 시작 안 됨
+  showCardHeaders?: boolean; // false면 모든 카드의 헤더(grip·제목·스위치) 숨김 — 드래그·사용 전환 비활성(2026-07-24, B타입)
   titlePrefix?: string; // 카드 제목 접두("조건 N.")
   cardWidth?: number | string;
 }
@@ -167,6 +173,7 @@ export function ConditionOrderSlot({
   switchesDisabled = false,
   switchesDisabledTooltip,
   dragDisabled = false,
+  showCardHeaders = true,
   titlePrefix = '조건',
   cardWidth = 202,
   className = '',
@@ -238,10 +245,16 @@ export function ConditionOrderSlot({
         if (!item) return null;
         const enabled = isEnabled(id);
         const title = enabled ? `${titlePrefix} ${++seq}.` : `${titlePrefix} 미사용`; // 2026-07-23 지시(구 "조건 -.")
-        // 미사용 카드는 드래그도 비활성(grip disabled 색·드래그 시작 안 됨, 2026-07-23 지시)
-        const cardDragDisabled = dragDisabled || !enabled;
+        // 미사용 카드는 드래그도 비활성(grip disabled 색·드래그 시작 안 됨, 2026-07-23 지시).
+        // 헤더 숨김 모드는 grip이 없어 드래그 자체가 불가.
+        const cardDragDisabled = dragDisabled || !enabled || !showCardHeaders;
         return (
-          <div key={id} className={`flex ${vertical ? 'flex-col' : 'flex-row'} items-center gap-spacing-2`}>
+          <div
+            key={id}
+            className={`flex ${vertical ? 'flex-col' : 'flex-row'} items-center gap-spacing-2 ${
+              cardWidth === 'fill' ? 'min-w-0 flex-1' : ''
+            }`}
+          >
             {i > 0 && (
               <Connector
                 size={16}
@@ -255,6 +268,7 @@ export function ConditionOrderSlot({
               switchDisabled={switchesDisabled}
               switchDisabledTooltip={switchesDisabledTooltip}
               dragDisabled={cardDragDisabled}
+              showHeader={showCardHeaders}
               onEnabledChange={(next) => toggleEnabled(id, next)}
               dragging={dragId === id}
               width={cardWidth}

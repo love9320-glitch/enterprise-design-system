@@ -9,7 +9,7 @@
 import { useContext, useEffect, useImperativeHandle, useState } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
 import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
-import { ChevronRight, Copy, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { ChevronRight, Copy, Download, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { ConditionOrderSlot } from './ConditionOrderSlot';
 import { Select, SelectChip } from './Select';
 import { Button } from './Button';
@@ -18,6 +18,8 @@ import type { TableColumn } from './Table';
 import { iconCellWidth } from './tableView';
 import { Divider } from './Divider';
 import { ScrollArea } from './ScrollArea';
+import { FileUploadButton } from './FileUploadButton';
+import type { UploadFileItem } from './FileUploadMenu';
 import { useHoverTooltip } from './useHoverTooltip';
 
 // 잠긴 컨트롤 hover 사유 툴팁 — disabled 컨트롤은 이벤트가 안 나가므로 감싼 span에서 감지.
@@ -101,6 +103,13 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   showReset?: boolean; // Step 01 타이틀 우측 underline 리셋 버튼(조건·행 전체 초기화)
   resetLabel?: string;
   switchLockTooltip?: ReactNode; // 뎁스 잠금 사유 — 잠긴 사용/미사용 스위치 hover 시 툴팁
+  // Step 02 타이틀 우측 엑셀 버튼(line 32, 2026-07-23 지시) — 다운로드 동작은 소비자 연결.
+  // 업로드는 FileUploadMenu 팝오버(1개 파일·엑셀만) — 파일 선택 시 onExcelUpload(file) 호출
+  excelUploadLabel?: string;
+  excelDownloadLabel?: string;
+  excelUploadGuide?: string; // 업로드 팝오버 안내 문구(\n 줄바꿈)
+  onExcelUpload?: (file: File) => void;
+  onExcelDownload?: () => void;
   // 순차 입력 잠금 사유 — 앞 조건 미완성으로 잠긴 값 셀렉트 hover 시 툴팁.
   // 미완성인 첫 앞 조건의 순번(카드 제목 "조건 N."의 N)을 받아 문구 생성.
   valueLockTooltip?: (order: number) => ReactNode;
@@ -142,6 +151,11 @@ export function JobPositionTemplate({
   resetLabel = '리셋',
   onReset,
   switchLockTooltip = '추가된 채용 분야가 있어 잠겨 있습니다. 리셋 후 변경할 수 있습니다.',
+  excelUploadLabel = '엑셀 업로드',
+  excelDownloadLabel = '엑셀 다운로드',
+  excelUploadGuide = '엑셀 파일 1개만 업로드할 수 있습니다.\n지원 형식: .xlsx, .xls',
+  onExcelUpload,
+  onExcelDownload,
   valueLockTooltip = (order) => `조건 ${order} 값을 먼저 선택해주세요.`,
   ref,
   className = '',
@@ -149,6 +163,8 @@ export function JobPositionTemplate({
 }: JobPositionTemplateProps) {
   // 모달 안이면 ModalBody 가용 높이(px) — tableHeight='fill'의 상한으로 사용
   const modalBodyMax = useContext(ModalBodyMaxContext);
+  // 엑셀 업로드 파일(1개) — 팝오버 표시용. 실제 처리(파싱/전송)는 onExcelUpload(file)로 소비자 몫
+  const [excelFiles, setExcelFiles] = useState<UploadFileItem[]>([]);
   // '채용 분야 코드 등록' 버튼 위치(2026-07-23 지시) — 페이지 사용: Step 01 하단 유지 /
   // 모달 사용: 모달 푸터 왼쪽으로 이동(ModalFooterStartContext 주입, setter 존재 = 모달 안).
   const setModalFooterStart = useContext(ModalFooterStartContext);
@@ -509,11 +525,11 @@ export function JobPositionTemplate({
       {/* Step 01 — 조건 조합 설정 (타이틀 우측 underline 리셋 — 조건·행 전체 초기화, 2026-07-23)
           min-h-0 — 높이 상한이 전파되면 카드 목록(ScrollArea)만 줄어들며 스크롤(타이틀·하단 버튼 고정) */}
       <div className="flex min-h-0 shrink-0 flex-col gap-spacing-5">
-        {/* 타이틀·리셋 상하 중앙 정렬 — underline 버튼(min-h 32)이 행 높이를 잡고 items-center로 맞춘다 */}
+        {/* 타이틀·리셋 상하 중앙 정렬 — underline 32 버튼(min-h 32)이 행 높이를 잡고 items-center로 맞춘다 */}
         <div className="flex min-h-[32px] items-center justify-between">
           <p className="text-14 text-font-icon-5">{step1Title}</p>
           {showReset && (
-            <Button variant="underline" leftIcon={RotateCcw} onClick={resetAll}>
+            <Button variant="underline" size="32" leftIcon={RotateCcw} onClick={resetAll}>
               {resetLabel}
             </Button>
           )}
@@ -567,6 +583,7 @@ export function JobPositionTemplate({
                         // 체크박스 팝오버는 confirm 모드(2026-07-23 지시) — PopoverMenu 푸터 영역
                         // (전체 선택 footerCheckbox + 취소/확인). 확인 시에만 행 반영.
                         confirm: isMultiCard(id),
+                        selectAllLabel: '전체', // 푸터 전체 선택 라벨(2026-07-24 지시)
                         // 팝오버 폭 — 트리거(카드 내부 178px)+50(2026-07-23 지시). 푸터 버튼 여유 확보
                         menuWidth: isMultiCard(id) ? 228 : undefined,
                         // 다중 카드 체크 상태는 rows 파생(현재 조합의 행 존재 여부) — 조합 복귀 시 체크 복원
@@ -620,9 +637,33 @@ export function JobPositionTemplate({
 
       {/* Step 02 — 채용 분야 추가 */}
       <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-spacing-5">
-        {/* Step 01 타이틀 행(min-h 32 — 리셋 버튼)과 시작 높이를 맞춘다 */}
-        <div className="flex min-h-[32px] items-center">
+        {/* Step 01 타이틀 행(min-h 32 — 리셋 버튼)과 시작 높이를 맞춘다.
+            우측 끝: 엑셀 업로드/다운로드(line 32, 버튼 사이 gap 8=spacing-5 — 2026-07-23 지시) */}
+        <div className="flex min-h-[32px] items-center justify-between">
           <p className="text-14 text-font-icon-5">{step2Title}</p>
+          <div className="flex items-center gap-spacing-5">
+            <Button variant="line" size="32" leftIcon={Download} onClick={onExcelDownload}>
+              {excelDownloadLabel}
+            </Button>
+            {/* 업로드 — FileUploadMenu 팝오버(1개·엑셀만, 우측 정렬·상하 auto). guide와 accept 일치 유지 주의 */}
+            <FileUploadButton
+              triggerText={excelUploadLabel}
+              files={excelFiles}
+              maxCount={1}
+              accept=".xlsx,.xls"
+              guide={excelUploadGuide}
+              placement="auto-right"
+              menuWidth={320} // 기본 420 − 100(2026-07-23 지시)
+              buttonProps={{ variant: 'line', size: '32' }}
+              onAdd={(list: FileList) => {
+                const f = list[0];
+                if (!f) return;
+                setExcelFiles([{ name: f.name, size: Math.round(f.size / 1e6) }]);
+                onExcelUpload?.(f);
+              }}
+              onDelete={() => setExcelFiles([])}
+            />
+          </div>
         </div>
         {/* 규칙 18 — 모달 안 무한 스크롤 테이블: bordered + maxHeight='fill' + min-h-0(shrink 상한) */}
         <Table
@@ -633,7 +674,9 @@ export function JobPositionTemplate({
           rowKey="id"
           bordered
           maxHeight={tableHeight}
-          className={tableHeight === 'fill' ? 'min-h-0' : ''}
+          // 빈 상태: flex-1로 조건 조합 설정 하단까지 늘려 엠티 텍스트 중앙 정렬 /
+          // 데이터 있음: hug(자연 높이, 2026-07-23 지시) — 상한(fill)만 유지
+          className={tableHeight === 'fill' ? (rows.length === 0 ? 'min-h-0 flex-1' : 'min-h-0') : ''}
           emptyMessage={emptyMessage}
         />
       </div>

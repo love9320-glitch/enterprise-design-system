@@ -75,9 +75,11 @@ export function List({
     ? 'bg-list-default-bg cursor-not-allowed'
     : highlighted && !noHover
       ? 'bg-list-hover-bg cursor-pointer' // 키보드 강조 우선
-      : selected || noHover
-        ? 'bg-list-default-bg cursor-pointer' // 선택·라디오: hover/pressed 효과 없음
-        : 'bg-list-default-bg cursor-pointer hover:bg-list-hover-bg active:bg-list-pressed-bg';
+      : selected
+        ? 'bg-list-selected-bg cursor-pointer' // 선택: 파란 알파 배경(2026-07-24) — hover/pressed 효과 없음
+        : noHover
+          ? 'bg-list-default-bg cursor-pointer' // 라디오: 선택 표시는 라디오가 담당
+          : 'bg-list-default-bg cursor-pointer hover:bg-list-hover-bg active:bg-list-pressed-bg';
 
   const titleColor = disabled
     ? 'text-list-disabled-text'
