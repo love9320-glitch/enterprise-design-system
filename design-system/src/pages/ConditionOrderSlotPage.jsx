@@ -18,7 +18,18 @@ import { Select } from '../components/Select';
   ]}
   onOrderChange={(ids) => console.log('배치 순서', ids)}
   onEnabledChange={(enabledIds) => console.log('사용 중(적용 순서)', enabledIds)}
-/>`;
+/>
+
+// 잠금 — 스위치(사유 툴팁)·드래그를 현재 상태로 고정(예: 결과가 생긴 뒤 뎁스 변경 방지)
+<ConditionOrderSlot
+  switchesDisabled switchesDisabledTooltip="추가된 항목이 있어 잠겨 있습니다."
+  dragDisabled                      // grip disabled 색 + 드래그 시작 안 됨(미사용 카드는 자동 잠금)
+  …
+/>
+
+// 단순 카드 모드(Job Position Template 채택형) — 헤더(grip·제목·스위치) 없이 셀렉트만,
+// 가로 배치 + 카드가 슬롯 폭을 균등 분할. 드래그·사용 전환은 비활성
+<ConditionOrderSlot direction="horizontal" showCardHeaders={false} cardWidth="fill" className="w-full" … />`;
 
 const USAGE_PROPS = [
   { name: 'items', type: '{ id, body }[]', default: '[]', desc: '조건 카드 목록 — body에 세부 Select들을 필요만큼 넣는다(2개 고정 아님). 배열에 추가하면 카드가 늘어남' },
@@ -26,8 +37,11 @@ const USAGE_PROPS = [
   { name: 'order / defaultOrder / onOrderChange', type: 'id[] / id[] / (ids) => void', default: '— / items 순서 / —', desc: '카드 배치 순서(controlled·uncontrolled) — 드래그 앤 드롭으로 변경' },
   { name: 'enabledIds / onEnabledChange', type: 'id[] / (ids, {id,enabled}) => void', default: '전체 사용 / —', desc: '사용 중 조건 — 미사용 카드는 적용 순번에서 빠지고 다음 조건이 번호를 당겨받음(카드 위치는 유지)' },
   { name: 'titlePrefix', type: 'string', default: "'조건'", desc: "카드 제목 접두 — 사용 중 카드에 '조건 1.' 형식으로 자동 번호" },
-  { name: 'cardWidth', type: 'number | string', default: '202', desc: '카드 너비(Figma 기본 202px)' },
-  { name: 'ConditionSlotCard', type: '컴포넌트', default: '—', desc: '카드 단독 사용 — title · enabled/onEnabledChange(Switch) · dragging(pressed=드래그 중) · children(세부 Select 스택)' },
+  { name: 'switchesDisabled / switchesDisabledTooltip', type: 'boolean / ReactNode', default: 'false / —', desc: '모든 카드의 사용/미사용 스위치 잠금(현재 상태 유지) + 잠긴 스위치 hover 시 사유 툴팁' },
+  { name: 'dragDisabled', type: 'boolean', default: 'false', desc: '드래그 정렬 잠금 — grip 아이콘 disabled 색·드래그 시작 안 됨. 미사용(스위치 off) 카드는 항상 자동 잠금' },
+  { name: 'showCardHeaders', type: 'boolean', default: 'true', desc: '카드 헤더(grip·제목·스위치) 표시 — false면 셀렉트만 있는 단순 카드(패딩 4·그림자 없음, 드래그·사용 전환 비활성). Job Position Template이 사용' },
+  { name: 'cardWidth', type: "number | string | 'fill'", default: '202', desc: "카드 너비 — 숫자(px)/CSS 길이, 'fill'이면 슬롯 폭을 카드들이 균등 분할" },
+  { name: 'ConditionSlotCard', type: '컴포넌트', default: '—', desc: '카드 단독 사용 — title · enabled/onEnabledChange(Switch) · switchDisabled(+Tooltip) · dragDisabled · showHeader · dragging(pressed) · width(fill 포함) · children(세부 Select 스택)' },
 ];
 
 const CRITERIA = [
@@ -122,6 +136,29 @@ export function ConditionOrderSlotPage() {
           <ConditionSlotCard title="조건 1." dragging>{cardBody()}</ConditionSlotCard>
           <ConditionSlotCard title="조건 미사용" enabled={false}>{cardBody()}</ConditionSlotCard>
         </div>
+      </div>
+
+      {/* 단순 카드 모드 — showCardHeaders=false + cardWidth='fill' (Job Position Template 채택형) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">
+          단순 카드 모드 — showCardHeaders=false · cardWidth=&quot;fill&quot;
+        </h3>
+        <p className="mb-spacing-6 text-12 text-font-icon-4">
+          헤더(grip·제목·스위치) 없이 셀렉트만 있는 컴팩트 카드(패딩 4·그림자 없음)로, 카드들이 슬롯
+          폭을 균등 분할합니다. 드래그·사용 전환은 비활성 — Job Position Template이 이 조합을 사용합니다.
+        </p>
+        <ConditionOrderSlot
+          direction="horizontal"
+          showCardHeaders={false}
+          cardWidth="fill"
+          className="w-full"
+          items={[
+            { id: 'a', body: cardBody() },
+            { id: 'b', body: cardBody() },
+            { id: 'c', body: cardBody() },
+          ]}
+        />
       </div>
     </section>
   );

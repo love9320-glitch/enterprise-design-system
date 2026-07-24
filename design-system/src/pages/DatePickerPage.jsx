@@ -78,7 +78,7 @@ const USAGE_PROPS = [
   { name: 'DateField · width', type: "'hug' | 'fill' | number | string", default: 'showTime?260:180', desc: "콘텐츠 폭(hug)/부모 100%(fill)/고정. 미지정 시 시간 포함=260·아니면 180. 좁으면 말줄임(…)" },
   { name: 'DateField · (disablePast/minDate/maxDate/disabledDate/weekStartsOn/minYear/maxYear)', type: '—', default: '—', desc: 'DatePicker로 패스스루' },
   // DatePicker
-  { name: 'DatePicker · mode', type: "'single' | 'range'", default: "'single'", desc: '단일 날짜 / 시작~끝 범위 선택' },
+  { name: 'DatePicker · mode', type: "'single' | 'range'", default: "'single'", desc: '단일 날짜 / 시작~끝 범위 선택 — 완성된 범위에서 다시 날짜를 클릭하면 리셋되고 그 날짜가 새 시작일이 됨(시작일 ~ 마감일 없음)' },
   { name: 'DatePicker · value', type: 'Date | {start,end}', default: '—', desc: 'controlled 선택값(mode에 따라 형태)' },
   { name: 'DatePicker · defaultValue', type: 'Date | {start,end}', default: '—', desc: 'uncontrolled 초기 선택값' },
   { name: 'DatePicker · onChange', type: '(next) => void', default: '—', desc: '선택 변경(next=Date 또는 {start,end})' },
