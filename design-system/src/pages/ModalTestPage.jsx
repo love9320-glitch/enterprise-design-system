@@ -661,9 +661,9 @@ function JobPositionModal({ open, onClose, onRegisterCode }) {
         ref={templateRef}
         criteriaOptions={POS_CRITERIA}
         valueOptions={POS_VALUES}
-        multiLastValue
         jobdaGroupOptions={POS_JOBDA_GROUPS}
         jobdaDutyOptions={POS_JOBDA_DUTIES}
+        tableHeight={370}
         onRegisterCode={onRegisterCode}
       />
     </Modal>
