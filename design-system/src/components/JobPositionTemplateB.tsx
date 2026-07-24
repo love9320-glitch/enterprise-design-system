@@ -225,6 +225,17 @@ export function JobPositionTemplateB({
   };
   const numJosa = (n: number) => ('013678'.includes(String(n % 10)) ? '을' : '를'); // 받침 있는 숫자 발음
   const criteriaLockTooltip = (n: number) => `기준${n}${numJosa(n)} 먼저 선택해주세요.`;
+  // 값 셀렉트 순차 잠금(2026-07-24 지시) — 앞 카드들의 값이 모두 선택되기 전까지 비활성.
+  // 반환: 값 미선택인 첫 앞 카드의 순번 / 없으면 null.
+  const firstValueUnselectedPrev = (id: string): number | null => {
+    const idx = cardIds.indexOf(id);
+    for (let i = 0; i < idx; i += 1) {
+      const s = selections[cardIds[i]];
+      if (!s?.criteria || typeof s.value !== 'string' || !s.value) return i + 1;
+    }
+    return null;
+  };
+  const valueLockTooltipB = (n: number) => `기준${n} 값을 먼저 선택해주세요.`;
 
   // 마지막 기준 카드 판별(2026-07-24) — 스켈레톤(선택된 기준 목록)의 마지막 기준을 가진 카드.
   // 이 카드의 값 셀렉트는 체크박스(테이블 마지막 칩과 동일한 그룹 동기화)로 동작한다.
@@ -679,12 +690,19 @@ export function JobPositionTemplateB({
                   {/* 값 셀렉트(2026-07-24 재추가) — 고르면 그 기준의 빈 칩들을 채우는 기본값.
                       마지막 기준 카드는 체크박스(confirm) — 테이블 마지막 칩과 같은 그룹 동기화 */}
                   {isLastValueCard(sel.criteria) ? (
+                    <LockTooltipWrap
+                      reason={(() => {
+                        const n = firstValueUnselectedPrev(id);
+                        return n != null ? valueLockTooltipB(n) : null;
+                      })()}
+                    >
                     <Select
                       width="100%"
                       label="값"
                       placeholder="값 선택"
                       searchable
                       searchPlaceholder="검색어 입력"
+                      disabled={firstValueUnselectedPrev(id) != null}
                       options={valueOptions[sel.criteria] ?? []}
                       {...({
                         multiple: true,
@@ -698,7 +716,14 @@ export function JobPositionTemplateB({
                           setCardLastMulti(e.target.value),
                       } as unknown as Parameters<typeof Select>[0])}
                     />
+                    </LockTooltipWrap>
                   ) : (
+                    <LockTooltipWrap
+                      reason={(() => {
+                        const n = firstValueUnselectedPrev(id);
+                        return n != null ? valueLockTooltipB(n) : null;
+                      })()}
+                    >
                     <Select
                       width="100%"
                       options={valueOptions[sel.criteria] ?? []}
@@ -706,10 +731,11 @@ export function JobPositionTemplateB({
                       placeholder="값 선택"
                       searchable
                       searchPlaceholder="검색어 입력"
-                      disabled={!sel.criteria}
+                      disabled={!sel.criteria || firstValueUnselectedPrev(id) != null}
                       value={typeof sel.value === 'string' ? sel.value : ''}
                       onChange={(e) => setCardValue(id, e.target.value)}
                     />
+                    </LockTooltipWrap>
                   )}
                 </>
               ),
