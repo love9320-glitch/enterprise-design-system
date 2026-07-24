@@ -45,6 +45,8 @@ import { SelectGroup } from '../components/SelectGroup';
 const USAGE_PROPS = [
   { name: 'options', type: '{ value, label, disabled? }[]', default: '[]', desc: '선택지 목록 — disabled 옵션은 비활성 행으로 표시(클릭·키보드 선택 불가)' },
   { name: 'multiple', type: 'boolean', default: 'false', desc: '체크박스 다중 선택 — value/defaultValue/onChange 값이 배열이 되고, 행 클릭=토글(메뉴 유지)' },
+  { name: 'confirm / selectAllLabel', type: "boolean / ReactNode", default: "false / '전체 선택'", desc: 'multiple 전용 — 선택을 draft로 들고 푸터(전체 선택 체크박스 + 취소/확인)에서 확인 시에만 반영. selectAllLabel로 전체 선택 문구 변경' },
+  { name: 'confirmSeed', type: 'string[]', default: '—', desc: 'confirm 전용 — 팝오버가 열릴 때 체크 초기값(미지정 시 현재 선택값). 표시값(value)과 체크 상태를 분리할 때 사용' },
   { name: 'variant', type: "'box' | 'text'", default: "'box'", desc: "필드형(box) / 인라인 텍스트형(text — 필터·문단 사이용)" },
   { name: 'size', type: "'24' | '20'", default: "'24'", desc: 'text variant 글자 크기 — 24=14px / 20=12px (box는 항상 14px)' },
   { name: 'value', type: 'string | string[]', default: '—', desc: '선택값 (제어) — multiple이면 배열' },

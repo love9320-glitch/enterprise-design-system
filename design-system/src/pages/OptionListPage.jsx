@@ -72,7 +72,7 @@ const USAGE_PROPS = [
   { name: 'List · onSwitchChange', type: '(e) => void', default: '—', desc: '스위치 변경 핸들러' },
   { name: 'List · rightButton', type: 'boolean', default: 'false', desc: '오른쪽 고스트 ⋯ 버튼 표시' },
   { name: 'List · endIcon', type: 'boolean', default: 'false', desc: '오른쪽 chevron(>) 표시' },
-  { name: 'List · selected', type: 'boolean', default: 'false', desc: '선택 상태 (chevron 파랑)' },
+  { name: 'List · selected', type: 'boolean', default: 'false', desc: '선택 상태 — 파란 알파 배경(list-selected-bg) + 텍스트·chevron 파랑(키보드 강조보다 우선)' },
   { name: 'List · highlighted', type: 'boolean', default: 'false', desc: '키보드 내비게이션 강조(hover 색)' },
   { name: 'List · disabled', type: 'boolean', default: 'false', desc: '비활성 (회색·클릭 차단)' },
   { name: 'List · onClick', type: '() => void', default: '—', desc: '행 클릭 핸들러' },

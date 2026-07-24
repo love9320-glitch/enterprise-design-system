@@ -37,6 +37,7 @@ const MODAL_PROPS = [
   { name: 'cancelText / onCancel', type: 'string / () => void', default: "'취소'", desc: '보조 버튼 라벨·핸들러(미지정 시 onClose)' },
   { name: 'footer / footerStart', type: 'ReactNode', default: '—', desc: '푸터 우측 전체 커스텀 / 좌측 영역(버튼·안내글·유효성 메시지)' },
   { name: 'footerStartType', type: "'text' | 'button'", default: "'text'", desc: '푸터 좌측 내용 유형 — 왼쪽 여백 결정: text=16px / button=12px(버튼 자체 여백 감안)' },
+  { name: '(푸터 좌측 주입)', type: 'ModalFooterStartContext', default: '—', desc: '본문 자식이 컨텍스트로 푸터 좌측에 버튼을 주입할 수 있음(예: JobPositionTemplate 액션 버튼 — 모달 안에서 자동 이동). footerStart prop을 직접 주면 prop이 우선' },
   { name: 'showHeader / showClose / showFooter / showCancel', type: 'boolean', default: 'true', desc: '헤더 / X 버튼 / 푸터 / 취소 버튼 노출' },
   { name: 'closeOnOverlayClick / closeOnEsc', type: 'boolean', default: 'true', desc: '딤 클릭 / ESC로 닫기 허용' },
   { name: 'bodyMaxHeight', type: 'number | string', default: "'70vh'", desc: '본문 최대 높이(초과 시 ScrollArea 내부 스크롤)' },

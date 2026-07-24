@@ -9,11 +9,28 @@ import { CRITERIA, VALUES, JOBDA_GROUPS, JOBDA_DUTIES } from './jobPositionSampl
 
 const USAGE = `import { JobPositionTemplate } from '../components/JobPositionTemplate';
 
+// 상하 레이아웃 — [타이틀·액션 버튼 행] → [조건 카드 가로 그룹] → [테이블].
+// 카드에서 기준을 고르는 순간 테이블에 행(빈 칩)이 생기고, 값은 카드 값 셀렉트(빈 칩 기본값)
+// 또는 테이블 칩에서 고른다. 마지막 기준 카드의 값은 체크박스 — 체크한 값마다 행 생성.
+const ref = useRef(null); // 저장 API — ref.current.validate() / getRows()
+
 <JobPositionTemplate
-  criteriaOptions={[{ value: 'region', label: '지역' }, …]}
-  valueOptions={{ region: [{ value: 'seoul', label: '서울' }, …], … }}
-  onChange={(rows) => save(rows)}   // 로우 추가/삭제/칩 변경 시 전체 스냅샷
-/>`;
+  ref={ref}
+  criteriaOptions={[{ value: 'region', label: '지역' }, …]}       // 기준 목록
+  valueOptions={{ region: [{ value: 'seoul', label: '서울' }, …] }} // 기준별 값 목록
+  jobdaGroupOptions={[{ value: 'dev', label: '개발' }, …]}          // Jobda 직군
+  jobdaDutyOptions={{ dev: [{ value: 'fe', label: '프론트엔드 개발자' }, …] }} // 직군별 직무
+  tableHeight={370}                        // 테이블 바디 고정 상한(px) — 넘치면 내부 스크롤
+  onChange={(rows) => save(rows)}          // 행 추가/삭제/칩 변경 시 전체 스냅샷
+  onRegisterCode={() => openCodeModal()}   // '채용 분야 코드 등록' 클릭
+  onExcelUpload={(file) => parse(file)}    // 업로드 팝오버에서 파일 선택 시(.xlsx/.xls 1개)
+  onExcelDownload={() => download()}       // '엑셀 다운로드' 클릭
+/>
+
+// 모달 조립 — 본문에 넣으면 액션 버튼 4종(리셋·코드 등록·엑셀)이 모달 푸터 왼쪽으로 자동 이동
+<Modal title="채용 분야 설정" size="3xl" onConfirm={() => ref.current?.validate() && save()}>
+  <JobPositionTemplate ref={ref} … />
+</Modal>`;
 
 const USAGE_PROPS = [
   { name: 'criteriaOptions', type: '{ value, label }[]', default: '[]', desc: '조건 카드의 기준 목록(첫 Select)' },
@@ -22,11 +39,11 @@ const USAGE_PROPS = [
   { name: 'defaultRows / onChange', type: 'rows / (rows) => void', default: '[] / —', desc: '로우 스냅샷 반출 — [{ id, items: [{ criteria, value }] }] (추가/삭제/칩 변경 시)' },
   { name: 'tableHeight', type: "'fill' | number", default: "'fill'", desc: "테이블 세로 — 'fill'=내용만큼 확장하되 모달 안에선 ModalBody 가용 높이가 상한(닿으면 테이블 바디 내부 스크롤) / 숫자=고정 상한(px, 바디만 스크롤)" },
   { name: 'ref (validate / getRows)', type: '{ validate(): boolean, getRows(): rows }', default: '—', desc: '저장 API — validate()=미선택 칩 에러 표시+통과 여부, getRows()=저장 시점 최신 로우(변경 없이 저장해도 안전)' },
-  { name: 'onRegisterCode', type: '() => void', default: '—', desc: "'채용 분야 코드 등록' 버튼 클릭 — 코드 등록 모달 열기 등은 소비자가 연결(registerCodeLabel로 문구 변경). 버튼 위치는 자동: 페이지에선 Step 01 하단, 모달 안에선 모달 푸터 왼쪽" },
-  { name: 'showReset / resetLabel / onReset', type: 'boolean / string / () => void', default: "true / '리셋' / —", desc: 'Step 01 타이틀 우측 underline 리셋 버튼 — 조건(순서·사용·선택)과 테이블 행을 초기 상태로 함께 초기화(onReset은 초기화 후 알림)' },
-  { name: 'onExcelUpload / onExcelDownload', type: '(file) => void / () => void', default: '— / —', desc: 'Step 02 타이틀 우측 엑셀 버튼(사이 8px) — 업로드는 클릭 시 FileUploadMenu 팝오버(1개 파일·.xlsx/.xls만, excelUploadGuide로 안내 문구 변경)가 열리고 파일 선택 시 onExcelUpload(file) 호출. 다운로드 동작은 소비자 연결' },
+  { name: 'onRegisterCode', type: '() => void', default: '—', desc: "'채용 분야 코드 등록' 버튼 클릭 — 코드 등록 모달 열기 등은 소비자가 연결(registerCodeLabel로 문구 변경). 버튼 위치 자동: 페이지=타이틀 우측 액션 행, 모달=푸터 왼쪽" },
+  { name: 'showReset / resetLabel / onReset', type: 'boolean / string / () => void', default: "true / '리셋' / —", desc: '리셋 버튼(액션 행 맨 앞, line) — 조건 선택과 테이블 행을 초기 상태로 함께 초기화(onReset은 초기화 후 알림)' },
+  { name: 'onExcelUpload / onExcelDownload', type: '(file) => void / () => void', default: '— / —', desc: '액션 행의 엑셀 버튼(모달에선 푸터 왼쪽) — 업로드는 클릭 시 FileUploadMenu 팝오버(1개 파일·.xlsx/.xls만, excelUploadGuide로 안내 문구 변경)가 열리고 파일 선택 시 onExcelUpload(file) 호출. 다운로드 동작은 소비자 연결' },
   { name: 'jobdaGroupOptions / jobdaDutyOptions', type: '{ value, label }[] / { [group]: { value, label }[] }', default: '[] / {}', desc: "'Jobda 직군/직무 매칭' 컬럼 — 행마다 직군·직무 SelectChip 2개. 직무는 선택한 직군에 종속(직군 변경 시 직무 리셋). 라벨·플레이스홀더는 jobdaLabel/jobdaGroupPlaceholder/jobdaDutyPlaceholder" },
-  { name: '라벨들', type: 'string', default: "'채용 분야' 등", desc: '카피 커스텀(orderLabel/jobLabel/manageLabel/emptyMessage/emptyValueMessage) — 섹션 타이틀 없음(테이블 헤더가 조건 구성 표시)' },
+  { name: 'pageTitle / 라벨들', type: 'string', default: "'채용 분야 설정' 등", desc: '카피 커스텀 — pageTitle(페이지 전용 타이틀)·orderLabel/jobLabel/manageLabel/emptyMessage/emptyValueMessage. 테이블 헤더가 조건 구성을 병기(채용 분야 (지역 > 직무))' },
 ];
 
 
