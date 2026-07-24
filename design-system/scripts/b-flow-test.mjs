@@ -1,4 +1,4 @@
-// JobPositionTemplateB 플로우 재현 테스트(일회성 디버그) — jsdom에서 실제 클릭 시뮬레이션.
+// JobPositionTemplate(구 B타입) 플로우 재현 테스트(일회성 디버그) — jsdom에서 실제 클릭 시뮬레이션.
 // 시나리오: 기준1=지역 → 값1(체크박스) 서울 → 기준2=고용형태 → 값 전부 리셋(카드·칩) 확인
 import { JSDOM } from 'jsdom';
 
@@ -24,7 +24,7 @@ Object.defineProperty(dom.window.HTMLElement.prototype, 'offsetParent', {
 const React = (await import('react')).default;
 const { createRoot } = await import('react-dom/client');
 const { act } = await import('react');
-const { JobPositionTemplateB } = await import('../src/components/JobPositionTemplateB.tsx');
+const { JobPositionTemplate } = await import('../src/components/JobPositionTemplate.tsx');
 
 const h = React.createElement;
 const CRITERIA = [
@@ -39,7 +39,7 @@ const VALUES = {
 const mount = document.createElement('div');
 document.body.appendChild(mount);
 const root = createRoot(mount);
-await act(async () => root.render(h(JobPositionTemplateB, { criteriaOptions: CRITERIA, valueOptions: VALUES })));
+await act(async () => root.render(h(JobPositionTemplate, { criteriaOptions: CRITERIA, valueOptions: VALUES })));
 
 const click = async (el) => {
   await act(async () => {
@@ -69,7 +69,7 @@ const ok = (cond, name) => { console.log((cond ? 'OK   ' : 'FAIL ') + name); if 
 await click(trigger('기준1 선택'));
 ok(!!option('지역'), '기준1 팝오버에 지역 옵션');
 await click(option('지역'));
-ok(combos().filter((c) => c.textContent?.includes('지역을 선택하세요')).length > 0, '테이블에 지역 칩(빈) 생성');
+ok(combos().filter((c) => c.textContent?.includes('지역 선택')).length > 0, '테이블에 지역 칩(빈) 생성');
 
 // 2) 값1 = 서울 (기준1이 마지막 카드 → 체크박스 confirm)
 await click(trigger('값 선택'));
@@ -84,8 +84,8 @@ await click(trigger('기준2 선택'));
 await click(option('고용형태'));
 const seoulLeft = combos().filter((c) => c.textContent?.includes('서울')).length;
 ok(seoulLeft === 0, `기준2 선택 후 서울 칩 리셋(잔존 ${seoulLeft})`);
-ok(combos().filter((c) => c.textContent?.includes('지역을 선택하세요')).length > 0, '지역 칩 플레이스홀더 복귀');
-ok(combos().filter((c) => c.textContent?.includes('고용형태를 선택하세요')).length > 0, '고용형태 칩(빈) 추가');
+ok(combos().filter((c) => c.textContent?.includes('지역 선택')).length > 0, '지역 칩 플레이스홀더 복귀');
+ok(combos().filter((c) => c.textContent?.includes('고용형태 선택')).length > 0, '고용형태 칩(빈) 추가');
 
 console.log(fail === 0 ? '✅ B 플로우 테스트 통과' : `❌ ${fail}건 실패`);
 process.exit(fail ? 1 : 0);

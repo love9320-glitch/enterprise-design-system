@@ -34,9 +34,6 @@ export { TablePage } from './TablePage';
 export { TableTemplatePage } from './TableTemplatePage';
 export { FormTemplatePage } from './FormTemplatePage';
 export { JobPositionTemplatePage } from './JobPositionTemplatePage';
-export { JobPositionTemplateBPage } from './JobPositionTemplateBPage';
-export { JobPositionModalAPage } from './JobPositionModalAPage';
-export { JobPositionModalBPage } from './JobPositionModalBPage';
 export { ScreeningBuilderTemplatePage } from './ScreeningBuilderTemplatePage';
 export { ModalPage } from './ModalPage';
 // EditorPage·ModalTestPage(안내 작성 모달=Editor 포함)는 App.jsx에서 지연 로드(lazy import)하므로 정적 재export하지 않는다

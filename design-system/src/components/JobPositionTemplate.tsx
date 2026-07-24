@@ -1,12 +1,13 @@
-// JobPositionTemplate — 채용 분야 설정 템플릿 (Figma "JobPositionTemplate" 8220:82935)
-// Step 01(좌): ConditionOrderSlot — 조건 카드(기준 Select + 값 Select)들을 드래그 정렬·사용/미사용.
-// Step 02(우): 조건 선택이 곧 테이블 반영(2026-07-23 — 미리보기 인풋·추가 버튼 제거).
-//   다중(체크박스) 조건: 체크=조합 행 즉시 추가, 해제=그 조합 행 제거(다른 활성 조건이 완성일 때).
-//   다중 카드 없음(multiLastValue=false): 조합이 완성되는 순간 자동 추가. 중복 조합은 조용히 건너뜀.
-//   외곽선(bordered) 무한 스크롤 테이블(규칙 18), 최신이 위. 로우의 SelectChip으로 그 자리 값 변경.
-// 조립(규칙 4): ConditionOrderSlot + Select + Button + Table + SelectChip — 손 구현 0.
+// JobPositionTemplate — 채용 분야 설정 템플릿 (2026-07-24 — B타입을 정식 채택, 구 A타입 삭제)
+// 상하 레이아웃: [액션 버튼 행(페이지) → 조건 카드 가로 그룹 → 테이블].
+//   조건 카드: 기준 셀렉트('기준N', 최상단 미사용, 순차 잠금+툴팁) + 값 셀렉트(빈 칩 기본값).
+//   기준 구성이 바뀌면 값 선택(카드·칩)은 전부 리셋 — 카드/테이블 정합 유지.
+//   마지막 기준 카드의 값은 체크박스(confirm) — 카드 앞 조건 값 컨텍스트로 값마다 행 추가/해제.
+//   테이블: 기준 선택 즉시 행 생성(칩 스켈레톤), 헤더에 조건 구성 병기, 칩에서 행별 값 편집.
+//   외곽선(bordered) 테이블(규칙 18) — 빈 상태는 중앙 정렬, 행 있으면 hug + 상한 초과 시 내부 스크롤.
+// 조립(규칙 4): ConditionOrderSlot + Select + Button + Table + SelectChip + FileUploadButton — 손 구현 0.
 // 작성 데이터는 onChange(rows)로 반출한다(템플릿 값 반출 계약 — 2026-07-07 감사 교훈).
-import { useContext, useEffect, useImperativeHandle, useState } from 'react';
+import { useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
 import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
 import { ChevronRight, Copy, Download, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
@@ -16,7 +17,6 @@ import { Button } from './Button';
 import { Table } from './Table';
 import type { TableColumn } from './Table';
 import { iconCellWidth } from './tableView';
-import { Divider } from './Divider';
 import { ScrollArea } from './ScrollArea';
 import { FileUploadButton } from './FileUploadButton';
 import type { UploadFileItem } from './FileUploadMenu';
@@ -40,16 +40,20 @@ function LockTooltipWrap({ reason, children }: { reason: ReactNode; children: Re
 const newRowId = () =>
   `row-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 
+// 기준 팝오버 최상단 '미사용' 옵션(2026-07-24 지시) — 선택 시 이 카드는 조합(스켈레톤)에서 제외
+const UNUSED_CRITERIA = '__unused__';
+
 // 옵션 항목 — [{ value, label }] (로우 칩에서 disabled 파생 부여)
 interface JobOption {
   value: string;
   label: string;
   disabled?: boolean;
 }
-// 로우의 조건 항목 — { criteria, value }
+// 로우의 조건 항목 — { criteria, value }. 마지막 조건 칩은 체크박스 다중 선택이라
+// 값이 배열일 수 있다(B타입, 2026-07-24 지시) — 표시는 라벨을 ', '로 이어 붙임.
 interface JobRowItem {
   criteria: string;
-  value: string;
+  value: string | string[];
 }
 // 테이블 로우 — { id, items: [{ criteria, value }], jobdaGroup?, jobdaDuty? }
 interface JobRow {
@@ -76,15 +80,9 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   criteriaOptions?: JobOption[]; // 기준 목록 [{ value, label }] — 카드의 첫 Select(예: 지역/고용형태/경력/직무)
   valueOptions?: Record<string, JobOption[]>; // 기준별 값 목록 { [criteriaValue]: [{ value, label }] } — 카드의 둘째 Select·로우 칩 공용
   conditionCount?: number; // 조건 카드 수
-  defaultDisabledIds?: string[]; // 초기 미사용(스위치 off) 조건 id 목록 (id=`cond-1`..`cond-N`)
-  //   미지정 시 기본: 조건 1만 사용(나머지 전부 off — 2026-07-23 지시). 전부 켜려면 [] 전달.
-  // multiLastValue — 마지막 조건(표시 순서상 맨 아래 카드)의 값을 체크박스 다중 선택으로.
-  //   추가 시 선택한 값마다 행을 하나씩 생성(각 행=단일 조합, 중복은 건너뜀).
-  multiLastValue?: boolean;
   defaultRows?: JobRow[]; // 초기 로우 [{ id, items: [{ criteria, value }] }]
   onChange?: (rows: JobRow[]) => void; // 로우 추가/삭제/칩 변경 시 전체 스냅샷 반출
-  step1Title?: string;
-  step2Title?: string;
+  pageTitle?: string; // 페이지 사용 시 액션 버튼 행 왼쪽 타이틀(모달에선 모달 타이틀 사용)
   orderLabel?: string;
   jobLabel?: string;
   manageLabel?: string;
@@ -98,11 +96,10 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   tableHeight?: number | 'fill'; // 테이블 세로 — 'fill'(내용만큼 확장, 모달 안에선 ModalBody 가용 높이 상한 → 테이블 바디 내부 스크롤) | 숫자(px 고정 상한+바디 스크롤)
   emptyMessage?: ReactNode; // 빈 상태 카피 — 기본 2줄(안내+행동 유도)
   emptyValueMessage?: string; // 저장 검증 — 미선택 칩 에러 툴팁 문구
-  registerCodeLabel?: string; // Step 01 하단 버튼 문구
-  onRegisterCode?: () => void; // Step 01 하단 '채용 분야 코드 등록' 클릭(모달 열기 등은 소비자 몫)
-  showReset?: boolean; // Step 01 타이틀 우측 underline 리셋 버튼(조건·행 전체 초기화)
+  registerCodeLabel?: string; // Step 02 타이틀 우측 버튼 문구(엑셀 다운로드 앞)
+  onRegisterCode?: () => void; // '채용 분야 코드 등록' 클릭(모달 열기 등은 소비자 몫)
+  showReset?: boolean; // 타이틀 우측 line 리셋 버튼(조건·행 전체 초기화)
   resetLabel?: string;
-  switchLockTooltip?: ReactNode; // 뎁스 잠금 사유 — 잠긴 사용/미사용 스위치 hover 시 툴팁
   // Step 02 타이틀 우측 엑셀 버튼(line 32, 2026-07-23 지시) — 다운로드 동작은 소비자 연결.
   // 업로드는 FileUploadMenu 팝오버(1개 파일·엑셀만) — 파일 선택 시 onExcelUpload(file) 호출
   excelUploadLabel?: string;
@@ -110,9 +107,6 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   excelUploadGuide?: string; // 업로드 팝오버 안내 문구(\n 줄바꿈)
   onExcelUpload?: (file: File) => void;
   onExcelDownload?: () => void;
-  // 순차 입력 잠금 사유 — 앞 조건 미완성으로 잠긴 값 셀렉트 hover 시 툴팁.
-  // 미완성인 첫 앞 조건의 순번(카드 제목 "조건 N."의 N)을 받아 문구 생성.
-  valueLockTooltip?: (order: number) => ReactNode;
   onReset?: () => void; // 리셋 후 알림(내부 초기화는 템플릿이 수행)
   ref?: Ref<JobPositionTemplateHandle>; // (선택) 저장 API(React 19 ref-as-prop)
 }
@@ -121,12 +115,9 @@ export function JobPositionTemplate({
   criteriaOptions = [],
   valueOptions = {},
   conditionCount = 4,
-  defaultDisabledIds,
-  multiLastValue = false,
   defaultRows = [],
   onChange,
-  step1Title = '1. 조건 조합 설정',
-  step2Title = '2. 채용 분야 추가',
+  pageTitle = '채용 분야 설정',
   orderLabel = '순서',
   jobLabel = '채용 분야',
   manageLabel = '관리',
@@ -141,7 +132,7 @@ export function JobPositionTemplate({
     <>
       추가된 채용 분야가 없습니다
       <br />
-      조건 조합 설정에서 조건을 선택해주세요.
+      상단의 기준 및 선택값을 선택해주세요.
     </>
   ),
   emptyValueMessage = '값을 선택하세요.',
@@ -150,13 +141,11 @@ export function JobPositionTemplate({
   showReset = true,
   resetLabel = '리셋',
   onReset,
-  switchLockTooltip = '추가된 채용 분야가 있어 잠겨 있습니다. 리셋 후 변경할 수 있습니다.',
   excelUploadLabel = '엑셀 업로드',
   excelDownloadLabel = '엑셀 다운로드',
   excelUploadGuide = '엑셀 파일 1개만 업로드할 수 있습니다.\n지원 형식: .xlsx, .xls',
   onExcelUpload,
   onExcelDownload,
-  valueLockTooltip = (order) => `조건 ${order} 값을 먼저 선택해주세요.`,
   ref,
   className = '',
   ...props
@@ -165,182 +154,133 @@ export function JobPositionTemplate({
   const modalBodyMax = useContext(ModalBodyMaxContext);
   // 엑셀 업로드 파일(1개) — 팝오버 표시용. 실제 처리(파싱/전송)는 onExcelUpload(file)로 소비자 몫
   const [excelFiles, setExcelFiles] = useState<UploadFileItem[]>([]);
-  // '채용 분야 코드 등록' 버튼 위치(2026-07-23 지시) — 페이지 사용: Step 01 하단 유지 /
-  // 모달 사용: 모달 푸터 왼쪽으로 이동(ModalFooterStartContext 주입, setter 존재 = 모달 안).
-  const setModalFooterStart = useContext(ModalFooterStartContext);
-  const inModal = setModalFooterStart != null;
-  useEffect(() => {
-    if (!setModalFooterStart) return;
-    setModalFooterStart(
-      <Button variant="line" leftIcon={Plus} onClick={onRegisterCode}>
-        {registerCodeLabel}
-      </Button>,
-    );
-    return () => setModalFooterStart(null);
-  }, [setModalFooterStart, onRegisterCode, registerCodeLabel]);
   // Step 01 상태 — 카드 순서/사용 여부는 ConditionOrderSlot controlled로 추적하고,
   // 카드별 (기준, 값) 선택은 템플릿이 소유한다(미리보기·추가 스냅샷 계산용).
+  // B타입(2026-07-24): 드래그·사용 스위치·타이틀 없는 단순 카드 — 순서는 고정, 카드 전부 활성.
   const cardIds = Array.from({ length: conditionCount }, (_, i) => `cond-${i + 1}`);
-  // 초기 미사용 — 미지정이면 조건 1만 사용(나머지 off, 2026-07-23 지시)
-  const initialDisabled = defaultDisabledIds ?? cardIds.slice(1);
-  const [order, setOrder] = useState(cardIds);
-  const [enabledIds, setEnabledIds] = useState(() =>
-    cardIds.filter((id) => !initialDisabled.includes(id)),
-  );
-  const [selections, setSelections] = useState<Record<string, JobSelection>>({}); // { [cardId]: { criteria, value } }
-  const effOrder = [
-    ...order.filter((id) => cardIds.includes(id)),
-    ...cardIds.filter((id) => !order.includes(id)),
-  ];
+  const [selections, setSelections] = useState<Record<string, JobSelection>>({}); // { [cardId]: { criteria } }
+  const activeOrder = cardIds;
 
-  // 마지막 '사용 중' 조건 — multiLastValue면 이 카드의 값 셀렉트가 다중 선택(배열 값)이 된다.
-  // 물리적 맨 아래가 아니라 활성 순번상 마지막(제목 "조건 N."의 최대 N)이어야 한다
-  // (조건 3·4를 끄면 조건 2가 마지막 → 조건 2가 체크박스, 2026-07-08 지적).
-  const activeOrder = effOrder.filter((id) => enabledIds.includes(id));
-
-  // 순차 입력(2026-07-23 지시) — 활성 순서상 앞 조건의 (기준+값)이 완성되기 전까지
-  // 다음 조건의 값 셀렉트는 비활성. 첫 조건은 항상 자유.
-  // 반환: 미완성인 첫 번째 앞 조건의 활성 순번(1부터 — 카드 제목 "조건 N."의 N) / 없으면 null.
-  const firstIncompletePrev = (id: string): number | null => {
-    const idx = activeOrder.indexOf(id);
-    if (idx <= 0) return null;
-    for (let i = 0; i < idx; i += 1) {
-      const sel = selections[activeOrder[i]];
-      const v = sel?.value;
-      if (!sel?.criteria || (Array.isArray(v) ? v.length === 0 : !v)) return i + 1;
-    }
-    return null;
-  };
-  const prevIncomplete = (id: string) => firstIncompletePrev(id) !== null;
-  const lastCardId = activeOrder[activeOrder.length - 1];
-
-  // 앞 조건이 바뀌면 뒤 조건의 선택 값은 다른 조합이 되므로 무효(2026-07-23 사용자 확인:
-  // "서울>경력>[디자인,개발]"과 "서울>신입>[디자인,개발]"은 서로 다름) — 뒤 카드 값을 전부 리셋.
-  // 체크박스(다중) 카드도 미선택으로 돌아간다. 테이블에 이미 추가된 행은 스냅샷이라 유지.
-  const resetLaterValues = (p: Record<string, JobSelection>, id: string) => {
-    const idx = activeOrder.indexOf(id);
-    if (idx === -1) return p;
-    const next = { ...p };
-    for (const lid of activeOrder.slice(idx + 1)) {
-      if (next[lid]) next[lid] = { ...next[lid], value: isMultiCard(lid) ? [] : '' };
-    }
-    return next;
-  };
-
-  const setCardCriteria = (id: string, criteria: string) =>
-    setSelections((p) => resetLaterValues({ ...p, [id]: { criteria, value: '' } }, id)); // 기준 변경 시 값+뒤 조건 값 리셋
-
-  // 값 정규화 — 다중 카드는 배열, 그 외는 문자열로 강제한다. 재정렬로 마지막 카드가 바뀌면
-  // 이전 카드에 남은 배열 값은 여기서 ''로 취급돼(단일화) 조합·미리보기가 꼬이지 않는다.
-  const isMultiCard = (id: string) => multiLastValue && id === lastCardId;
-  const valueOf = (id: string): string | string[] => {
-    const raw = selections[id]?.value;
-    if (isMultiCard(id)) return Array.isArray(raw) ? raw : raw ? [raw] : [];
-    return Array.isArray(raw) ? '' : (raw ?? '');
-  };
-
-  // 다른 '사용 중' 카드가 선택한 기준은 이 카드에서 비활성(중복 조건 방지, 2026-07-07 지시).
-  // 앞 카드만 잠그면 뒤 카드가 먼저 고른 기준을 앞 카드가 다시 고를 수 있어(사용자 재현) 양방향 잠금.
+  // 다른 카드가 선택한 기준은 이 카드에서 비활성(중복 조건 방지, 2026-07-07 지시).
   const usedByOthers = (id: string) => {
     const used = new Set<string>();
-    for (const pid of effOrder) {
-      if (pid === id || !enabledIds.includes(pid)) continue;
+    for (const pid of cardIds) {
+      if (pid === id) continue;
       const c = selections[pid]?.criteria;
-      if (c) used.add(c);
+      if (c && c !== UNUSED_CRITERIA) used.add(c);
     }
     return used;
   };
 
-  // Step 02 로우 — 최신이 위(순서 내림차순). onChange로 전체 스냅샷 반출.
+  // Step 02 로우 — 최신이 위. onChange로 전체 스냅샷 반출.
   const [rows, setRows] = useState<JobRow[]>(defaultRows);
   const applyRows = (next: JobRow[]) => {
     setRows(next);
     onChange?.(next);
   };
 
-  // 중복 검증(2026-07-07 지시) — 같은 조건 조합(기준+값)은 테이블에 한 번만.
-  // 순서는 무관하다(2026-07-08 지시): "정규직>신입…"과 "신입>정규직…"은 값 집합이 같으므로 같은 조합.
-  //   → 각 (기준:값) 쌍을 정렬한 뒤 join해 순서 독립 키를 만든다. 중복은 조용히 건너뛴다.
+  // 조합 키(순서 무관) — 로우 칩 편집 시 중복 조합 방지(wouldDuplicate)용
   const comboKey = (items: JobRowItem[]) =>
     items
-      .map((it) => `${it.criteria}:${it.value}`)
+      .map((it) => `${it.criteria}:${Array.isArray(it.value) ? [...it.value].sort().join(',') : it.value}`)
       .sort()
       .join('|');
 
-  // 즉시 반영(2026-07-23 지시) — 미리보기 인풋·추가 버튼 없이, 조건 선택이 곧 테이블 반영.
-  //   다중(체크박스) 카드: 체크=해당 조합 행 추가, 해제=그 조합 행 제거.
-  //   다중 카드가 없으면(multiLastValue=false): 조합이 완성되는 순간 자동 추가.
-  // add/remove를 한 번에 계산해 applyRows 1회 호출(연속 호출 시 stale rows 방지).
-  const syncCombos = (add: JobRowItem[][], remove: JobRowItem[][]) => {
-    const removeKeys = new Set(remove.map(comboKey));
-    const kept = rows.filter((r) => !removeKeys.has(comboKey(r.items)));
-    const fresh = add.filter((items) => !kept.some((r) => comboKey(r.items) === comboKey(items)));
-    if (fresh.length === 0 && kept.length === rows.length) return;
-    applyRows([...fresh.map((items) => ({ id: newRowId(), items })), ...kept]);
+  // ── B타입(2026-07-24 지시): 카드에서는 '기준'만 고르고 값은 테이블에서 고른다 ──
+  // 기준을 고르는 순간 그 기준의 셀렉트 칩이 들어간 행이 테이블에 나타난다.
+  //  - 스켈레톤 = 활성 카드들의 기준 목록(표시 순서). 모든 행의 items를 스켈레톤에 동기화:
+  //    새 기준은 빈 칩으로 추가, 빠진 기준은 칩 제거, 재정렬은 칩 순서 반영(선택해 둔 값은 보존).
+  //  - 행이 없으면 첫 행을 자동 생성, 스켈레톤이 비면 행도 비운다. 조합 추가는 행 복사로.
+  const skeletonFor = (sel: Record<string, JobSelection>, ids: string[]) =>
+    ids.map((cid) => sel[cid]?.criteria).filter((c): c is string => !!c && c !== UNUSED_CRITERIA);
+  // 카드에서 고른 값 — 그 기준의 새/빈 칩 초기값으로 쓴다(2026-07-24 값 셀렉트 재추가)
+  const cardValueOf = (sel: Record<string, JobSelection>, c: string) => {
+    const entry = Object.values(sel).find((s) => s.criteria === c);
+    return entry && typeof entry.value === 'string' ? entry.value : '';
   };
 
-  // 다중(체크박스) 체크 상태는 별도 저장하지 않고 '현재 조합으로 테이블에 있는 행'에서 파생한다
-  // (2026-07-23 사용자 확인) — 앞 조건을 바꿨다 되돌리면, 그 조합으로 추가해 둔 행들의 체크가
-  // 그대로 복원돼 보인다. 행 삭제·리셋도 자동으로 체크에 반영된다(단일 진실 = rows).
-  // 앞 조건이 미완성이면 null(파생 불가) — 순차 입력 규칙상 이때 값 셀렉트는 잠겨 있다.
-  const multiContext = (id: string): JobRowItem[] | null => {
-    const myCriteria = selections[id]?.criteria;
-    if (!myCriteria) return null;
-    const ctx: JobRowItem[] = [];
-    for (const cid of activeOrder) {
-      if (cid === id) continue;
-      const c = selections[cid]?.criteria;
-      const v = valueOf(cid);
-      if (!c || typeof v !== 'string' || !v) return null;
-      ctx.push({ criteria: c, value: v });
+  // 순차 입력(2026-07-24 지시) — 앞 카드의 기준이 선택되기 전까지 다음 카드의 기준 셀렉트 비활성.
+  // 반환: 미선택인 첫 앞 카드의 순번(1부터) / 없으면 null. 툴팁 문구의 을/를은 숫자 발음 받침 기준.
+  const firstUnselectedPrev = (id: string): number | null => {
+    const idx = cardIds.indexOf(id);
+    for (let i = 0; i < idx; i += 1) {
+      if (!selections[cardIds[i]]?.criteria) return i + 1;
     }
-    return ctx;
+    return null;
   };
-  const derivedMultiValues = (id: string): string[] => {
-    const myCriteria = selections[id]?.criteria;
-    const ctx = multiContext(id);
-    if (!myCriteria || !ctx) return [];
-    return (valueOptions[myCriteria] ?? [])
-      .map((o) => o.value)
-      .filter((v) =>
-        rows.some((r) => comboKey(r.items) === comboKey([...ctx, { criteria: myCriteria, value: v }])),
-      );
+  const numJosa = (n: number) => ('013678'.includes(String(n % 10)) ? '을' : '를'); // 받침 있는 숫자 발음
+  const criteriaLockTooltip = (n: number) => `기준${n}${numJosa(n)} 먼저 선택해주세요.`;
+  // 값 셀렉트 순차 잠금(2026-07-24 지시) — 앞 카드들의 값이 모두 선택되기 전까지 비활성.
+  // 반환: 값 미선택인 첫 앞 카드의 순번 / 없으면 null.
+  const firstValueUnselectedPrev = (id: string): number | null => {
+    const idx = cardIds.indexOf(id);
+    for (let i = 0; i < idx; i += 1) {
+      const s = selections[cardIds[i]];
+      if (!s?.criteria || typeof s.value !== 'string' || !s.value) return i + 1;
+    }
+    return null;
+  };
+  const valueLockTooltipB = (n: number) => `기준${n} 값을 먼저 선택해주세요.`;
+
+  // 마지막 기준 카드 판별(2026-07-24) — 스켈레톤(선택된 기준 목록)의 마지막 기준을 가진 카드.
+  // 이 카드의 값 셀렉트는 체크박스(테이블 마지막 칩과 동일한 그룹 동기화)로 동작한다.
+  const isLastValueCard = (criteria: string) => {
+    if (!criteria || criteria === UNUSED_CRITERIA) return false;
+    const skeleton = skeletonFor(selections, activeOrder);
+    return skeleton.length > 0 && skeleton[skeleton.length - 1] === criteria;
   };
 
-  // 다중(체크박스) 카드 값 변경 — 체크된 값은 즉시 행 추가, 해제된 값은 그 조합 행 제거.
-  const handleMultiChange = (id: string, next: string[]) => {
-    const myCriteria = selections[id]?.criteria;
-    const ctx = multiContext(id);
-    if (!myCriteria || !ctx) return; // 앞 조건 미완성 — 순차 규칙상 도달하지 않음
-    const prevVals = derivedMultiValues(id);
-    const comboFor = (v: string): JobRowItem[] =>
-      activeOrder.map((cid) =>
-        cid === id
-          ? { criteria: myCriteria, value: v }
-          : { criteria: selections[cid].criteria, value: valueOf(cid) as string },
-      );
-    const added = next.filter((v) => !prevVals.includes(v));
-    const removed = prevVals.filter((v) => !next.includes(v));
-    syncCombos(added.map(comboFor), removed.map(comboFor));
+  // 행 칩 플레이스홀더 — "지역 선택"처럼 조건명 + 선택(2026-07-24 지시, 구 "지역을 선택하세요")
+  const chipPlaceholder = (criteria: string) => {
+    const label = criteriaOptions.find((o) => o.value === criteria)?.label ?? criteria;
+    return `${label} 선택`;
   };
 
-  // 단일 값 변경 — 뒤 조건의 선택 값은 리셋(다른 조합이 되므로 무효).
-  // 다중 카드가 없을 때(multiLastValue=false)는 마지막 조건까지 완성되는 순간 자동 추가.
-  const handleSingleChange = (id: string, value: string) => {
-    setSelections((p) =>
-      resetLaterValues({ ...p, [id]: { ...(p[id] ?? { criteria: '' }), value } }, id),
+  const setCardCriteria = (id: string, criteria: string) => {
+    const idx = cardIds.indexOf(id);
+    const next = { ...selections, [id]: { criteria, value: '' } };
+    // 기준 구성이 바뀌면 값 선택은 전부 무효(2026-07-24 지시) — 마지막 카드 체크박스로 고른 값이
+    // 구성 변경 후 카드 표시와 어긋나는 문제 포함, 카드 값·테이블 칩 값을 모두 리셋한다.
+    for (const cid of cardIds) {
+      if (next[cid]) next[cid] = { ...next[cid], value: '' };
+    }
+    // 미사용(비우기)이면 그 뒤 카드는 기준까지 리셋(순차 입력 규칙과 정합)
+    if (!criteria) {
+      for (const lid of cardIds.slice(idx + 1)) next[lid] = { criteria: '', value: '' };
+    }
+    setSelections(next);
+    // 행 동기화 — 새 스켈레톤으로 칩 구성을 만들되 값은 전부 비운다.
+    // 값 무효화로 모든 행이 동일해지므로 빈 행 1개로 합쳐진다.
+    const skeleton = skeletonFor(next, activeOrder);
+    if (skeleton.length === 0) {
+      if (rows.length > 0) applyRows([]);
+      return;
+    }
+    const first = rows[0] ?? { id: newRowId(), items: [] as JobRowItem[] };
+    applyRows([
+      { ...first, items: skeleton.map((c) => ({ criteria: c, value: '' })) },
+    ]);
+  };
+  // 카드 값 셀렉트(2026-07-24 재추가) — 고르면 그 기준의 '빈' 칩들을 이 값으로 채운다
+  // (이미 값을 고른 칩은 유지 — 행별 개별 값이 우선)
+  const setCardValue = (id: string, value: string) => {
+    const next = { ...selections, [id]: { ...(selections[id] ?? { criteria: '' }), value } };
+    setSelections(next);
+    const criteria = next[id]?.criteria;
+    if (!criteria || criteria === UNUSED_CRITERIA || !value) return;
+    applyRows(
+      rows.map((r) => ({
+        ...r,
+        items: r.items.map((it) =>
+          it.criteria === criteria &&
+          (typeof it.value === 'string' ? !it.value : it.value.length === 0)
+            ? { ...it, value }
+            : it,
+        ),
+      })),
     );
-    if (multiLastValue) return; // 다중 카드가 있으면 체크박스가 반영 트리거
-    if (activeOrder.indexOf(id) !== activeOrder.length - 1) return; // 뒤 조건이 리셋됨 — 미완성
-    const items: JobRowItem[] = [];
-    for (const cid of activeOrder) {
-      const c = selections[cid]?.criteria;
-      const v = cid === id ? value : (valueOf(cid) as string);
-      if (!c || typeof v !== 'string' || !v) return; // 미완성 — 선택만 반영
-      items.push({ criteria: c, value: v });
-    }
-    syncCombos([items], []);
   };
+
   // 행 삭제 — 체크 상태는 rows에서 파생되므로, 현재 조합의 행을 지우면 왼쪽 체크도 자동 해제된다.
   const removeRow = (id: string) => applyRows(rows.filter((r) => r.id !== id));
   // 로우 복사(2026-07-07 지시) — 값을 그대로 복제하되 완전 중복을 피하도록 마지막 칩만 미선택으로.
@@ -369,7 +309,80 @@ export function JobPositionTemplate({
     setRowJobda(rowId, { jobdaGroup: above.jobdaGroup, jobdaDuty: above.jobdaDuty });
   };
 
-  const setRowValue = (rowId: string, itemIndex: number, value: string) => {
+  // 마지막 기준 카드 체크박스(2026-07-24) — 그룹 기준은 '카드에서 선택한 앞 조건 값'이다.
+  // (첫 행 앵커였을 때 버그: 서울>직무 20개 추가 후 카드에서 부산으로 바꾸면 서울 그룹이
+  //  체크된 채로 보였음 — 부산 조합은 아직 없으므로 아무것도 체크되지 않아야 한다.)
+  //  - 컨텍스트 = 스켈레톤의 마지막 앞 기준들 × 카드 선택 값. 앞 값이 하나라도 미선택이면 미완성(체크 없음).
+  //  - 체크 = 컨텍스트와 앞 칩 값들이 일치하는 행들의 마지막 기준 값.
+  //  - 확인 시: 새 체크 값 → 컨텍스트 값으로 행 추가(맨 위) / 해제 값 → 그 조합 행 제거.
+  const cardLastContext = () => {
+    const skeleton = skeletonFor(selections, activeOrder);
+    if (skeleton.length === 0) return null;
+    const last = skeleton[skeleton.length - 1];
+    const prefix: JobRowItem[] = [];
+    for (const c of skeleton.slice(0, -1)) {
+      const v = cardValueOf(selections, c);
+      if (!v) return null; // 앞 기준 값 미선택 — 컨텍스트 미완성
+      prefix.push({ criteria: c, value: v });
+    }
+    return { last, prefix };
+  };
+  const matchesCardPrefix = (r: JobRow, prefix: JobRowItem[]) =>
+    prefix.every((p) => {
+      const it = r.items.find((x) => x.criteria === p.criteria);
+      return !!it && it.value === p.value;
+    });
+  const cardCheckedValues = () => {
+    const ctx = cardLastContext();
+    if (!ctx) return [];
+    return rows
+      .filter((r) => matchesCardPrefix(r, ctx.prefix))
+      .map((r) => {
+        const it = r.items.find((x) => x.criteria === ctx.last);
+        const v = it?.value;
+        return typeof v === 'string' ? v : '';
+      })
+      .filter(Boolean);
+  };
+  const setCardLastMulti = (next: string[]) => {
+    const ctx = cardLastContext();
+    if (!ctx) return;
+    const nextSet = new Set(next);
+    const checked = new Set(cardCheckedValues());
+    const toAdd = next.filter((v) => !checked.has(v));
+    const willHaveValues = next.length > 0;
+    // 해제된 값의 행 제거. 값 없는(빈 칩) 행은 — 체크 값이 하나라도 생기면 함께 정리한다
+    // (기준 선택 때 만들어진 스켈레톤 잔행이 남던 문제 수정, 2026-07-24 사용자 지적)
+    const kept = rows.filter((r) => {
+      if (!matchesCardPrefix(r, ctx.prefix)) return true;
+      const it = r.items.find((x) => x.criteria === ctx.last);
+      const v = typeof it?.value === 'string' ? it.value : '';
+      if (!v) return !willHaveValues; // 빈 행: 값 행이 생기면 제거, 전부 해제면 유지
+      return nextSet.has(v);
+    });
+    const skeleton = skeletonFor(selections, activeOrder);
+    const added = toAdd.map((v) => ({
+      id: newRowId(),
+      items: skeleton.map((c) =>
+        c === ctx.last
+          ? { criteria: c, value: v }
+          : { criteria: c, value: cardValueOf(selections, c) },
+      ),
+    }));
+    // 전부 해제했는데 컨텍스트에 남는 행이 없으면 빈 행 하나를 복구(테이블이 비지 않게)
+    if (!willHaveValues && !kept.some((r) => matchesCardPrefix(r, ctx.prefix))) {
+      added.push({
+        id: newRowId(),
+        items: skeleton.map((c) =>
+          c === ctx.last ? { criteria: c, value: '' } : { criteria: c, value: cardValueOf(selections, c) },
+        ),
+      });
+    }
+    if (added.length === 0 && kept.length === rows.length) return;
+    applyRows([...added, ...kept]); // 새 조합이 맨 위(최신이 위 규칙)
+  };
+
+  const setRowValue = (rowId: string, itemIndex: number, value: string | string[]) => {
     applyRows(
       rows.map((r) =>
         r.id === rowId
@@ -393,20 +406,73 @@ export function JobPositionTemplate({
 
   // 전체 리셋(2026-07-23) — Step 01(순서·사용·선택)과 테이블 행을 초기 상태로 되돌린다.
   // 즉시 반영 모델에선 조건과 행이 동기이므로 한쪽만 리셋하면 어긋난다 → 함께 초기화.
-  const resetAll = () => {
-    setOrder(cardIds);
-    setEnabledIds(cardIds.filter((id) => !initialDisabled.includes(id)));
+  const resetAll = useCallback(() => {
     setSelections({});
     setInvalidKeys(new Set());
-    applyRows(defaultRows);
+    setRows(defaultRows);
+    onChange?.(defaultRows);
     onReset?.();
-  };
+  }, [defaultRows, onChange, onReset]);
+  // 모달 안에서는 액션 버튼 4종(리셋·코드 등록·다운로드·업로드)을 푸터 왼쪽으로(2026-07-24 지시).
+  // 페이지에선 타이틀 우측 유지. setter 존재 = 모달 안.
+  const setModalFooterStart = useContext(ModalFooterStartContext);
+  const inModal = setModalFooterStart != null;
+  useEffect(() => {
+    if (!setModalFooterStart) return;
+    setModalFooterStart(
+      <div className="flex items-center gap-spacing-5">
+        {showReset && (
+          <Button variant="line" size="32" leftIcon={RotateCcw} onClick={resetAll}>
+            {resetLabel}
+          </Button>
+        )}
+        <Button variant="line" size="32" leftIcon={Plus} onClick={onRegisterCode}>
+          {registerCodeLabel}
+        </Button>
+        <Button variant="line" size="32" leftIcon={Download} onClick={onExcelDownload}>
+          {excelDownloadLabel}
+        </Button>
+        <FileUploadButton
+          triggerText={excelUploadLabel}
+          files={excelFiles}
+          maxCount={1}
+          accept=".xlsx,.xls"
+          guide={excelUploadGuide}
+          placement="auto-right"
+          menuWidth={320}
+          buttonProps={{ variant: 'line', size: '32' }}
+          onAdd={(list: FileList) => {
+            const f = list[0];
+            if (!f) return;
+            setExcelFiles([{ name: f.name, size: Math.round(f.size / 1e6) }]);
+            onExcelUpload?.(f);
+          }}
+          onDelete={() => setExcelFiles([])}
+        />
+      </div>,
+    );
+    return () => setModalFooterStart(null);
+  }, [
+    setModalFooterStart,
+    showReset,
+    resetLabel,
+    resetAll,
+    registerCodeLabel,
+    onRegisterCode,
+    excelDownloadLabel,
+    onExcelDownload,
+    excelUploadLabel,
+    excelUploadGuide,
+    excelFiles,
+    onExcelUpload,
+  ]);
+
   useImperativeHandle(ref, () => ({
     validate: () => {
       const invalid = new Set<string>();
       rows.forEach((r) =>
         r.items.forEach((it, i) => {
-          if (!it.value) invalid.add(`${r.id}:${i}`);
+          if (Array.isArray(it.value) ? it.value.length === 0 : !it.value) invalid.add(`${r.id}:${i}`);
         }),
       );
       setInvalidKeys(invalid);
@@ -434,7 +500,14 @@ export function JobPositionTemplate({
     { key: 'orderNo', label: orderLabel, width: 41 },
     {
       key: 'items',
-      label: jobLabel,
+      // 헤더에 현재 조건 구성 표시(2026-07-24 지시) — "채용 분야 (지역 > 직무)" 식으로
+      // 선택된 기준 라벨을 순서대로 병기. 기준이 없으면 기본 라벨만.
+      label: (() => {
+        const labels = skeletonFor(selections, activeOrder).map(
+          (c) => criteriaOptions.find((o) => o.value === c)?.label ?? c,
+        );
+        return labels.length > 0 ? `${jobLabel} (${labels.join(' > ')})` : jobLabel;
+      })(),
       render: (row: JobRow) => (
         <div className="flex min-w-0 flex-wrap items-center gap-spacing-3">
           {row.items.map((it: JobRowItem, i: number) => (
@@ -448,7 +521,8 @@ export function JobPositionTemplate({
                     ? { ...o, disabled: true }
                     : o,
                 )}
-                value={it.value}
+                value={typeof it.value === 'string' && it.value ? it.value : null}
+                placeholder={chipPlaceholder(it.criteria)}
                 searchable // 값 목록이 길어질 수 있어 팝오버 상단 검색 제공(2026-07-07 지시)
                 searchPlaceholder="검색어 입력" // 좁은 칩 드롭다운(160)에 맞춘 짧은 문구
                 menuWidth={160} // 검색바가 들어가므로 칩 기본(120)보다 넓게
@@ -517,131 +591,30 @@ export function JobPositionTemplate({
   return (
     // tableHeight='fill' + 모달 안이면 ModalBody 가용 높이를 최대치로(SideNavigationTemplate과 동일 패턴) —
     // 내용이 적으면 자연 높이, 상한에 닿으면 모달이 더 안 커지고 테이블 바디가 내부 스크롤된다(2026-07-23 지시).
+    // B타입(2026-07-24): 좌우 2단 → 상하 스택. Step 01이 위(가로 카드), Step 02가 아래.
     <div
       style={tableHeight === 'fill' && modalBodyMax != null ? { maxHeight: `${modalBodyMax}px` } : undefined}
-      className={`flex min-h-0 w-full items-stretch gap-spacing-7 ${className}`}
+      className={`flex min-h-0 w-full flex-col gap-spacing-7 ${className}`}
       {...props}
     >
-      {/* Step 01 — 조건 조합 설정 (타이틀 우측 underline 리셋 — 조건·행 전체 초기화, 2026-07-23)
-          min-h-0 — 높이 상한이 전파되면 카드 목록(ScrollArea)만 줄어들며 스크롤(타이틀·하단 버튼 고정) */}
-      <div className="flex min-h-0 shrink-0 flex-col gap-spacing-5">
-        {/* 타이틀·리셋 상하 중앙 정렬 — underline 32 버튼(min-h 32)이 행 높이를 잡고 items-center로 맞춘다 */}
-        <div className="flex min-h-[32px] items-center justify-between">
-          <p className="text-14 text-font-icon-5">{step1Title}</p>
-          {showReset && (
-            <Button variant="underline" size="32" leftIcon={RotateCcw} onClick={resetAll}>
-              {resetLabel}
-            </Button>
-          )}
-        </div>
-        {/* 카드 목록 스크롤(규칙 9) — 높이가 부족하면 이 영역만 내부 스크롤(내용이 적으면 자연 높이).
-            뷰포트에 rounded-round-4 — 카드가 스크롤로 상하 경계에 잘릴 때도 모서리 라운드 유지(카드와 동일 값).
-            외곽 1px(scroll-line 토큰 = 바깥 배경색) — 스크롤과 무관하게 고정 오버레이로 남아,
-            카드가 경계에 잘릴 때 그 단면 위에 1px 라인이 보인다(2026-07-23 지시) */}
-        <ScrollArea
-          className="min-h-0 after:pointer-events-none after:absolute after:inset-0 after:rounded-round-4 after:border after:border-condition-slot-scroll-line after:content-['']"
-          contentClassName="max-h-full rounded-round-4"
-        >
-        <ConditionOrderSlot
-          items={cardIds.map((id) => {
-            const sel = selections[id] ?? { criteria: '', value: '' };
-            const used = usedByOthers(id);
-            return {
-              id,
-              body: (
-                <>
-                  <Select
-                    width="100%"
-                    options={criteriaOptions.map((o) =>
-                      used.has(o.value) ? { ...o, disabled: true } : o,
-                    )}
-                    value={sel.criteria}
-                    label="기준" // 내부 라벨 — 선택 시 "기준 ⋮ 지역"으로 표시(2026-07-07 지시)
-                    placeholder="기준 선택"
-                    onChange={(e) => setCardCriteria(id, e.target.value)}
-                  />
-                  {/* 앞 조건 미완성으로 잠겼을 때만 hover 사유 툴팁(순차 입력) — 미완성인 첫 조건 번호로 안내 */}
-                  <LockTooltipWrap
-                    reason={(() => {
-                      const n = firstIncompletePrev(id);
-                      return n != null ? valueLockTooltip(n) : null;
-                    })()}
-                  >
-                    <Select
-                      width="100%"
-                      options={valueOptions[sel.criteria] ?? []}
-                      label="값" // 내부 라벨 — 선택 시 "값 ⋮ 서울"으로 표시(2026-07-07 지시)
-                      placeholder="값 선택"
-                      searchable // 값 목록이 길 수 있어 팝오버 상단 검색 제공(2026-07-23 지시 — 로우 칩과 동일)
-                      searchPlaceholder="검색어 입력"
-                      // 기준 미선택 또는 앞 조건 미완성이면 비활성(순차 입력)
-                      disabled={!sel.criteria || prevIncomplete(id)}
-                      // 마지막 조건은 체크박스 다중 선택(값 여러 개) — multiple이 동적 boolean이라
-                      // 판별 유니언(SelectProps)에 스프레드로 한 번 좁혀 전달(런타임 동일)
-                      {...({
-                        multiple: isMultiCard(id),
-                        // 체크박스 팝오버는 confirm 모드(2026-07-23 지시) — PopoverMenu 푸터 영역
-                        // (전체 선택 footerCheckbox + 취소/확인). 확인 시에만 행 반영.
-                        confirm: isMultiCard(id),
-                        selectAllLabel: '전체', // 푸터 전체 선택 라벨(2026-07-24 지시)
-                        // 팝오버 폭 — 트리거(카드 내부 178px)+50(2026-07-23 지시). 푸터 버튼 여유 확보
-                        menuWidth: isMultiCard(id) ? 228 : undefined,
-                        // 다중 카드 체크 상태는 rows 파생(현재 조합의 행 존재 여부) — 조합 복귀 시 체크 복원
-                        value: isMultiCard(id) ? derivedMultiValues(id) : valueOf(id),
-                        // 다중=체크 즉시 행 추가/제거, 단일=조합 완성 시 자동 추가(2026-07-23)
-                        onChange: (e: { target: { value: string | string[] } }) =>
-                          isMultiCard(id)
-                            ? handleMultiChange(id, e.target.value as string[])
-                            : handleSingleChange(id, e.target.value as string),
-                      } as unknown as Parameters<typeof Select>[0])}
-                    />
-                  </LockTooltipWrap>
-                </>
-              ),
-            };
-          })}
-          order={order}
-          onOrderChange={setOrder}
-          enabledIds={enabledIds}
-          // 뎁스 잠금(2026-07-23 지시) — 테이블에 행이 생기는 순간 사용/미사용 스위치와
-          // 드래그 정렬을 현재 상태로 잠근다(행들과 조건 구성·순서가 어긋나지 않게). 리셋 전까지 변경 불가.
-          switchesDisabled={rows.length > 0}
-          switchesDisabledTooltip={switchLockTooltip}
-          dragDisabled={rows.length > 0}
-          onEnabledChange={(nextEnabled, { id: toggledId, enabled }) => {
-            setEnabledIds(nextEnabled);
-            // 다시 켠 카드가 양보(2026-07-07 지적) — 미사용 동안 다른 활성 카드가 같은 기준을
-            // 선택했을 수 있으므로, 켜는 순간 기준이 이미 사용 중이면 이 카드의 선택을 리셋한다.
-            // (이미 활성인 카드는 건드리지 않아 동작이 예측 가능)
-            if (enabled) {
-              const c = selections[toggledId]?.criteria;
-              const taken =
-                c &&
-                nextEnabled.some(
-                  (oid) => oid !== toggledId && selections[oid]?.criteria === c,
-                );
-              if (taken) setSelections((p) => ({ ...p, [toggledId]: { criteria: '', value: '' } }));
-            }
-          }}
-        />
-        </ScrollArea>
-        {/* 페이지 사용 시에만 Step 01 하단에 — 모달에선 위 effect가 푸터 왼쪽으로 보낸다 */}
-        {!inModal && (
-          <Button variant="line" width="fill" leftIcon={Plus} onClick={onRegisterCode}>
-            {registerCodeLabel}
-          </Button>
-        )}
-      </div>
-
-      <Divider direction="vertical" />
-
       {/* Step 02 — 채용 분야 추가 */}
-      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-spacing-5">
-        {/* Step 01 타이틀 행(min-h 32 — 리셋 버튼)과 시작 높이를 맞춘다.
-            우측 끝: 엑셀 업로드/다운로드(line 32, 버튼 사이 gap 8=spacing-5 — 2026-07-23 지시) */}
+      <div className="flex min-h-0 w-full flex-1 flex-col gap-spacing-5">
+        {/* 액션 버튼 행 — 왼쪽 타이틀 '채용 분야 설정'(2026-07-24 지시, 페이지 전용).
+            페이지 사용 시에만 표시 — 모달에선 위 effect가 버튼을 푸터 왼쪽으로 보낸다 */}
+        {!inModal && (
         <div className="flex min-h-[32px] items-center justify-between">
-          <p className="text-14 text-font-icon-5">{step2Title}</p>
+          <p className="text-15 font-semibold text-font-icon-5">{pageTitle}</p>
           <div className="flex items-center gap-spacing-5">
+            {/* 리셋 — 조건·행 전체 초기화, 코드 등록 버튼 앞(B타입, 2026-07-24 지시) */}
+            {showReset && (
+              <Button variant="line" size="32" leftIcon={RotateCcw} onClick={resetAll}>
+                {resetLabel}
+              </Button>
+            )}
+            {/* 채용 분야 코드 등록 — 엑셀 다운로드 앞(B타입, 2026-07-24 지시) */}
+            <Button variant="line" size="32" leftIcon={Plus} onClick={onRegisterCode}>
+              {registerCodeLabel}
+            </Button>
             <Button variant="line" size="32" leftIcon={Download} onClick={onExcelDownload}>
               {excelDownloadLabel}
             </Button>
@@ -665,6 +638,108 @@ export function JobPositionTemplate({
             />
           </div>
         </div>
+        )}
+        {/* 조건 카드 그룹 — 타이틀과 테이블 사이(B타입, 2026-07-24 지시) */}
+        {/* 카드 목록 가로 스크롤(규칙 9) — 카드가 컨테이너 폭을 넘으면 가로 스크롤.
+            뷰포트 rounded-round-4 + 외곽 1px(scroll-line 토큰) — A타입과 동일한 경계 처리 */}
+        <ScrollArea
+          horizontal
+          className="min-w-0 after:pointer-events-none after:absolute after:inset-0 after:rounded-round-4 after:border after:border-condition-slot-scroll-line after:content-['']"
+          contentClassName="rounded-round-4"
+        >
+        <ConditionOrderSlot
+          direction="horizontal"
+          className="w-full" // 슬롯(회색 배경)이 컨테이너 폭 100%를 채우게(B타입, 2026-07-24 지시)
+          cardWidth="fill" // 카드가 슬롯 폭을 균등 분할(2026-07-24 지시)
+          items={cardIds.map((id) => {
+            const sel = selections[id] ?? { criteria: '', value: '' };
+            const used = usedByOthers(id);
+            return {
+              id,
+              body: (
+                <>
+                  {/* 앞 카드 기준 미선택 시 잠금 + hover 사유 툴팁(순차 입력, 2026-07-24 지시) */}
+                  <LockTooltipWrap
+                    reason={(() => {
+                      const n = firstUnselectedPrev(id);
+                      return n != null ? criteriaLockTooltip(n) : null;
+                    })()}
+                  >
+                    <Select
+                      width="100%"
+                      options={[
+                        { value: UNUSED_CRITERIA, label: '미사용' }, // 최상단 — 카드 비우기
+                        ...criteriaOptions.map((o) =>
+                          used.has(o.value) ? { ...o, disabled: true } : o,
+                        ),
+                      ]}
+                      value={sel.criteria}
+                      label={`기준${cardIds.indexOf(id) + 1}`} // 카드 순번 병기 — "기준1 ⋮ 지역"(2026-07-24 지시)
+                      placeholder={`기준${cardIds.indexOf(id) + 1} 선택`} // 순번 병기(2026-07-24 지시)
+                      disabled={firstUnselectedPrev(id) != null}
+                      // '미사용' 선택 → 기준을 비워 플레이스홀더("기준N 선택") 상태로(2026-07-24 지시)
+                      onChange={(e) =>
+                        setCardCriteria(id, e.target.value === UNUSED_CRITERIA ? '' : e.target.value)
+                      }
+                    />
+                  </LockTooltipWrap>
+                  {/* 값 셀렉트(2026-07-24 재추가) — 고르면 그 기준의 빈 칩들을 채우는 기본값.
+                      마지막 기준 카드는 체크박스(confirm) — 테이블 마지막 칩과 같은 그룹 동기화 */}
+                  {isLastValueCard(sel.criteria) ? (
+                    <LockTooltipWrap
+                      reason={(() => {
+                        const n = firstValueUnselectedPrev(id);
+                        return n != null ? valueLockTooltipB(n) : null;
+                      })()}
+                    >
+                    <Select
+                      width="100%"
+                      label="값"
+                      placeholder="값 선택"
+                      searchable
+                      searchPlaceholder="검색어 입력"
+                      disabled={firstValueUnselectedPrev(id) != null}
+                      options={valueOptions[sel.criteria] ?? []}
+                      {...({
+                        multiple: true,
+                        confirm: true,
+                        selectAllLabel: '전체',
+                        menuWidth: 228,
+                        // 체크 상태 = 카드에서 고른 앞 조건 값 조합으로 존재하는 행들의 값
+                        // (앞 값 미선택·해당 조합 행 없음 → 체크 없음)
+                        value: cardCheckedValues(),
+                        onChange: (e: { target: { value: string[] } }) =>
+                          setCardLastMulti(e.target.value),
+                      } as unknown as Parameters<typeof Select>[0])}
+                    />
+                    </LockTooltipWrap>
+                  ) : (
+                    <LockTooltipWrap
+                      reason={(() => {
+                        const n = firstValueUnselectedPrev(id);
+                        return n != null ? valueLockTooltipB(n) : null;
+                      })()}
+                    >
+                    <Select
+                      width="100%"
+                      options={valueOptions[sel.criteria] ?? []}
+                      label="값" // 내부 라벨 — 선택 시 "값 ⋮ 서울"으로 표시
+                      placeholder="값 선택"
+                      searchable
+                      searchPlaceholder="검색어 입력"
+                      disabled={!sel.criteria || firstValueUnselectedPrev(id) != null}
+                      value={typeof sel.value === 'string' ? sel.value : ''}
+                      onChange={(e) => setCardValue(id, e.target.value)}
+                    />
+                    </LockTooltipWrap>
+                  )}
+                </>
+              ),
+            };
+          })}
+          showCardHeaders={false}
+        />
+        </ScrollArea>
         {/* 규칙 18 — 모달 안 무한 스크롤 테이블: bordered + maxHeight='fill' + min-h-0(shrink 상한) */}
         <Table
           /* render 파라미터를 구체 행 타입(JobRow)으로 쓰므로 Table 계약(TableRowData)으로 한 번 캐스팅 —
