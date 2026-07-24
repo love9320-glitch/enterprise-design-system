@@ -82,6 +82,7 @@ interface JobPositionTemplateBProps extends Omit<ComponentPropsWithoutRef<'div'>
   conditionCount?: number; // 조건 카드 수
   defaultRows?: JobRow[]; // 초기 로우 [{ id, items: [{ criteria, value }] }]
   onChange?: (rows: JobRow[]) => void; // 로우 추가/삭제/칩 변경 시 전체 스냅샷 반출
+  pageTitle?: string; // 페이지 사용 시 액션 버튼 행 왼쪽 타이틀(모달에선 모달 타이틀 사용)
   orderLabel?: string;
   jobLabel?: string;
   manageLabel?: string;
@@ -116,6 +117,7 @@ export function JobPositionTemplateB({
   conditionCount = 4,
   defaultRows = [],
   onChange,
+  pageTitle = '채용 분야 설정',
   orderLabel = '순서',
   jobLabel = '채용 분야',
   manageLabel = '관리',
@@ -244,6 +246,11 @@ export function JobPositionTemplateB({
 
   const setCardCriteria = (id: string, criteria: string) => {
     const next = { ...selections, [id]: { criteria, value: '' } };
+    // 미사용(비우기) 선택 시 그 뒤 카드들도 전부 리셋(2026-07-24 지시) — 순차 입력 규칙과 정합
+    if (!criteria) {
+      const idx = cardIds.indexOf(id);
+      for (const lid of cardIds.slice(idx + 1)) next[lid] = { criteria: '', value: '' };
+    }
     setSelections(next);
     syncRowsToSkeleton(skeletonFor(next, activeOrder), next);
   };
@@ -336,12 +343,15 @@ export function JobPositionTemplateB({
     const nextSet = new Set(next);
     const checked = new Set(cardCheckedValues());
     const toAdd = next.filter((v) => !checked.has(v));
-    // 해제된 값의 행 제거(컨텍스트 그룹 안에서만, 값 없는 행은 유지)
+    const willHaveValues = next.length > 0;
+    // 해제된 값의 행 제거. 값 없는(빈 칩) 행은 — 체크 값이 하나라도 생기면 함께 정리한다
+    // (기준 선택 때 만들어진 스켈레톤 잔행이 남던 문제 수정, 2026-07-24 사용자 지적)
     const kept = rows.filter((r) => {
       if (!matchesCardPrefix(r, ctx.prefix)) return true;
       const it = r.items.find((x) => x.criteria === ctx.last);
       const v = typeof it?.value === 'string' ? it.value : '';
-      return !v || nextSet.has(v);
+      if (!v) return !willHaveValues; // 빈 행: 값 행이 생기면 제거, 전부 해제면 유지
+      return nextSet.has(v);
     });
     const skeleton = skeletonFor(selections, activeOrder);
     const added = toAdd.map((v) => ({
@@ -352,6 +362,15 @@ export function JobPositionTemplateB({
           : { criteria: c, value: cardValueOf(selections, c) },
       ),
     }));
+    // 전부 해제했는데 컨텍스트에 남는 행이 없으면 빈 행 하나를 복구(테이블이 비지 않게)
+    if (!willHaveValues && !kept.some((r) => matchesCardPrefix(r, ctx.prefix))) {
+      added.push({
+        id: newRowId(),
+        items: skeleton.map((c) =>
+          c === ctx.last ? { criteria: c, value: '' } : { criteria: c, value: cardValueOf(selections, c) },
+        ),
+      });
+    }
     if (added.length === 0 && kept.length === rows.length) return;
     applyRows([...added, ...kept]); // 새 조합이 맨 위(최신이 위 규칙)
   };
@@ -573,10 +592,11 @@ export function JobPositionTemplateB({
     >
       {/* Step 02 — 채용 분야 추가 */}
       <div className="flex min-h-0 w-full flex-1 flex-col gap-spacing-5">
-        {/* 액션 버튼 행(우측 정렬) — 타이틀 없음(2026-07-24 지시).
-            페이지 사용 시에만 표시 — 모달에선 위 effect가 푸터 왼쪽으로 보낸다 */}
+        {/* 액션 버튼 행 — 왼쪽 타이틀 '채용 분야 설정'(2026-07-24 지시, 페이지 전용).
+            페이지 사용 시에만 표시 — 모달에선 위 effect가 버튼을 푸터 왼쪽으로 보낸다 */}
         {!inModal && (
-        <div className="flex min-h-[32px] items-center justify-end">
+        <div className="flex min-h-[32px] items-center justify-between">
+          <p className="text-15 font-semibold text-font-icon-5">{pageTitle}</p>
           <div className="flex items-center gap-spacing-5">
             {/* 리셋 — 조건·행 전체 초기화, 코드 등록 버튼 앞(B타입, 2026-07-24 지시) */}
             {showReset && (
