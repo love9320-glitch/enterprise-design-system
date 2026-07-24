@@ -198,21 +198,6 @@ export function JobPositionTemplateB({
     const entry = Object.values(sel).find((s) => s.criteria === c);
     return entry && typeof entry.value === 'string' ? entry.value : '';
   };
-  const syncRowsToSkeleton = (skeleton: string[], sel: Record<string, JobSelection> = selections) => {
-    if (skeleton.length === 0) {
-      if (rows.length > 0) applyRows([]);
-      return;
-    }
-    const base = rows.length > 0 ? rows : [{ id: newRowId(), items: [] as JobRowItem[] }];
-    applyRows(
-      base.map((r) => ({
-        ...r,
-        items: skeleton.map(
-          (c) => r.items.find((it) => it.criteria === c) ?? { criteria: c, value: cardValueOf(sel, c) },
-        ),
-      })),
-    );
-  };
 
   // 순차 입력(2026-07-24 지시) — 앞 카드의 기준이 선택되기 전까지 다음 카드의 기준 셀렉트 비활성.
   // 반환: 미선택인 첫 앞 카드의 순번(1부터) / 없으면 null. 툴팁 문구의 을/를은 숫자 발음 받침 기준.
@@ -256,14 +241,29 @@ export function JobPositionTemplateB({
   };
 
   const setCardCriteria = (id: string, criteria: string) => {
+    const idx = cardIds.indexOf(id);
     const next = { ...selections, [id]: { criteria, value: '' } };
-    // 미사용(비우기) 선택 시 그 뒤 카드들도 전부 리셋(2026-07-24 지시) — 순차 입력 규칙과 정합
+    // 기준 구성이 바뀌면 값 선택은 전부 무효(2026-07-24 지시) — 마지막 카드 체크박스로 고른 값이
+    // 구성 변경 후 카드 표시와 어긋나는 문제 포함, 카드 값·테이블 칩 값을 모두 리셋한다.
+    for (const cid of cardIds) {
+      if (next[cid]) next[cid] = { ...next[cid], value: '' };
+    }
+    // 미사용(비우기)이면 그 뒤 카드는 기준까지 리셋(순차 입력 규칙과 정합)
     if (!criteria) {
-      const idx = cardIds.indexOf(id);
       for (const lid of cardIds.slice(idx + 1)) next[lid] = { criteria: '', value: '' };
     }
     setSelections(next);
-    syncRowsToSkeleton(skeletonFor(next, activeOrder), next);
+    // 행 동기화 — 새 스켈레톤으로 칩 구성을 만들되 값은 전부 비운다.
+    // 값 무효화로 모든 행이 동일해지므로 빈 행 1개로 합쳐진다.
+    const skeleton = skeletonFor(next, activeOrder);
+    if (skeleton.length === 0) {
+      if (rows.length > 0) applyRows([]);
+      return;
+    }
+    const first = rows[0] ?? { id: newRowId(), items: [] as JobRowItem[] };
+    applyRows([
+      { ...first, items: skeleton.map((c) => ({ criteria: c, value: '' })) },
+    ]);
   };
   // 카드 값 셀렉트(2026-07-24 재추가) — 고르면 그 기준의 '빈' 칩들을 이 값으로 채운다
   // (이미 값을 고른 칩은 유지 — 행별 개별 값이 우선)
