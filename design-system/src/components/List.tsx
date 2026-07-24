@@ -73,10 +73,11 @@ export function List({
 
   const rowBg = disabled
     ? 'bg-list-default-bg cursor-not-allowed'
-    : highlighted && !noHover
-      ? 'bg-list-hover-bg cursor-pointer' // 키보드 강조 우선
-      : selected
-        ? 'bg-list-selected-bg cursor-pointer' // 선택: 파란 알파 배경(2026-07-24) — hover/pressed 효과 없음
+    : selected
+      ? 'bg-list-selected-bg cursor-pointer' // 선택: 파란 알파 배경(2026-07-24) — 열림 직후 키보드 강조가
+      //   선택 행에 겹쳐도 파란 배경 유지(회색으로 덮이던 문제 수정, 2026-07-24 사용자 지적)
+      : highlighted && !noHover
+        ? 'bg-list-hover-bg cursor-pointer' // 키보드 강조
         : noHover
           ? 'bg-list-default-bg cursor-pointer' // 라디오: 선택 표시는 라디오가 담당
           : 'bg-list-default-bg cursor-pointer hover:bg-list-hover-bg active:bg-list-pressed-bg';
