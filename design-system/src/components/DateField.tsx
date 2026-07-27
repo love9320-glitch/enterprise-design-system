@@ -175,7 +175,7 @@ export function DateField({
   endTime,
   defaultEndTime = '23:59',
   onEndTimeChange,
-  placeholder = '날짜를 선택하세요',
+  placeholder, // 미지정 시 mode 기반 기본값 — 단일 '날짜를 선택하세요' / 범위 '시작일과 마감일을 선택하세요'(2026-07-24)
   disabled = false,
   readOnly = false,
   error = false,
@@ -200,6 +200,7 @@ export function DateField({
   ...props
 }: DateFieldProps) {
   const isRange = mode === 'range';
+  const effPlaceholder = placeholder ?? (isRange ? '시작일과 마감일을 선택하세요' : '날짜를 선택하세요');
   const interactive = !disabled && !readOnly;
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -241,14 +242,20 @@ export function DateField({
   };
 
   // 표시 문자열 — 규칙 통일(utils/datetime). 비어 있으면 placeholder.
-  const display = isRange
+  // 범위 + 캘린더 열림 + 시작만 선택: "A ~ 마감일 선택 중"(2026-07-24 지시, 구 "(선택사항)").
+  // 닫으면 기존 규칙대로 "A ~ 마감일 없음".
+  const rangeCur = current as DateRange | null;
+  let display = isRange
     ? formatDateTimeRange(
-        (current as DateRange | null)?.start,
+        rangeCur?.start,
         showTime ? curSt : undefined,
-        (current as DateRange | null)?.end,
+        rangeCur?.end,
         showTime ? curEt : undefined,
       )
     : formatDateTime(current as Date | null, showTime ? curSt : undefined);
+  if (isRange && open && rangeCur?.start && !rangeCur?.end) {
+    display = display.replace(/~ 마감일 없음$/, '~ 마감일 선택 중');
+  }
   const isEmpty = !display;
 
   // 캘린더에서 선택 — 완료 시 자동 닫기(closeOnSelect)
@@ -299,7 +306,7 @@ export function DateField({
   // hug: input을 콘텐츠 폭만큼. size는 라틴 평균 글자폭 기준이라 한글(전각)은 2배로 세고 +1 여유.
   const shown = focused ? text : display;
   const hugSize = Math.max(
-    Array.from(shown || placeholder).reduce((n, c) => {
+    Array.from(shown || effPlaceholder).reduce((n, c) => {
       // 한글·CJK·전각 글자는 전각폭이라 2칸, 그 외 1칸. 끝 글자 잘림 방지로 초기값 +1.
       const code = c.charCodeAt(0);
       const wide =
@@ -327,7 +334,7 @@ export function DateField({
           ref={inputRef}
           type="text"
           value={focused ? text : display}
-          placeholder={placeholder}
+          placeholder={effPlaceholder}
           readOnly={!interactive}
           disabled={disabled}
           size={isHug ? hugSize : undefined}

@@ -69,7 +69,7 @@ const USAGE_PROPS = [
   { name: 'DateField · value / defaultValue / onChange', type: 'Date | {start,end}', default: '—', desc: '선택값(DatePicker와 동일 형태)' },
   { name: 'DateField · showTime', type: 'boolean', default: 'false', desc: '시간 포함(표시 + 팝오버 시간 영역)' },
   { name: 'DateField · startTime / endTime (+onChange)', type: "'HH:MM'", default: "'00:00' / '23:59'", desc: '시간 값(controlled/uncontrolled)' },
-  { name: 'DateField · placeholder', type: 'string', default: "'날짜를 선택하세요'", desc: '값 없을 때 표시' },
+  { name: 'DateField · placeholder', type: 'string', default: 'mode 기반', desc: "값 없을 때 표시 — 단일 '날짜를 선택하세요' / 범위 '시작일과 마감일을 선택하세요'. 범위에서 시작만 선택된 채 캘린더가 열려 있으면 'A ~ 마감일 선택 중', 닫으면 'A ~ 마감일 없음'" },
   { name: 'DateField · disabled / readOnly', type: 'boolean', default: 'false', desc: '비활성 / 읽기전용(클릭으로 안 열림)' },
   { name: 'DateField · error / errorMessage', type: 'boolean / string', default: 'false / —', desc: '에러 상태 + 필드 아래 툴팁' },
   { name: 'DateField · (직접 입력)', type: '—', default: '—', desc: '타이핑 후 Enter/blur로 파싱·정규화. 날짜: 250520·20250520·0520(올해)·25.05.20 / 시간(공백 뒤): 00:10·0010·011. 숫자·구분자·괄호만 입력 가능. 범위 시작만 입력 시 "마감일 없음"' },
