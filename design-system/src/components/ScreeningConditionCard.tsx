@@ -21,6 +21,7 @@ import type {
   ReactNode,
 } from 'react';
 import { GripVertical, Trash2, ChevronDown, Settings } from 'lucide-react';
+import { DragGhost } from './DragGhost';
 import { Popover } from './Popover';
 import { PopoverMenu } from './PopoverMenu';
 import { SegmentedTabs } from './SegmentedTabs';
@@ -207,14 +208,7 @@ export function ScreeningConditionCard({
       aria-grabbed={dragging || undefined}
     >
       {/* 드래그 고스트 원본 — 화면 밖 고정 배치(display:none이면 setDragImage가 안 먹음) */}
-      <div
-        ref={ghostRef}
-        style={{ position: 'fixed', top: -9999, left: -9999 }}
-        className="inline-flex w-fit items-center gap-spacing-4 rounded-round-4 border border-condition-card-drop-outline bg-condition-card-hover-card-bg px-spacing-6 py-spacing-4 text-condition-card-drop-text shadow-[0_2px_2px_0_rgba(0,0,0,0.12)]"
-      >
-        <GripVertical size={16} strokeWidth={1.8} className="shrink-0" />
-        <span className="whitespace-nowrap text-14">{cardName}</span>
-      </div>
+      <DragGhost ref={ghostRef} label={cardName} />
       {/* 헤더: grip + 카드명 / 삭제 버튼 */}
       <div className="flex w-full items-center justify-between">
         <div className="flex min-w-0 items-center gap-spacing-4">

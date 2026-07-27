@@ -46,6 +46,15 @@ const columns = [
       삭제
     </Button>
   )}
+/>
+
+// 행 드래그 순서 변경(Table 패스스루) — grip 핸들로 행을 끌어 라이브 재배치.
+// onRowsReorder에는 전체 rows가 온다(검색·필터·페이지로 가려진 행 위치는 보존).
+// dragHandleColKey=grip을 별도 컬럼 대신 그 컬럼 셀 안에, rowDragLabel=드래그 고스트(조건 카드식 필) 라벨.
+// 헤더 메뉴로 정렬 중일 때는 드래그가 잠긴다(grip disabled 색).
+<TableTemplate
+  columns={columns} rows={rows} draggableRows onRowsReorder={setRows}
+  dragHandleColKey="type" rowDragLabel={(row) => row.title}
 />`;
 
 const USAGE_PROPS = [
@@ -76,6 +85,10 @@ const USAGE_PROPS = [
   { name: 'minWidth', type: 'number', default: '720', desc: '테이블 최소 너비(좁아지면 가로 스크롤)' },
   { name: 'maxHeight', type: 'number', default: '—', desc: '표 높이 제한(px). 주로 pagination=false일 때 사용 — 초과하면 세로 스크롤 + 헤더 고정' },
   { name: 'emptyMessage', type: 'string', default: "'데이터가 없습니다.'", desc: 'rows가 비었을 때 문구' },
+  { name: 'draggableRows', type: 'boolean', default: 'false', desc: '행 드래그 순서 변경(grip 핸들) — 헤더 메뉴 정렬 중엔 드래그 잠금(핸들 disabled 색)' },
+  { name: 'onRowsReorder', type: '(rows) => void', default: '—', desc: '재정렬된 전체 rows 전달 — 검색·필터·페이지로 가려진 행 위치는 보존' },
+  { name: 'dragHandleColKey', type: 'string', default: '—', desc: 'grip을 별도 컬럼 대신 이 key 컬럼의 셀 안(내용 앞)에 렌더' },
+  { name: 'rowDragLabel', type: '(row) => ReactNode', default: '첫 컬럼 값', desc: '드래그 고스트(조건 카드식 축약형 필)의 라벨' },
 ];
 
 // 상태값 → Tag 색
@@ -181,7 +194,18 @@ function DemoTemplate({ withActions = true, actionSet = 'default', ...templatePr
         </>
       );
 
-  return <TableTemplate columns={COLUMNS} rows={rows} actions={actions} selectable={selectable} {...rest} />;
+  return (
+    <TableTemplate
+      columns={COLUMNS}
+      rows={rows}
+      actions={actions}
+      selectable={selectable}
+      // 행 드래그(draggableRows가 rest로 켜질 때) — 재정렬 반영 + 고스트 라벨(공고명)
+      onRowsReorder={setRows}
+      rowDragLabel={(row) => row.title}
+      {...rest}
+    />
+  );
 }
 
 // 페이지네이션 없이일 때 고를 수 있는 표 높이 옵션
@@ -231,11 +255,18 @@ function Playground() {
     rightActions: false, // 우측 슬롯(검색바 옆/대신 버튼)
     selects: false, rightSelects: false, // 좌/우 셀렉트 그룹 슬롯
     showTotal: true, showPageSize: true, // 페이지네이션 세부 요소
+    draggable: false, dragInCell: false, // 행 드래그 / grip을 구분 셀 안에(dragHandleColKey)
   });
   const [maxHeight, setMaxHeight] = useState(320); // 페이지네이션 없이일 때 표 높이(px), 0=제한 없음
   const [pageSize, setPageSize] = useState(10);    // 페이지네이션 있을 때 페이지당 행 수
   const [maxButtons, setMaxButtons] = useState(10); // 페이지 번호 노출 개수(윈도우)
   const toggle = (k) => setOpts((o) => ({ ...o, [k]: !o[k] }));
+
+  // 그립 셀 내장 시 구분 컬럼 폭 보정 — 기존 80 + grip 16 + gap 6(spacing-4) = 102
+  const playColumns =
+    opts.draggable && opts.dragInCell
+      ? COLUMNS.map((c) => (c.key === 'type' ? { ...c, width: 102 } : c))
+      : COLUMNS;
 
   return (
     <div>
@@ -251,6 +282,10 @@ function Playground() {
           <Checkbox checked={opts.pagination} onChange={() => toggle('pagination')} label="페이지네이션" />
           <Checkbox checked={opts.bordered}   onChange={() => toggle('bordered')}   label="외곽선(bordered)" />
           <Checkbox checked={opts.selectable} onChange={() => toggle('selectable')} label="체크박스 선택" />
+          <Checkbox checked={opts.draggable}  onChange={() => toggle('draggable')}  label="행 드래그" />
+          {opts.draggable && (
+            <Checkbox checked={opts.dragInCell} onChange={() => toggle('dragInCell')} label="그립 셀 내장(구분 셀)" />
+          )}
         </div>
 
         {/* 2행: 페이지네이션 세부 옵션(켜짐) / 표 높이(꺼짐) — 상단 구분선으로 1행과 분리 */}
@@ -335,6 +370,9 @@ function Playground() {
           showPageSize={opts.showPageSize}
           maxButtons={maxButtons}
           maxHeight={!opts.pagination && maxHeight ? maxHeight : undefined}
+          draggableRows={opts.draggable}
+          dragHandleColKey={opts.draggable && opts.dragInCell ? 'type' : undefined}
+          columns={playColumns}
         />
       </div>
     </div>
@@ -371,7 +409,8 @@ export function TableTemplatePage() {
         title="Playground — 요소 끄고 켜기"
         desc={
           <>
-            체크박스로 버튼그룹·검색바·페이지네이션·외곽선·선택을 실시간 토글해 보세요.<br />
+            체크박스로 버튼그룹·검색바·페이지네이션·외곽선·선택·행 드래그를 실시간 토글해 보세요.<br />
+            행 드래그를 켜면 grip 핸들로 행 순서를 바꿀 수 있고(고스트는 조건 카드식 필·라벨은 공고명, 헤더 메뉴로 정렬 중엔 잠금), "그립 셀 내장"으로 별도 컬럼 대신 구분 셀 안에 넣는 방식도 볼 수 있습니다. 순서 변경은 검색·페이지네이션이 걸려 있어도 전체 데이터에 반영됩니다.<br />
             버튼그룹에는 추가·가져오기·내보내기(+선택 시 삭제) 버튼을 넣어 두었고, 테이블 헤더에는 상태 필터 Select와 공고명·접수 기간 정렬 메뉴(⋮)를 달아 두었습니다(필터·정렬은 검색·페이지네이션과 함께 전체 행에 적용됩니다).<br />
             <code className="text-font-icon-5">title</code>을 켜면 <strong className="font-semibold text-font-icon-5">버튼그룹 왼쪽</strong>에 "공고 목록"이 함께 표시됩니다.
           </>

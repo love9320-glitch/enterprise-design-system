@@ -665,6 +665,7 @@ function JobPositionModal({ open, onClose, onRegisterCode }) {
         jobdaDutyOptions={POS_JOBDA_DUTIES}
         tableHeight={370}
         onRegisterCode={onRegisterCode}
+        onTemplateDownload={() => console.log('양식 다운로드')}
       />
     </Modal>
   );

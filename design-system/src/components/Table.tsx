@@ -19,14 +19,20 @@
 //     컨테이너가 이보다 좁아지면 가로 스크롤이 자동 활성화되고 fill 컬럼은 40px를 유지한다
 //   - scrollX: minWidth 없이도 가로 스크롤을 켜는 수동 옵션. 세로·가로 모두 ScrollArea 오버레이 스크롤바
 //   - loading / emptyMessage: 로딩 · 빈 상태 처리
+//   - draggableRows + onRowsReorder: 맨 앞에 grip 핸들 컬럼이 추가되고, 핸들 드래그로 행 순서를
+//     바꿀 수 있다(다른 행 위로 들어가면 라이브 재배치 — ConditionOrderSlot 패턴). onRowsReorder에는
+//     재정렬된 rows(원본 배열 기준)가 전달된다. 정렬(sort)이 걸린 동안은 표시 순서≠저장 순서라 드래그 잠금.
+//     dragHandleColKey를 주면 별도 컬럼 대신 그 컬럼 셀 안(앞)에 grip이 들어간다(예: 순서 셀).
+//     드래그 고스트는 조건 카드와 같은 축약형 필(DragGhost) — 라벨은 rowDragLabel(row), 기본=첫 컬럼 값.
 // 색·간격·보더는 table-*/spacing-*/border-* 토큰만 사용(하드코딩 금지).
 // sticky 헤더의 하단 구분선은 border-collapse 환경에서 스크롤 시 사라지는 브라우저 버그를 피하려
 // box-shadow(토큰 색 인라인)로 그린다. — Tooltip/ScrollArea의 토큰값 인라인 적용과 동일한 예외.
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ComponentPropsWithoutRef, ReactNode } from 'react';
-import { LoaderCircle, MoreVertical } from 'lucide-react';
+import { GripVertical, LoaderCircle, MoreVertical } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Checkbox } from './Checkbox';
+import { DragGhost } from './DragGhost';
 import { ScrollArea } from './ScrollArea';
 import { TruncatingText } from './TruncatingText';
 import { Select } from './Select';
@@ -92,6 +98,8 @@ const ALIGN_STYLE = {
 };
 
 const CHECKBOX_COL_WIDTH = 44;
+// grip 핸들 전용 컬럼 — 셀 좌우 패딩(spacing-5-5×2=20) + 아이콘 16px에 딱 맞는 폭(임의 폭 아님)
+const DRAG_COL_WIDTH = 36;
 const COL_MIN_WIDTH = 40; // 가변(fill) 컬럼이 표가 좁아져도 유지하는 최소 너비(px)
 
 // HeaderMenu — 헤더 우측 ghost 아이콘 버튼(size 24) + Popover 메뉴.
@@ -178,6 +186,14 @@ export interface TableProps extends ComponentPropsWithoutRef<'div'> {
   loadingMessage?: ReactNode;
   emptyMessage?: ReactNode;
   onRowClick?: (row: TableRowData) => void;
+  /** 행 드래그 앤 드롭 순서 변경 — 맨 앞에 grip 핸들 컬럼 추가(정렬 중엔 드래그 잠금) */
+  draggableRows?: boolean;
+  /** 드래그로 순서가 바뀔 때마다 재정렬된 rows 배열(원본 기준) 전달 */
+  onRowsReorder?: (rows: TableRowData[]) => void;
+  /** grip을 별도 컬럼 대신 이 key 컬럼의 셀 안(내용 앞)에 렌더 — 예: 순서 셀 */
+  dragHandleColKey?: string;
+  /** 드래그 고스트(축약형 필) 라벨 — 미지정 시 첫 컬럼 값 */
+  rowDragLabel?: (row: TableRowData) => ReactNode;
 }
 
 export function Table({
@@ -201,6 +217,10 @@ export function Table({
   loadingMessage = '불러오는 중…',
   emptyMessage = '데이터가 없습니다.',
   onRowClick,
+  draggableRows = false,
+  onRowsReorder,
+  dragHandleColKey,
+  rowDragLabel,
   className = '',
   ...props
 }: TableProps) {
@@ -256,7 +276,30 @@ export function Table({
   const toggleRow = (key: TableRowKey) =>
     emit(selectedSet.has(key) ? selected.filter((k) => k !== key) : [...selected, key]);
 
-  const totalCols = columns.length + (selectable ? 1 : 0);
+  // 행 드래그 순서 변경 — grip에서만 시작(allowRowDragRef), 다른 행 위로 들어가면 라이브 재배치
+  // (ConditionOrderSlot 패턴). 정렬 중엔 표시 순서≠저장 순서라 재배치 결과가 어긋나므로 잠근다.
+  // dragHandleColKey가 있으면 전용 컬럼 대신 그 컬럼 셀 안에 grip을 넣는다.
+  const rowDrag = draggableRows;
+  const showDragCol = rowDrag && !dragHandleColKey;
+  const dragLocked = activeSort != null || !onRowsReorder;
+  const [dragKey, setDragKey] = useState<TableRowKey | null>(null);
+  const allowRowDragRef = useRef(false);
+  // 행별 드래그 고스트(DragGhost) 원본 — dragstart에서 setDragImage 대상으로 조회
+  const ghostRefs = useRef(new Map<TableRowKey, HTMLDivElement>());
+  const moveRowTo = (srcKey: TableRowKey, dstKey: TableRowKey) => {
+    if (srcKey === dstKey) return;
+    const keys = rows.map(getKey);
+    const si = keys.indexOf(srcKey);
+    const di = keys.indexOf(dstKey);
+    if (si < 0 || di < 0) return;
+    const next = [...rows];
+    const [moved] = next.splice(si, 1);
+    // 제거 후 di는 아래로 이동 시 dst 다음, 위로 이동 시 dst 앞을 가리킴 — 방향별 앞/뒤 삽입과 동치
+    next.splice(di, 0, moved);
+    onRowsReorder?.(next);
+  };
+
+  const totalCols = columns.length + (selectable ? 1 : 0) + (showDragCol ? 1 : 0);
   const vMax = maxHeight;
   const fillV = vMax === 'fill'; // 세로 상한을 부모 flex 높이로
   const hasVScroll = vMax != null;
@@ -269,6 +312,7 @@ export function Table({
   // 이들의 합을 테이블 최소 너비로 삼아, 그보다 좁아지면 fill 컬럼이 40px 아래로 줄지 않고 가로 스크롤이 생긴다.
   const hasFill = columns.some((c) => c.width == null);
   const contentMinWidth =
+    (showDragCol ? DRAG_COL_WIDTH : 0) +
     (selectable ? CHECKBOX_COL_WIDTH : 0) +
     columns.reduce((sum, c) => sum + (c.width ?? COL_MIN_WIDTH), 0);
 
@@ -353,6 +397,7 @@ export function Table({
 
   const colgroupEl = (
     <colgroup>
+      {showDragCol && <col style={{ width: DRAG_COL_WIDTH }} />}
       {selectable && <col style={{ width: CHECKBOX_COL_WIDTH }} />}
       {columns.map((c) => (
         <col key={c.key} style={c.width ? { width: c.width } : undefined} />
@@ -365,10 +410,17 @@ export function Table({
   const theadEl = (
       <thead>
         <tr className="bg-table-header-bg">
+          {showDragCol && (
+            // grip 핸들 컬럼 헤더 — 라벨 없는 빈 셀(폭만 확보)
+            <th
+              className={`${cellLine(false)} ${headCorner(true, false)} h-[32px] align-middle`}
+              style={{ width: DRAG_COL_WIDTH, ...headDivider }}
+            />
+          )}
           {selectable && (
             // 체크박스 컬럼 헤더만 상하좌우 패딩을 8px(spacing-5)로 통일 — 공통 headCellProps의 좌(spacing-6) 패딩 대신.
             <th
-              className={`${cellLine(false)} ${headCorner(true, false)} p-spacing-5 align-middle`}
+              className={`${cellLine(false)} ${headCorner(!showDragCol, false)} p-spacing-5 align-middle`}
               style={{ width: CHECKBOX_COL_WIDTH, ...headDivider }}
             >
               <div className="flex items-center justify-center">
@@ -377,7 +429,7 @@ export function Table({
             </th>
           )}
           {columns.map((c, i) =>
-            headCell(c, !selectable && i === 0, i === columns.length - 1),
+            headCell(c, !selectable && !showDragCol && i === 0, i === columns.length - 1),
           )}
         </tr>
       </thead>
@@ -409,14 +461,103 @@ export function Table({
             // 마지막 행 구분선을 빼 이중선(2px)이 되지 않게 한다.
             const bottomClosed = bordered || hasVScroll;
             const rowLine = bottomClosed && isLastRow ? '' : 'border-b border-table-cell-line';
+            // grip 핸들 + 고스트 원본 — 전용 컬럼(showDragCol)과 셀 내장(dragHandleColKey) 공용
+            const gripEl = rowDrag ? (
+              <>
+                <span
+                  aria-label="순서 변경"
+                  aria-disabled={dragLocked || undefined}
+                  className={`flex shrink-0 items-center ${
+                    dragLocked
+                      ? 'cursor-not-allowed text-font-icon-2'
+                      : 'cursor-grab text-font-icon-3 active:cursor-grabbing'
+                  }`}
+                  onMouseDown={() => {
+                    allowRowDragRef.current = true;
+                  }}
+                  onMouseUp={() => {
+                    allowRowDragRef.current = false;
+                  }}
+                >
+                  <GripVertical size={16} strokeWidth={1.8} />
+                </span>
+                <DragGhost
+                  ref={(el) => {
+                    if (el) ghostRefs.current.set(key, el);
+                    else ghostRefs.current.delete(key);
+                  }}
+                  label={rowDragLabel ? rowDragLabel(row) : (row[columns[0]?.key] as ReactNode)}
+                />
+              </>
+            ) : null;
             return (
               <tr
                 key={key}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
-                className={`bg-table-row-bg transition-colors hover:bg-table-row-hover-bg ${
+                className={`${dragKey === key ? 'bg-table-row-hover-bg' : 'bg-table-row-bg'} transition-colors hover:bg-table-row-hover-bg ${
                   onRowClick ? 'cursor-pointer' : ''
                 }`}
+                draggable={rowDrag && !dragLocked ? true : undefined}
+                onDragStart={
+                  rowDrag
+                    ? (e) => {
+                        // grip 밖에서 시작한 드래그(텍스트 등)는 차단 — 핸들에서만 이동
+                        if (!allowRowDragRef.current || dragLocked) {
+                          e.preventDefault();
+                          return;
+                        }
+                        setDragKey(key);
+                        e.dataTransfer.effectAllowed = 'move';
+                        try {
+                          e.dataTransfer.setData('text/plain', String(key));
+                        } catch {
+                          /* 일부 브라우저(구IE 계열) setData 미지원 무시 */
+                        }
+                        // 조건 카드와 같은 축약형 필 고스트(DragGhost)로 교체
+                        const ghost = ghostRefs.current.get(key);
+                        if (ghost) {
+                          try {
+                            e.dataTransfer.setDragImage(ghost, 16, 20);
+                          } catch {
+                            /* setDragImage 미지원 브라우저 무시 — 기본 고스트 사용 */
+                          }
+                        }
+                      }
+                    : undefined
+                }
+                onDragEnd={
+                  rowDrag
+                    ? () => {
+                        setDragKey(null);
+                        allowRowDragRef.current = false;
+                      }
+                    : undefined
+                }
+                onDragOver={
+                  rowDrag
+                    ? (e) => {
+                        // 드래그 중엔 자기 자신 위 포함 항상 드롭 허용 — 미허용 상태로 놓으면
+                        // 크롬이 고스트를 원위치로 되돌리는 스냅백 애니메이션을 재생한다
+                        if (dragKey == null) return;
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                      }
+                    : undefined
+                }
+                onDrop={rowDrag ? (e) => e.preventDefault() : undefined}
+                onDragEnter={
+                  rowDrag
+                    ? () => {
+                        if (dragKey != null && dragKey !== key) moveRowTo(dragKey, key);
+                      }
+                    : undefined
+                }
               >
+                {showDragCol && (
+                  <td className={`${cellLine(false)} ${rowLine} h-[45px] px-spacing-5-5 py-spacing-4 align-middle`}>
+                    <div className="flex items-center justify-center">{gripEl}</div>
+                  </td>
+                )}
                 {selectable && (
                   <td className={`${cellLine(false)} ${rowLine} h-[45px] px-spacing-5-5 py-spacing-4 align-middle`}>
                     <div className="flex items-center justify-center">
@@ -443,7 +584,13 @@ export function Table({
                       rowSpan={span > 1 ? span : undefined}
                       className={`${cellLine(ci === columns.length - 1)} ${spanRowLine} h-[45px] px-spacing-5-5 py-spacing-4 align-middle`}
                     >
-                      <div className={`flex items-center ${ALIGN_STYLE[c.align as keyof typeof ALIGN_STYLE] ?? ALIGN_STYLE.left} min-w-0 text-14 text-font-icon-5`}>
+                      <div
+                        className={`flex items-center ${ALIGN_STYLE[c.align as keyof typeof ALIGN_STYLE] ?? ALIGN_STYLE.left} min-w-0 text-14 text-font-icon-5 ${
+                          rowDrag && dragHandleColKey === c.key ? 'gap-spacing-4' : ''
+                        }`}
+                      >
+                        {/* 셀 내장 grip(dragHandleColKey) — 셀 내용 앞에 핸들 배치(예: 순서 셀) */}
+                        {rowDrag && dragHandleColKey === c.key && gripEl}
                         {/* wrap=false면 말줄임(행이 세로로 안 늘어남), wrap=true면 줄바꿈으로 늘어남. */}
                         {c.render ? (
                           c.render(row)

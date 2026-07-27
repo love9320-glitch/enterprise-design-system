@@ -10,7 +10,7 @@
 import { useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
 import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
-import { ChevronRight, Copy, Download, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { ChevronRight, Copy, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { ConditionOrderSlot } from './ConditionOrderSlot';
 import { Select, SelectChip } from './Select';
 import { Button } from './Button';
@@ -100,13 +100,13 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   onRegisterCode?: () => void; // '채용 분야 코드 등록' 클릭(모달 열기 등은 소비자 몫)
   showReset?: boolean; // 타이틀 우측 line 리셋 버튼(조건·행 전체 초기화)
   resetLabel?: string;
-  // Step 02 타이틀 우측 엑셀 버튼(line 32, 2026-07-23 지시) — 다운로드 동작은 소비자 연결.
-  // 업로드는 FileUploadMenu 팝오버(1개 파일·엑셀만) — 파일 선택 시 onExcelUpload(file) 호출
+  // '엑셀 대량 등록'(line 32, 2026-07-27 지시 — 구 엑셀 업로드, 다운로드 버튼 삭제).
+  // 클릭 시 양식 다운로드 타입 FileUploadMenu 팝오버(1개 파일·엑셀만) —
+  // [양식 다운로드 | 엑셀 업로드] 푸터, 파일 선택 시 onExcelUpload(file) 호출.
   excelUploadLabel?: string;
-  excelDownloadLabel?: string;
   excelUploadGuide?: string; // 업로드 팝오버 안내 문구(\n 줄바꿈)
   onExcelUpload?: (file: File) => void;
-  onExcelDownload?: () => void;
+  onTemplateDownload?: () => void; // 팝오버의 '양식 다운로드' 클릭
   onReset?: () => void; // 리셋 후 알림(내부 초기화는 템플릿이 수행)
   ref?: Ref<JobPositionTemplateHandle>; // (선택) 저장 API(React 19 ref-as-prop)
 }
@@ -141,11 +141,10 @@ export function JobPositionTemplate({
   showReset = true,
   resetLabel = '리셋',
   onReset,
-  excelUploadLabel = '엑셀 업로드',
-  excelDownloadLabel = '엑셀 다운로드',
-  excelUploadGuide = '엑셀 파일 1개만 업로드할 수 있습니다.\n지원 형식: .xlsx, .xls',
+  excelUploadLabel = '엑셀 대량 등록',
+  excelUploadGuide = '엑셀 양식을 다운받아 내용을 수정 후 업로드하세요.\n지원 형식: .xlsx, .xls',
   onExcelUpload,
-  onExcelDownload,
+  onTemplateDownload,
   ref,
   className = '',
   ...props
@@ -429,15 +428,14 @@ export function JobPositionTemplate({
         <Button variant="line" size="32" leftIcon={Plus} onClick={onRegisterCode}>
           {registerCodeLabel}
         </Button>
-        <Button variant="line" size="32" leftIcon={Download} onClick={onExcelDownload}>
-          {excelDownloadLabel}
-        </Button>
         <FileUploadButton
           triggerText={excelUploadLabel}
           files={excelFiles}
           maxCount={1}
           accept=".xlsx,.xls"
           guide={excelUploadGuide}
+          // 항상 양식 다운로드 타입 — 핸들러 미연결이어도 팝오버 구성은 유지(2026-07-27 지시)
+          onTemplateDownload={onTemplateDownload ?? (() => {})}
           placement="auto-right"
           menuWidth={320}
           buttonProps={{ variant: 'line', size: '32' }}
@@ -459,12 +457,11 @@ export function JobPositionTemplate({
     resetAll,
     registerCodeLabel,
     onRegisterCode,
-    excelDownloadLabel,
-    onExcelDownload,
     excelUploadLabel,
     excelUploadGuide,
     excelFiles,
     onExcelUpload,
+    onTemplateDownload,
   ]);
 
   useImperativeHandle(ref, () => ({
@@ -496,8 +493,9 @@ export function JobPositionTemplate({
   };
 
   const columns = [
-    // width 계산(규칙 17 정신) — 셀 좌우 패딩 10×2(spacing-5-5) + 텍스트 폭 21(2026-07-23 지정) = 41
-    { key: 'orderNo', label: orderLabel, width: 41 },
+    // width 계산(규칙 17 정신) — 셀 좌우 패딩 10×2(spacing-5-5) + grip 16 + gap 6(spacing-4)
+    // + 텍스트 폭 21(2026-07-23 지정) = 63. grip은 dragHandleColKey로 이 셀 안에 들어간다(2026-07-27 지시).
+    { key: 'orderNo', label: orderLabel, width: 63 },
     {
       key: 'items',
       // 헤더에 현재 조건 구성 표시(2026-07-24 지시) — "채용 분야 (지역 > 직무)" 식으로
@@ -615,16 +613,15 @@ export function JobPositionTemplate({
             <Button variant="line" size="32" leftIcon={Plus} onClick={onRegisterCode}>
               {registerCodeLabel}
             </Button>
-            <Button variant="line" size="32" leftIcon={Download} onClick={onExcelDownload}>
-              {excelDownloadLabel}
-            </Button>
-            {/* 업로드 — FileUploadMenu 팝오버(1개·엑셀만, 우측 정렬·상하 auto). guide와 accept 일치 유지 주의 */}
+            {/* 엑셀 대량 등록 — 양식 다운로드 타입 팝오버(1개·엑셀만, 우측 정렬·상하 auto). guide와 accept 일치 유지 주의 */}
             <FileUploadButton
               triggerText={excelUploadLabel}
               files={excelFiles}
               maxCount={1}
               accept=".xlsx,.xls"
               guide={excelUploadGuide}
+              // 항상 양식 다운로드 타입 — 핸들러 미연결이어도 팝오버 구성은 유지(2026-07-27 지시)
+              onTemplateDownload={onTemplateDownload ?? (() => {})}
               placement="auto-right"
               menuWidth={320} // 기본 420 − 100(2026-07-23 지시)
               buttonProps={{ variant: 'line', size: '32' }}
@@ -753,6 +750,28 @@ export function JobPositionTemplate({
           // 데이터 있음: hug(자연 높이, 2026-07-23 지시) — 상한(fill)만 유지
           className={tableHeight === 'fill' ? (rows.length === 0 ? 'min-h-0 flex-1' : 'min-h-0') : ''}
           emptyMessage={emptyMessage}
+          draggableRows
+          dragHandleColKey="orderNo" // grip을 별도 컬럼 대신 순서 셀 안에(2026-07-27 지시)
+          // 고스트 라벨 — 선택된 값 라벨 조합("서울 > 개발"), 선택 전이면 "순서 N"
+          rowDragLabel={(d) => {
+            const row = d as unknown as JobRow & { orderNo: number };
+            const labels = row.items
+              .filter((it) => typeof it.value === 'string' && it.value)
+              .map(
+                (it) =>
+                  (valueOptions[it.criteria] ?? []).find((o) => o.value === it.value)?.label ??
+                  (it.value as string),
+              );
+            return labels.length > 0 ? labels.join(' > ') : `${orderLabel} ${row.orderNo}`;
+          }}
+          // 재정렬된 표시 행(orderNo 파생 포함)을 id로 원본 행에 되매핑 — 순서 번호는 렌더 파생이라 자동 재계산
+          onRowsReorder={(next) =>
+            applyRows(
+              next
+                .map((d) => rows.find((r) => r.id === (d as { id: string }).id))
+                .filter((r): r is JobRow => !!r),
+            )
+          }
         />
       </div>
     </div>

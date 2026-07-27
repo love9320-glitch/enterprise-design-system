@@ -22,6 +22,7 @@ interface InlineFieldTriggerProps extends ComponentPropsWithoutRef<'span'> {
   interactive?: boolean; // 상호작용 가능 여부(미지정 시 !disabled && !readOnly)
   maxWidth?: CSSProperties['maxWidth']; // 텍스트 최대 폭(CSS 길이) — 넘으면 말줄임
   fill?: boolean; // 부모 전체 폭 채움 — 텍스트 왼쪽·chevron 오른쪽 끝(justify-between). 기본 hug
+  chevron?: boolean; // 우측 화살표 표시 여부 — false면 텍스트만(DateField 인라인형 등)
 }
 
 export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTriggerProps>(function InlineFieldTrigger(
@@ -35,6 +36,7 @@ export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTrigger
     interactive, // 상호작용 가능 여부(미지정 시 !disabled && !readOnly)
     maxWidth, // 텍스트 최대 폭(CSS 길이) — 넘으면 말줄임
     fill = false, // 부모 전체 폭 채움 — 텍스트 왼쪽·chevron 오른쪽 끝(justify-between). 기본 hug
+    chevron = true, // 우측 화살표 표시 여부 — false면 텍스트만
     className = '',
     ...props
   },
@@ -68,13 +70,15 @@ export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTrigger
       >
         {children}
       </TruncatingText>
-      <ChevronDown
-        size={iconSize}
-        strokeWidth={1.8}
-        className={`pointer-events-none shrink-0 transition-transform ${iconColor} ${
-          open ? 'rotate-180' : ''
-        }`}
-      />
+      {chevron && (
+        <ChevronDown
+          size={iconSize}
+          strokeWidth={1.8}
+          className={`pointer-events-none shrink-0 transition-transform ${iconColor} ${
+            open ? 'rotate-180' : ''
+          }`}
+        />
+      )}
     </span>
   );
 });
