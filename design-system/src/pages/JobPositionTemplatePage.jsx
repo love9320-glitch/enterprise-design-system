@@ -23,8 +23,8 @@ const ref = useRef(null); // 저장 API — ref.current.validate() / getRows()
   tableHeight={370}                        // 테이블 바디 고정 상한(px) — 넘치면 내부 스크롤
   onChange={(rows) => save(rows)}          // 행 추가/삭제/칩 변경 시 전체 스냅샷
   onRegisterCode={() => openCodeModal()}   // '채용 분야 코드 등록' 클릭
-  onExcelUpload={(file) => parse(file)}    // 업로드 팝오버에서 파일 선택 시(.xlsx/.xls 1개)
-  onExcelDownload={() => download()}       // '엑셀 다운로드' 클릭
+  onExcelUpload={(file) => parse(file)}       // 대량 등록 팝오버에서 파일 선택 시(.xlsx/.xls 1개)
+  onTemplateDownload={() => downloadForm()}   // 팝오버의 '양식 다운로드' 클릭
 />
 
 // 모달 조립 — 본문에 넣으면 액션 버튼 4종(리셋·코드 등록·엑셀)이 모달 푸터 왼쪽으로 자동 이동
@@ -41,11 +41,22 @@ const USAGE_PROPS = [
   { name: 'ref (validate / getRows)', type: '{ validate(): boolean, getRows(): rows }', default: '—', desc: '저장 API — validate()=미선택 칩 에러 표시+통과 여부, getRows()=저장 시점 최신 로우(변경 없이 저장해도 안전)' },
   { name: 'onRegisterCode', type: '() => void', default: '—', desc: "'채용 분야 코드 등록' 버튼 클릭 — 코드 등록 모달 열기 등은 소비자가 연결(registerCodeLabel로 문구 변경). 버튼 위치 자동: 페이지=타이틀 우측 액션 행, 모달=푸터 왼쪽" },
   { name: 'showReset / resetLabel / onReset', type: 'boolean / string / () => void', default: "true / '리셋' / —", desc: '리셋 버튼(액션 행 맨 앞, line) — 조건 선택과 테이블 행을 초기 상태로 함께 초기화(onReset은 초기화 후 알림)' },
-  { name: 'onExcelUpload / onExcelDownload', type: '(file) => void / () => void', default: '— / —', desc: '액션 행의 엑셀 버튼(모달에선 푸터 왼쪽) — 업로드는 클릭 시 FileUploadMenu 팝오버(1개 파일·.xlsx/.xls만, excelUploadGuide로 안내 문구 변경)가 열리고 파일 선택 시 onExcelUpload(file) 호출. 다운로드 동작은 소비자 연결' },
+  { name: 'onExcelUpload / onTemplateDownload', type: '(file) => void / () => void', default: '— / —', desc: "'엑셀 대량 등록' 버튼(모달에선 푸터 왼쪽) — 클릭 시 양식 다운로드 타입 FileUploadMenu 팝오버([양식 다운로드 | 엑셀 업로드] 푸터, 1개 파일·.xlsx/.xls만). 파일 선택=onExcelUpload(file), 양식 다운로드=onTemplateDownload. 문구는 excelUploadLabel/excelUploadGuide" },
   { name: 'jobdaGroupOptions / jobdaDutyOptions', type: '{ value, label }[] / { [group]: { value, label }[] }', default: '[] / {}', desc: "'Jobda 직군/직무 매칭' 컬럼 — 행마다 직군·직무 SelectChip 2개. 직무는 선택한 직군에 종속(직군 변경 시 직무 리셋). 라벨·플레이스홀더는 jobdaLabel/jobdaGroupPlaceholder/jobdaDutyPlaceholder" },
   { name: 'pageTitle / 라벨들', type: 'string', default: "'채용 분야 설정' 등", desc: '카피 커스텀 — pageTitle(페이지 전용 타이틀)·orderLabel/jobLabel/manageLabel/emptyMessage/emptyValueMessage. 테이블 헤더가 조건 구성을 병기(채용 분야 (지역 > 직무))' },
 ];
 
+
+// 데모용 양식 다운로드 — 샘플 파일을 실제로 내려받게 해 무동작 버튼을 피한다(실서비스에선 실제 양식 URL)
+function downloadSampleTemplate() {
+  const blob = new Blob(['채용 분야 양식 샘플 (데모)'], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = '채용분야_양식.xlsx';
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 export function JobPositionTemplatePage() {
   const [modalOpen, setModalOpen] = useState(false);
@@ -83,6 +94,7 @@ export function JobPositionTemplatePage() {
         tableHeight={370} // 단독 배치 — 테이블 바디 고정 상한(넘치면 내부 스크롤, 2026-07-24 지시)
         onChange={setSaved}
         onRegisterCode={() => setCodeOpen(true)}
+        onTemplateDownload={downloadSampleTemplate}
       />
       {saved && (
         <p className="mt-spacing-5 text-12 text-font-icon-4">

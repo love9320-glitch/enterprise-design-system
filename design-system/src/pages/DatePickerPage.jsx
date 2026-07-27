@@ -20,6 +20,11 @@ import { DatePicker } from '../components/DatePicker';
 <DateField disabled /> · <DateField readOnly defaultValue={today} />
 <DateField error errorMessage="날짜를 선택하세요" />
 
+// 인라인 텍스트형 — 박스 없는 트리거(아이콘+날짜만, 화살표 없음). 직접 입력 없음(클릭=팝오버).
+// 항상 콘텐츠 폭(hug) + maxWidth 말줄임, size 24(14px)/20(12px), width="fill"이면 부모 폭
+<DateField variant="text" value={date} onChange={setDate} />
+<DateField variant="text" size="20" mode="range" showTime value={range} onChange={setRange} />
+
 // DatePicker — 패널 단독(트리거에 직접 붙이려면 Popover로 감싸거나 DateField 사용)
 // 단일 날짜 — value=Date | null
 const [date, setDate] = useState(null);
@@ -76,6 +81,9 @@ const USAGE_PROPS = [
   { name: 'DateField · formatErrorMessage', type: 'string', default: "'날짜 형식이 올바르지 않습니다.'", desc: '직접 입력 형식 오류 툴팁' },
   { name: 'DateField · closeOnSelect', type: 'boolean', default: '단일 true · 범위 false', desc: '선택 완료 시 자동 닫기(범위 기본은 배경 클릭으로만 닫힘, showTime이면 true여도 유지)' },
   { name: 'DateField · width', type: "'hug' | 'fill' | number | string", default: 'showTime?260:180', desc: "콘텐츠 폭(hug)/부모 100%(fill)/고정. 미지정 시 시간 포함=260·아니면 180. 좁으면 말줄임(…)" },
+  { name: 'DateField · variant', type: "'box' | 'text'", default: "'box'", desc: "'text'=박스 없는 인라인 텍스트형(Select 인라인형과 동일 비주얼). 직접 입력 없음(클릭=팝오버). 항상 hug, width는 'fill'만 반영" },
+  { name: 'DateField · size', type: "'24' | '20'", default: "'24'", desc: 'text variant 전용 크기 — 24(14px) / 20(12px)' },
+  { name: 'DateField · maxWidth', type: 'number | string', default: '—', desc: 'text variant 전용 트리거 최대 너비 — 넘으면 말줄임(hover 툴팁)' },
   { name: 'DateField · (disablePast/minDate/maxDate/disabledDate/weekStartsOn/minYear/maxYear)', type: '—', default: '—', desc: 'DatePicker로 패스스루' },
   // DatePicker
   { name: 'DatePicker · mode', type: "'single' | 'range'", default: "'single'", desc: '단일 날짜 / 시작~끝 범위 선택 — 완성된 범위에서 다시 날짜를 클릭하면 리셋되고 그 날짜가 새 시작일이 됨(시작일 ~ 마감일 없음)' },
@@ -183,6 +191,38 @@ function DateFieldDemo() {
         <div>
           <p className="mb-spacing-4 text-12 text-font-icon-3">지난날 선택 불가 (disablePast)</p>
           <DateField mode="range" disablePast value={pastRange} onChange={setPastRange} />
+        </div>
+      </div>
+      {/* 인라인 텍스트형(variant="text") — 박스 없는 트리거(Select 인라인형과 동일 비주얼), 직접 입력 없음 */}
+      <div className="flex flex-wrap items-center gap-spacing-9">
+        <div>
+          <p className="mb-spacing-4 text-12 text-font-icon-3">인라인형 (variant="text")</p>
+          <DateField variant="text" value={date} onChange={setDate} />
+        </div>
+        <div>
+          <p className="mb-spacing-4 text-12 text-font-icon-3">인라인형 · 범위 + 시간</p>
+          <DateField
+            variant="text"
+            mode="range"
+            showTime
+            value={rangeT}
+            onChange={setRangeT}
+            startTime={s}
+            onStartTimeChange={setS}
+            endTime={e}
+            onEndTimeChange={setE}
+          />
+        </div>
+        <div>
+          <p className="mb-spacing-4 text-12 text-font-icon-3">인라인형 · size 20 (12px)</p>
+          <DateField variant="text" size="20" value={date} onChange={setDate} />
+        </div>
+        <div>
+          <p className="mb-spacing-4 text-12 text-font-icon-3">인라인형 · disabled / readOnly</p>
+          <span className="inline-flex items-center gap-spacing-7">
+            <DateField variant="text" disabled />
+            <DateField variant="text" readOnly defaultValue={new Date()} />
+          </span>
         </div>
       </div>
       <div className="flex flex-wrap items-start gap-spacing-9">

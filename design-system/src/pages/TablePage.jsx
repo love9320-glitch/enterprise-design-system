@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Table } from '../components/Table';
 import { Tag } from '../components/Tag';
 import { Button } from '../components/Button';
@@ -50,7 +51,18 @@ const sortColumns = [
     items: [{ key: 'export', label: '엑셀 다운로드', onClick: () => {} }],
   } },
 ];
-<Table columns={sortColumns} rows={rows} rowKey="id" />`;
+<Table columns={sortColumns} rows={rows} rowKey="id" />
+
+// 행 드래그 순서 변경 — draggableRows면 맨 앞에 grip 핸들 컬럼이 생기고, 핸들을 잡아 다른 행 위로
+// 끌면 그 자리로 라이브 재배치된다. onRowsReorder로 재정렬된 rows를 받아 상태를 갱신한다.
+// 드래그 고스트는 조건 카드와 같은 축약형 필(grip+라벨) — 라벨은 rowDragLabel(row), 기본=첫 컬럼 값.
+// (헤더 메뉴 정렬이 걸려 있는 동안은 표시 순서≠저장 순서라 드래그가 잠긴다)
+const [rows, setRows] = useState(ROWS);
+<Table columns={columns} rows={rows} rowKey="id" draggableRows onRowsReorder={setRows} />
+
+// dragHandleColKey — grip을 별도 컬럼 대신 지정 컬럼 셀 안(내용 앞)에 렌더(예: 순서 셀)
+<Table columns={columns} rows={rows} rowKey="id" draggableRows dragHandleColKey="orderNo"
+  rowDragLabel={(row) => row.title} onRowsReorder={setRows} />`;
 
 const USAGE_PROPS = [
   { name: 'columns', type: '{ key, label, width?, align?, render?, renderHeader?, filter?, headerMenu? }[]', default: '[]', desc: '컬럼 정의. filter=헤더 필터 Select, headerMenu={sortable,items}=헤더 우측 정렬/기능 메뉴 버튼' },
@@ -72,6 +84,10 @@ const USAGE_PROPS = [
   { name: 'loadingMessage', type: 'string', default: "'불러오는 중…'", desc: '로딩 중 문구' },
   { name: 'emptyMessage', type: 'ReactNode', default: "'데이터가 없습니다.'", desc: 'rows가 비었을 때 문구 — JSX로 여러 줄 안내 가능(<br /> 등)' },
   { name: 'onRowClick', type: '(row) => void', default: '—', desc: '행 클릭 핸들러' },
+  { name: 'draggableRows', type: 'boolean', default: 'false', desc: '행 드래그 순서 변경 — 맨 앞에 grip 핸들 컬럼 추가. 정렬 중엔 드래그 잠금(핸들 disabled 색)' },
+  { name: 'onRowsReorder', type: '(rows) => void', default: '—', desc: '드래그로 순서가 바뀔 때마다 재정렬된 rows 배열 전달 — 상태 갱신용' },
+  { name: 'dragHandleColKey', type: 'string', default: '—', desc: 'grip을 별도 컬럼 대신 이 key 컬럼의 셀 안(내용 앞)에 렌더 — 예: 순서 셀' },
+  { name: 'rowDragLabel', type: '(row) => ReactNode', default: '첫 컬럼 값', desc: '드래그 고스트(조건 카드식 축약형 필)의 라벨' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
 ];
 
@@ -127,6 +143,22 @@ const ROWS_LONG = [
   { id: 1, type: '옵션 1', title: '2026 상반기 신입·경력 통합 공개채용 (서울/부산/대전 동시 진행)', apply: '2개' },
   { id: 2, type: '옵션 2', title: '2026 신입 개발자 공개채용 — 프론트엔드/백엔드/모바일 전 직군',  apply: '5개' },
 ];
+
+// 행 드래그 데모 — rows를 상태로 들고 onRowsReorder로 갱신(핸들 드래그 → 라이브 재배치).
+function DraggableRowsDemo() {
+  const [rows, setRows] = useState(ROWS);
+  return (
+    <Table
+      columns={COLUMNS}
+      rows={rows}
+      rowKey="id"
+      draggableRows
+      rowDragLabel={(row) => row.title}
+      onRowsReorder={setRows}
+      minWidth={420}
+    />
+  );
+}
 
 // first=true(첫 블록)는 구분선 없이 flush, 이후 블록은 상단 구분선으로 단락을 나눈다.
 function Block({ title, desc, first = false, children }) {
@@ -188,6 +220,13 @@ export function TablePage() {
         desc="같은 공고명(고정 200px)이 줄바꿈되어 행이 세로로 늘어남."
       >
         <Table columns={WRAP_COLUMNS} rows={ROWS_LONG} wrap />
+      </Block>
+
+      <Block
+        title="Row — 드래그 순서 변경 (draggableRows)"
+        desc="맨 앞 grip 핸들을 잡아 다른 행 위로 끌면 그 자리로 라이브 재배치됩니다. 드래그 고스트는 조건 카드와 같은 축약형 필(grip+라벨, rowDragLabel로 지정·기본은 첫 컬럼 값)이며, dragHandleColKey를 주면 grip이 별도 컬럼 대신 그 컬럼 셀 안에 들어갑니다(예: 순서 셀). onRowsReorder로 재정렬된 rows를 받아 상태를 갱신하세요. 헤더 메뉴로 정렬 중일 때는 표시 순서와 저장 순서가 달라 드래그가 잠깁니다(핸들 disabled 색)."
+      >
+        <DraggableRowsDemo />
       </Block>
 
       <Block

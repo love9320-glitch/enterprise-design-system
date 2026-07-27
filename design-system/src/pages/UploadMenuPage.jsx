@@ -44,6 +44,7 @@ const FILE_PROPS = [
   { name: 'onAdd', type: '(FileList)=>void', default: '—', desc: "'파일 찾기' 선택 콜백" },
   { name: 'onDelete', type: '(file,index)=>void', default: '—', desc: '행 삭제 콜백' },
   { name: 'findText / maxText', type: 'string', default: "'파일 찾기' / 자동", desc: '버튼·최대 안내 문구' },
+  { name: 'onTemplateDownload / templateDownloadText / uploadText', type: "() => void / string / string", default: "— / '양식 다운로드' / '엑셀 업로드'", desc: '양식 다운로드 타입 — onTemplateDownload를 주면 푸터가 [양식 다운로드(line·↓) | 엑셀 업로드(fill·↑)] 반반 구성으로 바뀜(양식 받아 수정 후 업로드 플로우)' },
   { name: 'width', type: 'number|string', default: '420', desc: '팝오버 너비' },
 ];
 
@@ -74,6 +75,8 @@ export function UploadMenuPage() {
     { name: 'upload file name2.pdf', size: 48 },
   ]);
   const [image, setImage] = useState(null);
+  // 양식 다운로드 타입 데모 — 엑셀 1개 업로드 플로우(첫 데모는 업로드된 상태로 시작 — Figma 변형과 동일)
+  const [tplFiles, setTplFiles] = useState([{ name: 'upload file name1.xlsx', size: 48 }]);
 
   const addFiles = (list) =>
     setFiles((prev) => [
@@ -158,6 +161,43 @@ export function UploadMenuPage() {
         <div>
           <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">파일 업로드 (empty)</h3>
           <FileUploadMenu files={[]} guide={FILE_GUIDE} accept=".pdf,.doc,.xlsx" onAdd={addFiles} />
+        </div>
+      </div>
+
+      {/* 양식 다운로드 타입 — up and down 변형(Figma 7957:5287) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div className="flex flex-wrap items-start gap-spacing-9">
+        <div>
+          <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">양식 다운로드 타입</h3>
+          <p className="mb-spacing-6 max-w-[420px] text-12 text-font-icon-4">
+            <code className="text-font-icon-5">onTemplateDownload</code>를 주면 푸터가{' '}
+            <span className="text-font-icon-5">[양식 다운로드(line) | 엑셀 업로드(fill)]</span> 반반 구성이
+            됩니다 — 양식을 받아 내용을 수정한 뒤 업로드하는 플로우입니다.
+          </p>
+          <FileUploadMenu
+            files={tplFiles}
+            maxCount={1}
+            accept=".xlsx,.xls"
+            guide={'파일 최대 용량은 100mb입니다.\n엑셀 양식을 다운받아 내용을 수정 후 업로드 하세요.'}
+            onTemplateDownload={() => console.log('양식 다운로드')}
+            onAdd={(list) =>
+              setTplFiles([...list].slice(0, 1).map((f) => ({ name: f.name, size: Math.round(f.size / 1e6) })))
+            }
+            onDelete={() => setTplFiles([])}
+          />
+        </div>
+        <div>
+          <h3 className="mb-spacing-5 text-15 font-semibold text-font-icon-5">양식 다운로드 타입 (empty)</h3>
+          <FileUploadMenu
+            files={[]}
+            maxCount={1}
+            accept=".xlsx,.xls"
+            guide={'파일 최대 용량은 100mb입니다.\n엑셀 양식을 다운받아 내용을 수정 후 업로드 하세요.'}
+            onTemplateDownload={() => console.log('양식 다운로드')}
+            onAdd={(list) =>
+              setTplFiles([...list].slice(0, 1).map((f) => ({ name: f.name, size: Math.round(f.size / 1e6) })))
+            }
+          />
         </div>
       </div>
 

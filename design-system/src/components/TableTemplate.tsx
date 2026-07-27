@@ -12,6 +12,9 @@
 //   - rightActions : 우측 슬롯(ReactNode 또는 (ctx)=>) — 검색바 대신/함께 임의 버튼 등을 우측에 배치
 //   - selects / rightSelects : 좌/우 셀렉트 그룹 슬롯(ReactNode 또는 (ctx)=>) — SelectGroup으로 감싸 배치.
 //     좌=타이틀→셀렉트그룹→버튼그룹(셀렉트가 버튼그룹 앞), 우=버튼그룹→셀렉트그룹→검색바(셀렉트가 버튼그룹과 검색바 사이)
+//   - draggableRows + onRowsReorder : 행 드래그 순서 변경(Table 패스스루). Table은 보이는 행 기준으로
+//     재정렬을 돌려주므로, 검색·필터·페이지로 가려진 행의 위치는 보존하며 전체 rows에 되끼워 전달한다.
+//     dragHandleColKey(그립을 컬럼 셀 안에)·rowDragLabel(고스트 라벨)도 그대로 통과.
 // 색·간격·보더는 하위 컴포넌트(Table/Pagination 등)의 토큰을 그대로 따른다.
 import { useMemo, useState } from 'react';
 import type { ChangeEvent, ComponentPropsWithoutRef, ReactNode } from 'react';
@@ -78,6 +81,10 @@ interface TableTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>, 'titl
   loading?: boolean;
   emptyMessage?: ReactNode;
   onRowClick?: (row: TableRowData) => void;
+  draggableRows?: boolean; // 행 드래그 순서 변경(grip 핸들) — 정렬 중엔 잠금
+  onRowsReorder?: (rows: TableRowData[]) => void; // 재정렬된 전체 rows 전달(가려진 행 위치 보존)
+  dragHandleColKey?: string; // grip을 별도 컬럼 대신 이 key 컬럼 셀 안에 렌더
+  rowDragLabel?: (row: TableRowData) => ReactNode; // 드래그 고스트(조건 카드식 필) 라벨
   buttonGroupGap?: '3' | '4' | '5' | '6' | '7'; // 좌/우 버튼그룹 간격 토큰 키 — 기본 '5'(8px, 셀렉트 그룹과 통일)
   selectGroupGap?: '3' | '4' | '5' | '6' | '7'; // 좌/우 셀렉트 그룹 간격 토큰 키 — 기본 '5'(8px, 버튼그룹과 통일)
 }
@@ -121,6 +128,10 @@ export function TableTemplate({
   loading = false,
   emptyMessage,
   onRowClick,
+  draggableRows = false,
+  onRowsReorder,
+  dragHandleColKey,
+  rowDragLabel,
   buttonGroupGap = '5',
   selectGroupGap = '5',
   className = '',
@@ -264,6 +275,27 @@ export function TableTemplate({
         loading={loading}
         emptyMessage={emptyMessage}
         onRowClick={onRowClick}
+        draggableRows={draggableRows}
+        dragHandleColKey={dragHandleColKey}
+        rowDragLabel={rowDragLabel}
+        // Table은 보이는 행(visibleRows) 기준으로 재정렬을 돌려준다 — 검색·필터·페이지로 가려진
+        // 행의 위치는 그대로 두고, 보이는 행들이 차지하던 자리(전체 rows 기준)에 새 순서를 되끼운다.
+        onRowsReorder={
+          draggableRows && onRowsReorder
+            ? (nextVisible) => {
+                const visibleSet = new Set(visibleRows);
+                const positions: number[] = [];
+                rows.forEach((r, i) => {
+                  if (visibleSet.has(r)) positions.push(i);
+                });
+                const next = [...rows];
+                nextVisible.forEach((r, j) => {
+                  if (positions[j] != null) next[positions[j]] = r;
+                });
+                onRowsReorder(next);
+              }
+            : undefined
+        }
       />
 
       {pagination && (

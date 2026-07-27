@@ -4,9 +4,12 @@
 //   - 표기/입력 형식은 utils/datetime 규칙: "YY.MM.DD (HH:MM)", 범위 "A~B" / 시작만 "A ~ 마감일 없음".
 //   - 범위에서 마감일을 안 적고 확정하면(시작만 입력) end=null → "마감일 없음"으로 표시된다.
 //   - 필드 외형/상태(default·hover·focused·filled·disabled·readOnly·error 툴팁)는 tf-* 토큰.
+//   - variant='text': 박스 없는 인라인 텍스트형(Select variant='text'와 동일 비주얼 — InlineFieldTrigger).
+//     클릭하면 팝오버가 열리고, 직접 입력은 없다(트리거 전용). size 24/14px · 20/12px, 항상 hug + maxWidth 말줄임.
 import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar as CalendarIcon } from 'lucide-react';
+import { InlineFieldTrigger } from './InlineFieldTrigger';
 import { Popover } from './Popover';
 import { DatePicker } from './DatePicker';
 import { Tooltip } from './Tooltip';
@@ -151,6 +154,9 @@ interface DateFieldProps {
   // 너비: 'hug'(콘텐츠 폭) | 'fill'(부모 100%) | 숫자(px) | CSS 길이.
   // 미지정 시 기본 = showTime이면 260, 아니면 180. 폭이 좁으면 텍스트는 말줄임(…).
   width?: number | string;
+  variant?: 'box' | 'text'; // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 직접 입력 없음, 클릭=팝오버)
+  size?: '24' | '20'; // text variant 전용: '24'(14px) | '20'(12px) — box는 항상 14px
+  maxWidth?: number | string; // text variant 전용: 트리거 최대 너비 — 넘으면 말줄임
   className?: string;
   // DatePicker 패스스루
   disablePast?: boolean;
@@ -187,6 +193,9 @@ export function DateField({
   // 너비: 'hug'(콘텐츠 폭) | 'fill'(부모 100%) | 숫자(px) | CSS 길이.
   // 미지정 시 기본 = showTime이면 260, 아니면 180. 폭이 좁으면 텍스트는 말줄임(…).
   width,
+  variant = 'box', // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 직접 입력 없음, 클릭=팝오버)
+  size = '24', // text variant 전용: '24'(14px) | '20'(12px)
+  maxWidth, // text variant 전용: 트리거 최대 너비 — 넘으면 말줄임
   className = '',
   // DatePicker 패스스루
   disablePast,
@@ -302,6 +311,11 @@ export function DateField({
   const effWidth = width ?? (showTime ? 260 : 180);
   const isHug = effWidth === 'hug';
   const isFill = effWidth === 'fill';
+  // text variant — 인라인 텍스트형(InlineFieldTrigger). 항상 hug + maxWidth 말줄임, width는 'fill'만 반영.
+  const isText = variant === 'text';
+  const isTextFill = isText && width === 'fill';
+  const maxWidthStyle =
+    maxWidth != null ? (typeof maxWidth === 'number' ? `${maxWidth}px` : maxWidth) : undefined;
   const fixedWidth = isHug || isFill ? undefined : typeof effWidth === 'number' ? `${effWidth}px` : effWidth;
   // hug: input을 콘텐츠 폭만큼. size는 라틴 평균 글자폭 기준이라 한글(전각)은 2배로 세고 +1 여유.
   const shown = focused ? text : display;
@@ -425,6 +439,34 @@ export function DateField({
     </div>
   );
 
+  // 인라인 텍스트형 트리거 — 비주얼은 공유 프리미티브 InlineFieldTrigger(Select·DatePicker 공용).
+  // 클릭/anchor는 Popover가 처리(DatePicker 연.월 선택과 같은 패턴), 직접 입력은 없다.
+  const textTrigger = (
+    <span className={`relative ${isTextFill ? 'flex w-full' : 'inline-flex'}`}>
+      <InlineFieldTrigger
+        icon={CalendarIcon}
+        size={size}
+        open={open}
+        disabled={disabled}
+        readOnly={readOnly}
+        maxWidth={maxWidthStyle}
+        fill={isTextFill}
+        chevron={false} // 인라인형은 화살표 없이 아이콘+날짜만(2026-07-27 지시)
+        aria-invalid={showErr || undefined}
+      >
+        {display || effPlaceholder}
+      </InlineFieldTrigger>
+      {/* 에러 툴팁 — box와 동일하게 닫혔을 때만 트리거 아래 오버레이 */}
+      {showErr && errMsg && !open && (
+        <span className="absolute left-0 top-full z-10 mt-spacing-2">
+          <Tooltip variant="error" beak="top">
+            {errMsg}
+          </Tooltip>
+        </span>
+      )}
+    </span>
+  );
+
   return (
     <Popover
       open={open}
@@ -444,8 +486,8 @@ export function DateField({
       disabled={!interactive}
       placement="auto"
       menuWidth={276}
-      trigger={trigger}
-      className={`${isFill ? 'w-full' : ''} ${className}`}
+      trigger={isText ? textTrigger : trigger}
+      className={`${isFill && !isText ? 'w-full' : ''} ${isTextFill ? 'w-full' : ''} ${className}`}
       {...props}
     >
       {() => (

@@ -1,6 +1,8 @@
 // FileUploadMenu — 파일 업로드 팝오버 (Figma popover menu / type=upload file list)
 //
 // PopoverMenu 컨테이너를 조립한다(규칙 4): 안내 박스 + 파일 목록(List 행, 우측 삭제) + 전체폭 '파일 찾기'.
+// 양식 다운로드 타입(2026-07-27, Figma 7957:5287 up and down 변형): onTemplateDownload를 주면
+// 푸터가 [line ↓ 양식 다운로드 | fill ↑ 엑셀 업로드] 반반 버튼으로 바뀐다(양식 받아 수정 후 업로드 플로우).
 // 프레젠테이셔널(controlled) — 파일 상태는 호출부가 소유하고, 선택/삭제는 콜백으로 받는다.
 //   - files: [{ name, size? , id? }] (size: 숫자=MB 표기 / 문자열=그대로)
 //   - 최대 개수 도달(max) 시 푸터 버튼이 비활성 + 안내 문구로 바뀐다.
@@ -10,7 +12,7 @@
 //    (예: guide '… .pdf, .doc, .xlsx …' ↔ accept '.pdf,.doc,.xlsx')
 import { useRef } from 'react';
 import type { ChangeEvent } from 'react';
-import { Trash2 } from 'lucide-react';
+import { Download, Trash2, Upload } from 'lucide-react';
 import { PopoverMenu } from './PopoverMenu';
 import type { PopoverMenuProps } from './PopoverMenu';
 import { ListGroup } from './ListGroup';
@@ -39,6 +41,12 @@ export interface FileUploadMenuProps extends PopoverMenuProps {
   findText?: string;
   /** 기본 `최대 ${maxCount}개까지 업로드할 수 있습니다` */
   maxText?: string;
+  // ── 양식 다운로드 타입(Figma up and down 변형, 2026-07-27) ──
+  // onTemplateDownload를 주면 푸터가 [line ↓ 양식 다운로드 | fill ↑ 엑셀 업로드] 반반 구성으로 바뀐다.
+  onTemplateDownload?: () => void;
+  templateDownloadText?: string;
+  /** 양식 다운로드 타입의 업로드 버튼 문구 */
+  uploadText?: string;
 }
 
 export function FileUploadMenu({
@@ -51,6 +59,9 @@ export function FileUploadMenu({
   onDelete,
   findText = '파일 찾기',
   maxText,
+  onTemplateDownload,
+  templateDownloadText = '양식 다운로드',
+  uploadText = '엑셀 업로드',
   width = 420,
   className = '',
   ...props
@@ -72,8 +83,19 @@ export function FileUploadMenu({
       className={className}
       footer
       footerButtonsFill
-      showCancel={false}
-      confirmText={isMax ? (maxText ?? `최대 ${maxCount}개까지 업로드할 수 있습니다`) : findText}
+      // 양식 다운로드 타입 — 취소 슬롯을 '양식 다운로드'(line·Download)로, 확인은 '엑셀 업로드'(fill·Upload)
+      showCancel={!!onTemplateDownload}
+      cancelText={templateDownloadText}
+      cancelIcon={onTemplateDownload ? Download : null}
+      onCancel={onTemplateDownload}
+      confirmText={
+        isMax
+          ? (maxText ?? (onTemplateDownload ? '업로드 완료' : `최대 ${maxCount}개까지 업로드할 수 있습니다`))
+          : onTemplateDownload
+            ? uploadText
+            : findText
+      }
+      confirmIcon={onTemplateDownload && !isMax ? Upload : null}
       confirmDisabled={isMax}
       onConfirm={openPicker}
       {...props}

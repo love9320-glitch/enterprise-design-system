@@ -7,7 +7,7 @@
 // 컨테이너 색은 list-popover-* 시멘틱 토큰(bg gray100 / outline gray200).
 import { RotateCcw } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { ChangeEvent, ComponentPropsWithoutRef, KeyboardEvent, ReactNode } from 'react';
+import type { ChangeEvent, ComponentPropsWithoutRef, ElementType, KeyboardEvent, ReactNode } from 'react';
 import { SearchBar } from './SearchBar';
 import { Input } from './Input';
 import { Button } from './Button';
@@ -52,8 +52,10 @@ export interface PopoverMenuProps extends ComponentPropsWithoutRef<'div'> {
   // 푸터 우측 — 취소/확인 버튼
   cancelText?: ReactNode;
   onCancel?: () => void;
+  cancelIcon?: ElementType | null; // 취소(line) 버튼 왼쪽 아이콘(2026-07-27 — 업로드 메뉴 양식 다운로드 타입)
   confirmText?: ReactNode;
   onConfirm?: () => void;
+  confirmIcon?: ElementType | null; // 확인 버튼 왼쪽 아이콘
   /** 확인 버튼 variant ('fill' | 'line' | 'ghost') */
   confirmVariant?: 'fill' | 'line' | 'ghost';
   confirmDisabled?: boolean;
@@ -90,8 +92,10 @@ export function PopoverMenu({
   footerResetIcon: FooterResetIcon = RotateCcw,
   cancelText = '취소',
   onCancel,
+  cancelIcon = null,
   confirmText = '확인',
   onConfirm,
+  confirmIcon = null,
   confirmVariant = 'fill',
   confirmDisabled = false,
   confirmLoading = false,
@@ -187,7 +191,7 @@ export function PopoverMenu({
             className={footerButtonsFill ? '' : 'shrink-0'}
           >
             {showCancel && (
-              <Button variant="line" size="32" onClick={onCancel}>
+              <Button variant="line" size="32" leftIcon={cancelIcon} onClick={onCancel}>
                 {cancelText}
               </Button>
             )}
@@ -195,6 +199,7 @@ export function PopoverMenu({
               <Button
                 variant={confirmVariant}
                 size="32"
+                leftIcon={confirmIcon}
                 disabled={confirmDisabled}
                 loading={confirmLoading}
                 onClick={onConfirm}
