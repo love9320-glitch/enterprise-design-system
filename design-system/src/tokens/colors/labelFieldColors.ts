@@ -9,6 +9,7 @@ const b = baseColors.base;
 
 export const labelFieldColors = {
   'default-text':  b.gray[900], // #0d0d0d — 기본 라벨 텍스트
+  'gray-text':     b.gray[300], // #878787 — 회색 라벨 텍스트(color='gray' 옵션, 2026-07-27 지시)
   'required-mark': b.red[400],  // #e74a4a — 필수 표시(점)
   'disabled-text': b.gray[150], // #c9c9c9 — 비활성 라벨 텍스트
   'helper-text':   b.gray[600], // #3f3f3f — Field 헬퍼(description) 텍스트

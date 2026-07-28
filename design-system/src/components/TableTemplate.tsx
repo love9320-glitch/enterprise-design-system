@@ -220,8 +220,9 @@ export function TableTemplate({
   const showHeader =
     !!resolvedActions || searchable || !!title || !!resolvedRightActions || !!resolvedSelects || !!resolvedRightSelects; // 하나라도 있으면 헤더 렌더
 
+  // 세로 스택 갭: 컨트롤 행↔테이블↔페이지네이션 12→8(spacing-5, 2026-07-28 지시)
   return (
-    <div className={`flex flex-col gap-spacing-6 ${className}`} {...props}>
+    <div className={`flex flex-col gap-spacing-5 ${className}`} {...props}>
       {showHeader && (
         <div className="flex items-center justify-between gap-spacing-6">
           {/* 좌: 타이틀 → 셀렉트그룹 → 버튼그룹 (셀렉트그룹이 버튼그룹 앞). 전부 없으면 빈 자리로 우측(검색바 등)을 고정.

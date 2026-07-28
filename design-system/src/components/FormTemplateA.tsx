@@ -1,4 +1,5 @@
-// FormTemplate — 폼 템플릿 (Figma "form template", Property 1=1/2/3/mixed column)
+// FormTemplateA — 폼 템플릿 타입 A(여백 그리드형. Figma "form template", Property 1=1/2/3/mixed column)
+// ※ 2026-07-28 개명: FormTemplate → FormTemplateA (테이블형 타입 B 신설에 따른 구분)
 // 12칸 그리드(Figma "12 grid") 위에 Field(라벨+컨트롤)를 span으로 배치하는 조립형 템플릿(규칙 4).
 //   - columns: 1/2/3 — 필드 기본 폭(12/columns칸). 혼합 배치는 필드별 span(12칸 기준)으로 지정
 //   - columnGap/rowGap: 그리드 가로/세로 간격 — 16/20/24/28/32(px, spacing 토큰 7~11)
@@ -24,7 +25,7 @@ const GAP_Y = {
 };
 
 // 폼 필드 한 항목 — { key, label, required?, disabled?, description?, span?(1~12), control: ReactNode }
-interface FormTemplateField {
+interface FormTemplateAField {
   key: string;
   label?: ReactNode;
   required?: boolean;
@@ -34,15 +35,15 @@ interface FormTemplateField {
   control?: ReactNode;
 }
 
-interface FormTemplateProps extends ComponentPropsWithoutRef<'div'> {
-  fields?: FormTemplateField[]; // [{ key, label, required?, disabled?, description?, span?(1~12), control: ReactNode }]
+interface FormTemplateAProps extends ComponentPropsWithoutRef<'div'> {
+  fields?: FormTemplateAField[]; // [{ key, label, required?, disabled?, description?, span?(1~12), control: ReactNode }]
   columns?: 1 | 2 | 3; // 필드 기본 폭(12/columns칸). mixed는 필드별 span으로
   columnGap?: keyof typeof GAP_X; // 가로 간격(px): 16 | 20 | 24 | 28 | 32
   rowGap?: keyof typeof GAP_Y; // 세로 간격(px): 16 | 20 | 24 | 28 | 32
   labelSize?: '12' | '13' | '14' | '15' | '16'; // 라벨 크기 일괄('12'~'16') — 미지정 시 Field 기본(세로 12)
 }
 
-export function FormTemplate({
+export function FormTemplateA({
   fields = [],
   columns = 1,
   columnGap = 16,
@@ -50,7 +51,7 @@ export function FormTemplate({
   labelSize,
   className = '',
   ...props
-}: FormTemplateProps) {
+}: FormTemplateAProps) {
   const cols = Math.min(Math.max(columns, 1), 3);
   const defaultSpan = 12 / cols; // 1→12 · 2→6 · 3→4
   const gapX = GAP_X[columnGap] ?? GAP_X[16];

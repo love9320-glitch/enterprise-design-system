@@ -25,6 +25,7 @@ const ref = useRef(null); // 저장 API — ref.current.validate() / getRows()
   onRegisterCode={() => openCodeModal()}   // '채용 분야 코드 등록' 클릭
   onExcelUpload={(file) => parse(file)}       // 대량 등록 팝오버에서 파일 선택 시(.xlsx/.xls 1개)
   onTemplateDownload={() => downloadForm()}   // 팝오버의 '양식 다운로드' 클릭
+  onLoadPositions={() => openLoad()}   // '채용 분야 불러오기' 클릭(엑셀 대량 등록 오른쪽)
 />
 
 // 모달 조립 — 본문에 넣으면 액션 버튼 4종(리셋·코드 등록·엑셀)이 모달 푸터 왼쪽으로 자동 이동
@@ -42,6 +43,7 @@ const USAGE_PROPS = [
   { name: 'onRegisterCode', type: '() => void', default: '—', desc: "'채용 분야 코드 등록' 버튼 클릭 — 코드 등록 모달 열기 등은 소비자가 연결(registerCodeLabel로 문구 변경). 버튼 위치 자동: 페이지=타이틀 우측 액션 행, 모달=푸터 왼쪽" },
   { name: 'showReset / resetLabel / onReset', type: 'boolean / string / () => void', default: "true / '리셋' / —", desc: '리셋 버튼(액션 행 맨 앞, line) — 조건 선택과 테이블 행을 초기 상태로 함께 초기화(onReset은 초기화 후 알림)' },
   { name: 'onExcelUpload / onTemplateDownload', type: '(file) => void / () => void', default: '— / —', desc: "'엑셀 대량 등록' 버튼(모달에선 푸터 왼쪽) — 클릭 시 양식 다운로드 타입 FileUploadMenu 팝오버([양식 다운로드 | 엑셀 업로드] 푸터, 1개 파일·.xlsx/.xls만). 파일 선택=onExcelUpload(file), 양식 다운로드=onTemplateDownload. 문구는 excelUploadLabel/excelUploadGuide" },
+  { name: 'loadLabel / onLoadPositions', type: 'string / () => void', default: "'채용 분야 불러오기' / —", desc: '엑셀 대량 등록 오른쪽 불러오기 버튼(line 32 + folder-input 아이콘) — 불러오기 UI는 소비자 연결' },
   { name: 'jobdaGroupOptions / jobdaDutyOptions', type: '{ value, label }[] / { [group]: { value, label }[] }', default: '[] / {}', desc: "'Jobda 직군/직무 매칭' 컬럼 — 행마다 직군·직무 SelectChip 2개. 직무는 선택한 직군에 종속(직군 변경 시 직무 리셋). 라벨·플레이스홀더는 jobdaLabel/jobdaGroupPlaceholder/jobdaDutyPlaceholder" },
   { name: 'pageTitle / 라벨들', type: 'string', default: "'채용 분야 설정' 등", desc: '카피 커스텀 — pageTitle(페이지 전용 타이틀)·orderLabel/jobLabel/manageLabel/emptyMessage/emptyValueMessage. 테이블 헤더가 조건 구성을 병기(채용 분야 (지역 > 직무))' },
 ];
@@ -95,6 +97,7 @@ export function JobPositionTemplatePage() {
         onChange={setSaved}
         onRegisterCode={() => setCodeOpen(true)}
         onTemplateDownload={downloadSampleTemplate}
+        onLoadPositions={() => console.log('채용 분야 불러오기')}
       />
       {saved && (
         <p className="mt-spacing-5 text-12 text-font-icon-4">

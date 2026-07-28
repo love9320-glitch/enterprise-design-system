@@ -33,6 +33,7 @@ export { PaginationPage } from './PaginationPage';
 export { TablePage } from './TablePage';
 export { TableTemplatePage } from './TableTemplatePage';
 export { FormTemplatePage } from './FormTemplatePage';
+export { JobPostingTemplatePage } from './JobPostingTemplatePage';
 export { JobPositionTemplatePage } from './JobPositionTemplatePage';
 export { ScreeningBuilderTemplatePage } from './ScreeningBuilderTemplatePage';
 export { ModalPage } from './ModalPage';

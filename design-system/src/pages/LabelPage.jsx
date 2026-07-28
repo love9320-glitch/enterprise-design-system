@@ -11,12 +11,16 @@ const USAGE = `import { Label } from '../components/Label';
 // 필수 표시 / 사이즈 / 비활성
 <Label required>이름</Label>
 <Label size="16">제목</Label>
-<Label disabled>비활성 라벨</Label>`;
+<Label disabled>비활성 라벨</Label>
+
+// 색 옵션 — default(#0d0d0d) / gray(#878787, label-field/gray-text 토큰)
+<Label color="gray">채용기간</Label>`;
 
 const USAGE_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: '라벨 텍스트' },
   { name: 'htmlFor', type: 'string', default: '—', desc: '연결할 컨트롤 id (클릭 시 포커스)' },
   { name: 'size', type: "'12'|'13'|'14'|'15'|'16'", default: "'14'", desc: 'Figma label Property 1 (텍스트 크기)' },
+  { name: 'color', type: "'default' | 'gray'", default: "'default'", desc: "텍스트 색 — default(#0d0d0d) / gray(#878787, label-field/gray-text 토큰). disabled가 우선" },
   { name: 'required', type: 'boolean', default: 'false', desc: '필수 표시 — 빨강 점(●)' },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 회색(font-icon-3)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
@@ -61,6 +65,10 @@ export function LabelPage() {
           <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
             <p className="text-12 text-font-icon-3">required</p>
             <Label required>이름</Label>
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">color="gray"</p>
+            <Label color="gray">채용기간</Label>
           </div>
           <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
             <p className="text-12 text-font-icon-3">disabled</p>

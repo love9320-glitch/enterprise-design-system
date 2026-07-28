@@ -10,7 +10,7 @@
 import { useCallback, useContext, useEffect, useImperativeHandle, useState } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode, Ref } from 'react';
 import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
-import { ChevronRight, Copy, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
+import { ChevronRight, Copy, FolderInput, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { ConditionOrderSlot } from './ConditionOrderSlot';
 import { Select, SelectChip } from './Select';
 import { Button } from './Button';
@@ -96,6 +96,9 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   tableHeight?: number | 'fill'; // 테이블 세로 — 'fill'(내용만큼 확장, 모달 안에선 ModalBody 가용 높이 상한 → 테이블 바디 내부 스크롤) | 숫자(px 고정 상한+바디 스크롤)
   emptyMessage?: ReactNode; // 빈 상태 카피 — 기본 2줄(안내+행동 유도)
   emptyValueMessage?: string; // 저장 검증 — 미선택 칩 에러 툴팁 문구
+  emptyCriteriaMessage?: string; // 저장 검증 — 기준 미선택(행 없음) 시 첫 카드 기준 셀렉트 에러 문구
+  emptyJobdaGroupMessage?: string; // 저장 검증 — Jobda 직군 미선택 칩 에러 문구
+  emptyJobdaDutyMessage?: string; // 저장 검증 — Jobda 직무 미선택 칩 에러 문구
   registerCodeLabel?: string; // Step 02 타이틀 우측 버튼 문구(엑셀 다운로드 앞)
   onRegisterCode?: () => void; // '채용 분야 코드 등록' 클릭(모달 열기 등은 소비자 몫)
   showReset?: boolean; // 타이틀 우측 line 리셋 버튼(조건·행 전체 초기화)
@@ -107,6 +110,8 @@ interface JobPositionTemplateProps extends Omit<ComponentPropsWithoutRef<'div'>,
   excelUploadGuide?: string; // 업로드 팝오버 안내 문구(\n 줄바꿈)
   onExcelUpload?: (file: File) => void;
   onTemplateDownload?: () => void; // 팝오버의 '양식 다운로드' 클릭
+  loadLabel?: string; // '채용 분야 불러오기' 버튼 문구(엑셀 대량 등록 오른쪽, line 32 + folder-input)
+  onLoadPositions?: () => void; // '채용 분야 불러오기' 클릭(불러오기 UI는 소비자 몫)
   onReset?: () => void; // 리셋 후 알림(내부 초기화는 템플릿이 수행)
   ref?: Ref<JobPositionTemplateHandle>; // (선택) 저장 API(React 19 ref-as-prop)
 }
@@ -135,7 +140,11 @@ export function JobPositionTemplate({
       상단의 기준 및 선택값을 선택해주세요.
     </>
   ),
-  emptyValueMessage = '값을 선택하세요.',
+  // 검증 툴팁 카피 — '필수 선택'으로 통일(2026-07-28 지시, 규칙 15 띄어쓰기)
+  emptyValueMessage = '필수 선택',
+  emptyCriteriaMessage = '필수 선택',
+  emptyJobdaGroupMessage = '필수 선택',
+  emptyJobdaDutyMessage = '필수 선택',
   registerCodeLabel = '채용 분야 코드 등록',
   onRegisterCode,
   showReset = true,
@@ -145,6 +154,8 @@ export function JobPositionTemplate({
   excelUploadGuide = '엑셀 양식을 다운받아 내용을 수정 후 업로드하세요.\n지원 형식: .xlsx, .xls',
   onExcelUpload,
   onTemplateDownload,
+  loadLabel = '채용 분야 불러오기',
+  onLoadPositions,
   ref,
   className = '',
   ...props
@@ -157,7 +168,15 @@ export function JobPositionTemplate({
   // 카드별 (기준, 값) 선택은 템플릿이 소유한다(미리보기·추가 스냅샷 계산용).
   // B타입(2026-07-24): 드래그·사용 스위치·타이틀 없는 단순 카드 — 순서는 고정, 카드 전부 활성.
   const cardIds = Array.from({ length: conditionCount }, (_, i) => `cond-${i + 1}`);
-  const [selections, setSelections] = useState<Record<string, JobSelection>>({}); // { [cardId]: { criteria } }
+  const [selections, setSelections] = useState<Record<string, JobSelection>>(() => {
+    // defaultRows가 있으면 첫 행의 기준 구성으로 카드 기준을 복원 — 모달 재진입 시
+    // 등록된 행과 카드 구성이 어긋나지 않게(값은 빈 상태로 시작, 2026-07-28 지시)
+    const init: Record<string, JobSelection> = {};
+    (defaultRows[0]?.items ?? []).forEach((it, i) => {
+      if (i < conditionCount) init[`cond-${i + 1}`] = { criteria: it.criteria, value: '' };
+    });
+    return init;
+  });
   const activeOrder = cardIds;
 
   // 다른 카드가 선택한 기준은 이 카드에서 비활성(중복 조건 방지, 2026-07-07 지시).
@@ -170,6 +189,9 @@ export function JobPositionTemplate({
     }
     return used;
   };
+
+  // 저장 검증 — 기준 미선택(행 없음) 안내(2026-07-28 지시). 기준 선택 시 해제.
+  const [criteriaError, setCriteriaError] = useState(false);
 
   // Step 02 로우 — 최신이 위. onChange로 전체 스냅샷 반출.
   const [rows, setRows] = useState<JobRow[]>(defaultRows);
@@ -236,6 +258,7 @@ export function JobPositionTemplate({
   };
 
   const setCardCriteria = (id: string, criteria: string) => {
+    setCriteriaError(false); // 기준을 고르면 미선택 안내 해제
     const idx = cardIds.indexOf(id);
     const next = { ...selections, [id]: { criteria, value: '' } };
     // 기준 구성이 바뀌면 값 선택은 전부 무효(2026-07-24 지시) — 마지막 카드 체크박스로 고른 값이
@@ -298,8 +321,16 @@ export function JobPositionTemplate({
       ...rows,
     ]);
   // Jobda 직군/직무 매칭 값 변경(2026-07-23)
-  const setRowJobda = (rowId: string, patch: Partial<Pick<JobRow, 'jobdaGroup' | 'jobdaDuty'>>) =>
+  const setRowJobda = (rowId: string, patch: Partial<Pick<JobRow, 'jobdaGroup' | 'jobdaDuty'>>) => {
     applyRows(rows.map((r) => (r.id === rowId ? { ...r, ...patch } : r)));
+    // 값이 채워지면 해당 매칭 칩의 저장 검증 에러 해제(값 칩과 동일 패턴)
+    setInvalidKeys((p) => {
+      const next = new Set(p);
+      if (patch.jobdaGroup) next.delete(`${rowId}:jobda-group`);
+      if (patch.jobdaDuty) next.delete(`${rowId}:jobda-duty`);
+      return next;
+    });
+  };
   // '상동' — 화면상 바로 위 행의 직군/직무 매칭 값을 그대로 복사(맨 위 행은 위가 없어 비활성)
   const copyJobdaFromAbove = (rowId: string) => {
     const idx = rows.findIndex((r) => r.id === rowId);
@@ -447,6 +478,10 @@ export function JobPositionTemplate({
           }}
           onDelete={() => setExcelFiles([])}
         />
+        {/* 채용 분야 불러오기 — 엑셀 대량 등록 오른쪽, 같은 스타일(line 32, 2026-07-28 지시) */}
+        <Button variant="line" size="32" leftIcon={FolderInput} onClick={onLoadPositions}>
+          {loadLabel}
+        </Button>
       </div>,
     );
     return () => setModalFooterStart(null);
@@ -462,16 +497,26 @@ export function JobPositionTemplate({
     excelFiles,
     onExcelUpload,
     onTemplateDownload,
+    loadLabel,
+    onLoadPositions,
   ]);
 
   useImperativeHandle(ref, () => ({
     validate: () => {
+      // 기준을 하나도 선택하지 않아 행이 없으면 — 첫 카드 기준 셀렉트에 에러 안내(2026-07-28 지시)
+      if (rows.length === 0) {
+        setCriteriaError(true);
+        return false;
+      }
       const invalid = new Set<string>();
-      rows.forEach((r) =>
+      rows.forEach((r) => {
         r.items.forEach((it, i) => {
           if (Array.isArray(it.value) ? it.value.length === 0 : !it.value) invalid.add(`${r.id}:${i}`);
-        }),
-      );
+        });
+        // Jobda 직군/직무 매칭 미선택도 저장 전 안내(2026-07-28 지시)
+        if (!r.jobdaGroup) invalid.add(`${r.id}:jobda-group`);
+        if (!r.jobdaDuty) invalid.add(`${r.id}:jobda-duty`);
+      });
       setInvalidKeys(invalid);
       return invalid.size === 0;
     },
@@ -548,6 +593,8 @@ export function JobPositionTemplate({
               options={jobdaGroupOptions}
               value={row.jobdaGroup || null}
               placeholder={jobdaGroupPlaceholder}
+              error={invalidKeys.has(`${row.id}:jobda-group`)}
+              errorMessage={emptyJobdaGroupMessage}
               onChange={(e) =>
                 setRowJobda(row.id, { jobdaGroup: e.target.value as string, jobdaDuty: '' })
               }
@@ -557,6 +604,8 @@ export function JobPositionTemplate({
               value={row.jobdaDuty || null}
               placeholder={jobdaDutyPlaceholder}
               disabled={!row.jobdaGroup}
+              error={invalidKeys.has(`${row.id}:jobda-duty`)}
+              errorMessage={emptyJobdaDutyMessage}
               onChange={(e) => setRowJobda(row.id, { jobdaDuty: e.target.value as string })}
             />
           </div>
@@ -633,6 +682,10 @@ export function JobPositionTemplate({
               }}
               onDelete={() => setExcelFiles([])}
             />
+            {/* 채용 분야 불러오기 — 엑셀 대량 등록 오른쪽, 같은 스타일(line 32, 2026-07-28 지시) */}
+            <Button variant="line" size="32" leftIcon={FolderInput} onClick={onLoadPositions}>
+              {loadLabel}
+            </Button>
           </div>
         </div>
         )}
@@ -674,6 +727,9 @@ export function JobPositionTemplate({
                       label={`기준${cardIds.indexOf(id) + 1}`} // 카드 순번 병기 — "기준1 ⋮ 지역"(2026-07-24 지시)
                       placeholder={`기준${cardIds.indexOf(id) + 1} 선택`} // 순번 병기(2026-07-24 지시)
                       disabled={firstUnselectedPrev(id) != null}
+                      // 저장 검증 — 기준 미선택 상태로 저장 시 첫 카드에 에러 툴팁 안내
+                      error={criteriaError && cardIds.indexOf(id) === 0 && !sel.criteria}
+                      errorMessage={emptyCriteriaMessage}
                       // '미사용' 선택 → 기준을 비워 플레이스홀더("기준N 선택") 상태로(2026-07-24 지시)
                       onChange={(e) =>
                         setCardCriteria(id, e.target.value === UNUSED_CRITERIA ? '' : e.target.value)

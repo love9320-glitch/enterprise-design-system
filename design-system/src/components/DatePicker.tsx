@@ -440,7 +440,7 @@ export function DatePicker({
   //  - 선택 가능한 상태에서는 현재(표시) 달은 default, 이전/다음 달은 muted로 구분한다.
   //  → 차이: "이번 달 지난 날짜"가 선택 가능하면 default, disablePast면 muted가 된다.
   const dayState = (date: Date) => {
-    if (isDayDisabled(date)) return 'muted';
+    if (isDayDisabled(date)) return 'disabled'; // 선택 불가 — 이전/다음 달(muted)과 색 분리(2026-07-28)
     if (isRange) {
       const { start, end } = range as DateRange;
       const isStart = isSameDay(date, start);

@@ -75,7 +75,8 @@ function NameInputRow({
     onSubmit(name);
   };
   return (
-    <div className="w-full pr-spacing-3">
+    /* 좌우 여백 +6px(2026-07-28 지시) — 좌 0→6(spacing-4)·우 4→10(spacing-5-5), 인풋 폭이 그만큼 안쪽으로 */
+    <div className="w-full pl-spacing-4 pr-spacing-5-5">
       <Input
         width="100%"
         value={value}

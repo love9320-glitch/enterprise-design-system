@@ -9,16 +9,19 @@
 
 import type { ComponentPropsWithoutRef } from 'react';
 
+// 행간 = 텍스트 사이즈와 동일 수치(leading-N 토큰, 2026-07-28 지시) — 라벨은 한 줄 텍스트라
+// 기본 행간(+8px)의 상하 여백 없이 사이즈에 딱 맞는 높이를 갖는다.
 const SIZE_STYLES = {
-  '12': 'text-12',
-  '13': 'text-13',
-  '14': 'text-14',
-  '15': 'text-15',
-  '16': 'text-16',
+  '12': 'text-12 leading-12',
+  '13': 'text-13 leading-13',
+  '14': 'text-14 leading-14',
+  '15': 'text-15 leading-15',
+  '16': 'text-16 leading-16',
 };
 
 interface LabelProps extends ComponentPropsWithoutRef<'label'> {
   size?: keyof typeof SIZE_STYLES; // '12' | '13' | '14' | '15' | '16' (Figma size variant)
+  color?: 'default' | 'gray';      // 텍스트 색 — 'default'(#0d0d0d) | 'gray'(#878787, label-field/gray-text)
   required?: boolean;              // 필수 표시(빨강 점) — Figma state=required
   disabled?: boolean;              // 비활성 — Figma state=disabled
 }
@@ -27,13 +30,18 @@ export function Label({
   children,
   htmlFor,
   size = '14',        // '12' | '13' | '14' | '15' | '16' (Figma size variant)
+  color = 'default',  // 'default'(#0d0d0d) | 'gray'(#878787) — disabled가 우선
   required = false,   // 필수 표시(빨강 점) — Figma state=required
   disabled = false,   // 비활성 — Figma state=disabled
   className = '',
   ...props
 }: LabelProps) {
   // 색은 label-field 시멘틱 토큰 경유(Figma label-field/* 변수와 1:1)
-  const textColor = disabled ? 'text-label-field-disabled-text' : 'text-label-field-default-text';
+  const textColor = disabled
+    ? 'text-label-field-disabled-text'
+    : color === 'gray'
+      ? 'text-label-field-gray-text'
+      : 'text-label-field-default-text';
 
   return (
     <label

@@ -8,7 +8,7 @@ import { Button } from '../components/Button';
 import { Tag } from '../components/Tag';
 import { TableTemplate } from '../components/TableTemplate';
 import { NoticeWritingTemplate } from '../components/NoticeWritingTemplate';
-import { FormTemplate } from '../components/FormTemplate';
+import { FormTemplateA } from '../components/FormTemplateA';
 import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { DateField } from '../components/DateField';
@@ -159,7 +159,7 @@ function NoticeModal({ open, onClose }) {
   );
 }
 
-// ───────── 모달 4: 안내 및 발표 작성 (FormTemplate + NoticeWritingTemplate 조립) ─────────
+// ───────── 모달 4: 안내 및 발표 작성 (FormTemplateA + NoticeWritingTemplate 조립) ─────────
 const COMPOSE_TEMPLATES = [
   { value: 'pass', label: '합격 안내' },
   { value: 'fail', label: '불합격 안내' },
@@ -272,7 +272,7 @@ function ComposeModal({ open, onClose }) {
       onConfirm={close}
     >
       <div className="flex flex-col gap-spacing-9">
-        <FormTemplate columns={2} columnGap={16} rowGap={16} labelSize="14" fields={fields} />
+        <FormTemplateA columns={2} columnGap={16} rowGap={16} labelSize="14" fields={fields} />
         {/* key=template — 발송 템플릿 선택 시 재마운트해 defaultBodies를 새 본문으로 재시드(미선택=빈 에디터) */}
         <NoticeWritingTemplate
           key={template || 'empty'}
@@ -286,7 +286,7 @@ function ComposeModal({ open, onClose }) {
   );
 }
 
-// ───────── 모달 6: 메세지 템플릿 생성 (FormTemplate 2단 + NoticeWritingTemplate) ─────────
+// ───────── 모달 6: 메세지 템플릿 생성 (FormTemplateA 2단 + NoticeWritingTemplate) ─────────
 const MSG_TYPES = [
   { value: 'common', label: '공통' },
   { value: 'individual', label: '개별' },
@@ -350,7 +350,7 @@ function MessageTemplateModal({ open, onClose }) {
       onConfirm={close}
     >
       <div className="flex flex-col gap-spacing-9">
-        <FormTemplate columns={2} columnGap={16} rowGap={16} labelSize="14" fields={fields} />
+        <FormTemplateA columns={2} columnGap={16} rowGap={16} labelSize="14" fields={fields} />
         <NoticeWritingTemplate
           mergeFields={NOTICE_MERGE_FIELDS}
           enabledChannels={methods}

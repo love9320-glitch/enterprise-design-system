@@ -1,6 +1,6 @@
 {
   "name": "@gusun/design-system",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -18,7 +18,7 @@
     "check:focus": "npx esbuild scripts/focus-trap-test.mjs --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.cache/focus-trap-test.mjs --log-level=error && node node_modules/.cache/focus-trap-test.mjs"
   },
   "dependencies": {
-    "lucide-react": "^1.17.0"
+    "lucide-react": "^1.27.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

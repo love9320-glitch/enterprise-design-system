@@ -16,6 +16,8 @@ interface ButtonProps extends ComponentPropsWithoutRef<'button'> {
   loading?: boolean;
   truncate?: boolean;              // 라벨이 부모 폭을 넘으면 말줄임(테이블 셀 등 좁은 영역용)
   width?: 'hug' | 'fill';          // 'hug'(콘텐츠 폭) | 'fill'(부모 전체 폭) — underline 변형엔 미적용
+  area?: boolean;                  // 영역 채움형 — 부모 영역 전체를 채우고(w-full·h-full) 라운드를 없애
+                                   //   hover 배경이 영역에 꽉 차게(셀/구획 안 ghost 버튼용). underline 미적용
   showTooltip?: boolean;           // 아이콘 전용 버튼 hover 명칭 툴팁 on/off (기본 켬)
   tooltip?: ReactNode;             // 툴팁 문구 커스텀. 미지정 시 aria-label 사용
   asChild?: boolean;               // true면 <button> 대신 자식 엘리먼트(단일)를 루트로 렌더하고
@@ -36,6 +38,7 @@ export function Button({
   loading = false,
   truncate = false,       // 라벨이 부모 폭을 넘으면 말줄임(테이블 셀 등 좁은 영역용)
   width = 'hug',          // 'hug'(콘텐츠 폭) | 'fill'(부모 전체 폭) — underline 변형엔 미적용
+  area = false,           // 영역 채움형 — 부모 영역 전체 채움 + 라운드 제거(셀 안 ghost 버튼용)
   showTooltip = true,     // 아이콘 전용 버튼 hover 명칭 툴팁 on/off (기본 켬)
   tooltip,                // 툴팁 문구 커스텀. 미지정 시 aria-label 사용
   asChild = false,        // <button> 대신 자식 엘리먼트를 루트로(Slot 합성)
@@ -54,6 +57,8 @@ export function Button({
   const iconSize = size === '18' || size === '24' ? 14 : 16;
   // fill: 부모 폭을 100% 채운다(밑줄 텍스트 버튼은 박스가 없어 제외).
   const isFill = width === 'fill' && variant !== 'underline';
+  // area: 부모 영역 전체(가로·세로)를 채우고 라운드를 없앤다 — hover 배경이 영역에 꽉 참(2026-07-27 지시)
+  const isArea = area && variant !== 'underline';
   const ref = useRef<HTMLElement | null>(null);
   // asChild 유효성 — 자식이 단일 엘리먼트일 때만 Slot 합성(아니면 일반 <button> 폴백)
   const slotChild = asChild && isValidElement(children) ? (children as ReactElement<{ children?: ReactNode }>) : null;
@@ -63,13 +68,13 @@ export function Button({
   useLayoutEffect(() => {
     const el = ref.current;
     // truncate(셀 폭 추종)·fill(부모 폭 100%)이면 콘텐츠 기준 너비 고정을 하지 않는다.
-    if (!el || truncate || isFill) {
-      if (el && isFill) el.style.width = '';
+    if (!el || truncate || isFill || isArea) {
+      if (el && (isFill || isArea)) el.style.width = '';
       return;
     }
     el.style.width = '';
     el.style.width = el.offsetWidth + 'px';
-  }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading, truncate, isFill]);
+  }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading, truncate, isFill, isArea]);
 
   // 텍스트 두께 — underline 변형만 semibold 옵션 지원(2026-07-15), 그 외는 400 고정
   const weightClass =
@@ -78,11 +83,11 @@ export function Button({
   // focus-visible(키보드 포커스)에 hover와 같은 효과를 준다(마우스 클릭에는 표시 없음).
   const base =
     `inline-flex items-center justify-center relative font-pretendard ${weightClass} ` +
-    'whitespace-nowrap rounded-round-4 transition-colors select-none focus:outline-none';
+    `whitespace-nowrap ${isArea ? 'rounded-none' : 'rounded-round-4'} transition-colors select-none focus:outline-none`;
   // truncate: 버튼이 부모 폭 안에서 줄어들고(min-w-0/max-w-full) 라벨이 말줄임되게 한다.
   const truncStyle = truncate ? 'min-w-0 max-w-full' : '';
-  // fill: 부모 전체 폭(inline-flex라도 width:100% 적용됨).
-  const widthStyle = isFill ? 'w-full' : '';
+  // fill: 부모 전체 폭(inline-flex라도 width:100% 적용됨). area: 가로·세로 모두 채움.
+  const widthStyle = isArea ? 'h-full w-full' : isFill ? 'w-full' : '';
 
   let sizeStyle;
   if (variant === 'underline') {
