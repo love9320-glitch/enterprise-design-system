@@ -135,6 +135,30 @@ export default {
 
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
+## 변경 내역
+
+### v0.2.0 (2026-07-28)
+
+**⚠️ Breaking**
+- `FormTemplate` → **`FormTemplateA`로 개명** — import 이름을 바꿔 주세요. (여백 그리드형 폼, 기능 동일)
+
+**신규**
+- **`FormTemplateB`** — 테이블형 폼 박스: 12칸 그리드 셀이 1px 헤어라인으로 나뉘는 외곽선+그림자 박스. 투명 계열 컨트롤 주입, `flush` 셀 + Button `area`로 영역 채움 버튼 셀 구성
+- **`JobPostingTemplate`** — 채용 공고 설정: 다중 공고 폼(추가/삭제·순번 고정) + 채용 분야 등록 모달 왕복(재오픈 유지·교체 저장) + 등록 테이블(행 드래그·jobda 매칭·사용 스위치)
+- Button **`area`**(부모 영역 채움 — 셀 안 버튼), Input **`variant="transparent"`**(박스·링 없는 투명 인풋), DateField **`variant="text"`**(인라인형)·**`showIcon`**, Label **`color="gray"`**, Table **`draggableRows`/`onRowsReorder`/`dragHandleColKey`/`rowDragLabel`**(행 드래그 순서 변경), TableTemplate 행 드래그 패스스루
+
+**개선**
+- 인라인 계열(Select text·DateField text·DatePicker 연.월) hover 통일 — 밑줄 제거, 텍스트 gray 300 전환
+- JobPositionTemplate 저장 검증 확장 — 기준·값·jobda 매칭 미선택 시 "필수 선택" 툴팁 안내
+- Field 가로 레이아웃 라벨 세로 중앙 정렬 + helper 별도 행, Label 행간=텍스트 사이즈 토큰
+- Calendar 이전/다음 달(muted, gray 250)과 선택 불가(disabled, gray 100) 상태·색 분리
+- 신규 토큰: `job-posting-template/*` · `label-field/gray-text` · `calendar/disabled-text` · `leading-12~15`
+- lucide-react 1.27.0 (DatabaseArrowDown 등 최신 아이콘)
+
+### v0.1.x
+- 0.1.1 — Editor(Tiptap)를 `./editor` 서브패스로 분리(메인 엔트리 tiptap 무의존)
+- 0.1.0 — 최초 공개(컴포넌트·토큰·preset·styles.css·타입)
+
 ## License
 
 ATS
