@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { version as pkgVersion } from '../package.json';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
   HomePage,
@@ -285,7 +286,8 @@ export default function App() {
             DS
           </span>
           <h1 className="text-16 font-semibold text-font-icon-5">ATS Design System</h1>
-          <Tag color="gray">v0.1.0</Tag>
+          {/* 버전 배지 — package.json version 직접 참조(하드코딩 금지, 2026-07-28) */}
+          <Tag color="gray">v{pkgVersion}</Tag>
         </div>
         {/* 전역 컴포넌트 검색 — 선택 즉시 해당 데모 페이지로 이동(선택 후 트리거는 비움) */}
         <Select
