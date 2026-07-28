@@ -1,6 +1,6 @@
 # @gusun/design-system
 
-코드↔Figma가 1:1로 동기화된 **ATS 디자인 시스템** — 토큰 기반 React 컴포넌트 라이브러리입니다. 60+ 컴포넌트와 6종 템플릿, 디자인 토큰을 TypeScript(strict)로 제공합니다.
+코드↔Figma가 1:1로 동기화된 **ATS 디자인 시스템** — 토큰 기반 React 컴포넌트 라이브러리입니다. 60+ 컴포넌트와 8종 템플릿, 디자인 토큰을 TypeScript(strict)로 제공합니다.
 
 - **데모·문서 사이트**: https://love9320-glitch.github.io/enterprise-design-system/ — 모든 컴포넌트의 실행 예제·props 표·복사 가능한 코드
 - **처음이라면**: [시작 가이드](https://love9320-glitch.github.io/enterprise-design-system/#getting-started) — 개발 경험이 없어도 0부터 실행까지
@@ -69,7 +69,7 @@ export default {
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [Button](https://love9320-glitch.github.io/enterprise-design-system/#button) | `variant`(fill·line·ghost·underline) · `size`(32·24·18) · `leftIcon/rightIcon/icon`(lucide) · `disabled` `loading` · `width`(hug·fill) · `asChild`(링크를 버튼처럼) · underline 전용 `color`(7색)/`weight` |
+| [Button](https://love9320-glitch.github.io/enterprise-design-system/#button) | `variant`(fill·line·ghost·underline) · `size`(32·24·18) · `leftIcon/rightIcon/icon`(lucide) · `disabled` `loading` · `width`(hug·fill) · `area`(영역 채움 — 셀 안 버튼) · `asChild`(링크를 버튼처럼) · underline 전용 `color`(7색)/`weight` |
 | [ButtonGroup](https://love9320-glitch.github.io/enterprise-design-system/#button) | `gap`(간격 토큰 키) — 버튼 나열 래퍼 |
 | [SegmentControl](https://love9320-glitch.github.io/enterprise-design-system/#segment-control) | `items` · `value/onChange` · `size` |
 | [ToolBar](https://love9320-glitch.github.io/enterprise-design-system/#tool-bar) | 플로팅 툴바 셸 — 내부는 Button·Select 조립, `ToolBarDivider` 포함 |
@@ -78,7 +78,7 @@ export default {
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [Input](https://love9320-glitch.github.io/enterprise-design-system/#input) | `value/onChange` · `placeholder` · `size`(32·22) · `width` · `disabled` `readOnly` · `error`+`errorMessage`(툴팁) · `inputProps` |
+| [Input](https://love9320-glitch.github.io/enterprise-design-system/#input) | `value/onChange` · `placeholder` · `size`(32·22) · `variant`(solid·transparent — 투명은 박스·링 없이 텍스트만) · `width` · `disabled` `readOnly` · `error`+`errorMessage`(툴팁) · `inputProps` |
 | [TextArea](https://love9320-glitch.github.io/enterprise-design-system/#textarea) | Input과 동일 계열 + 자동 높이·오버레이 스크롤바 · `maxLength` 카운터 |
 | [SearchBar](https://love9320-glitch.github.io/enterprise-design-system/#search-bar) | `value/onChange` · `onSubmit(value)` · `placeholder` · `width` |
 | [Select](https://love9320-glitch.github.io/enterprise-design-system/#select) | `options[{value,label,disabled?}]` · `value/onChange({target:{value}})` · `multiple`(+`confirm` 확인 푸터) · `searchable` · `variant`(box·text·chip) · `label`(내부 라벨) · `placement` `menuWidth` |
@@ -86,7 +86,7 @@ export default {
 | [Checkbox / CheckboxGroup](https://love9320-glitch.github.io/enterprise-design-system/#checkbox) | `checked/onChange` · `label` / Group: `items` `value(배열)/onChange` `direction` |
 | [Radio / RadioGroup](https://love9320-glitch.github.io/enterprise-design-system/#radio) | Checkbox와 동일 패턴(단일 선택) |
 | [Switch](https://love9320-glitch.github.io/enterprise-design-system/#switch) | `checked/onChange` · `label` · `disabled` |
-| [DatePicker / DateField / TimeField](https://love9320-glitch.github.io/enterprise-design-system/#date-picker) | `mode`(single·range) · `value/onChange` · `disablePast/Future` `minDate/maxDate` / 필드형은 인풋+팝오버 결합 |
+| [DatePicker / DateField / TimeField](https://love9320-glitch.github.io/enterprise-design-system/#date-picker) | `mode`(single·range) · `value/onChange` · `disablePast/Future` `minDate/maxDate` / DateField: 인풋+팝오버 결합 · `variant`(box·text 인라인형) · `showIcon` |
 | [SelectOrInput / PhoneField](https://love9320-glitch.github.io/enterprise-design-system/#input) | 셀렉트↔직접입력 겸용 · Phone은 하이픈 자동 |
 | [Editor](https://love9320-glitch.github.io/enterprise-design-system/#editor) | `/editor` 서브패스 — `value/onChange(html)` · `mode`(edit·read·source) · `toolbar`(기능 선택) · `mergeFields` |
 
@@ -94,7 +94,7 @@ export default {
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [Label](https://love9320-glitch.github.io/enterprise-design-system/#label) | `size` · `required` · `disabled` |
+| [Label](https://love9320-glitch.github.io/enterprise-design-system/#label) | `size` · `color`(default·gray) · `required` · `disabled` |
 | [Field](https://love9320-glitch.github.io/enterprise-design-system/#field) | `label` · `required` · `description` · `direction`(vertical·horizontal) · `labelWidth` — 라벨+컨트롤 레이아웃 |
 | [Tabs](https://love9320-glitch.github.io/enterprise-design-system/#tabs) | `items[{value,label,icon?,tag?}]` · `value/onChange` · `variant`(hug·fill) · `rightSlot` |
 | [SegmentedTabs](https://love9320-glitch.github.io/enterprise-design-system/#segmented-tabs) | `items` · `value/onChange` · `width` — 슬라이딩 pill |
@@ -105,7 +105,7 @@ export default {
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [Table](https://love9320-glitch.github.io/enterprise-design-system/#table) | `columns[{key,label,width?,render?,filter?,headerMenu?}]` · `rows` · `selectable`+`selectedIds/onSelectChange` · `sort/filters`(controlled 가능) · `maxHeight`(sticky 헤더) · `bordered` |
+| [Table](https://love9320-glitch.github.io/enterprise-design-system/#table) | `columns[{key,label,width?,render?,filter?,headerMenu?}]` · `rows` · `selectable`+`selectedIds/onSelectChange` · `sort/filters`(controlled 가능) · `maxHeight`(sticky 헤더) · `bordered` · `draggableRows`+`onRowsReorder`(행 드래그, `dragHandleColKey`로 그립을 셀 안에) |
 | [Tag / NewTag](https://love9320-glitch.github.io/enterprise-design-system/#tag) | `color`(blue·red·gray·black) · `width` / NewTag: 원형 N 뱃지 |
 | [Chip](https://love9320-glitch.github.io/enterprise-design-system/#chip) | `color`(8색) · `onRemove`(X 버튼) |
 | [Tooltip / Divider / ScrollArea](https://love9320-glitch.github.io/enterprise-design-system/#tooltip-scrollbar) | Tooltip: `variant` `beak` / Divider: `direction` `color` / ScrollArea: `maxHeight` 오버레이 스크롤 |
@@ -119,9 +119,11 @@ export default {
 | 컴포넌트 | 용도 |
 |---|---|
 | [TableTemplate](https://love9320-glitch.github.io/enterprise-design-system/#table-template) | 툴바(제목·버튼·셀렉트·검색)+테이블+페이지네이션 일체형 |
-| [FormTemplate](https://love9320-glitch.github.io/enterprise-design-system/#form-template) | Field 배치 규격의 폼 레이아웃 |
-| [SideNavigationTemplate](https://love9320-glitch.github.io/enterprise-design-system/#side-nav-template) | 좌 내비 + 우 콘텐츠 슬롯 |
-| [JobPositionTemplate](https://love9320-glitch.github.io/enterprise-design-system/#job-position-template) | 조건 조합 → 순서 지정 → 표 등록 플로우 |
+| [FormTemplateA](https://love9320-glitch.github.io/enterprise-design-system/#form-template) | 여백 그리드형 폼 레이아웃(12칸 그리드 + Field) — 구 FormTemplate(v0.2.0 개명) |
+| [FormTemplateB](https://love9320-glitch.github.io/enterprise-design-system/#form-template) | 테이블형 폼 박스 — 1px 헤어라인 셀 + 투명 계열 컨트롤 + 영역 채움 버튼 셀 |
+| [SideNavigationTemplate](https://love9320-glitch.github.io/enterprise-design-system/#side-nav-template) | 좌 내비 + 우 콘텐츠 슬롯 · 메뉴 추가/이름 수정/삭제(editable) |
+| [JobPositionTemplate](https://love9320-glitch.github.io/enterprise-design-system/#job-position-template) | 채용 분야 설정 — 기준 카드 조합 → 칩 테이블 등록(검증·엑셀 대량 등록·행 드래그) |
+| [JobPostingTemplate](https://love9320-glitch.github.io/enterprise-design-system/#job-posting-template) | 채용 공고 설정 — 다중 공고 폼(FormTemplateB) + 채용 분야 등록 모달 왕복 + 등록 테이블 |
 | [ScreeningBuilderTemplate](https://love9320-glitch.github.io/enterprise-design-system/#screening-builder-template) | 조건 카드 + 수식/자연어 빌더(함수 그룹핑·복수 조건·개별설정) |
 | [NoticeWritingTemplate](https://love9320-glitch.github.io/enterprise-design-system/#notice-template) | `/editor` 서브패스 — 채널 탭+에디터 안내문 작성 |
 
