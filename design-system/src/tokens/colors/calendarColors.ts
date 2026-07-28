@@ -11,8 +11,10 @@ export const calendarColors = {
   'day-bg':   b.white,      // #ffffff
   'day-text': b.gray[900],  // #0d0d0d
   'hover-bg': b.gray[50],   // #f2f2f2 — 기본 날짜 hover(List hover와 동일)
-  // 다른 달 날짜(흐림)
-  'muted-text': b.gray[150], // #c9c9c9
+  // 다른 달 날짜(흐림) — 선택 불가와 분리(2026-07-28 지시)
+  'muted-text': b.gray[250], // #999999
+  // 선택 불가 날짜(disablePast·minDate 등)
+  'disabled-text': b.gray[100], // #e3e3e3 (2026-07-28 지시 — 구 gray150 #c9c9c9)
   // 오늘
   'today-bg':   b.gray[500], // #505050
   'today-text': b.white,     // #ffffff

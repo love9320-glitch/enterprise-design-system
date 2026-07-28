@@ -92,7 +92,13 @@ import { Users } from 'lucide-react';
 
 // 상태
 <Button disabled>비활성</Button>
-<Button loading onClick={save}>저장</Button>`;
+<Button loading onClick={save}>저장</Button>
+
+// 영역 채움형(area) — 버튼이 감싸는 영역 전체(가로·세로)를 채우고 라운드 제거,
+// hover 배경이 셀/구획에 꽉 참(폼 테이블 셀 안 ghost 버튼용). 셀은 패딩 없이 버튼만 넣는다.
+<div className="h-[56px] w-[200px]">
+  <Button variant="ghost" area leftIcon={Plus}>채용 분야 등록</Button>
+</div>`;
 
 const ASCHILD_USAGE = `import { Button } from '@gusun/design-system';
 
@@ -130,6 +136,7 @@ const USAGE_PROPS = [
   { name: 'loading', type: 'boolean', default: 'false', desc: '로딩 상태 — 클릭 차단' },
   { name: 'truncate', type: 'boolean', default: 'false', desc: '라벨이 부모 폭을 넘으면 말줄임 + hover 시 전체 텍스트 툴팁(좁은 셀용)' },
   { name: 'width', type: "'hug' | 'fill'", default: "'hug'", desc: "fill=부모 전체 폭(width:100%). underline 변형엔 미적용" },
+  { name: 'area', type: 'boolean', default: 'false', desc: '영역 채움형 — 부모 영역 전체(가로·세로)를 채우고 라운드 제거, hover 배경이 영역에 꽉 참(셀/구획 안 ghost 버튼용). underline 미적용' },
   { name: 'onClick', type: '(e) => void', default: '—', desc: '클릭 핸들러 (비활성/로딩 시 차단)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스 (나머지 속성은 ...props로 전달)' },
 ];
@@ -210,6 +217,25 @@ export function ButtonPage() {
       <VariantBlock variant="ghost" label="Ghost (Third Button)" tinted />
       {/* Underline — 배경 없이 밑줄(hover) 텍스트 버튼. 아이콘 전용은 의미가 없어 제외 */}
       <VariantBlock variant="underline" label="Underline (Text Button)" rows={BUTTON_ROWS.slice(0, 3)} />
+
+      {/* 영역 채움형(area) — 셀/구획 안에서 버튼이 영역 전체를 채우고 hover 배경이 꽉 차는 타입 */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Area — 영역 채움형</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">area</code>를 켜면 버튼이 감싸는 영역 전체(가로·세로)를 채우고
+          라운드가 없어져, hover 배경이 셀/구획에 꽉 찹니다 — 폼 테이블 셀 안의 ghost 버튼처럼 영역
+          단위로 눌리는 배치용(기본은 영역 안에 버튼 박스가 뜨는 형태).
+        </p>
+        <div className="flex overflow-hidden rounded-round-4 border border-table-outline">
+          <div className="h-[56px] w-[200px] border-r border-table-outline">
+            <Button variant="ghost" area leftIcon={Users}>채용 분야 등록</Button>
+          </div>
+          <div className="h-[56px] w-[200px]">
+            <Button variant="ghost" area leftIcon={Trash2}>공고 삭제</Button>
+          </div>
+        </div>
+      </div>
 
       {/* Underline 컬러 — black(기본)+칩 컬러 대응 6색(2026-07-15, gray 제외) */}
       <Divider className="mt-spacing-9 mb-spacing-8" />

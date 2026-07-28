@@ -155,6 +155,7 @@ interface DateFieldProps {
   // 미지정 시 기본 = showTime이면 260, 아니면 180. 폭이 좁으면 텍스트는 말줄임(…).
   width?: number | string;
   variant?: 'box' | 'text'; // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 직접 입력 없음, 클릭=팝오버)
+  showIcon?: boolean; // 달력 아이콘 표시 여부(box·text 공통) — false면 날짜 텍스트만
   size?: '24' | '20'; // text variant 전용: '24'(14px) | '20'(12px) — box는 항상 14px
   maxWidth?: number | string; // text variant 전용: 트리거 최대 너비 — 넘으면 말줄임
   className?: string;
@@ -194,6 +195,7 @@ export function DateField({
   // 미지정 시 기본 = showTime이면 260, 아니면 180. 폭이 좁으면 텍스트는 말줄임(…).
   width,
   variant = 'box', // 'box'(필드형, 기본) | 'text'(인라인 텍스트형 — 직접 입력 없음, 클릭=팝오버)
+  showIcon = true, // 달력 아이콘 표시 여부(box·text 공통) — false면 날짜 텍스트만
   size = '24', // text variant 전용: '24'(14px) | '20'(12px)
   maxWidth, // text variant 전용: 트리거 최대 너비 — 넘으면 말줄임
   className = '',
@@ -343,7 +345,7 @@ export function DateField({
           interactive ? `cursor-text ${RING}` : disabled ? 'cursor-not-allowed' : 'cursor-default'
         }`}
       >
-        <CalendarIcon size={16} strokeWidth={1.8} className={`shrink-0 ${iconColor}`} />
+        {showIcon && <CalendarIcon size={16} strokeWidth={1.8} className={`shrink-0 ${iconColor}`} />}
         <input
           ref={inputRef}
           type="text"
@@ -444,14 +446,14 @@ export function DateField({
   const textTrigger = (
     <span className={`relative ${isTextFill ? 'flex w-full' : 'inline-flex'}`}>
       <InlineFieldTrigger
-        icon={CalendarIcon}
+        icon={showIcon ? CalendarIcon : null}
         size={size}
         open={open}
         disabled={disabled}
         readOnly={readOnly}
         maxWidth={maxWidthStyle}
         fill={isTextFill}
-        chevron={false} // 인라인형은 화살표 없이 아이콘+날짜만(2026-07-27 지시)
+        chevron={false} // 인라인형은 화살표 없이 아이콘+날짜만(2026-07-27 지시), hover 회색은 기본 동작
         aria-invalid={showErr || undefined}
       >
         {display || effPlaceholder}

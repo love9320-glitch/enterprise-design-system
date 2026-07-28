@@ -25,6 +25,10 @@ import { DatePicker } from '../components/DatePicker';
 <DateField variant="text" value={date} onChange={setDate} />
 <DateField variant="text" size="20" mode="range" showTime value={range} onChange={setRange} />
 
+// 달력 아이콘 빼기 — box·text 공통(날짜 텍스트만)
+<DateField showIcon={false} value={date} onChange={setDate} />
+<DateField variant="text" showIcon={false} value={date} onChange={setDate} />
+
 // DatePicker — 패널 단독(트리거에 직접 붙이려면 Popover로 감싸거나 DateField 사용)
 // 단일 날짜 — value=Date | null
 const [date, setDate] = useState(null);
@@ -50,7 +54,7 @@ const [e, setE] = useState('23:59');
   <DatePicker value={date} onChange={setDate} />
 </Popover>
 
-// 빌딩 블록 — 날짜 셀(7가지 상태)
+// 빌딩 블록 — 날짜 셀(8가지 상태)
 <CalendarDayButton state="selected">13</CalendarDayButton>
 
 // TwoDepthList — 입력 영역 + 좌/우 2컬럼(연/월·시/분 등). 상단 input은 직접 입력 가능.
@@ -84,6 +88,7 @@ const USAGE_PROPS = [
   { name: 'DateField · variant', type: "'box' | 'text'", default: "'box'", desc: "'text'=박스 없는 인라인 텍스트형(Select 인라인형과 동일 비주얼). 직접 입력 없음(클릭=팝오버). 항상 hug, width는 'fill'만 반영" },
   { name: 'DateField · size', type: "'24' | '20'", default: "'24'", desc: 'text variant 전용 크기 — 24(14px) / 20(12px)' },
   { name: 'DateField · maxWidth', type: 'number | string', default: '—', desc: 'text variant 전용 트리거 최대 너비 — 넘으면 말줄임(hover 툴팁)' },
+  { name: 'DateField · showIcon', type: 'boolean', default: 'true', desc: '달력 아이콘 표시 여부(box·text 공통) — false면 날짜 텍스트만' },
   { name: 'DateField · (disablePast/minDate/maxDate/disabledDate/weekStartsOn/minYear/maxYear)', type: '—', default: '—', desc: 'DatePicker로 패스스루' },
   // DatePicker
   { name: 'DatePicker · mode', type: "'single' | 'range'", default: "'single'", desc: '단일 날짜 / 시작~끝 범위 선택 — 완성된 범위에서 다시 날짜를 클릭하면 리셋되고 그 날짜가 새 시작일이 됨(시작일 ~ 마감일 없음)' },
@@ -107,7 +112,7 @@ const USAGE_PROPS = [
   { name: 'DatePicker · minYear / maxYear', type: 'number', default: '표시 연도 ±12', desc: '연도 선택 범위' },
   { name: 'DatePicker · width', type: 'number | string', default: '276', desc: '팝오버 너비' },
   // CalendarDayButton
-  { name: 'CalendarDayButton · state', type: "'default'|'muted'|'today'|'selected'|'range-start'|'range-end'|'in-range'", default: "'default'", desc: '날짜 셀 상태' },
+  { name: 'CalendarDayButton · state', type: "'default'|'muted'|'disabled'|'today'|'selected'|'range-start'|'range-end'|'in-range'", default: "'default'", desc: '날짜 셀 상태 — muted=이전/다음 달(gray 250), disabled=선택 불가(gray 100)' },
   { name: 'CalendarDayButton · disabled', type: 'boolean', default: 'false', desc: '비활성(클릭 차단)' },
   { name: 'CalendarDayButton · onClick', type: '() => void', default: '—', desc: '셀 클릭' },
   // TwoDepthList
@@ -127,7 +132,8 @@ const USAGE_PROPS = [
 
 const DAY_STATES = [
   { state: 'default', label: 'default — 이번 달 날짜', text: '3' },
-  { state: 'muted', label: 'muted — 이전/다음 달·선택 불가', text: '30' },
+  { state: 'muted', label: 'muted — 이전/다음 달', text: '30' },
+  { state: 'disabled', label: 'disabled — 선택 불가(disablePast 등)', text: '1' },
   { state: 'today', label: 'today — 오늘', text: '2' },
   { state: 'selected', label: 'selected — 단일 선택', text: '13' },
   { state: 'range-start', label: 'range-start — 범위 시작', text: '13' },
@@ -216,6 +222,13 @@ function DateFieldDemo() {
         <div>
           <p className="mb-spacing-4 text-12 text-font-icon-3">인라인형 · size 20 (12px)</p>
           <DateField variant="text" size="20" value={date} onChange={setDate} />
+        </div>
+        <div>
+          <p className="mb-spacing-4 text-12 text-font-icon-3">아이콘 없음 (showIcon=false — box·text 공통)</p>
+          <span className="inline-flex items-center gap-spacing-7">
+            <DateField showIcon={false} value={date} onChange={setDate} />
+            <DateField variant="text" showIcon={false} value={date} onChange={setDate} />
+          </span>
         </div>
         <div>
           <p className="mb-spacing-4 text-12 text-font-icon-3">인라인형 · disabled / readOnly</p>
@@ -481,9 +494,9 @@ export function DatePickerPage() {
       {/* CalendarDayButton 상태 */}
       <Divider className="mt-spacing-9 mb-spacing-8" />
       <div>
-        <SectionTitle>CalendarDayButton — 7가지 상태</SectionTitle>
+        <SectionTitle>CalendarDayButton — 8가지 상태</SectionTitle>
         <p className="mb-spacing-7 text-12 text-font-icon-4">
-          날짜 한 칸의 상태별 모습. 범위 상태(range-start/in-range/range-end)는 좌/우 반쪽 배경으로 끊김 없이 이어집니다.
+          날짜 한 칸의 상태별 모습. 이전/다음 달(muted, gray 250)과 선택 불가(disabled, gray 100)는 분리된 상태이고, 범위 상태(range-start/in-range/range-end)는 좌/우 반쪽 배경으로 끊김 없이 이어집니다.
         </p>
         <div className="flex flex-wrap items-start gap-spacing-8">
           {DAY_STATES.map((d) => (

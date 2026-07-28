@@ -1,4 +1,5 @@
 // InlineFieldTrigger — 박스 없는 인라인 텍스트형 트리거(리딩 아이콘? + 값 텍스트 + chevron).
+// hover 효과(2026-07-28 지시): 전 인라인형 공통 — 밑줄 없이 텍스트 회색(font-icon-3 #878787) 전환.
 // Select(variant="text")와 DatePicker 연.월 선택(DualSelectField)이 공유하는 "트리거 비주얼"이다.
 // 클릭·키보드·포커스·위치계산 같은 상호작용은 사용처가 담당한다:
 //   - Select: 이 컴포넌트에 role/tabIndex/onClick/onKeyDown/ref를 직접 spread
@@ -23,6 +24,8 @@ interface InlineFieldTriggerProps extends ComponentPropsWithoutRef<'span'> {
   maxWidth?: CSSProperties['maxWidth']; // 텍스트 최대 폭(CSS 길이) — 넘으면 말줄임
   fill?: boolean; // 부모 전체 폭 채움 — 텍스트 왼쪽·chevron 오른쪽 끝(justify-between). 기본 hug
   chevron?: boolean; // 우측 화살표 표시 여부 — false면 텍스트만(DateField 인라인형 등)
+  hoverUnderline?: boolean; // hover/포커스 시 텍스트 밑줄(기본 false — 2026-07-28 전 인라인형 통일)
+  hoverGrayText?: boolean; // hover 시 텍스트 회색(font-icon-3 #878787, 기본 true — 전 인라인형 공통)
 }
 
 export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTriggerProps>(function InlineFieldTrigger(
@@ -37,6 +40,8 @@ export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTrigger
     maxWidth, // 텍스트 최대 폭(CSS 길이) — 넘으면 말줄임
     fill = false, // 부모 전체 폭 채움 — 텍스트 왼쪽·chevron 오른쪽 끝(justify-between). 기본 hug
     chevron = true, // 우측 화살표 표시 여부 — false면 텍스트만
+    hoverUnderline = false, // hover/포커스 시 텍스트 밑줄(2026-07-28 전 인라인형에서 제거)
+    hoverGrayText = true, // hover 시 텍스트 회색(font-icon-3 #878787) — 전 인라인형 공통
     className = '',
     ...props
   },
@@ -65,8 +70,8 @@ export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTrigger
       <TruncatingText
         style={maxWidth ? { maxWidth } : undefined}
         className={`min-w-0 font-normal ${fill ? 'flex-1' : ''} ${sizeTextClass} ${textColor} ${
-          canInteract ? 'group-hover:underline group-focus-visible:underline' : '' /* 포커스=호버 */
-        }`}
+          canInteract && hoverUnderline ? 'group-hover:underline group-focus-visible:underline' : '' /* 포커스=호버 */
+        } ${canInteract && hoverGrayText ? 'transition-colors group-hover:text-font-icon-3' : ''}`}
       >
         {children}
       </TruncatingText>

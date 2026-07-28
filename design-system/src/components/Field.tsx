@@ -42,6 +42,7 @@ interface FieldProps extends ComponentPropsWithoutRef<'div'> {
   controlsDirection?: 'column' | 'row';     // 컨트롤 여러 개일 때 배치(복합 필드, row=한 줄 등분)
   labelWidth?: number | string;             // horizontal일 때 라벨 영역 너비(number=px | CSS 문자열)
   labelSize?: '12' | '13' | '14' | '15' | '16'; // Label size (12~16). 미지정 시 '14' (2026-07-06 세로도 12→14 통일)
+  labelColor?: 'default' | 'gray';          // Label color 패스스루 — 'gray'(#878787, 폼 템플릿 B 등)
   gap?: keyof typeof GAP_CLASS;             // 라벨↔컨트롤 간격 토큰 키 override (예: 'spacing-5')
 }
 
@@ -55,6 +56,7 @@ export function Field({
   controlsDirection = 'column', // 'column' | 'row' — 컨트롤 여러 개일 때 배치(복합 필드, row=한 줄 등분)
   labelWidth,               // horizontal일 때 라벨 영역 너비(number=px | CSS 문자열)
   labelSize,                // Label size (12~16). 미지정 시 '14' (2026-07-06 세로도 12→14 통일)
+  labelColor,               // Label color 패스스루 — 'gray'(#878787, 폼 템플릿 B 등)
   gap,                      // 라벨↔컨트롤 간격 토큰 키 override (예: 'spacing-5')
   className = '',
   children,                 // 컨트롤
@@ -68,7 +70,8 @@ export function Field({
     GAP_CLASS[gap ?? DEFAULT_GAP[isHorizontal ? 'horizontal' : 'vertical']];
 
   const wrapper = isHorizontal
-    ? `flex flex-row items-start ${gapClass}`
+    ? // 가로: 라벨·컨트롤 세로 중앙 정렬(2026-07-28 지시 — 구 items-start + 라벨 pt 4px 보정)
+      `flex flex-row items-center ${gapClass}`
     : `flex flex-col ${gapClass}`;
 
   const labelWidthStyle =
@@ -76,39 +79,71 @@ export function Field({
       ? { width: typeof labelWidth === 'number' ? `${labelWidth}px` : labelWidth }
       : undefined;
 
+  // 컨트롤 컨테이너 — 가로 등분(row) / 세로 스택(column), 컨트롤 간 8px
+  const controlsEl = isRowControls ? (
+    // 복합 필드(row): 컨트롤을 한 줄에 등분(각 min-w-0 flex-1), 컨트롤 간 8px
+    <div className="flex flex-row items-start gap-spacing-5">
+      {/* toArray — 조건부 자식(false/null)을 걸러 유령 등분 컬럼이 생기지 않게 */}
+      {Children.toArray(children).map((c) => (
+        <div key={(c as ReactElement).key} className="min-w-0 flex-1">
+          {c}
+        </div>
+      ))}
+    </div>
+  ) : (
+    // column: 컨트롤 세로 스택, 컨트롤 간 8px(row와 동일)
+    <div className="flex flex-col gap-spacing-5">{children}</div>
+  );
+  const helperEl =
+    description != null ? <p className="text-12 text-label-field-helper-text">{description}</p> : null;
+
+  if (isHorizontal) {
+    // 가로: [라벨 | 컨트롤] 행은 세로 중앙 정렬을 유지하고, helper는 별도 행으로 내려
+    // 라벨 폭 스페이서로 들여써 컨트롤 시작점에 맞춘다(2026-07-28 지시 — helper가
+    // 컨트롤 열 안에 있으면 라벨 중앙점이 helper까지 포함해 내려가는 문제 방지).
+    return (
+      <div className={`flex flex-col gap-spacing-3 ${className}`} {...props}>
+        <div className={`flex flex-row items-center ${gapClass}`}>
+          {label != null && (
+            <div style={labelWidthStyle} className="shrink-0">
+              <Label htmlFor={htmlFor} size={resolvedLabelSize} color={labelColor} required={required} disabled={disabled}>
+                {label}
+              </Label>
+            </div>
+          )}
+          <div className="min-w-0 flex-1">{controlsEl}</div>
+        </div>
+        {helperEl != null && (
+          <div className={`flex flex-row ${gapClass}`}>
+            {label != null && (
+              // 스페이서 — labelWidth 미지정(hug)이어도 같은 라벨을 invisible로 렌더해 폭을 맞춘다
+              <div style={labelWidthStyle} aria-hidden className="invisible shrink-0">
+                <Label size={resolvedLabelSize} required={required}>
+                  {label}
+                </Label>
+              </div>
+            )}
+            <div className="min-w-0 flex-1">{helperEl}</div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div className={`${wrapper} ${className}`} {...props}>
       {label != null && (
-        <div
-          style={labelWidthStyle}
-          className={isHorizontal ? 'shrink-0 pt-spacing-3' : undefined}
-        >
-          <Label htmlFor={htmlFor} size={resolvedLabelSize} required={required} disabled={disabled}>
+        <div>
+          <Label htmlFor={htmlFor} size={resolvedLabelSize} color={labelColor} required={required} disabled={disabled}>
             {label}
           </Label>
         </div>
       )}
 
-      {/* 컨트롤 영역 — controls 컨테이너(가로 등분/세로 스택, 컨트롤 간 8px) + 그 아래 helper(4px).
-          가로 레이아웃에선 남은 폭을 채운다 */}
-      <div className={`flex min-w-0 flex-col gap-spacing-3 ${isHorizontal ? 'flex-1' : ''}`}>
-        {isRowControls ? (
-          // 복합 필드(row): 컨트롤을 한 줄에 등분(각 min-w-0 flex-1), 컨트롤 간 8px
-          <div className="flex flex-row items-start gap-spacing-5">
-            {/* toArray — 조건부 자식(false/null)을 걸러 유령 등분 컬럼이 생기지 않게 */}
-            {Children.toArray(children).map((c) => (
-              <div key={(c as ReactElement).key} className="min-w-0 flex-1">
-                {c}
-              </div>
-            ))}
-          </div>
-        ) : (
-          // column: 컨트롤 세로 스택, 컨트롤 간 8px(row와 동일)
-          <div className="flex flex-col gap-spacing-5">{children}</div>
-        )}
-        {description != null && (
-          <p className="text-12 text-label-field-helper-text">{description}</p>
-        )}
+      {/* 컨트롤 영역 — controls 컨테이너 + 그 아래 helper(4px) */}
+      <div className="flex min-w-0 flex-col gap-spacing-3">
+        {controlsEl}
+        {helperEl}
       </div>
     </div>
   );

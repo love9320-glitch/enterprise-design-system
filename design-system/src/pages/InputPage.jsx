@@ -14,7 +14,11 @@ const [name, setName] = useState('');
 <Input disabled />
 
 // 에러 — 테두리 대신 하단 툴팁으로 표시(레이아웃 공간 차지 X)
-<Input error errorMessage="필수 입력정보 입니다" width={320} />`;
+<Input error errorMessage="필수 입력정보 입니다" width={320} />
+
+// transparent — 박스·배경·링 없이 텍스트만(가로 패딩 0). 플레이스홀더도 filled와 같은 진한색,
+// 포커스에도 링이 없다. 셀·구획 안에 인풋을 플러시하게 얹을 때 사용(에러 툴팁은 동일).
+<Input variant="transparent" placeholder="텍스트를 입력하세요" />`;
 
 const USAGE_PROPS = [
   { name: 'value', type: 'string', default: '—', desc: '입력값 (제어 컴포넌트로 쓸 때)' },
@@ -22,6 +26,7 @@ const USAGE_PROPS = [
   { name: 'onChange', type: '(e) => void', default: '—', desc: '입력 변경 핸들러 (e.target.value)' },
   { name: 'placeholder', type: 'string', default: "'텍스트를 입력하세요'", desc: '플레이스홀더 문구' },
   { name: 'size', type: "'32' | '22'", default: "'32'", desc: "높이 — 32(text-14) / 22(작게, text-12·leading-18 핏, 좁은 셀·인라인용)" },
+  { name: 'variant', type: "'solid' | 'transparent'", default: "'solid'", desc: "'transparent'=박스·배경·링 없이 텍스트만(가로 패딩 0, 플레이스홀더도 진한색, hover·포커스 시 플레이스홀더만 gray 300, 포커스 링 없음)" },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 입력 차단(회색)' },
   { name: 'readOnly', type: 'boolean', default: 'false', desc: '읽기 전용 — 값은 보이되 편집 불가' },
   { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시' },
@@ -78,6 +83,34 @@ export function InputPage() {
         <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
           <p className="pt-spacing-4 text-12 text-font-icon-3">Error</p>
           <Input error errorMessage="필수 입력정보 입니다" />
+        </div>
+      </div>
+
+      {/* Transparent — 박스·배경·링 없이 텍스트만(Figma input transparent 8616:41229) */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">Transparent — 투명 타입</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">variant="transparent"</code> — 박스·배경·링 없이 텍스트만
+          보입니다(가로 패딩 0). 플레이스홀더도 filled와 같은 진한색이고, hover와 입력 중(포커스)에는 플레이스홀더만 회색(gray 300)으로 바뀌고, 입력된 값 텍스트는 항상 진한색을 유지합니다. 포커스에도 링이 없습니다. 셀·구획 안에
+          인풋을 플러시하게 얹을 때 사용하며 에러 툴팁은 solid와 동일합니다.
+        </p>
+        <div className="space-y-spacing-7">
+          {[
+            { label: 'Default', props: {} },
+            { label: 'Filled', props: { defaultValue: '텍스트 입력 완료' } },
+            { label: 'Read only', props: { readOnly: true, defaultValue: '읽기 전용 값' } },
+            { label: 'Disabled', props: { disabled: true } },
+          ].map(({ label, props }) => (
+            <div key={label} className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+              <p className="text-12 text-font-icon-3">{label}</p>
+              <Input variant="transparent" {...props} />
+            </div>
+          ))}
+          <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
+            <p className="pt-spacing-4 text-12 text-font-icon-3">Error</p>
+            <Input variant="transparent" error errorMessage="필수 입력정보 입니다" />
+          </div>
         </div>
       </div>
 

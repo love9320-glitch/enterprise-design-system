@@ -4,7 +4,8 @@
 //     반쪽 배경(range-bg)을 이어 붙이고, 그 위에 원형 하이라이트를 올린다.
 // 상태(state):
 //   default     — 이번 달 선택 가능 날짜(검정 텍스트, hover 시 회색 원)
-//   muted       — 흐린 회색 날짜(DatePicker에선 이전/다음 달 또는 선택 불가(disablePast 등))
+//   muted       — 이전/다음 달 날짜(회색 #999999)
+//   disabled    — 선택 불가 날짜(disablePast·minDate 등, 연회색 #c9c9c9 — muted와 분리, 2026-07-28)
 //   today       — 오늘(진회색 원 + 흰 텍스트)
 //   selected    — 단일 선택 / 범위 시작=끝(파란 원 + 흰 텍스트)
 //   range-start — 범위 시작(파란 원 + 오른쪽 반쪽 range-bg)
@@ -18,6 +19,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 const HALF_FILL = {
   'default':     { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
   'muted':       { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
+  'disabled':    { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
   'today':       { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
   'selected':    { left: 'bg-calendar-day-bg', right: 'bg-calendar-day-bg' },
   'range-start': { left: 'bg-calendar-day-bg', right: 'bg-calendar-range-bg' },
@@ -29,6 +31,7 @@ const HALF_FILL = {
 const CIRCLE_STYLE = {
   'default':     { circle: 'bg-calendar-day-bg', text: 'text-calendar-day-text' },
   'muted':       { circle: 'bg-transparent', text: 'text-calendar-muted-text' },
+  'disabled':    { circle: 'bg-transparent', text: 'text-calendar-disabled-text' },
   'today':       { circle: 'bg-calendar-today-bg', text: 'text-calendar-today-text' },
   'selected':    { circle: 'bg-calendar-selected-bg', text: 'text-calendar-selected-text' },
   'range-start': { circle: 'bg-calendar-selected-bg', text: 'text-calendar-selected-text' },
@@ -61,8 +64,8 @@ export function CalendarDayButton({
     !disabled && HOVERABLE.has(state)
       ? 'group-hover:bg-calendar-hover-bg group-focus-visible:bg-calendar-hover-bg'
       : '';
-  // muted는 이미 회색(비활성)으로 읽히므로, disabled여도 추가 dimming(opacity)을 주지 않는다.
-  const dimmed = disabled && state !== 'muted';
+  // muted/disabled 상태는 이미 회색으로 읽히므로 추가 dimming(opacity)을 주지 않는다.
+  const dimmed = disabled && state !== 'muted' && state !== 'disabled';
   // 행 가장자리 + 해당 반쪽이 범위색일 때만 바깥 모서리를 둥글게(줄바꿈으로 각지게 끊기는 것 방지)
   const leftRound =
     edge === 'left' && half.left.includes('range-bg') ? 'rounded-l-round-00' : '';

@@ -41,7 +41,7 @@ const USAGE_PROPS = [
   { name: 'htmlFor', type: 'string', default: '—', desc: '컨트롤 id와 연결 (라벨 클릭 포커스)' },
   { name: 'required', type: 'boolean', default: 'false', desc: '라벨 필수 표시(빨강 점)' },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '라벨 비활성 스타일' },
-  { name: 'description', type: 'string | ReactNode', default: '—', desc: '보조 설명(helper) — 컨트롤 아래' },
+  { name: 'description', type: 'string | ReactNode', default: '—', desc: '보조 설명(helper) — 컨트롤 아래. 가로 레이아웃에선 별도 행으로 내려가 컨트롤 시작점에 들여쓰기(라벨 중앙 정렬 유지)' },
   { name: 'direction', type: "'vertical'|'horizontal'", default: "'vertical'", desc: '라벨↔컨트롤 배치' },
   { name: 'controlsDirection', type: "'column'|'row'", default: "'column'", desc: '컨트롤 여러 개 배치(복합 필드, row=한 줄 등분)' },
   { name: 'labelWidth', type: 'number | string', default: '—', desc: 'horizontal일 때 라벨 영역 너비' },
@@ -185,6 +185,16 @@ export function FieldPage() {
           </Field>
           <Field label="지원 부서" direction="horizontal" labelWidth={96}>
             <Select options={DEPTS} width="100%" placeholder="부서 선택" />
+          </Field>
+          {/* helper — 별도 행으로 내려가 컨트롤 시작점에 들여쓰기(라벨은 컨트롤과 중앙 정렬 유지) */}
+          <Field
+            label="이메일"
+            direction="horizontal"
+            labelWidth={96}
+            required
+            description="합격 안내 발송에 사용됩니다."
+          >
+            <Input width="100%" />
           </Field>
         </div>
       </div>

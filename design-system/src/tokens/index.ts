@@ -5,6 +5,7 @@ export { fontIconColors } from './fontIconColors';
 export { buttonColors } from './colors/buttonColors';
 export { textFieldColors } from './colors/textFieldColors';
 export { labelFieldColors } from './colors/labelFieldColors';
+export { jobPostingTemplateColors } from './colors/jobPostingTemplateColors';
 export { dividerColors } from './colors/dividerColors';
 export { chipColors } from './colors/chipColors';
 export { listColors } from './colors/listColors';
