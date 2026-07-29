@@ -8,7 +8,7 @@
 // 선택·펼침 데이터는 onChange(value)/onToggleExpand로 반출(데이터 반출 계약).
 import { useState } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { TruncatingText } from './TruncatingText';
 
@@ -19,6 +19,7 @@ interface LnbMenuProps extends ComponentPropsWithoutRef<'button'> {
   icon?: LucideIcon | null; // 1depth 왼쪽 아이콘(lucide) — null이면 빈 아이콘 영역 유지
   open?: boolean; // 2depth 전용 — 펼침 여부(chevron 방향)
   selected?: boolean; // 1/sub=파란 배경+텍스트 · 2depth=펼침 상태 표현(배경 없음)
+  labelLines?: 1 | 2; // 긴 메뉴명 처리 — 1(말줄임+hover 툴팁, 기본) | 2(2줄까지 줄바꿈 후 클램프+툴팁)
 }
 
 export function LnbMenu({
@@ -28,6 +29,7 @@ export function LnbMenu({
   open = false, // 2depth 전용 — 펼침 여부(chevron 방향)
   selected = false,
   disabled = false,
+  labelLines = 1, // 1(말줄임+툴팁) | 2(2줄 클램프+툴팁)
   onClick,
   className = '',
   ...props
@@ -53,24 +55,26 @@ export function LnbMenu({
       onClick={disabled ? undefined : onClick}
       aria-expanded={depth === '2' ? open : undefined}
       aria-current={selected && depth !== '2' ? 'page' : undefined}
-      className={`flex w-full items-center rounded-round-4 py-spacing-3 pr-spacing-5-5 text-left text-14 transition-colors focus:outline-none ${padStyle} ${stateStyle} ${className}`}
+      // items-start — 메뉴명이 2줄일 때 아이콘(24px 영역=첫 줄 행간)이 첫 줄에 정렬되게(1줄일 땐 동일)
+      className={`flex w-full items-start rounded-round-4 py-spacing-3 pr-spacing-5-5 text-left text-14 transition-colors focus:outline-none ${padStyle} ${stateStyle} ${className}`}
       {...props}
     >
-      {/* 아이콘 영역 24px — 1depth=커스텀 아이콘, 2depth=펼침 chevron(닫힘 ▸ / 열림 ▾) */}
+      {/* 아이콘 영역 24px — 1depth=커스텀 아이콘, 2depth=펼침 chevron(닫힘 ▸ / 열림 ▾).
+          chevron은 컴포넌트 교체 대신 회전 트랜지션으로 접힘/펼침을 부드럽게(2026-07-29 지시) */}
       {depth !== 'sub' && (
         <span className="flex size-[24px] shrink-0 items-center justify-center">
           {depth === '2' ? (
-            open ? (
-              <ChevronDown size={16} strokeWidth={1.8} />
-            ) : (
-              <ChevronRight size={16} strokeWidth={1.8} />
-            )
+            <ChevronRight
+              size={16}
+              strokeWidth={1.8}
+              className={`transition-transform ${open ? 'rotate-90' : ''}`}
+            />
           ) : (
             Icon && <Icon size={16} strokeWidth={1.8} />
           )}
         </span>
       )}
-      <TruncatingText as="span" className="min-w-0">
+      <TruncatingText as="span" lines={labelLines} className="min-w-0">
         {label}
       </TruncatingText>
     </button>
@@ -117,6 +121,7 @@ interface LnbProps extends Omit<ComponentPropsWithoutRef<'nav'>, 'onChange'> {
   defaultExpanded?: string[]; // 처음부터 펼칠 2depth 부모 value 목록
   onToggleExpand?: (value: string, open: boolean) => void; // 부모 펼침/접힘 알림
   width?: number | string; // 기본 138(Figma) — 숫자(px)/CSS 길이
+  menuLabelLines?: 1 | 2; // 메뉴명 처리 일괄 — 1(말줄임+툴팁) | 2(2줄 클램프+툴팁)
 }
 
 export function Lnb({
@@ -128,6 +133,7 @@ export function Lnb({
   defaultExpanded = [],
   onToggleExpand,
   width = 138, // Figma LNB 기본 폭
+  menuLabelLines = 1, // 메뉴명 일괄 — 1(말줄임) | 2(2줄 클램프)
   children,
   className = '',
   ...props
@@ -172,6 +178,7 @@ export function Lnb({
                   <div key={item.value} className="flex w-full flex-col gap-spacing-3">
                     <LnbMenu
                       label={item.label}
+                      labelLines={menuLabelLines}
                       depth={isParent ? '2' : '1'}
                       icon={item.icon}
                       open={open}
@@ -185,6 +192,7 @@ export function Lnb({
                         <LnbMenu
                           key={sub.value}
                           label={sub.label}
+                          labelLines={menuLabelLines}
                           depth="sub"
                           selected={selected === sub.value}
                           disabled={sub.disabled}
