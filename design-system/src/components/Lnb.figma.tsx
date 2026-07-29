@@ -8,20 +8,35 @@ import figma from '@figma/code-connect';
 import { Users } from 'lucide-react';
 import { Lnb, LnbMenu, LnbMenuGroup } from './Lnb';
 
-// menu — 메뉴 한 줄(depth × state)
+// menu — 메뉴 한 줄. depth별로 매핑 분리(2026-07-29): 1depth·sub의 select는 selected,
+// 2depth의 select는 '펼침'이라 open으로 번역(1depth 스니펫에 open이 붙던 오류 수정)
 figma.connect(
   LnbMenu,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8843-8836',
   {
     props: {
-      depth: figma.enum('depth', { '1depth': '1', '2depth': '2', 'sub depth': 'sub' }),
-      open: figma.enum('state', { select: true }),
+      depth: figma.enum('depth', { '1depth': '1', 'sub depth': 'sub' }),
       selected: figma.enum('state', { select: true }),
       disabled: figma.enum('state', { disabled: true }),
       label: figma.string('menu name'),
     },
-    example: ({ depth, open, selected, disabled, label }) => (
-      <LnbMenu depth={depth} icon={Users} open={open} selected={selected} disabled={disabled} label={label} />
+    example: ({ depth, selected, disabled, label }) => (
+      <LnbMenu depth={depth} icon={Users} selected={selected} disabled={disabled} label={label} />
+    ),
+  },
+);
+figma.connect(
+  LnbMenu,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8843-8836',
+  {
+    variant: { depth: '2depth' },
+    props: {
+      open: figma.enum('state', { select: true }),
+      disabled: figma.enum('state', { disabled: true }),
+      label: figma.string('menu name'),
+    },
+    example: ({ open, disabled, label }) => (
+      <LnbMenu depth="2" open={open} disabled={disabled} label={label} />
     ),
   },
 );

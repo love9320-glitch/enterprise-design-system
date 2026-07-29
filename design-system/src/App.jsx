@@ -1,6 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { version as pkgVersion } from '../package.json';
-import { ChevronDown, ChevronRight } from 'lucide-react';
 import {
   HomePage,
   TypographyPage, BaseColorsPage, FontIconColorsPage,
@@ -13,6 +12,7 @@ import {
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
+import { Lnb } from './components/Lnb';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Select } from './components/Select';
 import { Tag } from './components/Tag';
@@ -149,89 +149,39 @@ const NAV_GROUPS = [
 const groupItems = (g) => g.items ?? g.subgroups.flatMap((s) => s.items);
 const ALL_ITEMS = NAV_GROUPS.flatMap(groupItems);
 
-// 1뎁스 메뉴 항목 버튼 (서브그룹 하위 항목은 indent로 들여쓴다)
-function NavItem({ item, active, onSelect, indent = false }) {
-  return (
-    <li>
-      <button
-        onClick={() => onSelect(item.id)}
-        className={`w-full cursor-pointer rounded-round-4 py-spacing-4 text-left text-sm transition-colors focus:outline-none focus-visible:bg-button-ghost-hover-bg ${
-          indent ? 'pl-spacing-9 pr-spacing-4' : 'px-spacing-4'
-        } ${
-          active === item.id
-            ? 'bg-side-nav-select-bg font-semibold text-side-nav-select-text' /* 활성 = side-nav 토큰(도그푸딩) */
-            : 'text-font-icon-4 hover:bg-button-ghost-hover-bg hover:text-font-icon-5'
-        }`}
-      >
-        {item.label}
-      </button>
-    </li>
-  );
-}
-
+// 사이드바 — DS Lnb 컴포넌트로 조립(도그푸딩, 2026-07-29 — site title은 헤더 로고가 대신하므로 숨김).
+// NAV_GROUPS를 Lnb 데이터로 변환: items=1depth(아이콘 없음), subgroups=2depth 펼침 부모+sub 하위.
 function Sidebar({ active, onSelect }) {
-  // 서브그룹 접기/펼치기 — 수동 토글 상태. 미지정 시 활성 항목이 든 서브그룹만 자동 펼침.
-  // 활성 항목이 바뀌면 그 항목이 든 서브그룹의 수동 '접힘'은 해제한다(선택했는데 접혀 있는 모순 방지) — 렌더 시 파생.
-  const [openMap, setOpenMap] = useState({});
-  const [prevActive, setPrevActive] = useState(active);
-  if (active !== prevActive) {
-    setPrevActive(active);
-    const sub = NAV_GROUPS.flatMap((g) => g.subgroups ?? []).find((s) => s.items.some((it) => it.id === active));
-    if (sub && openMap[sub.label] === false) setOpenMap((m) => ({ ...m, [sub.label]: true }));
-  }
-  const isOpen = (sub) => openMap[sub.label] ?? sub.items.some((it) => it.id === active);
-  const toggle = (sub) => setOpenMap((m) => ({ ...m, [sub.label]: !isOpen(sub) }));
+  const groups = NAV_GROUPS.map((g) => ({
+    key: g.label || 'root',
+    title: g.label || undefined,
+    items: g.items
+      ? // 1뎁스 단순 그룹(파운데이션·템플릿·규칙·테스트 등)은 아이콘 영역 없이 플레인하게(2026-07-29 지시)
+        g.items.map((it) => ({ value: it.id, label: it.label, iconArea: false }))
+      : g.subgroups.map((sub) => ({
+          value: `sub:${sub.label}`,
+          label: sub.label,
+          children: sub.items.map((it) => ({ value: it.id, label: it.label })),
+        })),
+  }));
+  // 활성 항목이 든 서브그룹은 처음부터 펼침(기존 자동 펼침 동작 유지)
+  const initialExpanded = NAV_GROUPS.flatMap((g) => g.subgroups ?? [])
+    .filter((s) => s.items.some((it) => it.id === active))
+    .map((s) => `sub:${s.label}`);
 
   return (
     <aside className="relative w-56 shrink-0 border-r border-divider-default">
-      <ScrollArea className="absolute inset-0" contentClassName="h-full px-spacing-6 py-spacing-7">
-      {NAV_GROUPS.map((group) => (
-        <div key={group.label || groupItems(group)[0].id} className="mb-spacing-9">
-          {group.label && (
-            <p className="mb-spacing-4 px-spacing-4 text-xs font-semibold uppercase tracking-wide text-font-icon-2">
-              {group.label}
-            </p>
-          )}
-          {group.items && (
-            <ul className="space-y-spacing-3">
-              {group.items.map((item) => (
-                <NavItem key={item.id} item={item} active={active} onSelect={onSelect} />
-              ))}
-            </ul>
-          )}
-          {group.subgroups && (
-            <ul className="space-y-spacing-3">
-              {group.subgroups.map((sub) => {
-                const open = isOpen(sub);
-                return (
-                  <li key={sub.label}>
-                    <button
-                      onClick={() => toggle(sub)}
-                      aria-expanded={open}
-                      className="flex w-full cursor-pointer items-center gap-spacing-3 rounded-round-4 px-spacing-4 py-spacing-4 text-left text-sm text-font-icon-5 transition-colors hover:bg-button-ghost-hover-bg focus:outline-none focus-visible:bg-button-ghost-hover-bg"
-                    >
-                      {open ? (
-                        <ChevronDown size={14} strokeWidth={1.8} className="shrink-0 text-font-icon-3" />
-                      ) : (
-                        <ChevronRight size={14} strokeWidth={1.8} className="shrink-0 text-font-icon-3" />
-                      )}
-                      {sub.label}
-                    </button>
-                    {open && (
-                      <ul className="mt-spacing-3 space-y-spacing-3">
-                        {sub.items.map((item) => (
-                          <NavItem key={item.id} item={item} active={active} onSelect={onSelect} indent />
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      ))}
-      </ScrollArea>
+      {/* absolute inset-0 — aside의 flex-stretch 높이를 Lnb height=100%의 확정 기준으로 만든다 */}
+      <div className="absolute inset-0">
+        <Lnb
+          width="100%"
+          height="100%"
+          groups={groups}
+          value={active}
+          onChange={onSelect}
+          defaultExpanded={initialExpanded}
+        />
+      </div>
     </aside>
   );
 }
