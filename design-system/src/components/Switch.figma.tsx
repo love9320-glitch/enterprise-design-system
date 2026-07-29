@@ -2,7 +2,7 @@
 //   - 변형 속성 'state'(2026-07-29 사용자가 Property 1→state 개명·오타 수정 — checkbox/radio와 통일).
 //     hover 상태는 CSS 상호작용이라 별도 prop 없음(selected hover→checked로만 반영).
 //   - 라벨 실명 'right text'(공백 포함).
-// 발행: FIGMA_ACCESS_TOKEN=… npx figma connect publish --force
+// 발행: main 머지 시 자동(.github/workflows/figma-code-connect.yml) — 수동은 FIGMA_ACCESS_TOKEN=… npx figma connect publish --force
 // 파서 제약 — URL·props는 리터럴만(변수·스프레드·as const 금지).
 import figma from '@figma/code-connect';
 import { Switch } from './Switch';
