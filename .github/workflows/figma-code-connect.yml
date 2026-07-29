@@ -1,0 +1,38 @@
+name: Publish Figma Code Connect
+
+# main에 Code Connect 매핑(.figma.tsx)이나 설정(figma.config.json)이 머지되면
+# Figma에 자동 재발행한다 — 수동 `npx figma connect publish` + 토큰 노출 없이
+# "PR 머지 = Figma 스니펫 갱신"이 되게 하는 자동화(2026-07-29).
+# 필요 Secret: FIGMA_ACCESS_TOKEN (스코프: file_content:read + file_code_connect:write)
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'design-system/src/**/*.figma.tsx'
+      - 'design-system/figma.config.json'
+
+concurrency:
+  group: figma-code-connect
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: design-system/package-lock.json
+
+      - name: Install
+        working-directory: design-system
+        run: npm ci
+
+      - name: Publish Code Connect to Figma
+        working-directory: design-system
+        env:
+          FIGMA_ACCESS_TOKEN: ${{ secrets.FIGMA_ACCESS_TOKEN }}
+        run: npx figma connect publish --force
