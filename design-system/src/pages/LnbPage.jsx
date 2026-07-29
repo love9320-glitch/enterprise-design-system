@@ -42,8 +42,10 @@ const USAGE_PROPS = [
   { name: 'Lnb · value / defaultValue / onChange', type: 'string / string / (value)=>void', default: '—', desc: '선택 메뉴(1depth·sub) — 부모(2depth)는 선택이 아니라 펼침 토글' },
   { name: 'Lnb · defaultExpanded / onToggleExpand', type: 'string[] / (value, open)=>void', default: '[] / —', desc: '2depth 초기 펼침 목록 / 펼침·접힘 알림(상태는 내부 소유)' },
   { name: 'Lnb · width', type: 'number | string', default: '138', desc: '컨테이너 폭(px/CSS 길이)' },
+  { name: 'Lnb · height', type: 'number | string', default: '—', desc: "지정 시 LNB 높이 고정 + 내부 스크롤(타이틀 포함 전체, 오버레이 스크롤바) — 레이아웃에선 '100%'로 화면 높이에 맞춤. 미지정 시 자연 높이" },
   { name: 'LnbMenu · depth', type: "'1' | '2' | 'sub'", default: "'1'", desc: "1=아이콘 메뉴 · 2=펼침 부모(chevron ▸/▾) · sub=들여쓴 하위(좌 32px)" },
   { name: 'LnbMenu · label / icon / open', type: 'ReactNode / LucideIcon / boolean', default: '— / null / false', desc: '메뉴명(잘리면 hover 툴팁) / 1depth 아이콘 / 2depth 펼침 여부' },
+  { name: 'LnbMenu · iconArea', type: 'boolean', default: 'true', desc: 'false면 1depth 아이콘 영역(24px) 생략 — 아이콘 없는 플레인 메뉴(LnbItem.iconArea로 데이터 모드 지정)' },
   { name: 'LnbMenu · selected / disabled', type: 'boolean', default: 'false', desc: '선택(1·sub=파란 배경+텍스트, 2=펼침 표현) / 비활성' },
   { name: 'LnbMenu · wrap / Lnb · menuWrap', type: 'boolean', default: 'false', desc: '긴 메뉴명 — false=말줄임+hover 툴팁 / true=줄바꿈으로 전체 표시(Table wrap과 동일 규약)' },
   { name: 'LnbMenuGroup · title', type: 'ReactNode', default: 'null', desc: '카테고리 텍스트(12px 회색) — null이면 숨김' },
@@ -139,6 +141,49 @@ export function LnbPage() {
             <LnbMenu label="메뉴명입니다" depth="sub" selected />
             <LnbMenu label="메뉴명입니다" depth="sub" disabled />
           </div>
+        </div>
+      </div>
+
+      {/* 내부 스크롤 — height 지정 시 메뉴 목록만 스크롤 */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">내부 스크롤 — height</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">height</code>를 지정하면 브라우저 전체 스크롤 대신{' '}
+          <strong className="font-semibold text-font-icon-5">LNB 안에서만</strong> 내용이
+          스크롤됩니다(사이트 타이틀 포함 LNB 전체가 함께 스크롤, 오버레이 스크롤바). 레이아웃에 넣을 때는{' '}
+          <code className="text-font-icon-5">height="100%"</code>로 화면 높이를 따라갑니다.
+        </p>
+        <div className="inline-block rounded-round-4 border border-base-gray-100">
+          <Lnb
+            siteTitle={
+              <>
+                DESIGN
+                <br />
+                SYSTEM
+              </>
+            }
+            height={320}
+            groups={[
+              {
+                title: '메뉴 카테고리',
+                items: Array.from({ length: 6 }, (_, i) => ({
+                  value: `a-${i + 1}`,
+                  label: `메뉴 ${i + 1}`,
+                  icon: Users,
+                })),
+              },
+              {
+                title: '메뉴 카테고리',
+                items: Array.from({ length: 6 }, (_, i) => ({
+                  value: `b-${i + 1}`,
+                  label: `메뉴 ${i + 7}`,
+                  icon: FileText,
+                })),
+              },
+            ]}
+            defaultValue="a-1"
+          />
         </div>
       </div>
 
