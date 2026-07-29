@@ -34,6 +34,7 @@ export { TablePage } from './TablePage';
 export { TableTemplatePage } from './TableTemplatePage';
 export { FormTemplatePage } from './FormTemplatePage';
 export { JobPostingTemplatePage } from './JobPostingTemplatePage';
+export { LnbPage } from './LnbPage';
 export { JobPositionTemplatePage } from './JobPositionTemplatePage';
 export { ScreeningBuilderTemplatePage } from './ScreeningBuilderTemplatePage';
 export { ModalPage } from './ModalPage';

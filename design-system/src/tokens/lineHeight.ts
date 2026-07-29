@@ -13,6 +13,7 @@ export const lineHeight = {
   20: '20px', // text-12 기본
   22: '22px', // text-13 기본
   24: '24px', // text-14 기본
+  25: '25px', // LNB 사이트 타이틀(20px 두 줄) 전용 촘촘 행간(2026-07-29)
   26: '26px', // text-15 기본
   28: '28px', // text-16 기본
   30: '30px', // text-18 기본
