@@ -1,9 +1,11 @@
 import {
   baseColors,
   buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors, listColors, tagColors,
-  newTagColors, sideNavColors,
-  checkboxColors, radioColors, switchColors, tabColors,
+  newTagColors, sideNavColors, lnbColors,
+  checkboxColors, radioColors, switchColors, tabColors, segmentedColors,
   tableColors, modalColors, editorColors, calendarColors,
+  conditionOrderSlotColors, conditionCardColors, formulaColors, builderAreaColors, toolbarColors,
+  accordionColors, jobPostingTemplateColors,
 } from '../tokens/index';
 
 // hex → base 토큰 명칭 역매핑. 컴포넌트 시멘틱 컬러는 모두 baseColors를 경유하므로
@@ -44,10 +46,19 @@ const COMPONENTS = [
   { title: 'Switch',                prefix: 'switch',     tokens: switchColors },
   { title: 'Tabs',                  prefix: 'tab',        tokens: tabColors },
   { title: 'Side Navigation',       prefix: 'side-nav',   tokens: sideNavColors },
+  { title: 'LNB Menu',              prefix: 'lnb',        tokens: lnbColors },
+  { title: 'Segmented Tabs',        prefix: 'segmented',  tokens: segmentedColors },
+  { title: 'Accordion',             prefix: 'accordion',  tokens: accordionColors },
   { title: 'Table',                 prefix: 'table',      tokens: tableColors },
   { title: 'Modal',                 prefix: 'modal',      tokens: modalColors },
   { title: 'Editor',                prefix: 'editor',     tokens: editorColors },
   { title: 'Calendar (Date Picker)', prefix: 'calendar',  tokens: calendarColors },
+  { title: 'Condition Order Slot',  prefix: 'condition-slot', tokens: conditionOrderSlotColors },
+  { title: 'Condition Card (Screening)', prefix: 'condition-card', tokens: conditionCardColors },
+  { title: 'Formula (Screening)',   prefix: 'formula',    tokens: formulaColors },
+  { title: 'Builder Area (Screening)', prefix: 'builder-area', tokens: builderAreaColors },
+  { title: 'Tool Bar',              prefix: 'toolbar',    tokens: toolbarColors },
+  { title: 'Job Posting Template',  prefix: 'job-posting-template', tokens: jobPostingTemplateColors },
 ];
 
 // 토큰 객체를 leaf(hex 문자열)까지 평탄화 — Button처럼 1단계 중첩(fill/ghost/line)도
