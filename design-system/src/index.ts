@@ -21,6 +21,7 @@ export * from './components/FileUploadMenu';
 export * from './components/FormTemplateA';
 export * from './components/FormTemplateB';
 export * from './components/JobPostingTemplate';
+export * from './components/Lnb';
 export * from './components/ImageUploadButton';
 export * from './components/ImageUploadMenu';
 export * from './components/InlineFieldTrigger';

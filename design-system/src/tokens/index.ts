@@ -6,6 +6,7 @@ export { buttonColors } from './colors/buttonColors';
 export { textFieldColors } from './colors/textFieldColors';
 export { labelFieldColors } from './colors/labelFieldColors';
 export { jobPostingTemplateColors } from './colors/jobPostingTemplateColors';
+export { lnbColors } from './colors/lnbColors';
 export { dividerColors } from './colors/dividerColors';
 export { chipColors } from './colors/chipColors';
 export { listColors } from './colors/listColors';

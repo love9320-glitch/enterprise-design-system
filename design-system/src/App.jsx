@@ -9,7 +9,7 @@ import {
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
   ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage,
-  PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage,
+  PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
@@ -90,6 +90,7 @@ const NAV_GROUPS = [
           { id: 'segmented-tabs', label: 'Segmented Tabs', Page: SegmentedTabsPage },
           { id: 'pagination', label: 'Pagination', Page: PaginationPage },
           { id: 'side-navigation', label: 'Side Navigation', Page: SideNavigationPage },
+          { id: 'lnb', label: 'LNB Menu', Page: LnbPage },
         ],
       },
       {
