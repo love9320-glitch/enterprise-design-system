@@ -1,7 +1,6 @@
 // TruncatingText — 말줄임(truncate) 텍스트 + hover 툴팁
-// 영역이 좁아 텍스트가 잘릴 수 있는 곳에 사용한다. 실제로 잘렸을 때만(1줄=scrollWidth,
-// 여러 줄 클램프=scrollHeight 초과) hover 시 normal Tooltip으로 전체 텍스트를 보여준다.
-// lines(1~3)로 여러 줄 클램프 지원 — 2026-07-29 LNB 메뉴명 2줄 옵션에서 확장.
+// 영역이 좁아 텍스트가 잘릴 수 있는 곳에 사용한다. 실제로 잘렸을 때만(scrollWidth>clientWidth)
+// hover 시 normal Tooltip으로 전체 텍스트를 보여준다.
 // 툴팁은 portal(document.body) + fixed로 overflow를 벗어나며, viewport 경계에서
 // 위→아래·오른쪽→왼쪽으로 자동 반전한다.
 import { useRef, useState, useLayoutEffect } from 'react';
@@ -9,22 +8,13 @@ import type { ComponentPropsWithoutRef, ElementType } from 'react';
 import { createPortal } from 'react-dom';
 import { Tooltip } from './Tooltip';
 
-// 줄 수 → 클램프 클래스(Tailwind 내장 line-clamp — 정적 lookup, 동적 조합 금지)
-const LINE_CLAMP = {
-  1: 'truncate',
-  2: 'line-clamp-2',
-  3: 'line-clamp-3',
-};
-
 interface TruncatingTextProps extends ComponentPropsWithoutRef<'p'> {
   as?: ElementType; // 'p' | 'span' | 'div' 등
-  lines?: keyof typeof LINE_CLAMP; // 1(말줄임, 기본) | 2·3(줄바꿈 후 클램프) — 잘리면 hover 툴팁
 }
 
 export function TruncatingText({
   children,
   as: Component = 'p', // 'p' | 'span' | 'div' 등
-  lines = 1, // 1(한 줄 말줄임) | 2·3(여러 줄 클램프)
   className = '',
   ...props
 }: TruncatingTextProps) {
@@ -35,11 +25,7 @@ export function TruncatingText({
 
   const onEnter = () => {
     const el = ref.current;
-    if (!el) return;
-    // 잘림 판정 — 1줄은 가로(scrollWidth), 클램프는 세로(scrollHeight) 초과(+1은 반올림 오차)
-    const clipped =
-      lines === 1 ? el.scrollWidth > el.clientWidth : el.scrollHeight > el.clientHeight + 1;
-    if (clipped) setTipRect(el.getBoundingClientRect());
+    if (el && el.scrollWidth > el.clientWidth) setTipRect(el.getBoundingClientRect());
   };
   const onLeave = () => {
     setTipRect(null);
@@ -67,7 +53,7 @@ export function TruncatingText({
         ref={ref}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
-        className={`${LINE_CLAMP[lines] ?? LINE_CLAMP[1]} ${className}`}
+        className={`truncate ${className}`}
         {...props}
       >
         {children}

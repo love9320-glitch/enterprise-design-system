@@ -19,7 +19,7 @@ interface LnbMenuProps extends ComponentPropsWithoutRef<'button'> {
   icon?: LucideIcon | null; // 1depth 왼쪽 아이콘(lucide) — null이면 빈 아이콘 영역 유지
   open?: boolean; // 2depth 전용 — 펼침 여부(chevron 방향)
   selected?: boolean; // 1/sub=파란 배경+텍스트 · 2depth=펼침 상태 표현(배경 없음)
-  labelLines?: 1 | 2; // 긴 메뉴명 처리 — 1(말줄임+hover 툴팁, 기본) | 2(2줄까지 줄바꿈 후 클램프+툴팁)
+  wrap?: boolean; // 긴 메뉴명 — false(말줄임+hover 툴팁, 기본) | true(줄바꿈으로 전체 표시) — Table wrap과 동일 규약
 }
 
 export function LnbMenu({
@@ -29,7 +29,7 @@ export function LnbMenu({
   open = false, // 2depth 전용 — 펼침 여부(chevron 방향)
   selected = false,
   disabled = false,
-  labelLines = 1, // 1(말줄임+툴팁) | 2(2줄 클램프+툴팁)
+  wrap = false, // false(말줄임+툴팁) | true(줄바꿈 전체 표시)
   onClick,
   className = '',
   ...props
@@ -74,9 +74,13 @@ export function LnbMenu({
           )}
         </span>
       )}
-      <TruncatingText as="span" lines={labelLines} className="min-w-0">
-        {label}
-      </TruncatingText>
+      {wrap ? (
+        <span className="min-w-0 break-words">{label}</span>
+      ) : (
+        <TruncatingText as="span" className="min-w-0">
+          {label}
+        </TruncatingText>
+      )}
     </button>
   );
 }
@@ -121,7 +125,7 @@ interface LnbProps extends Omit<ComponentPropsWithoutRef<'nav'>, 'onChange'> {
   defaultExpanded?: string[]; // 처음부터 펼칠 2depth 부모 value 목록
   onToggleExpand?: (value: string, open: boolean) => void; // 부모 펼침/접힘 알림
   width?: number | string; // 기본 138(Figma) — 숫자(px)/CSS 길이
-  menuLabelLines?: 1 | 2; // 메뉴명 처리 일괄 — 1(말줄임+툴팁) | 2(2줄 클램프+툴팁)
+  menuWrap?: boolean; // 메뉴명 일괄 — false(말줄임+툴팁) | true(줄바꿈 전체 표시)
 }
 
 export function Lnb({
@@ -133,7 +137,7 @@ export function Lnb({
   defaultExpanded = [],
   onToggleExpand,
   width = 138, // Figma LNB 기본 폭
-  menuLabelLines = 1, // 메뉴명 일괄 — 1(말줄임) | 2(2줄 클램프)
+  menuWrap = false, // 메뉴명 일괄 — false(말줄임) | true(전체 표시)
   children,
   className = '',
   ...props
@@ -178,7 +182,7 @@ export function Lnb({
                   <div key={item.value} className="flex w-full flex-col gap-spacing-3">
                     <LnbMenu
                       label={item.label}
-                      labelLines={menuLabelLines}
+                      wrap={menuWrap}
                       depth={isParent ? '2' : '1'}
                       icon={item.icon}
                       open={open}
@@ -192,7 +196,7 @@ export function Lnb({
                         <LnbMenu
                           key={sub.value}
                           label={sub.label}
-                          labelLines={menuLabelLines}
+                          wrap={menuWrap}
                           depth="sub"
                           selected={selected === sub.value}
                           disabled={sub.disabled}
