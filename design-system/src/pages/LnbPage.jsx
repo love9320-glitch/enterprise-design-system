@@ -45,6 +45,7 @@ const USAGE_PROPS = [
   { name: 'LnbMenu · depth', type: "'1' | '2' | 'sub'", default: "'1'", desc: "1=아이콘 메뉴 · 2=펼침 부모(chevron ▸/▾) · sub=들여쓴 하위(좌 32px)" },
   { name: 'LnbMenu · label / icon / open', type: 'ReactNode / LucideIcon / boolean', default: '— / null / false', desc: '메뉴명(잘리면 hover 툴팁) / 1depth 아이콘 / 2depth 펼침 여부' },
   { name: 'LnbMenu · selected / disabled', type: 'boolean', default: 'false', desc: '선택(1·sub=파란 배경+텍스트, 2=펼침 표현) / 비활성' },
+  { name: 'LnbMenu · wrap / Lnb · menuWrap', type: 'boolean', default: 'false', desc: '긴 메뉴명 — false=말줄임+hover 툴팁 / true=줄바꿈으로 전체 표시(Table wrap과 동일 규약)' },
   { name: 'LnbMenuGroup · title', type: 'ReactNode', default: 'null', desc: '카테고리 텍스트(12px 회색) — null이면 숨김' },
 ];
 
@@ -137,6 +138,27 @@ export function LnbPage() {
             <LnbMenu label="메뉴명입니다" depth="sub" />
             <LnbMenu label="메뉴명입니다" depth="sub" selected />
             <LnbMenu label="메뉴명입니다" depth="sub" disabled />
+          </div>
+        </div>
+      </div>
+
+      {/* 긴 메뉴명 — 말줄임 vs 2줄 클램프 */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">긴 메뉴명 — wrap</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          <code className="text-font-icon-5">wrap=false</code>(기본)는 한 줄 말줄임 — 잘리면 hover 시
+          전체 이름 툴팁이 뜹니다. <code className="text-font-icon-5">true</code>는 줄바꿈으로 전체를
+          표시합니다(툴팁 불필요).
+        </p>
+        <div className="flex items-start gap-spacing-10">
+          <div className="w-[140px]">
+            <p className="mb-spacing-4 text-12 text-font-icon-3">wrap=false (말줄임+툴팁)</p>
+            <LnbMenu label="아주 길어서 잘리는 메뉴 이름입니다" icon={Users} />
+          </div>
+          <div className="w-[140px]">
+            <p className="mb-spacing-4 text-12 text-font-icon-3">wrap=true (전체 표시)</p>
+            <LnbMenu label="아주 길어서 여러 줄로 내려가는 메뉴 이름입니다" icon={Users} wrap />
           </div>
         </div>
       </div>
