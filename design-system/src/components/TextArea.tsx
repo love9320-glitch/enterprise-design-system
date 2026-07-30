@@ -9,9 +9,10 @@
 //   동기화해 얹는다**(scroll-bar 토큰, hover/드래그 동작). 커서 추적·hover 둘 다 만족.
 //
 // 에러 표현 규칙: Input과 동일 — 테두리 대신 박스 아래 absolute 툴팁 오버레이(레이아웃 영향 0).
-import { useState, useRef, useCallback, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useLayoutEffect, useId } from 'react';
 import type { ChangeEvent, ComponentPropsWithoutRef, MouseEvent as ReactMouseEvent } from 'react';
 import { listColors } from '../tokens';
+import { REQUIRED_INPUT_MESSAGE } from '../utils/validationMessages';
 import { Tooltip } from './Tooltip';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 2px(border-2 토큰), 색은 시멘틱 토큰.
@@ -55,7 +56,7 @@ export function TextArea({
   disabled = false,
   readOnly = false,
   error = false,
-  errorMessage = '',
+  errorMessage = REQUIRED_INPUT_MESSAGE, // 표준 카피 자동 적용(규칙 21)
   width = 320,              // 너비: 숫자(px) 또는 CSS 길이 문자열. 미지정 시 320px
   className = '',
   textareaProps = {},
@@ -69,16 +70,24 @@ export function TextArea({
   const len = value != null ? value.length : internalLen;
   const [thumb, setThumb] = useState({ pos: 0, size: 0, visible: false });
   const [active, setActive] = useState(false); // hover 또는 드래그 중
+  // 에러 툴팁 id — 표시 중일 때 aria-describedby로 연결(스크린리더가 같은 문구 낭독)
+  const errTipId = useId();
+  const showErrTip = error && !!errorMessage;
 
-  const textColor = disabled
-    ? 'text-text-field-disabled-text'
-    : readOnly
-      ? 'text-text-field-readonly-text'
-      : 'text-text-field-filled-text';
+  // error(벨리데이션 툴팁 표시 중)면 값·플레이스홀더 모두 red 400 (2026-07-30 지시)
+  const textColor = error
+    ? 'text-text-field-error-text'
+    : disabled
+      ? 'text-text-field-disabled-text'
+      : readOnly
+        ? 'text-text-field-readonly-text'
+        : 'text-text-field-filled-text';
   // disabled면 플레이스홀더도 더 연하게(Figma disabled = 연한 회색)
-  const placeholderColor = disabled
-    ? 'placeholder:text-text-field-disabled-text'
-    : 'placeholder:text-text-field-default-text';
+  const placeholderColor = error
+    ? 'placeholder:text-text-field-error-text'
+    : disabled
+      ? 'placeholder:text-text-field-disabled-text'
+      : 'placeholder:text-text-field-default-text';
 
   // 네이티브 스크롤 메트릭 → 오버레이 thumb 위치/크기 (ScrollArea 세로 thumb와 동일 계산)
   const updateThumb = useCallback(() => {
@@ -196,6 +205,7 @@ export function TextArea({
           rows={rows}
           maxLength={maxLength}
           aria-invalid={error || undefined}
+          aria-describedby={showErrTip ? errTipId : undefined}
           className={`hide-native-scroll block w-full resize-none overflow-y-auto bg-transparent pt-spacing-4 pb-spacing-12 text-14 outline-none disabled:cursor-not-allowed read-only:cursor-default ${placeholderColor} ${textColor}`}
           {...textareaProps}
         />
@@ -225,9 +235,10 @@ export function TextArea({
         </p>
       )}
 
-      {/* 에러 툴팁 — absolute 오버레이라 박스 아래 공간을 차지하지 않는다 */}
-      {error && errorMessage && (
-        <div className="absolute left-0 top-full z-10 mt-spacing-2">
+      {/* 에러 툴팁 — absolute 오버레이라 박스 아래 공간을 차지하지 않는다.
+          role=alert: 등장 시 스크린리더가 즉시 낭독 + id로 aria-describedby 연결 */}
+      {showErrTip && (
+        <div id={errTipId} role="alert" className="absolute left-0 top-full z-10 mt-spacing-2">
           <Tooltip variant="error" beak="top">
             {errorMessage}
           </Tooltip>

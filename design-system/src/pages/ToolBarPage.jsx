@@ -31,7 +31,7 @@ export function ToolBarPage() {
   const [checked, setChecked] = useState(true);
 
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Tool Bar</h2>
       <p className="mb-spacing-8 text-13 text-font-icon-4">
         체크 선택 시 나타나는 플로팅 액션 툴바 — 위→아래(white→gray.50) 그라데이션 배경 +

@@ -101,7 +101,7 @@ function LnbLiveDemo() {
 
 export function LnbPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">LNB Menu</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         좌측 내비게이션 메뉴 — 사이트 타이틀 + 카테고리 그룹 + 메뉴 트리(1depth 아이콘 메뉴 ·

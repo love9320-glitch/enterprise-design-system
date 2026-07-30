@@ -19,7 +19,7 @@ const templatesMd = [tplModalMd, tplListMd, tplDetailMd, tplFormMd].join('\n\n')
 
 function DocPage({ source }) {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <MarkdownDoc source={source} />
     </section>
   );

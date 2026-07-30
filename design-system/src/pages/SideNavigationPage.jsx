@@ -225,7 +225,7 @@ function ActionsDemo() {
 
 export function SideNavigationPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Side Navigation</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         사이드 메뉴 내비게이션. 버튼 한 행은 [아이콘 · 라벨 · <span className="text-font-icon-5">NewTag</span> · ›]로

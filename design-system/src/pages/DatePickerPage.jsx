@@ -18,7 +18,7 @@ import { DatePicker } from '../components/DatePicker';
 <DateField mode="range" showTime value={range} onChange={setRange}  // 범위+시간
   startTime={s} onStartTimeChange={setS} endTime={e} onEndTimeChange={setE} />
 <DateField disabled /> · <DateField readOnly defaultValue={today} />
-<DateField error errorMessage="날짜를 선택하세요" />
+<DateField error errorMessage="필수 선택사항입니다." />
 
 // 인라인 텍스트형 — 박스 없는 트리거(아이콘+날짜만, 화살표 없음). 직접 입력 없음(클릭=팝오버).
 // 항상 콘텐츠 폭(hug) + maxWidth 말줄임, size 24(14px)/20(12px), width="fill"이면 부모 폭
@@ -63,8 +63,8 @@ const [e, setE] = useState('23:59');
 <TwoDepthList separator="." inputValue="2025.07"  // 좌/우 분리 인풋 + '.' 구분자(아래 정렬)
   onInputApply={(t) => {                            // 합성 문자열('2026.7') 파싱은 호출부가
     const [ys, ms] = t.split('.');
-    if (!/^(\\d{2}|\\d{4})$/.test(ys)) return { error: 'left', message: '연도는 YYYY 형식으로 입력하세요' };
-    if (+ms < 1 || +ms > 12) return { error: 'right', message: '월은 1~12로 입력하세요' };
+    if (!/^(\\d{2}|\\d{4})$/.test(ys)) return { error: 'left', message: '잘못된 양식입니다.' };
+    if (+ms < 1 || +ms > 12) return { error: 'right', message: '잘못된 양식입니다.' };
     const yyyy = ys.length === 2 ? String(2000 + +ys) : ys;
     setY(yyyy); setMo(ms);
     return yyyy + '.' + ms.padStart(2, '0');        // 정규화 성공 / 실패 시 {error:파트, message}
@@ -80,9 +80,9 @@ const USAGE_PROPS = [
   { name: 'DateField · startTime / endTime (+onChange)', type: "'HH:MM'", default: "'00:00' / '23:59'", desc: '시간 값(controlled/uncontrolled)' },
   { name: 'DateField · placeholder', type: 'string', default: 'mode 기반', desc: "값 없을 때 표시 — 단일 '날짜를 선택하세요' / 범위 '시작일과 마감일을 선택하세요'. 범위에서 시작만 선택된 채 캘린더가 열려 있으면 'A ~ 마감일 선택 중', 닫으면 'A ~ 마감일 없음'" },
   { name: 'DateField · disabled / readOnly', type: 'boolean', default: 'false', desc: '비활성 / 읽기전용(클릭으로 안 열림)' },
-  { name: 'DateField · error / errorMessage', type: 'boolean / string', default: 'false / —', desc: '에러 상태 + 필드 아래 툴팁' },
+  { name: 'DateField · error / errorMessage', type: 'boolean / string', default: 'false / —', desc: '에러 상태 + 필드 아래 툴팁 (텍스트 red 400)' },
   { name: 'DateField · (직접 입력)', type: '—', default: '—', desc: '타이핑 후 Enter/blur로 파싱·정규화. 날짜: 250520·20250520·0520(올해)·25.05.20 / 시간(공백 뒤): 00:10·0010·011. 숫자·구분자·괄호만 입력 가능. 범위 시작만 입력 시 "마감일 없음"' },
-  { name: 'DateField · formatErrorMessage', type: 'string', default: "'날짜 형식이 올바르지 않습니다.'", desc: '직접 입력 형식 오류 툴팁' },
+  { name: 'DateField · formatErrorMessage', type: 'string', default: "'잘못된 양식입니다.'", desc: '직접 입력 형식 오류 툴팁' },
   { name: 'DateField · closeOnSelect', type: 'boolean', default: '단일 true · 범위 false', desc: '선택 완료 시 자동 닫기(범위 기본은 배경 클릭으로만 닫힘, showTime이면 true여도 유지)' },
   { name: 'DateField · width', type: "'hug' | 'fill' | number | string", default: 'showTime?260:180', desc: "콘텐츠 폭(hug)/부모 100%(fill)/고정. 미지정 시 시간 포함=260·아니면 180. 좁으면 말줄임(…)" },
   { name: 'DateField · variant', type: "'box' | 'text'", default: "'box'", desc: "'text'=박스 없는 인라인 텍스트형(Select 인라인형과 동일 비주얼). 직접 입력 없음(클릭=팝오버). 항상 hug, width는 'fill'만 반영" },
@@ -120,7 +120,7 @@ const USAGE_PROPS = [
   { name: 'TwoDepthList · separator', type: 'string', default: "':'", desc: "좌/우 분리 인풋 사이 구분자 표시·합성 기준 — 연/월 '.' · 시/분 ':'(아래 정렬)" },
   { name: 'TwoDepthList · editable', type: 'boolean', default: 'true', desc: '상단 input 직접 입력 허용(false면 readOnly로 값만 표시)' },
   { name: 'TwoDepthList · onInputApply', type: "(text) => string | null | {error:'left'|'right', message?}", default: '—', desc: '합성 텍스트로 좌/우 값 적용(파싱은 호출부). 성공=정규화 문자열, 실패={error:파트, message} — 해당 인풋 아래에 그 문구로 툴팁' },
-  { name: 'TwoDepthList · errorMessage', type: 'string', default: "'형식이 올바르지 않습니다.'", desc: '직접 입력 형식 오류 시 툴팁 메시지' },
+  { name: 'TwoDepthList · errorMessage', type: 'string', default: "'잘못된 양식입니다.'", desc: '직접 입력 형식 오류 시 툴팁 메시지' },
   { name: 'TwoDepthList · allowedChars', type: 'RegExp | null', default: '/\\d/', desc: '파트 입력 허용 문자(문자 1개씩 test) — 기본 숫자만(구분자는 UI가 표시), null이면 제한 없음' },
   { name: 'TwoDepthList · onInputChange', type: '(e) => void', default: '—', desc: '입력 변경 raw 이벤트(선택)' },
   { name: 'TwoDepthList · leftOptions / rightOptions', type: '{value,label,disabled?}[]', default: '[]', desc: '좌/우 컬럼 옵션' },
@@ -253,7 +253,7 @@ function DateFieldDemo() {
             value={errDate}
             onChange={setErrDate}
             error={!errDate}
-            errorMessage="날짜를 선택하세요"
+            errorMessage="필수 선택사항입니다."
           />
         </div>
       </div>
@@ -309,7 +309,7 @@ function TimeFieldDemo() {
       </div>
       <div>
         <p className="mb-spacing-4 text-12 text-font-icon-3">error (선택 시 사라짐)</p>
-        <TimeField value={errTime} onChange={setErrTime} error={!errTime} errorMessage="시간을 선택하세요" />
+        <TimeField value={errTime} onChange={setErrTime} error={!errTime} errorMessage="필수 선택사항입니다." />
       </div>
     </div>
   );
@@ -392,10 +392,10 @@ function YearMonthDemo({ showInput = true }) {
       onInputApply={(t) => {
         const [ys, ms] = t.split('.');
         if (!/^(\d{2}|\d{4})$/.test(ys.trim()))
-          return { error: 'left', message: '연도는 YYYY 형식으로 입력하세요 (예: 2026 · 26)' };
+          return { error: 'left', message: '잘못된 양식입니다.' };
         const mo = Number(ms);
         if (ms.trim() === '' || Number.isNaN(mo) || mo < 1 || mo > 12)
-          return { error: 'right', message: '월은 1~12로 입력하세요' };
+          return { error: 'right', message: '잘못된 양식입니다.' };
         const yyyy = ys.trim().length === 2 ? String(2000 + Number(ys)) : ys.trim();
         setY(yyyy);
         setM(String(mo));
@@ -424,9 +424,9 @@ function TimeListDemo({ showInput = true }) {
         const hh = Number(hs);
         const mm = Number(ms);
         if (hs.trim() === '' || Number.isNaN(hh) || hh > 23)
-          return { error: 'left', message: '시는 0~23으로 입력하세요' };
+          return { error: 'left', message: '잘못된 양식입니다.' };
         if (ms.trim() === '' || Number.isNaN(mm) || mm > 59)
-          return { error: 'right', message: '분은 0~59로 입력하세요' };
+          return { error: 'right', message: '잘못된 양식입니다.' };
         const HH = String(hh).padStart(2, '0');
         const MM = String(mm).padStart(2, '0');
         setH(HH);
@@ -445,7 +445,7 @@ function TimeListDemo({ showInput = true }) {
 
 export function DatePickerPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Date Picker</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         캘린더 날짜 선택 시스템 — DateField(트리거 필드) · DatePicker(단일/범위 · 시간 포함) ·

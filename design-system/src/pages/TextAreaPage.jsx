@@ -21,7 +21,7 @@ const [memo, setMemo] = useState('');
 <TextArea autoGrow />            // 무한 증가
 
 // 에러 — 테두리 대신 하단 툴팁(레이아웃 공간 차지 X)
-<TextArea error errorMessage="필수 입력정보 입니다" width={360} />`;
+<TextArea error errorMessage="필수 입력사항입니다." width={360} />`;
 
 const USAGE_PROPS = [
   { name: 'value / defaultValue', type: 'string', default: '—', desc: '제어/비제어 값' },
@@ -33,7 +33,7 @@ const USAGE_PROPS = [
   { name: 'maxLength', type: 'number', default: '—', desc: '최대 글자 수(입력 제한 + 카운터 분모)' },
   { name: 'showCount', type: 'boolean', default: 'true', desc: '글자 수 카운터(Figma countTxt). maxLength 있으면 N/max' },
   { name: 'disabled / readOnly', type: 'boolean', default: 'false', desc: '비활성 / 읽기 전용' },
-  { name: 'error / errorMessage', type: 'boolean / string', default: 'false / ""', desc: '에러 상태 + 하단 툴팁' },
+  { name: 'error / errorMessage', type: 'boolean / string', default: "false / '필수 입력사항입니다.'", desc: '에러 상태 + 하단 툴팁 (텍스트 red 400)' },
   { name: 'width', type: 'number | string', default: '320', desc: '너비 — 숫자=px, 문자열=CSS' },
   { name: 'textareaProps', type: 'object', default: '{}', desc: '내부 <textarea>에 전달할 속성' },
 ];
@@ -109,7 +109,7 @@ function Playground() {
           showCount={opts.showCount}
           maxLength={maxLength}
           error={opts.error}
-          errorMessage="에러 메시지 예시"
+          errorMessage="필수 입력사항입니다."
           disabled={opts.disabled}
           readOnly={opts.readOnly}
           width="100%"
@@ -133,7 +133,7 @@ function ValidationDemo() {
       onChange={(e) => setValue(e.target.value)}
       maxLength={100}
       error={value.trim() === ''}
-      errorMessage="필수 입력정보 입니다"
+      errorMessage="필수 입력사항입니다."
       width="100%"
     />
   );
@@ -141,7 +141,7 @@ function ValidationDemo() {
 
 export function TextAreaPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">TextArea</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         여러 줄 텍스트 입력 (solid 타입). Input의 멀티라인 버전으로, 하단에{' '}
@@ -170,7 +170,7 @@ export function TextAreaPage() {
         {/* Error — 툴팁이 아래로 오버레이되므로 행 하단에 여백을 둔다 */}
         <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
           <p className="pt-spacing-3 text-12 text-font-icon-3">Error</p>
-          <TextArea error errorMessage="필수 입력정보 입니다" maxLength={100} />
+          <TextArea error errorMessage="필수 입력사항입니다." maxLength={100} />
         </div>
       </div>
 

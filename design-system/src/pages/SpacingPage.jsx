@@ -7,7 +7,7 @@ const borderScale = Object.entries(borderWidth);
 
 export function SpacingPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold">Spacing</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         갭·마진·패딩에 사용하는 간격 토큰 — Figma "Spacing 토큰".<br />Tailwind 기본

@@ -59,7 +59,7 @@ function AlphaColorSwatch({ label, hex }) {
 
 export function BaseColorsPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold">Base Colors</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         베이스(프리미티브) 컬러 — Figma "베이직 칼라 토큰". 모노톤 그레이 스케일과

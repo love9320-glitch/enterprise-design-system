@@ -1,7 +1,7 @@
 import {
   baseColors,
   buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors, listColors, tagColors,
-  newTagColors, sideNavColors, lnbColors,
+  newTagColors, sideNavColors, lnbColors, layoutColors,
   checkboxColors, radioColors, switchColors, tabColors, segmentedColors,
   tableColors, modalColors, editorColors, calendarColors,
   conditionOrderSlotColors, conditionCardColors, formulaColors, builderAreaColors, toolbarColors,
@@ -47,6 +47,7 @@ const COMPONENTS = [
   { title: 'Tabs',                  prefix: 'tab',        tokens: tabColors },
   { title: 'Side Navigation',       prefix: 'side-nav',   tokens: sideNavColors },
   { title: 'LNB Menu',              prefix: 'lnb',        tokens: lnbColors },
+  { title: 'Layout',                prefix: 'layout',     tokens: layoutColors },
   { title: 'Segmented Tabs',        prefix: 'segmented',  tokens: segmentedColors },
   { title: 'Accordion',             prefix: 'accordion',  tokens: accordionColors },
   { title: 'Table',                 prefix: 'table',      tokens: tableColors },
@@ -94,7 +95,7 @@ function Swatch({ prefix, name, hex }) {
 
 export function ComponentColorsPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold">Component Colors</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         컴포넌트별 시멘틱 컬러 토큰(<span className="font-mono text-13">tokens/colors/*</span>).

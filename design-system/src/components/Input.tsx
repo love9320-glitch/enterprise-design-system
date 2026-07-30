@@ -8,7 +8,9 @@
 // 에러 표현 규칙: 에러는 인풋 테두리를 바꾸지 않고 "툴팁"으로만 표시한다.
 //  - 툴팁은 인풋 박스 아래에 absolute 오버레이로 띄워, 레이아웃 흐름과
 //    형제 컴포넌트 영역에 전혀 영향을 주지 않는다(공간을 차지하지 않음).
+import { useId } from 'react';
 import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
+import { REQUIRED_INPUT_MESSAGE } from '../utils/validationMessages';
 import { Tooltip } from './Tooltip';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰). 색은 시멘틱 토큰.
@@ -47,29 +49,37 @@ export function Input({
   disabled = false,
   readOnly = false,
   error = false,
-  errorMessage = '',
+  errorMessage = REQUIRED_INPUT_MESSAGE, // 표준 카피 자동 적용(규칙 21) — 필요 시만 덮어쓰기
   width = 200, // 너비: 숫자(px) 또는 CSS 길이 문자열('100%' 등). 미지정 시 200px
   className = '',
   inputProps = {},
   ...props
 }: InputProps) {
   const interactive = !disabled && !readOnly;
+  // 에러 툴팁 id — 표시 중일 때 aria-describedby로 연결(스크린리더가 같은 문구 낭독)
+  const errTipId = useId();
+  const showErrTip = error && !!errorMessage;
   const widthStyle = typeof width === 'number' ? `${width}px` : width;
   const sizeStyle = SIZE_STYLE[size] ?? SIZE_STYLE['32'];
   const isTransparent = variant === 'transparent';
 
-  const textColor = disabled
-    ? 'text-text-field-disabled-text'
-    : readOnly
-      ? 'text-text-field-readonly-text'
-      : 'text-text-field-filled-text';
+  // error(벨리데이션 툴팁 표시 중)면 값·플레이스홀더 모두 red 400 (2026-07-30 지시)
+  const textColor = error
+    ? 'text-text-field-error-text'
+    : disabled
+      ? 'text-text-field-disabled-text'
+      : readOnly
+        ? 'text-text-field-readonly-text'
+        : 'text-text-field-filled-text';
   // disabled면 플레이스홀더도 비활성 색(#c9c9c9) — TextArea와 동일 패턴(Figma disabled 스펙)
   // transparent는 default(플레이스홀더)도 filled와 같은 진한색(2026-07-27 지시)
-  const placeholderColor = disabled
-    ? 'placeholder:text-text-field-disabled-text'
-    : isTransparent
-      ? 'placeholder:text-text-field-filled-text'
-      : 'placeholder:text-text-field-default-text';
+  const placeholderColor = error
+    ? 'placeholder:text-text-field-error-text'
+    : disabled
+      ? 'placeholder:text-text-field-disabled-text'
+      : isTransparent
+        ? 'placeholder:text-text-field-filled-text'
+        : 'placeholder:text-text-field-default-text';
 
   return (
     <div
@@ -102,11 +112,16 @@ export function Input({
             : ''
         } disabled:cursor-not-allowed read-only:cursor-default ${textColor}`}
         {...inputProps}
+        aria-describedby={
+          [showErrTip ? errTipId : null, inputProps['aria-describedby']].filter(Boolean).join(' ') ||
+          undefined
+        }
       />
 
-      {/* 에러 툴팁 — absolute 오버레이라 인풋 아래 공간을 차지하지 않는다 */}
-      {error && errorMessage && (
-        <div className="absolute left-0 top-full z-10 mt-spacing-2">
+      {/* 에러 툴팁 — absolute 오버레이라 인풋 아래 공간을 차지하지 않는다.
+          role=alert: 등장 시 스크린리더가 즉시 낭독 + id로 aria-describedby 연결 */}
+      {showErrTip && (
+        <div id={errTipId} role="alert" className="absolute left-0 top-full z-10 mt-spacing-2">
           <Tooltip variant="error" beak="top">
             {errorMessage}
           </Tooltip>

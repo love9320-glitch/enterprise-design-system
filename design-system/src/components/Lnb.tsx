@@ -221,7 +221,7 @@ export function Lnb({
   const nav = (
     <nav
       style={height != null ? undefined : { width: widthStyle }}
-      className={`flex ${height != null ? 'w-full' : 'shrink-0'} flex-col gap-spacing-9 p-spacing-6 ${height == null ? className : ''}`}
+      className={`flex ${height != null ? 'w-full' : 'shrink-0'} flex-col gap-spacing-9 px-spacing-6 py-spacing-8 ${height == null ? className : ''}`}
       {...props}
     >
       {siteTitle != null && (

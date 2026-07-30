@@ -33,7 +33,7 @@ import { Input } from '../components/Input';
 
 // 에러는 컨트롤 자체 툴팁을 그대로 사용 (Field는 라벨만 소유)
 <Field label="이름" required>
-  <Input error errorMessage="필수 입력정보 입니다" />
+  <Input error errorMessage="필수 입력사항입니다." />
 </Field>`;
 
 const USAGE_PROPS = [
@@ -134,7 +134,7 @@ function ValidationDemo() {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         error={isEmpty}
-        errorMessage="필수 입력정보 입니다"
+        errorMessage="필수 입력사항입니다."
         width="100%"
       />
     </Field>
@@ -143,7 +143,7 @@ function ValidationDemo() {
 
 export function FieldPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Field</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         라벨 + 컨트롤(Input·Select·DateField 등)을 묶는 폼 행. 컨트롤은 손으로 다시 짜지 않고
@@ -302,7 +302,7 @@ export function FieldPage() {
           </div>
           <div className="grid grid-cols-[140px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
             <p className="pt-spacing-4 text-12 text-font-icon-3">error</p>
-            <EmailField options={EMAILS} error errorMessage="이메일을 선택하거나 입력해 주세요" width="100%" />
+            <EmailField options={EMAILS} error errorMessage="필수 입력사항입니다." width="100%" />
           </div>
         </div>
       </div>

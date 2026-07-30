@@ -55,7 +55,7 @@ const FIVE = [
 
 export function SegmentedTabsPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Segmented Tabs</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         회색 트랙 안에서 흰색 배경이 선택한 탭으로 <span className="text-font-icon-5">슬라이드</span>하며

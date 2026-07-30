@@ -35,7 +35,7 @@ const ROWS = [
 
 export function SearchBarPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Search Bar</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         돋보기 아이콘 + 입력 (solid 타입). <span className="text-font-icon-5">Hover</span>·

@@ -48,7 +48,7 @@ export function JobPostingTemplatePage() {
   // 채용 분야 등록 모달 안 '채용 분야 코드 등록' 클릭 → 코드 등록 모달을 위에 띄운다(2026-07-28 지시)
   const [codeOpen, setCodeOpen] = useState(false);
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Job Posting Template</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         채용 공고 설정 템플릿 — 공고 폼(Form Template B)과 채용 분야 테이블을 회색 아우터 박스로 묶습니다.{' '}

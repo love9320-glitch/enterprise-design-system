@@ -4,7 +4,7 @@ const fontIconScale = Object.entries(fontIconColors).sort((a, b) => b[0] - a[0])
 
 export function FontIconColorsPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold">Font / Icon Colors</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         폰트·아이콘용 시멘틱 컬러 — Figma "폰트 아이콘 칼라" 토큰.<br />베이스 그레이

@@ -13,6 +13,7 @@ import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
 import { ChevronRight, Copy, FolderInput, Layers2, Plus, RotateCcw, Trash2 } from 'lucide-react';
 import { ConditionOrderSlot } from './ConditionOrderSlot';
 import { Select, SelectChip } from './Select';
+import { REQUIRED_SELECT_MESSAGE } from '../utils/validationMessages';
 import { Button } from './Button';
 import { Table } from './Table';
 import type { TableColumn } from './Table';
@@ -140,11 +141,11 @@ export function JobPositionTemplate({
       상단의 기준 및 선택값을 선택해주세요.
     </>
   ),
-  // 검증 툴팁 카피 — '필수 선택'으로 통일(2026-07-28 지시, 규칙 15 띄어쓰기)
-  emptyValueMessage = '필수 선택',
-  emptyCriteriaMessage = '필수 선택',
-  emptyJobdaGroupMessage = '필수 선택',
-  emptyJobdaDutyMessage = '필수 선택',
+  // 검증 툴팁 카피 — 표준 '필수 선택사항입니다.'(2026-07-30 지시, 규칙 19)
+  emptyValueMessage = REQUIRED_SELECT_MESSAGE,
+  emptyCriteriaMessage = REQUIRED_SELECT_MESSAGE,
+  emptyJobdaGroupMessage = REQUIRED_SELECT_MESSAGE,
+  emptyJobdaDutyMessage = REQUIRED_SELECT_MESSAGE,
   registerCodeLabel = '채용 분야 코드 등록',
   onRegisterCode,
   showReset = true,

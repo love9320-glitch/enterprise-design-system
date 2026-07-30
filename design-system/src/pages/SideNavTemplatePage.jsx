@@ -268,7 +268,7 @@ function Playground() {
 
 export function SideNavTemplatePage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Side Navigation Template</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         좌측 <span className="text-font-icon-5">사이드 내비게이션</span>(추가 행 상단 내장) + 우측{' '}

@@ -38,7 +38,7 @@ const STATS = [
 
 export function HomePage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       {/* Hero */}
       <p className="mb-spacing-4 text-13 font-semibold uppercase tracking-wide text-font-icon-3">
         Design System

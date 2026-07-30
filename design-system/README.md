@@ -100,6 +100,13 @@ export default {
 | [SegmentedTabs](https://love9320-glitch.github.io/enterprise-design-system/#segmented-tabs) | `items` · `value/onChange` · `width` — 슬라이딩 pill |
 | [Pagination](https://love9320-glitch.github.io/enterprise-design-system/#pagination) | `page/onChange` · `totalCount` `pageSize/onPageSizeChange` · `maxButtons` |
 | [SideNavigation](https://love9320-glitch.github.io/enterprise-design-system/#side-navigation) | `width`(180·220·260) · `showAdd/onAdd` · 버튼: `selected` `icon` `showNewTag` |
+| [Lnb](https://love9320-glitch.github.io/enterprise-design-system/#lnb) | `groups`(1/2depth+sub) · `value/onChange` · `siteTitle` · `width/height`(지정 시 내부 스크롤) · `defaultExpanded` · 메뉴: `icon` `iconArea` `wrap` `disabled` |
+
+### 레이아웃
+
+| 컴포넌트 | 핵심 props |
+|---|---|
+| [AppLayout](https://love9320-glitch.github.io/enterprise-design-system/#layout) | 사이트 골격(템플릿 상위 계층): `gnb`/`lnb`/`rightPanel` 슬롯(null=미표시) · `panelMode`(auto·push·overlay·fullscreen — auto는 폭 1440 기준 반응형)+`panelBreakpoint`+`onPanelClose`(닫기 버튼+ESC) · `pageWidth`(readable 840·standard 1200·wide 1440·fluid)+`pagePadding`(24·32·40·none) · `lnbWidth`(180·220·260) · `rightPanelWidth`(360·480) |
 
 ### 데이터 표시 · 오버레이
 
@@ -136,6 +143,23 @@ export default {
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
 ## 변경 내역
+
+### v0.3.0 (2026-07-30)
+
+**신규**
+- **`AppLayout`** — 사이트 전체 구조 레이아웃(템플릿보다 한 단위 큰 계층): GNB(64px)·LNB·Main Content·Right Panel 슬롯 조립. Content/Page 분리(`pageWidth` readable/standard/wide/fluid + `pagePadding` 24/32/40), Right Panel 3모드(`panelMode` push/overlay/fullscreen + `auto` 반응형 — 폭 1440 기준 자동 전환, `onPanelClose`로 닫기 버튼+ESC), Divider 1px 별도 점유 규칙. 데모 사이트 셸도 AppLayout으로 교체(도그푸딩)
+- **`Lnb`** — 좌측 내비게이션 메뉴(1/2depth·서브메뉴, 사이트 타이틀 옵션, 내부 스크롤, 말줄임/전체 표시 옵션). 데모 사이트 사이드바 도그푸딩
+- **벨리데이션 접근성** — 에러 툴팁을 입력과 `aria-describedby`로 연결하고 `role="alert"` 부여(스크린리더가 같은 문구 낭독). Input·Select·DateField·TimeField·TextArea 공통
+- **벨리데이션 카피 표준 3종** — `utils/validationMessages`(`REQUIRED_INPUT_MESSAGE` "필수 입력사항입니다." / `REQUIRED_SELECT_MESSAGE` "필수 선택사항입니다." / `INVALID_FORMAT_MESSAGE` "잘못된 양식입니다.")를 export하고, 각 컴포넌트 `errorMessage`/`formatErrorMessage` **기본값**으로 적용 — `error=true`만 켜면 표준 문구 툴팁이 자동 표시
+
+**변경 주의(동작 변화)**
+- `errorMessage` 기본값이 `''`(툴팁 없음)에서 표준 카피로 바뀌어, **`error`만 주던 코드도 이제 툴팁이 뜹니다**(표시를 원치 않으면 `errorMessage=""` 지정)
+- 벨리데이션 에러 상태의 필드 텍스트·플레이스홀더가 **red 400**으로 표시됩니다(`text-field/error-text` 토큰)
+
+**개선**
+- Lnb 상하 패딩 20px(Figma 동기화), 신규 토큰: `layout/*`(gnb·main·panel bg) · `text-field/error-text` · `spacing-13`(40px)
+- 데모 사이트 페이지 폭 정책을 셸 일괄 관리로 개편(레이아웃 데모=Fluid+24 / 일반 페이지=1200+24), 레이아웃 새 창 미리보기(`#layout-preview`) 추가
+- Code Connect 확대: Tabs 계열·Tooltip·SearchBar·Input(solid/transparent) CLI 매핑(누적 43건), 에러 카피 표준을 Figma 스니펫에도 반영
 
 ### v0.2.0 (2026-07-28)
 

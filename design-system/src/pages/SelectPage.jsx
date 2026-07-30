@@ -19,7 +19,7 @@ const [v, setV] = useState('');
 
 // 펼침 방향 수동 지정 · 에러 툴팁
 <Select options={options} placement="top-left" />
-<Select options={options} error errorMessage="필수 선택입니다" />
+<Select options={options} error errorMessage="필수 선택사항입니다." />
 
 // 다중 선택 (multiple) — 값은 배열, 행 클릭=체크 토글(메뉴 유지)
 // 선택 라벨은 ', '로 이어 표시되고 넘치면 말줄임
@@ -31,7 +31,7 @@ const [vals, setVals] = useState([]);
 <Select variant="text" size="20" options={options} maxWidth={160} />
 // disabled·readOnly·error도 지원 (box와 동일)
 <Select variant="text" options={options} readOnly defaultValue="a" />
-<Select variant="text" options={options} error errorMessage="필수 선택입니다" />
+<Select variant="text" options={options} error errorMessage="필수 선택사항입니다." />
 
 // 셀렉트 그룹 — 셀렉트들을 일정 간격으로 묶는다 (간격 규칙은 ButtonGroup과 동일)
 import { SelectGroup } from '../components/SelectGroup';
@@ -56,8 +56,8 @@ const USAGE_PROPS = [
   { name: 'label', type: 'string', default: '—', desc: "내부 라벨(box 전용) — 값 선택 시 '라벨 ⋮ 값'으로 표시(구분자=점 2개 SVG 아이콘, 라벨 고정·값만 말줄임). 미선택 시엔 placeholder만. 외부 Label을 못 쓰는 좁은 배치의 대안" },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 열기/선택 차단' },
   { name: 'readOnly', type: 'boolean', default: 'false', desc: '읽기 전용 — 값 표시, 변경 불가' },
-  { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시' },
-  { name: 'errorMessage', type: 'string', default: "''", desc: '에러 툴팁 문구' },
+  { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시 + 트리거 텍스트 red 400' },
+  { name: 'errorMessage', type: 'string', default: "'필수 선택사항입니다.'", desc: '에러 툴팁 문구 — 표준 카피 자동 적용, 필요 시만 덮어쓰기' },
   { name: 'width', type: "number | string | 'hug' | 'fill'", default: '200', desc: "트리거 너비 — px/CSS 길이/'hug'(콘텐츠 맞춤). text variant는 기본 hug이며 'fill'이면 부모 전체 폭(텍스트 왼쪽·chevron 오른쪽 끝)" },
   { name: 'maxWidth', type: 'number | string', default: '—', desc: 'hug일 때 최대 너비 제한(넘으면 말줄임)' },
   { name: 'menuWidth', type: 'number | string', default: '—', desc: '드롭다운 너비 (미지정 시 box=트리거와 동일 / text=120px)' },
@@ -71,6 +71,7 @@ const USAGE_PROPS = [
   { name: 'SelectChip', type: '컴포넌트', default: '—', desc: '칩 비주얼 트리거의 Select(variant="chip" 별칭) — 클릭하면 동일한 팝오버 옵션 메뉴. 옵션·동작은 Select와 완전 동일' },
   { name: 'SelectChip · color', type: "'gray' | 'red' | 'blue' | 'black' | 'green' | 'violet' | 'pink' | 'orange'", default: "'gray'", desc: '칩 분류색 — Chip과 동일한 chip-* 토큰 재사용(default/hover, pressed=default). green/violet/pink/orange는 수식 함수 계열 대응(2026-07-15)' },
   { name: 'SelectChip · weight', type: "'normal' | 'semibold'", default: "'normal'", desc: '칩 텍스트 두께' },
+  { name: 'SelectChip · error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시 + 칩 텍스트 red 400 (box·text와 동일 계약)' },
   { name: 'defaultOpen', type: 'boolean', default: 'false', desc: '마운트 시 드롭다운 열림(1회성) — 생성 직후 바로 선택 시작하는 플로우용(스크리닝 수식 드롭 등)' },
   // SelectGroup
   { name: 'SelectGroup · children', type: 'ReactNode', default: '—', desc: '묶을 Select들 (fragment·조건부 렌더 평탄화)' },
@@ -103,7 +104,7 @@ const SEARCH_OPTIONS = [
 
 export function SelectPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Select</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         드롭다운 선택 (solid 타입). Input과 같은 필드 컨테이너에 오른쪽 화살표를 둔 형태로,
@@ -126,7 +127,7 @@ export function SelectPage() {
       {/* Error — 툴팁이 아래로 오버레이되므로 행 하단에 여백을 둔다 */}
       <div className="mt-spacing-7 grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
         <p className="pt-spacing-4 text-12 text-font-icon-3">Error</p>
-        <Select options={OPTIONS} error errorMessage="필수 선택입니다" />
+        <Select options={OPTIONS} error errorMessage="필수 선택사항입니다." />
       </div>
 
       {/* Select Chip */}
@@ -174,6 +175,14 @@ export function SelectPage() {
           <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
             <p className="text-12 text-font-icon-3">maxWidth 말줄임</p>
             <SelectChip options={OPTIONS} maxWidth={120} defaultValue="opt6" />
+          </div>
+          {/* 에러 툴팁이 칩 아래 오버레이라 겹치지 않게 여백 확보 */}
+          <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6 pb-spacing-8">
+            <p className="text-12 text-font-icon-3">error 벨리데이션</p>
+            <div className="flex items-center gap-spacing-5">
+              <SelectChip options={OPTIONS} error errorMessage="필수 선택사항입니다." />
+              <SelectChip options={OPTIONS} color="blue" error errorMessage="필수 선택사항입니다." defaultValue="opt1" />
+            </div>
           </div>
         </div>
       </div>
@@ -464,7 +473,7 @@ export function SelectPage() {
         {/* Error — 툴팁이 아래로 오버레이되므로 행 하단에 여백 */}
         <div className="mt-spacing-7 grid grid-cols-[140px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
           <p className="text-12 text-font-icon-3">error</p>
-          <Select variant="text" options={OPTIONS} error errorMessage="필수 선택입니다" placeholder="전체" />
+          <Select variant="text" options={OPTIONS} error errorMessage="필수 선택사항입니다." placeholder="전체" />
         </div>
 
         {/* 너비 (maxWidth) */}

@@ -50,7 +50,7 @@ export function AccordionPage() {
     ]);
 
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Accordion</h2>
       <p className="mb-spacing-8 text-13 text-font-icon-4">
         콘텐츠를 접고 펼치는 아코디언 — 항목 위·아래·사이는 Divider(default)로 구분합니다. 이름

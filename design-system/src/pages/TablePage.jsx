@@ -176,7 +176,7 @@ function Block({ title, desc, first = false, children }) {
 
 export function TablePage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Table</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         데이터 테이블 — 컬럼 정의(columns)와 데이터(rows)를 받아 렌더합니다.<br />선택(체크박스)·세로 스크롤(헤더 고정)·가로

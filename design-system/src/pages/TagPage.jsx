@@ -37,7 +37,7 @@ const NEW_TAG_PROPS = [
 
 export function TagPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Tag</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         상태·분류를 표시하는 작은 라벨. <code className="text-font-icon-5">color</code>(blue·red·gray·black)로
