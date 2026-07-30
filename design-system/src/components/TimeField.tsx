@@ -2,12 +2,13 @@
 // 시계 아이콘 + 'HH:MM' 값. 누르면 인풋 영역 없는 시/분 2depth 목록(TwoDepthList showInput=false)이 뜬다.
 //   - 직접 타이핑: "12:34"·"1:1"·"1230"·"011"(→01:01) → Enter/포커스 아웃 시 'HH:MM'로 정규화.
 //   - 숫자·콜론만 입력 가능. 필드 상태(default·hover·focused·filled·disabled·readOnly·error)는 tf-* 토큰.
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Clock as ClockIcon } from 'lucide-react';
 import { Popover } from './Popover';
 import { TwoDepthList } from './TwoDepthList';
 import { Tooltip } from './Tooltip';
+import { INVALID_FORMAT_MESSAGE, REQUIRED_SELECT_MESSAGE } from '../utils/validationMessages';
 
 const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-text-field-focused-line';
 const pad2 = (n: number) => String(n).padStart(2, '0');
@@ -50,8 +51,8 @@ export function TimeField({
   disabled = false,
   readOnly = false,
   error = false,
-  errorMessage = '',
-  formatErrorMessage = 'HH:MM 형식으로 입력하세요',
+  errorMessage = REQUIRED_SELECT_MESSAGE, // 표준 카피 자동 적용(규칙 21)
+  formatErrorMessage = INVALID_FORMAT_MESSAGE, // 직접 입력 형식 오류 — 표준 카피(규칙 21)
   // 너비: 'hug' | 'fill' | 숫자(px) | CSS 길이. 미지정 시 120. 좁으면 말줄임(…).
   width,
   className = '',
@@ -96,11 +97,14 @@ export function TimeField({
     applyValue(v);
   };
 
-  const textColor = disabled
-    ? 'text-text-field-disabled-text'
-    : readOnly
-      ? 'text-text-field-readonly-text'
-      : 'text-text-field-filled-text';
+  // error(벨리데이션 툴팁 표시 중)면 값·플레이스홀더 모두 red 400 (2026-07-30 지시)
+  const textColor = error || parseError
+    ? 'text-text-field-error-text'
+    : disabled
+      ? 'text-text-field-disabled-text'
+      : readOnly
+        ? 'text-text-field-readonly-text'
+        : 'text-text-field-filled-text';
   const iconColor = disabled
     ? 'text-text-field-disabled-icon'
     : readOnly
@@ -111,6 +115,9 @@ export function TimeField({
 
   const showErr = error || parseError;
   const errMsg = parseError ? formatErrorMessage : errorMessage;
+  // 에러 툴팁 id — 표시 중일 때 aria-describedby로 연결(스크린리더가 같은 문구 낭독)
+  const errTipId = useId();
+  const showErrTip = !!(showErr && errMsg && !open);
 
   // 너비 — 미지정 시 120. hug/fill 지원.
   const effWidth = width ?? 120;
@@ -140,6 +147,7 @@ export function TimeField({
           disabled={disabled}
           size={isHug ? hugSize : undefined}
           aria-invalid={showErr || undefined}
+          aria-describedby={showErrTip ? errTipId : undefined}
           onClick={(e) => e.stopPropagation()}
           onMouseEnter={(e) => {
             const el = e.currentTarget;
@@ -189,13 +197,15 @@ export function TimeField({
               e.currentTarget.blur();
             }
           }}
-          className={`bg-transparent text-14 outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed read-only:cursor-pointer ${textColor} ${
-            isHug ? 'w-auto' : 'min-w-0 flex-1 text-ellipsis'
-          }`}
+          className={`bg-transparent text-14 outline-none disabled:cursor-not-allowed read-only:cursor-pointer ${
+            error || parseError
+              ? 'placeholder:text-text-field-error-text'
+              : 'placeholder:text-text-field-default-text'
+          } ${textColor} ${isHug ? 'w-auto' : 'min-w-0 flex-1 text-ellipsis'}`}
         />
       </div>
-      {showErr && errMsg && !open && (
-        <div className="absolute left-0 top-full z-10 mt-spacing-2">
+      {showErrTip && (
+        <div id={errTipId} role="alert" className="absolute left-0 top-full z-10 mt-spacing-2">
           <Tooltip variant="error" beak="top">
             {errMsg}
           </Tooltip>

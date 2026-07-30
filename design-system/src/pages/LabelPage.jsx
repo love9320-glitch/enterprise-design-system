@@ -30,7 +30,7 @@ const SIZES = ['12', '13', '14', '15', '16'];
 
 export function LabelPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Label</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         폼 라벨 텍스트. Figma <code className="text-font-icon-5">label</code> 컴포넌트(사이즈 변형

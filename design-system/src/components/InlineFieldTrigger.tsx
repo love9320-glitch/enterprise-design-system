@@ -26,6 +26,7 @@ interface InlineFieldTriggerProps extends ComponentPropsWithoutRef<'span'> {
   chevron?: boolean; // 우측 화살표 표시 여부 — false면 텍스트만(DateField 인라인형 등)
   hoverUnderline?: boolean; // hover/포커스 시 텍스트 밑줄(기본 false — 2026-07-28 전 인라인형 통일)
   hoverGrayText?: boolean; // hover 시 텍스트 회색(font-icon-3 #878787, 기본 true — 전 인라인형 공통)
+  error?: boolean; // 벨리데이션 에러(툴팁 표시 중) — 텍스트 red 400
 }
 
 export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTriggerProps>(function InlineFieldTrigger(
@@ -42,6 +43,7 @@ export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTrigger
     chevron = true, // 우측 화살표 표시 여부 — false면 텍스트만
     hoverUnderline = false, // hover/포커스 시 텍스트 밑줄(2026-07-28 전 인라인형에서 제거)
     hoverGrayText = true, // hover 시 텍스트 회색(font-icon-3 #878787) — 전 인라인형 공통
+    error = false, // 벨리데이션 에러(툴팁 표시 중) — 텍스트 red 400
     className = '',
     ...props
   },
@@ -49,8 +51,14 @@ export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTrigger
 ) {
   const canInteract = interactive ?? (!disabled && !readOnly);
 
-  // 텍스트 색: disabled=흐림 / 열림=회색 / 그 외(readOnly·placeholder·filled)=진함
-  const textColor = disabled ? 'text-font-icon-2' : open ? 'text-font-icon-3' : 'text-font-icon-5';
+  // 텍스트 색: error=red 400(2026-07-30 지시) / disabled=흐림 / 열림=회색 / 그 외(readOnly·placeholder·filled)=진함
+  const textColor = error
+    ? 'text-text-field-error-text'
+    : disabled
+      ? 'text-font-icon-2'
+      : open
+        ? 'text-font-icon-3'
+        : 'text-font-icon-5';
   // 아이콘 색(리딩 아이콘·chevron 공통): disabled·readOnly=흐림 / 그 외=진함
   const iconColor = disabled || readOnly ? 'text-font-icon-2' : 'text-font-icon-5';
 

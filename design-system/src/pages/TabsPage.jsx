@@ -265,7 +265,7 @@ function Block({ title, desc, first = false, children }) {
 
 export function TabsPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Tabs</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         탭 — 여러 화면/섹션을 전환합니다. 선택 탭은 하단 2px underline, 그룹은 하단 1px 구분선.<br />

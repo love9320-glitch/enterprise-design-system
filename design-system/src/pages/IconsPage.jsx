@@ -113,7 +113,7 @@ const ICON_CATEGORIES = [
 
 export function IconsPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold">Icons</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         Lucide 아이콘(lucide-react) 기반 아이콘 시스템 — 기본 사이즈{' '}

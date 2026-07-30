@@ -35,6 +35,10 @@ const HEX = /#[0-9a-fA-F]{6}\b/;
 const STRAY_CHAR = /[\u00C0-\u00D6\u00D8-\u00F6\u00F8-\u024F]/;
 // ── 규칙 15: 카피 띄어쓰기 오류 후보 ──
 const COPY = /(할수|볼수|될수|만들수|쓸수|첫번째|두번째|세번째|여러개|몇개|선택시|입력시|클릭시)/;
+// ── 규칙 21: 벨리데이션 에러 카피 표준 — errorMessage/formatErrorMessage 리터럴은 3종만
+//    ('필수 입력사항입니다.' / '필수 선택사항입니다.' / '잘못된 양식입니다.' — utils/validationMessages.ts 상수 권장)
+const ERR_MSG_LITERAL = /(?:errorMessage|formatErrorMessage)\s*[=:]\s*\{?["']([^"']+)["']/;
+const STD_ERR_COPIES = new Set(['필수 입력사항입니다.', '필수 선택사항입니다.', '잘못된 양식입니다.']);
 
 for (const f of files) {
   const lines = readFileSync(f, 'utf8').split('\n');
@@ -47,6 +51,10 @@ for (const f of files) {
     if (STRAY_CHAR.test(raw)) push(errors, f, n, '이상 문자(라틴 확장 오입력)', raw);
     if (HEX.test(code) && !/tokens|swatch|checker/i.test(raw)) push(warnings, f, n, '1b HEX 하드코딩 후보', raw);
     if (COPY.test(raw) && !raw.trim().startsWith('//')) push(warnings, f, n, '15 카피 띄어쓰기 후보', raw);
+    // ── 규칙 21: 표준 3종 외 에러 카피 리터럴 후보(빈 문자열=툴팁 차단 의도라 제외) ──
+    const errCopy = code.match(ERR_MSG_LITERAL);
+    if (errCopy && errCopy[1] !== '' && !STD_ERR_COPIES.has(errCopy[1]))
+      push(warnings, f, n, '21 비표준 에러 카피 후보', raw);
     // ── 규칙 18: 모달 파일에서 페이지네이션 없는 고정 maxHeight 테이블 후보 ──
     if (isModalFile && /<Table[\s\S]*maxHeight=\{\d+\}/.test(code) && !/pagination/.test(code))
       push(warnings, f, n, '18 모달 고정 maxHeight 테이블 — fill 검토', raw);

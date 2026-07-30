@@ -6,7 +6,7 @@
 //   - 필드 외형/상태(default·hover·focused·filled·disabled·readOnly·error 툴팁)는 tf-* 토큰.
 //   - variant='text': 박스 없는 인라인 텍스트형(Select variant='text'와 동일 비주얼 — InlineFieldTrigger).
 //     클릭하면 팝오버가 열리고, 직접 입력은 없다(트리거 전용). size 24/14px · 20/12px, 항상 hug + maxWidth 말줄임.
-import { useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Calendar as CalendarIcon } from 'lucide-react';
 import { InlineFieldTrigger } from './InlineFieldTrigger';
@@ -14,6 +14,7 @@ import { Popover } from './Popover';
 import { DatePicker } from './DatePicker';
 import { Tooltip } from './Tooltip';
 import { formatDateTime, formatDateTimeRange } from '../utils/datetime';
+import { INVALID_FORMAT_MESSAGE, REQUIRED_SELECT_MESSAGE } from '../utils/validationMessages';
 
 // 편집 가능 상태의 테두리(ring) — SearchBar/Input과 동일(hover/focus-within 2px, tf-* 토큰)
 const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-text-field-focused-line';
@@ -186,8 +187,8 @@ export function DateField({
   disabled = false,
   readOnly = false,
   error = false,
-  errorMessage = '',
-  formatErrorMessage = '날짜 형식이 올바르지 않습니다.', // 직접 입력 형식 오류 메시지
+  errorMessage = REQUIRED_SELECT_MESSAGE, // 표준 카피 자동 적용(규칙 21)
+  formatErrorMessage = INVALID_FORMAT_MESSAGE, // 직접 입력 형식 오류 — 표준 카피(규칙 21)
   // 캘린더 선택 완료 시 자동 닫기 — 기본: 단일은 날짜 클릭 즉시 닫힘, 범위는 배경 클릭으로만 닫힘.
   // (showTime이면 시간도 골라야 하므로 true여도 닫지 않음)
   closeOnSelect = mode !== 'range',
@@ -293,11 +294,14 @@ export function DateField({
     }
   };
 
-  const textColor = disabled
-    ? 'text-text-field-disabled-text'
-    : readOnly
-      ? 'text-text-field-readonly-text'
-      : 'text-text-field-filled-text';
+  // error(벨리데이션 툴팁 표시 중)면 값·플레이스홀더 모두 red 400 (2026-07-30 지시)
+  const textColor = error || parseError
+    ? 'text-text-field-error-text'
+    : disabled
+      ? 'text-text-field-disabled-text'
+      : readOnly
+        ? 'text-text-field-readonly-text'
+        : 'text-text-field-filled-text';
   const iconColor = disabled
     ? 'text-text-field-disabled-icon'
     : readOnly
@@ -308,6 +312,9 @@ export function DateField({
 
   const showErr = error || parseError;
   const errMsg = parseError ? formatErrorMessage : errorMessage;
+  // 에러 툴팁 id — 표시 중일 때 aria-describedby로 연결(스크린리더가 같은 문구 낭독)
+  const errTipId = useId();
+  const showErrTip = !!(showErr && errMsg && !open);
 
   // 너비 — 미지정 시 showTime이면 260, 아니면 180. 'hug'=콘텐츠 폭, 'fill'=부모 100%.
   const effWidth = width ?? (showTime ? 260 : 180);
@@ -355,6 +362,7 @@ export function DateField({
           disabled={disabled}
           size={isHug ? hugSize : undefined}
           aria-invalid={showErr || undefined}
+          aria-describedby={showErrTip ? errTipId : undefined}
           onClick={(e) => e.stopPropagation()} // 입력칸 클릭은 팝오버 토글하지 않음
           onMouseEnter={(e) => {
             // 잘렸을 때만(scrollWidth>clientWidth) 전체 값 툴팁. 편집 중(focused)엔 표시 안 함.
@@ -406,14 +414,16 @@ export function DateField({
               e.currentTarget.blur();
             }
           }}
-          className={`bg-transparent text-14 outline-none placeholder:text-text-field-default-text disabled:cursor-not-allowed read-only:cursor-pointer ${textColor} ${
-            isHug ? 'w-auto' : 'min-w-0 flex-1 text-ellipsis'
-          }`}
+          className={`bg-transparent text-14 outline-none disabled:cursor-not-allowed read-only:cursor-pointer ${
+            error || parseError
+              ? 'placeholder:text-text-field-error-text'
+              : 'placeholder:text-text-field-default-text'
+          } ${textColor} ${isHug ? 'w-auto' : 'min-w-0 flex-1 text-ellipsis'}`}
         />
       </div>
       {/* 에러 툴팁 — 닫혔을 때만(열리면 picker와 겹침). 필드 아래 오버레이. */}
-      {showErr && errMsg && !open && (
-        <div className="absolute left-0 top-full z-10 mt-spacing-2">
+      {showErrTip && (
+        <div id={errTipId} role="alert" className="absolute left-0 top-full z-10 mt-spacing-2">
           <Tooltip variant="error" beak="top">
             {errMsg}
           </Tooltip>
@@ -455,12 +465,13 @@ export function DateField({
         fill={isTextFill}
         chevron={false} // 인라인형은 화살표 없이 아이콘+날짜만(2026-07-27 지시), hover 회색은 기본 동작
         aria-invalid={showErr || undefined}
+        aria-describedby={showErrTip ? errTipId : undefined}
       >
         {display || effPlaceholder}
       </InlineFieldTrigger>
       {/* 에러 툴팁 — box와 동일하게 닫혔을 때만 트리거 아래 오버레이 */}
-      {showErr && errMsg && !open && (
-        <span className="absolute left-0 top-full z-10 mt-spacing-2">
+      {showErrTip && (
+        <span id={errTipId} role="alert" className="absolute left-0 top-full z-10 mt-spacing-2">
           <Tooltip variant="error" beak="top">
             {errMsg}
           </Tooltip>

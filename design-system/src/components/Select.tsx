@@ -9,7 +9,7 @@
 //  - multiple: 체크박스 다중 선택 — value는 배열, 행 클릭=토글(메뉴 유지),
 //    트리거에는 선택 라벨을 ', '로 이어 표시하고 넘치면 말줄임(기존 TruncatingText 재사용)
 // 색은 tf-* 시멘틱 토큰(트리거)과 list-* 토큰(목록)을 사용.
-import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useCallback, useMemo, useId } from 'react';
 import type {
   ComponentPropsWithoutRef,
   KeyboardEvent as ReactKeyboardEvent,
@@ -31,6 +31,7 @@ import { usePopoverPosition } from './usePopoverPosition';
 import { useOutsideDismiss } from './useOutsideDismiss';
 import { pushPopoverLayer, removePopoverLayer, isTopPopoverLayer } from './popoverLayers';
 import type { OptionItem } from './formulaFunctions';
+import { REQUIRED_SELECT_MESSAGE } from '../utils/validationMessages';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰), 색은 hover-line(gray-900 알파) 공통.
 // 포커스 링은 focus-visible(키보드 포커스)에만 — 마우스 클릭/프레스 후 링이 남지 않게(2026-07-16 지시)
@@ -48,9 +49,11 @@ export type SelectPlacement = 'auto' | `${'top' | 'bottom' | 'auto'}-${'left' | 
 function ErrorTipPortal({
   anchorRef,
   children,
+  id,
 }: {
   anchorRef: RefObject<HTMLElement | null>;
   children: ReactNode;
+  id?: string; // aria-describedby 연결용(스크린리더가 같은 문구 낭독)
 }) {
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   useLayoutEffect(() => {
@@ -77,7 +80,12 @@ function ErrorTipPortal({
   }, [anchorRef]);
   if (!pos) return null;
   return createPortal(
-    <div style={{ position: 'fixed', top: pos.top, left: pos.left }} className="z-[1000]">
+    <div
+      id={id}
+      role="alert" // 등장 시 스크린리더 즉시 낭독
+      style={{ position: 'fixed', top: pos.top, left: pos.left }}
+      className="z-[1000]"
+    >
       <Tooltip variant="error" beak="top">
         {children}
       </Tooltip>
@@ -177,7 +185,7 @@ export function Select({
   disabled = false,
   readOnly = false,
   error = false,
-  errorMessage = '',
+  errorMessage = REQUIRED_SELECT_MESSAGE, // 표준 카피 자동 적용(규칙 21)
   width = 200,             // 트리거 너비: 숫자(px) | CSS 길이 | 'hug'(콘텐츠 맞춤). 미지정 시 200px
   maxWidth,                // 트리거 최대 너비(숫자 px/CSS 길이). hug일 때 제한용 — 넘으면 말줄임
   menuWidth,               // 드롭다운 너비: 숫자(px)/CSS 길이. 미지정 시 트리거와 동일
@@ -230,6 +238,9 @@ export function Select({
   const isTextFill = variant === 'text' && width === 'fill';
   // chip variant: 칩 비주얼 트리거(콘텐츠 hug) — 드롭다운·키보드·검색 동작은 box와 동일.
   const isChip = variant === 'chip';
+  // 에러 툴팁 id — 표시 중일 때 트리거 aria-describedby로 연결(스크린리더가 같은 문구 낭독)
+  const errTipId = useId();
+  const showErrTip = error && !!errorMessage && !open;
   // text/chip variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
   const effectiveMenuWidth = menuWidth ?? (isText || isChip ? 120 : undefined);
   const selectedOption = multiple ? undefined : options.find((o) => o.value === current);
@@ -461,13 +472,16 @@ export function Select({
   };
 
   // box variant 색 — tf-* 시멘틱 토큰. (text variant의 색·크기는 InlineFieldTrigger가 담당)
-  const textColor = disabled
-    ? 'text-text-field-disabled-text'
-    : readOnly
-      ? 'text-text-field-readonly-text'
-      : isPlaceholder
-        ? 'text-text-field-default-text'
-        : 'text-text-field-filled-text';
+  // error(벨리데이션 툴팁 표시 중)면 값·플레이스홀더 모두 red 400 (2026-07-30 지시)
+  const textColor = error
+    ? 'text-text-field-error-text'
+    : disabled
+      ? 'text-text-field-disabled-text'
+      : readOnly
+        ? 'text-text-field-readonly-text'
+        : isPlaceholder
+          ? 'text-text-field-default-text'
+          : 'text-text-field-filled-text';
 
   const iconColor = disabled
     ? 'text-text-field-disabled-icon'
@@ -495,6 +509,7 @@ export function Select({
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
+          aria-describedby={showErrTip ? errTipId : undefined}
           tabIndex={interactive ? 0 : -1}
           onClick={() => interactive && setOpen((o) => !o)}
           onKeyDown={onTriggerKeyDown}
@@ -505,6 +520,7 @@ export function Select({
           interactive={interactive}
           maxWidth={maxWidthStyle}
           fill={isTextFill}
+          error={error}
         >
           {displayLabel}
         </InlineFieldTrigger>
@@ -518,6 +534,7 @@ export function Select({
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
+          aria-describedby={showErrTip ? errTipId : undefined}
           tabIndex={interactive ? 0 : -1}
           onClick={() => interactive && setOpen((o) => !o)}
           onKeyDown={onTriggerKeyDown}
@@ -527,7 +544,9 @@ export function Select({
           } ${interactive ? 'cursor-pointer' : 'cursor-not-allowed'}`}
         >
           <TruncatingText
-            className={`min-w-0 text-12 ${weight === 'semibold' ? 'font-semibold' : 'font-normal'}`}
+            className={`min-w-0 text-12 ${weight === 'semibold' ? 'font-semibold' : 'font-normal'} ${
+              error ? 'text-text-field-error-text' : '' /* 에러 시 red 400 — chip-* 상속색 덮어씀 */
+            }`}
           >
             {displayLabel}
           </TruncatingText>
@@ -545,6 +564,7 @@ export function Select({
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
+          aria-describedby={showErrTip ? errTipId : undefined}
           tabIndex={interactive ? 0 : -1}
           onClick={() => interactive && setOpen((o) => !o)}
           onKeyDown={onTriggerKeyDown}
@@ -667,7 +687,11 @@ export function Select({
         )}
 
       {/* 에러 툴팁 — 닫혔을 때 필드 아래(포털·fixed — 테이블 등 클립/스크롤 컨테이너 영향 없음) */}
-      {error && errorMessage && !open && <ErrorTipPortal anchorRef={rootRef}>{errorMessage}</ErrorTipPortal>}
+      {showErrTip && (
+        <ErrorTipPortal anchorRef={rootRef} id={errTipId}>
+          {errorMessage}
+        </ErrorTipPortal>
+      )}
     </div>
   );
 }

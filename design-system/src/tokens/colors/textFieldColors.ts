@@ -34,6 +34,8 @@ export const textFieldColors = {
   'readonly-line': b['gray-900-00'],
   'readonly-text': b.gray[900],     // #0d0d0d (읽기는 진하게)
   'readonly-icon': b.gray[150],
+  // error — 벨리데이션 툴팁 표시 중인 필드의 텍스트(값·플레이스홀더)
+  'error-text': b.red[400],           // #e74a4a
   // tooltip — error(빨강) / normal(검정)
   'error-tooltip-bg':    b.red[400],  // #e74a4a
   'error-tooltip-text':  b.white,     // #ffffff

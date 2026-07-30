@@ -1,6 +1,6 @@
 import {
   fontFamily, fontSize, lineHeight,
-  baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors, jobPostingTemplateColors, lnbColors, dividerColors, chipColors,
+  baseColors, fontIconColors, buttonColors, textFieldColors, labelFieldColors, jobPostingTemplateColors, lnbColors, layoutColors, dividerColors, chipColors,
   listColors, tagColors, newTagColors, sideNavColors, conditionOrderSlotColors, conditionCardColors, formulaColors, builderAreaColors, toolbarColors, accordionColors, segmentedColors, checkboxColors, radioColors, switchColors, tabColors, tableColors, modalColors,
   editorColors, calendarColors,
   spacing, radius, borderWidth,
@@ -27,6 +27,7 @@ export default {
         'font-icon': fontIconColors,
         button: buttonColors,
         'text-field': textFieldColors,
+        layout: layoutColors,
         'label-field': labelFieldColors,
         'job-posting-template': jobPostingTemplateColors,
         lnb: lnbColors,

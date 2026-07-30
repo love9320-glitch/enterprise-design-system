@@ -110,7 +110,7 @@ function Playground() {
 
 export function ConditionOrderSlotPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Condition Order Slot</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         조건 카드를 배치·정렬하는 입력 슬롯입니다. 카드는 [⠿ · 조건 N. · 스위치] 헤더와 세부

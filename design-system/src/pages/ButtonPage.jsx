@@ -204,7 +204,7 @@ function VariantBlock({ variant, label, tinted = false, rows = BUTTON_ROWS }) {
 
 export function ButtonPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold">Button</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         Fill · Ghost · Line · Underline — 4가지 variant × 2가지 사이즈 × 레이아웃 × 3가지 상태

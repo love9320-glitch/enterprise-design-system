@@ -45,7 +45,7 @@ const CHIP_PROPS = [
 
 export function ChipPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Chip</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         제거형 칩. 텍스트 + <code className="text-font-icon-5">X</code>(삭제=

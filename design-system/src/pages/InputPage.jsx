@@ -14,7 +14,7 @@ const [name, setName] = useState('');
 <Input disabled />
 
 // 에러 — 테두리 대신 하단 툴팁으로 표시(레이아웃 공간 차지 X)
-<Input error errorMessage="필수 입력정보 입니다" width={320} />
+<Input error errorMessage="필수 입력사항입니다." width={320} />
 
 // transparent — 박스·배경·링 없이 텍스트만(가로 패딩 0). 플레이스홀더도 filled와 같은 진한색,
 // 포커스에도 링이 없다. 셀·구획 안에 인풋을 플러시하게 얹을 때 사용(에러 툴팁은 동일).
@@ -29,8 +29,8 @@ const USAGE_PROPS = [
   { name: 'variant', type: "'solid' | 'transparent'", default: "'solid'", desc: "'transparent'=박스·배경·링 없이 텍스트만(가로 패딩 0, 플레이스홀더도 진한색, hover·포커스 시 플레이스홀더만 gray 300, 포커스 링 없음)" },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 입력 차단(회색)' },
   { name: 'readOnly', type: 'boolean', default: 'false', desc: '읽기 전용 — 값은 보이되 편집 불가' },
-  { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시' },
-  { name: 'errorMessage', type: 'string', default: "''", desc: '에러 툴팁 문구 (error=true일 때 하단 오버레이)' },
+  { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시 + 텍스트 red 400' },
+  { name: 'errorMessage', type: 'string', default: "'필수 입력사항입니다.'", desc: '에러 툴팁 문구 (error=true일 때 하단 오버레이) — 표준 카피 자동 적용, 필요 시만 덮어쓰기' },
   { name: 'width', type: 'number | string', default: '200', desc: '너비 — 숫자=px, 문자열=CSS 길이' },
   { name: 'inputProps', type: 'object', default: '{}', desc: '내부 <input>에 전달할 속성' },
   { name: 'className', type: 'string', default: "''", desc: '컨테이너 추가 클래스' },
@@ -53,14 +53,14 @@ function ValidationDemo() {
       value={value}
       onChange={(e) => setValue(e.target.value)}
       error={isEmpty}
-      errorMessage="필수 입력정보 입니다"
+      errorMessage="필수 입력사항입니다."
     />
   );
 }
 
 export function InputPage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Input</h2>
       <p className="mb-spacing-8 text-14 text-font-icon-4">
         텍스트 입력 필드 (solid 타입). <span className="text-font-icon-5">Hover</span>·
@@ -82,7 +82,7 @@ export function InputPage() {
         {/* Error — 툴팁이 아래로 오버레이되므로 행 하단에 여백을 둔다 */}
         <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
           <p className="pt-spacing-4 text-12 text-font-icon-3">Error</p>
-          <Input error errorMessage="필수 입력정보 입니다" />
+          <Input error errorMessage="필수 입력사항입니다." />
         </div>
       </div>
 
@@ -109,7 +109,7 @@ export function InputPage() {
           ))}
           <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-9">
             <p className="pt-spacing-4 text-12 text-font-icon-3">Error</p>
-            <Input variant="transparent" error errorMessage="필수 입력정보 입니다" />
+            <Input variant="transparent" error errorMessage="필수 입력사항입니다." />
           </div>
         </div>
       </div>

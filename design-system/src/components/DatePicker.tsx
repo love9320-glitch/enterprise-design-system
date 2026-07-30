@@ -24,6 +24,7 @@ import { TwoDepthList } from './TwoDepthList';
 import { CalendarDayButton } from './CalendarDayButton';
 import { ScrollArea } from './ScrollArea';
 import { Tooltip } from './Tooltip';
+import { INVALID_FORMAT_MESSAGE } from '../utils/validationMessages';
 
 // ── 타입 ─────────────────────────────────────────────────────────────────
 // 범위 선택값 — mode='range'의 value 형태
@@ -267,8 +268,8 @@ function TimeField({ label, value, onChange, hourOptions, minuteOptions, placeme
           const [hs, ms] = t.split(':');
           const hh = Number(hs);
           const mm = Number(ms);
-          if (hs.trim() === '' || Number.isNaN(hh) || hh > 23) return { error: 'left', message: '시는 0~23으로 입력하세요' };
-          if (ms.trim() === '' || Number.isNaN(mm) || mm > 59) return { error: 'right', message: '분은 0~59로 입력하세요' };
+          if (hs.trim() === '' || Number.isNaN(hh) || hh > 23) return { error: 'left', message: INVALID_FORMAT_MESSAGE };
+          if (ms.trim() === '' || Number.isNaN(mm) || mm > 59) return { error: 'right', message: INVALID_FORMAT_MESSAGE };
           const v = `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
           onChange?.(v);
           return v;
@@ -540,10 +541,10 @@ export function DatePicker({
             onInputApply={(t) => {
               const [ys, ms] = t.split('.');
               if (!/^(\d{2}|\d{4})$/.test(ys.trim()))
-                return { error: 'left', message: '연도는 YYYY 형식으로 입력하세요 (예: 2026 · 26)' };
+                return { error: 'left', message: INVALID_FORMAT_MESSAGE };
               const mo = Number(ms);
               if (ms.trim() === '' || Number.isNaN(mo) || mo < 1 || mo > 12)
-                return { error: 'right', message: '월은 1~12로 입력하세요' };
+                return { error: 'right', message: INVALID_FORMAT_MESSAGE };
               const yr = ys.trim().length === 2 ? 2000 + Number(ys) : Number(ys);
               const next = new Date(yr, mo - 1, 1);
               setView(next);

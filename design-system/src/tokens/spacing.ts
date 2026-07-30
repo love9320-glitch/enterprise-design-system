@@ -18,4 +18,5 @@ export const spacing = {
   'spacing-10': '28px',
   'spacing-11': '32px',
   'spacing-12': '36px',
+  'spacing-13': '40px', // 레이아웃 Page 좌우 패딩 상한(2026-07-30 레이아웃 가이드라인 32~40px)
 };

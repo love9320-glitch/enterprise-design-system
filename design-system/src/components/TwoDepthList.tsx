@@ -15,6 +15,7 @@ import type {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { Input } from './Input';
+import { INVALID_FORMAT_MESSAGE } from '../utils/validationMessages';
 import { ListGroup } from './ListGroup';
 import { List } from './List';
 import { Tooltip } from './Tooltip';
@@ -114,7 +115,7 @@ export function TwoDepthList({
   // 실패 시 null(마지막 편집 인풋에 errorMessage 툴팁) 또는 { error:'left'|'right', message? }
   // (해당 파트 인풋 아래에 그 문구로 툴팁 — 파트별 문구는 호출부가 지정).
   onInputApply,
-  errorMessage = '형식이 올바르지 않습니다.', // 파트 지정이 없을 때의 기본 툴팁 메시지
+  errorMessage = INVALID_FORMAT_MESSAGE, // 파트 지정이 없을 때의 기본 툴팁 — 표준 카피(규칙 21)
   // 파트 입력 허용 문자(문자 1개씩 test) — 기본은 숫자만(구분자는 UI가 표시하므로 입력 불필요).
   allowedChars = /\d/,
   inputPlaceholder = '', // 'YYYY.MM'·'HH:MM'처럼 구분자 포함 문자열 — 구분자로 쪼개 좌/우 placeholder로 사용

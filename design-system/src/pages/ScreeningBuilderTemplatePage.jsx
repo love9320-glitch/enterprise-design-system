@@ -208,7 +208,7 @@ export function ScreeningBuilderTemplatePage() {
   const [saved, setSaved] = useState(null);
 
   return (
-    <section className="mx-auto max-w-[1452px] px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">
         Screening Builder Template
       </h2>

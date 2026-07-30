@@ -320,7 +320,7 @@ function PlaygroundB() {
 
 export function FormTemplatePage() {
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Form Template</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         폼 템플릿 — 두 타입을 제공합니다. <span className="text-font-icon-5">타입 A(여백 그리드형)</span>는

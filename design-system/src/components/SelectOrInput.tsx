@@ -51,7 +51,7 @@ export function SelectOrInput({
   disabled = false,
   readOnly = false,
   error = false,
-  errorMessage = '',        // Input의 에러 툴팁으로 표시
+  errorMessage,             // 에러 툴팁 문구 — 미지정 시 자식(Input/Select) 표준 카피 자동 적용(규칙 21)
   formatInput,              // (raw) => string — 직접 입력값 변환(예: 전화번호 하이픈). 입력 시마다 적용
   width = 400,              // 전체 너비: 숫자(px) | CSS 길이('100%' 등)
   selectWidth = 160,        // Select 너비 — 나머지는 Input이 채움
@@ -117,7 +117,7 @@ export function SelectOrInput({
           readOnly={readOnly}
           // Select 전용 모드에선 에러 툴팁을 Select가 담당(Input이 없으므로)
           error={!showInput && error}
-          errorMessage={!showInput ? errorMessage : ''}
+          errorMessage={!showInput ? errorMessage : ''} // 숨은 쪽은 ''로 툴팁 차단
         />
       )}
       {showInput && (

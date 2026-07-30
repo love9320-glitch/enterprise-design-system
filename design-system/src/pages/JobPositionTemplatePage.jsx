@@ -69,7 +69,7 @@ export function JobPositionTemplatePage() {
   const templateRef = useRef(null);
 
   return (
-    <section className="mx-auto max-w-5xl px-spacing-7 py-spacing-10 text-left">
+    <section className="py-spacing-10 text-left">
       <h2 className="mb-spacing-3 text-20 font-semibold text-font-icon-5">Job Position Template</h2>
       <p className="mb-spacing-9 text-14 text-font-icon-4">
         채용 분야 설정 템플릿. 상하 레이아웃(조건 카드 가로 배치)이고, 카드에는 드래그·사용 스위치·타이틀 없이 기준 셀렉트만 있으며,
