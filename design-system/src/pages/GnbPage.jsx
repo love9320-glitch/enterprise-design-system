@@ -30,14 +30,14 @@ const USAGE = `import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
   </GnbGroup>
 </Gnb>
 
-// 구분선은 그룹 '안'에서 사용한다
-<GnbGroup>
-  <Button variant="ghost" icon={Settings} aria-label="설정" />
+// 구분선은 그룹 '안'에서 필요한 위치에 자유롭게 추가한다(예: 종(알림) 버튼 왼쪽)
+<ButtonGroup gap="4">
+  <Button variant="ghost" icon={History} aria-label="히스토리" />
   <Divider direction="vertical" className="h-[16px] my-auto" />
-  <Avatar src="/user.jpg" alt="사용자" />
-</GnbGroup>
+  <Button variant="ghost" icon={Bell} aria-label="알림" />
+</ButtonGroup>
 
-// AppLayout gnb 슬롯에 조립 — 높이(56px)·하단 구분선은 AppLayout이 제공하므로 bar 없이
+// AppLayout gnb 슬롯에 조립 — 영역 높이(56px)와 하단 구분선은 AppLayout이 제공하므로 bar 없이
 <AppLayout gnb={<Gnb><GnbGroup fill>…</GnbGroup></Gnb>}>…</AppLayout>`;
 
 const USAGE_PROPS = [
@@ -126,10 +126,11 @@ export function GnbPage() {
       {/* 구성 규격 */}
       <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">구성 규격</h3>
       <ul className="list-disc space-y-spacing-3 pl-spacing-8 text-14 text-font-icon-4">
-        <li>바(bar=true) — 콘텐츠 높이 56px + 하단 구분선 1px(점유 57), 배경 layout/gnb-inline(그룹 사이 1px 갭으로 노출)</li>
-        <li>GnbGroup — 흰 배경(layout/gnb-bg), 좌우 패딩 spacing-7(16px), 내부 간격 spacing-6(12px, gap 옵션). fill이면 남는 폭 채움</li>
-        <li>그룹 구분 — 그룹 사이 1px 갭(spacing-1). 구분선(Divider)은 그룹 안에서만 사용(h-[16px] my-auto 조합)</li>
-        <li>역할(레이아웃 가이드라인) — 전역 탐색, 제품 전환, 계정 및 공통 액션</li>
+        <li><span className="text-font-icon-5">Gnb(루트)</span> — 그룹들을 담는 행. 배경 layout/gnb-inline(gray 50)이 그룹 사이 1px 갭(spacing-1)으로 비쳐 그룹을 구분한다(bar 여부와 무관한 공통 구조)</li>
+        <li><span className="text-font-icon-5">bar=true</span> — 단독 배치용 크롬: 높이 56px + 하단 구분선 1px(점유 57). AppLayout gnb 슬롯에서는 bar 없이 쓴다(높이·하단 구분선을 AppLayout이 제공)</li>
+        <li><span className="text-font-icon-5">GnbGroup</span> — 흰 배경(layout/gnb-bg)·높이 100%, 좌우 패딩 spacing-7(16px), 내부 간격 gap 옵션(기본 spacing-6=12px), fill=남는 폭 채움 + justify로 내부 정렬(start/between/end/center)</li>
+        <li><span className="text-font-icon-5">그룹 안 구분선</span> — Divider를 그룹 children의 원하는 위치·개수만큼 자유 배치: {'<Divider direction="vertical" className="h-[16px] my-auto" />'}</li>
+        <li><span className="text-font-icon-5">역할</span>(레이아웃 가이드라인) — 전역 탐색, 제품 전환, 계정 및 공통 액션</li>
       </ul>
     </section>
   );
