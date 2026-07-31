@@ -7,7 +7,7 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
@@ -100,6 +100,7 @@ const NAV_GROUPS = [
           { id: 'table', label: 'Table', Page: TablePage },
           { id: 'tag',   label: 'Tag',  Page: TagPage },
           { id: 'chip',  label: 'Chip', Page: ChipPage },
+          { id: 'avatar', label: 'Avatar', Page: AvatarPage },
           { id: 'tooltip-scrollbar', label: 'Tooltip / Scrollbar / Divider', Page: TooltipScrollbarPage },
           { id: 'accordion', label: 'Accordion', Page: AccordionPage },
         ],
