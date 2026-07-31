@@ -14,13 +14,13 @@ figma.connect(
   {
     props: {
       checked: figma.enum('state', {
-        'selected default': true,
-        'selected hover': true,
-        'selected disabled': true,
+        'Selected default': true,
+        'Selected hover': true,
+        'Selected disabled': true,
       }),
       disabled: figma.enum('state', {
-        'unselected disabled': true,
-        'selected disabled': true,
+        'Unselected disabled': true,
+        'Selected disabled': true,
       }),
       label: figma.string('right text'),
     },
@@ -36,7 +36,7 @@ figma.connect(
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7626-2874',
   {
     props: {
-      direction: figma.enum('direction', { horizontal: 'horizontal', vertical: 'vertical' }),
+      direction: figma.enum('direction', { Horizontal: 'horizontal', Vertical: 'vertical' }),
       gap: figma.enum('gap', { '3': '3', '4': '4', '5': '5', '6': '6', '7': '7' }),
     },
     example: ({ direction, gap }) => (

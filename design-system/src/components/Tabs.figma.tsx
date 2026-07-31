@@ -13,8 +13,8 @@ figma.connect(
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7371-3004',
   {
     props: {
-      selected: figma.enum('state', { 'tab select': true }),
-      disabled: figma.enum('state', { 'tab disabled': true }),
+      selected: figma.enum('state', { 'Tab select': true }),
+      disabled: figma.enum('state', { 'Tab disabled': true }),
     },
     example: ({ selected, disabled }) => (
       <TabMenu selected={selected} disabled={disabled}>
@@ -29,7 +29,7 @@ figma.connect(
   Tabs,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7371-3057',
   {
-    variant: { 'Property 1': 'hug' },
+    variant: { 'Property 1': 'Hug' },
     example: () => (
       <Tabs
         items={[
@@ -48,7 +48,7 @@ figma.connect(
   Tabs,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7371-3057',
   {
-    variant: { 'Property 1': 'hug onoff' },
+    variant: { 'Property 1': 'Hug onoff' },
     example: () => (
       <Tabs
         items={[
@@ -67,7 +67,7 @@ figma.connect(
   Tabs,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7371-3057',
   {
-    variant: { 'Property 1': 'fill' },
+    variant: { 'Property 1': 'Fill' },
     example: () => (
       <Tabs
         variant="fill"

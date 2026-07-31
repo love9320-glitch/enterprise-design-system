@@ -12,7 +12,7 @@ figma.connect(
   Avatar,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8942-19658',
   {
-    variant: { type: 'image' },
+    variant: { type: 'Image' },
     props: {
       size: figma.enum('size', {
         '24': '24',
@@ -31,7 +31,7 @@ figma.connect(
   Avatar,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8942-19658',
   {
-    variant: { type: 'text' },
+    variant: { type: 'Text' },
     props: {
       size: figma.enum('size', {
         '24': '24',

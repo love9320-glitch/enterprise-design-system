@@ -15,9 +15,9 @@ figma.connect(
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8843-8836',
   {
     props: {
-      depth: figma.enum('depth', { '1depth': '1', 'sub depth': 'sub' }),
-      selected: figma.enum('state', { select: true }),
-      disabled: figma.enum('state', { disabled: true }),
+      depth: figma.enum('depth', { '1depth': '1', 'Sub depth': 'sub' }),
+      selected: figma.enum('state', { Select: true }),
+      disabled: figma.enum('state', { Disabled: true }),
       label: figma.string('menu name'),
     },
     example: ({ depth, selected, disabled, label }) => (
@@ -31,8 +31,8 @@ figma.connect(
   {
     variant: { depth: '2depth' },
     props: {
-      open: figma.enum('state', { select: true }),
-      disabled: figma.enum('state', { disabled: true }),
+      open: figma.enum('state', { Select: true }),
+      disabled: figma.enum('state', { Disabled: true }),
       label: figma.string('menu name'),
     },
     example: ({ open, disabled, label }) => (
