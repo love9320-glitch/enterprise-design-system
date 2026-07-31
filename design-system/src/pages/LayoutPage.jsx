@@ -4,9 +4,11 @@ import { LAYOUT_DEMO_MENU } from './layoutDemoMenu';
 import { AppLayout } from '../components/AppLayout';
 import { Lnb } from '../components/Lnb';
 import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
+import { RightPanel } from '../components/RightPanel';
+import { Button } from '../components/Button';
+import { ButtonGroup } from '../components/ButtonGroup';
 import { Avatar } from '../components/Avatar';
 import DEMO_IMG from '../assets/avatar-sample.png';
-import { Button } from '../components/Button';
 import { Checkbox } from '../components/Checkbox';
 import { Select } from '../components/Select';
 import { Divider } from '../components/Divider';
@@ -15,6 +17,9 @@ import { UsageExample } from '../components/UsageExample';
 const USAGE = `import { AppLayout } from '../components/AppLayout';
 import { Lnb } from '../components/Lnb';
 import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
+import { RightPanel } from '../components/RightPanel';
+import { Button } from '../components/Button';
+import { ButtonGroup } from '../components/ButtonGroup';
 import { Avatar } from '../components/Avatar';
 import DEMO_IMG from '../assets/avatar-sample.png';
 
@@ -43,10 +48,10 @@ const USAGE_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: 'Page Container 콘텐츠 — Content(fill 영역)와 분리된 실제 UI 컨테이너. pageWidth 최대 폭 + 중앙 정렬' },
   { name: 'gnb', type: 'ReactNode', default: 'null', desc: 'GNB 바(56px+하단 구분선 1px=57) — Gnb 컴포넌트(그룹 구조) 권장. null이면 미표시(집중 모드 등 세로 공간 확보)' },
   { name: 'lnb', type: 'ReactNode', default: 'null', desc: 'LNB — 현재 제품/업무 영역 로컬 탐색. <Lnb width="100%" height="100%"> 권장. null이면 Hidden' },
-  { name: 'rightPanel', type: 'ReactNode', default: 'null', desc: 'Right Panel(360px) — AI·상세 정보·활동 기록 등 보조 작업 영역(Secondary Workspace). null이면 Closed' },
+  { name: 'rightPanel', type: 'ReactNode', default: 'null', desc: 'Right Panel 슬롯 — RightPanel 컴포넌트(width="fill", onClose 연결) 조립 권장. null이면 Closed' },
   { name: 'panelMode', type: "'auto' | 'push' | 'overlay' | 'fullscreen'", default: "'auto'", desc: 'auto=레이아웃 폭 반응형(breakpoint 이상 Push·미만 Overlay 자동 전환) / push=본문 축소·지속 병행(Pinned) / overlay=본문 위 겹침·dim 없음·일시적 보조 / fullscreen=작업 영역 전체·집중형' },
   { name: 'panelBreakpoint', type: 'number', default: '1440', desc: 'auto 모드 전환 기준 폭(px) — 레이아웃 폭이 이상이면 Push, 미만이면 Overlay' },
-  { name: 'onPanelClose', type: '() => void', default: '—', desc: 'overlay/fullscreen 명시적 닫기 버튼 + ESC 닫기 — 닫은 뒤 포커스 복귀는 호출부 책임' },
+  { name: 'onPanelClose', type: '() => void', default: '—', desc: 'overlay/fullscreen ESC 닫기 — 명시적 닫기 버튼은 RightPanel onClose로 제공(닫은 뒤 포커스 복귀는 호출부 책임)' },
   { name: 'pageWidth', type: "'readable' | 'standard' | 'wide' | 'fluid'", default: "'standard'", desc: 'Page 최대 폭 — 840(문서·긴 텍스트) / 1200(폼·상세) / 1440(대시보드) / 무제한(테이블·빌더)' },
   { name: 'pagePadding', type: "'24' | '32' | '40' | 'none'", default: "'32'", desc: 'Page 좌우 패딩(spacing-9/11/13) — none은 템플릿이 자체 패딩을 가질 때' },
   { name: 'height', type: 'number | string', default: "'100vh'", desc: '레이아웃 전체 높이 — 앱 셸은 100vh, 데모 등 부분 배치는 px/CSS 길이' },
@@ -111,17 +116,29 @@ function DemoMainContent({ panelUsed, panelOpen, onTogglePanel }) {
   );
 }
 
-function DemoRightPanel() {
+function DemoRightPanel({ onClose }) {
+  // RightPanel 컴포넌트 조립(2026-07-31) — 헤더(타이틀+닫기)/바디(스크롤)/푸터 3단 표준 구조
   return (
-    <div className="space-y-spacing-6">
-      <div className="flex h-[32px] items-center">
-              <p className="text-20 font-semibold leading-20 text-font-icon-5">Right Panel</p>
-            </div>
+    <RightPanel
+      width="fill"
+      title="라이트 패널 타이틀"
+      onClose={onClose}
+      bodyPadding
+      footer={
+        <div className="flex w-full items-center justify-between">
+          <p className="text-14 text-font-icon-5">컴포넌트 영역</p>
+          <ButtonGroup gap="5">
+            <Button variant="line">취소</Button>
+            <Button variant="fill">저장</Button>
+          </ButtonGroup>
+        </div>
+      }
+    >
       <p className="text-14 text-font-icon-4">
         AI Assistant·지원자/채용 상세 정보·속성 및 조건 편집·활동 기록·미리보기·다음 액션 등 현재
         작업에 필요한 보조 기능을 수용하는 Secondary Workspace입니다(AI 전용 영역으로 고정하지 않음).
       </p>
-    </div>
+    </RightPanel>
   );
 }
 
@@ -189,7 +206,7 @@ export function LayoutPage() {
             ) : null
           }
           lnbWidth={lnbWidth}
-          rightPanel={panelOpen ? <DemoRightPanel /> : null}
+          rightPanel={panelOpen ? <DemoRightPanel onClose={() => setPanelState('closed')} /> : null}
           panelMode={panelOpen ? panelState : 'auto'}
           rightPanelWidth={Number(panelWidth)}
           onPanelClose={() => setPanelState('closed')}

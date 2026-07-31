@@ -9,6 +9,7 @@ export { jobPostingTemplateColors } from './colors/jobPostingTemplateColors';
 export { lnbColors } from './colors/lnbColors';
 export { layoutColors } from './colors/layoutColors';
 export { avatarColors } from './colors/avatarColors';
+export { rightPanelColors } from './colors/rightPanelColors';
 export { dividerColors } from './colors/dividerColors';
 export { chipColors } from './colors/chipColors';
 export { listColors } from './colors/listColors';

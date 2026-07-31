@@ -15,8 +15,6 @@
 //   % 상한이 동작하므로(ScrollArea 판례) 영역 래퍼에 h-full을 명시한다.
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
-import { X } from 'lucide-react';
-import { Button } from './Button';
 import { Divider } from './Divider';
 import { ScrollArea } from './ScrollArea';
 
@@ -126,19 +124,9 @@ export function AppLayout({
     </div>
   );
 
-  // 패널 본체(공통) — 독립 스크롤 + 선택적 닫기 버튼
-  const panelBody = (
-    <div className="relative h-full">
-      {onPanelClose && (isOverlay || isFullscreen) && (
-        <div className="absolute right-spacing-4 top-spacing-4 z-10">
-          <Button variant="ghost" icon={X} aria-label="패널 닫기" onClick={onPanelClose} />
-        </div>
-      )}
-      <ScrollArea maxHeight="100%" style={{ height: '100%' }}>
-        <div className="p-spacing-8">{rightPanel}</div>
-      </ScrollArea>
-    </div>
-  );
+  // 패널 본체 — 크롬(헤더·닫기 버튼·스크롤·패딩)은 슬롯 콘텐츠가 담당.
+  // RightPanel 컴포넌트(width="fill", onClose=onPanelClose 연결) 조립을 권장한다(2026-07-31 개정).
+  const panelBody = <div className="h-full min-w-0">{rightPanel}</div>;
 
   return (
     <div ref={rootRef} style={rootStyle} className={`flex min-h-0 flex-col ${className}`}>

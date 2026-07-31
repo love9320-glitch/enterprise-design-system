@@ -4,6 +4,7 @@ import { LAYOUT_DEMO_MENU } from './layoutDemoMenu';
 import { AppLayout } from '../components/AppLayout';
 import { Lnb } from '../components/Lnb';
 import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
+import { RightPanel } from '../components/RightPanel';
 import { Avatar } from '../components/Avatar';
 import DEMO_IMG from '../assets/avatar-sample.png';
 import { Button } from '../components/Button';
@@ -65,15 +66,18 @@ export function LayoutPreviewPage() {
       lnbWidth={lnbWidth}
       rightPanel={
         panelOpen ? (
-          <div className="space-y-spacing-6">
-            <div className="flex h-[32px] items-center">
-              <p className="text-20 font-semibold leading-20 text-font-icon-5">Right Panel</p>
-            </div>
+          /* RightPanel 컴포넌트 조립(2026-07-31) — 헤더/바디 표준 구조 */
+          <RightPanel
+            width="fill"
+            title="라이트 패널 타이틀"
+            onClose={() => setPanelState('closed')}
+            bodyPadding
+          >
             <p className="text-14 text-font-icon-4">
               AI Assistant·지원자/채용 상세 정보·속성 및 조건 편집·활동 기록·미리보기·다음 액션 등 현재
               작업에 필요한 보조 기능을 수용하는 Secondary Workspace입니다(AI 전용 영역으로 고정하지 않음).
             </p>
-          </div>
+          </RightPanel>
         ) : null
       }
       panelMode={panelOpen ? panelState : 'auto'}
