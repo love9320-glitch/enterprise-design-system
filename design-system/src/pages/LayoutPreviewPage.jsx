@@ -3,6 +3,9 @@ import { PanelRight, PanelRightClose } from 'lucide-react';
 import { LAYOUT_DEMO_MENU } from './layoutDemoMenu';
 import { AppLayout } from '../components/AppLayout';
 import { Lnb } from '../components/Lnb';
+import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
+import { Avatar } from '../components/Avatar';
+import DEMO_IMG from '../assets/avatar-sample.png';
 import { Button } from '../components/Button';
 
 // 레이아웃 전체 화면 미리보기(데모 전용 숨은 라우트 — 내비게이션 미등록).
@@ -37,7 +40,15 @@ export function LayoutPreviewPage() {
     <AppLayout
       gnb={
         showGnb ? (
-          <span className="text-20 font-semibold leading-25 text-font-icon-5">GNB</span>
+          /* GNB 컴포넌트(그룹 구조) 적용 — fill 그룹(로고) + 아바타 그룹(2026-07-31) */
+          <Gnb>
+            <GnbGroup fill justify="between">
+              <GnbLogo>GNB</GnbLogo>
+            </GnbGroup>
+            <GnbGroup>
+              <Avatar src={DEMO_IMG} alt="사용자" interactive={false} />
+            </GnbGroup>
+          </Gnb>
         ) : null
       }
       lnb={

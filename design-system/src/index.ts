@@ -24,6 +24,7 @@ export * from './components/JobPostingTemplate';
 export * from './components/Lnb';
 export * from './components/AppLayout';
 export * from './components/Avatar';
+export * from './components/Gnb';
 export * from './components/ImageUploadButton';
 export * from './components/ImageUploadMenu';
 export * from './components/InlineFieldTrigger';

@@ -7,7 +7,7 @@
 //   - Right Panel 모드 — push(본문 폭을 줄여 공간 확보·지속 병행 작업) / overlay(본문 위 겹침 —
 //     dim 없음·좌측 구분선+그림자·독립 스크롤·일시적 보조 작업) / fullscreen(작업 영역 전체·집중형).
 //     onPanelClose를 주면 명시적 닫기 버튼 + ESC(overlay·fullscreen) 닫기를 제공한다.
-//   - Divider 점유 규칙 — 각 영역 폭(GNB 64 / LNB 180·220·260 / Panel 360·480)은 '콘텐츠 크기'
+//   - Divider 점유 규칙 — 각 영역 폭(GNB 56 / LNB 180·220·260 / Panel 360·480)은 '콘텐츠 크기'
 //     기준이고 구분선 1px는 별도 요소로 점유(+1). 내부 레이아웃은 구분선의 영향을 받지 않는다.
 // 각 영역은 슬롯(ReactNode)이며 null이면 그 영역 자체가 빠진다(Figma gnb/lnb/rightPanel 토글과 동일).
 // 색은 layout-* 시멘틱 토큰, 구분선은 DS Divider(divider-* 토큰) 재사용.
@@ -144,7 +144,9 @@ export function AppLayout({
     <div ref={rootRef} style={rootStyle} className={`flex min-h-0 flex-col ${className}`}>
       {gnb != null && (
         <header className="shrink-0">
-          <div className="flex h-[64px] items-center bg-layout-gnb-bg px-spacing-8">{gnb}</div>
+          {/* 크롬(배경·패딩)은 슬롯 콘텐츠가 담당 — Gnb(그룹 구조: 흰 그룹+1px 갭 배경) 권장.
+              일반 노드를 넣으면 GnbGroup fill로 감싸는 조립을 권장한다(2026-07-31 그룹 개정) */}
+          <div className="h-[56px] bg-layout-gnb-bg">{gnb}</div>
           <Divider />
         </header>
       )}
