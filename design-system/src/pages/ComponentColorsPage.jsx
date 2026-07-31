@@ -1,7 +1,7 @@
 import {
   baseColors,
   buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors, listColors, tagColors,
-  newTagColors, sideNavColors, lnbColors, layoutColors, avatarColors,
+  newTagColors, sideNavColors, lnbColors, layoutColors, avatarColors, rightPanelColors,
   checkboxColors, radioColors, switchColors, tabColors, segmentedColors,
   tableColors, modalColors, editorColors, calendarColors,
   conditionOrderSlotColors, conditionCardColors, formulaColors, builderAreaColors, toolbarColors,
@@ -49,6 +49,7 @@ const COMPONENTS = [
   { title: 'LNB Menu',              prefix: 'lnb',        tokens: lnbColors },
   { title: 'Layout',                prefix: 'layout',     tokens: layoutColors },
   { title: 'Avatar',                prefix: 'avatar',     tokens: avatarColors },
+  { title: 'Right Panel',           prefix: 'right-panel', tokens: rightPanelColors },
   { title: 'Segmented Tabs',        prefix: 'segmented',  tokens: segmentedColors },
   { title: 'Accordion',             prefix: 'accordion',  tokens: accordionColors },
   { title: 'Table',                 prefix: 'table',      tokens: tableColors },

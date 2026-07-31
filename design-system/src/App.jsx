@@ -7,7 +7,7 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage, RightPanelPage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
@@ -122,6 +122,7 @@ const NAV_GROUPS = [
     label: '레이아웃',
     items: [
       { id: 'layout', label: 'Layout', Page: LayoutPage },
+      { id: 'right-panel', label: 'Right Panel', Page: RightPanelPage },
     ],
   },
   {
