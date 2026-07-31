@@ -18,18 +18,18 @@ import DEMO_IMG from '../assets/avatar-sample.png'; // Figma 시안 샘플 이�
 <Avatar initial="G" interactive={false} />
 
 // 사이즈 6단
-<Avatar initial="G" size="16" /> … <Avatar initial="G" size="56" />`;
+<Avatar initial="G" size="24" /> … <Avatar initial="G" size="56" />`;
 
 const USAGE_PROPS = [
   { name: 'src', type: 'string | null', default: 'null', desc: '이미지 URL — 있으면 image 타입(사진), 없으면 text 타입(이니셜)' },
   { name: 'initial', type: 'ReactNode', default: "''", desc: 'text 타입 이니셜(보통 1글자) — image 타입에선 alt 대체값으로도 사용' },
   { name: 'alt', type: 'string', default: '—', desc: '이미지 대체 텍스트(image 타입)' },
-  { name: 'size', type: "'16' | '24' | '32' | '40' | '48' | '56'", default: "'32'", desc: '지름(px) — Figma 6단' },
+  { name: 'size', type: "'24' | '32' | '40' | '48' | '56'", default: "'32'", desc: '지름(px) 5단' },
   { name: 'interactive', type: 'boolean', default: 'true', desc: 'false면 hover 효과·클릭·포커스 차단(정적 표시용, span 렌더). true면 button 시맨틱+포커스 링' },
   { name: 'onClick', type: '(e) => void', default: '—', desc: '클릭 콜백(interactive일 때만 동작)' },
 ];
 
-const SIZES = ['16', '24', '32', '40', '48', '56'];
+const SIZES = ['24', '32', '40', '48', '56'];
 
 export function AvatarPage() {
   const [interactive, setInteractive] = useState(true);
@@ -58,7 +58,7 @@ export function AvatarPage() {
       </div>
       <div className="space-y-spacing-7">
         <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
-          <p className="text-12 text-font-icon-3">image · 사이즈 6단</p>
+          <p className="text-12 text-font-icon-3">image · 사이즈 5단</p>
           <div className="flex flex-wrap items-end gap-spacing-6">
             {SIZES.map((s) => (
               <Avatar key={s} src={DEMO_IMG} alt={`${s}px 아바타`} size={s} interactive={interactive} />
@@ -66,7 +66,7 @@ export function AvatarPage() {
           </div>
         </div>
         <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
-          <p className="text-12 text-font-icon-3">text · 사이즈 6단</p>
+          <p className="text-12 text-font-icon-3">text · 사이즈 5단</p>
           <div className="flex flex-wrap items-end gap-spacing-6">
             {SIZES.map((s) => (
               <Avatar key={s} initial="G" size={s} interactive={interactive} />

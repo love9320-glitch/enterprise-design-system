@@ -3,13 +3,12 @@
 //   - state: Default/Hover는 CSS로 자동, Pressed는 Figma가 Default 색을 재사용하므로 별도 스타일 없음.
 //   - interactive=false면 hover 효과·클릭·포커스를 전부 차단(정적 표시용, 2026-07-31 지시).
 //     interactive(기본)일 때는 button 시맨틱(키보드 접근 가능), 아닐 때는 span으로 렌더한다.
-//   - size: 16~56(Figma 6단). 이니셜 글자 크기는 등록 텍스트 토큰으로 근사(32=14px는 Figma 스펙).
+//   - size: 24~56 5단(Figma의 16은 2026-07-31 지시로 코드에서 제외). 이니셜 글자 크기는 등록 텍스트 토큰으로 근사(32=14px는 Figma 스펙).
 // 색은 avatar-* 시멘틱 토큰(avatar/* Figma 변수 1:1), 라운드는 round-00(완전 원형)만 사용.
 import type { ComponentPropsWithoutRef, MouseEvent, ReactNode } from 'react';
 
 // 사이즈별 지름(px)과 이니셜 텍스트 토큰 — 32(14px)만 Figma 스펙, 나머지는 비례 근사(등록 토큰만)
 const SIZE_STYLE = {
-  '16': { box: 'h-[16px] w-[16px]', text: 'text-12' },
   '24': { box: 'h-[24px] w-[24px]', text: 'text-12' },
   '32': { box: 'h-[32px] w-[32px]', text: 'text-14' }, // Figma: semibold 14/24
   '40': { box: 'h-[40px] w-[40px]', text: 'text-14' },
@@ -21,7 +20,7 @@ interface AvatarProps extends Omit<ComponentPropsWithoutRef<'button'>, 'children
   src?: string | null; // 이미지 URL — 있으면 image 타입, 없으면 text 타입(이니셜)
   alt?: string; // 이미지 대체 텍스트(image 타입) — 미지정 시 initial 사용
   initial?: ReactNode; // 이니셜(text 타입 표시 문자, 보통 1글자)
-  size?: keyof typeof SIZE_STYLE; // '16' | '24' | '32'(기본) | '40' | '48' | '56'
+  size?: keyof typeof SIZE_STYLE; // '24' | '32'(기본) | '40' | '48' | '56' (16은 2026-07-31 지시로 제외)
   interactive?: boolean; // false면 hover 효과·클릭·포커스 차단(정적 표시용). 기본 true
   onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
 }
@@ -30,7 +29,7 @@ export function Avatar({
   src = null, // 이미지 URL — 있으면 image 타입
   alt,
   initial = '', // 이니셜(text 타입 표시 문자)
-  size = '32', // '16' | '24' | '32' | '40' | '48' | '56'
+  size = '32', // '24' | '32' | '40' | '48' | '56'
   interactive = true, // false면 hover 효과·클릭·포커스 차단(정적 표시용)
   onClick,
   className = '',
