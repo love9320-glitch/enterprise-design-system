@@ -78,7 +78,7 @@ export default {
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [Input](https://love9320-glitch.github.io/enterprise-design-system/#input) | `value/onChange` · `placeholder` · `size`(32·22) · `variant`(solid·transparent — 투명은 박스·링 없이 텍스트만) · `width` · `disabled` `readOnly` · `error`+`errorMessage`(툴팁) · `inputProps` |
+| [Input](https://love9320-glitch.github.io/enterprise-design-system/#input) | `value/onChange` · `placeholder` · `size`(32·22) · `variant`(solid·transparent — 투명은 박스·링 없이 텍스트만) · `width` · `disabled` `readOnly` · `error`+`errorMessage`(툴팁 — 기본 표준 카피 "필수 입력사항입니다." 자동, 텍스트 red 400, aria-describedby 연결) · `inputProps` |
 | [TextArea](https://love9320-glitch.github.io/enterprise-design-system/#textarea) | Input과 동일 계열 + 자동 높이·오버레이 스크롤바 · `maxLength` 카운터 |
 | [SearchBar](https://love9320-glitch.github.io/enterprise-design-system/#search-bar) | `value/onChange` · `onSubmit(value)` · `placeholder` · `width` |
 | [Select](https://love9320-glitch.github.io/enterprise-design-system/#select) | `options[{value,label,disabled?}]` · `value/onChange({target:{value}})` · `multiple`(+`confirm` 확인 푸터) · `searchable` · `variant`(box·text·chip) · `label`(내부 라벨) · `placement` `menuWidth` |
@@ -106,7 +106,9 @@ export default {
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [AppLayout](https://love9320-glitch.github.io/enterprise-design-system/#layout) | 사이트 골격(템플릿 상위 계층): `gnb`/`lnb`/`rightPanel` 슬롯(null=미표시) · `panelMode`(auto·push·overlay·fullscreen — auto는 폭 1440 기준 반응형)+`panelBreakpoint`+`onPanelClose`(닫기 버튼+ESC) · `pageWidth`(readable 840·standard 1200·wide 1440·fluid)+`pagePadding`(24·32·40·none) · `lnbWidth`(180·220·260) · `rightPanelWidth`(360·480) |
+| [AppLayout](https://love9320-glitch.github.io/enterprise-design-system/#layout) | 사이트 골격(템플릿 상위 계층): `gnb`(56px+구분선 1px — Gnb 조립 권장)/`lnb`/`rightPanel`(RightPanel 조립 권장) 슬롯(null=미표시) · `panelMode`(auto·push·overlay·fullscreen — auto는 폭 1440 기준 반응형)+`panelBreakpoint`+`onPanelClose`(ESC 닫기) · `pageWidth`(readable 840·standard 1200·wide 1440·fluid)+`pagePadding`(24·32·40·none) · `lnbWidth`(180·220·260) · `rightPanelWidth`(360·480) |
+| [Gnb / GnbGroup / GnbLogo](https://love9320-glitch.github.io/enterprise-design-system/#gnb) | 글로벌 내비 바(그룹 조립): GnbGroup을 자유 추가/삭제(그룹 사이 1px 갭 자동 구분) · Group: `fill` `justify`(start·between·end·center) `gap` · Gnb: `bar`(단독 배치 크롬 56px+구분선) · 구분선은 그룹 안 자유 배치 |
+| [RightPanel](https://love9320-glitch.github.io/enterprise-design-system/#right-panel) | 보조 작업 패널(헤더/바디/푸터 3단+1px 헤어라인): `title`(null=헤더 미표시) · `onClose`(닫기 X) · `footer`(자유 슬롯, null=미표시) · `width`(360·480·fill) · `bodyPadding` — 바디는 내부 스크롤 |
 
 ### 데이터 표시 · 오버레이
 
@@ -115,6 +117,7 @@ export default {
 | [Table](https://love9320-glitch.github.io/enterprise-design-system/#table) | `columns[{key,label,width?,render?,filter?,headerMenu?}]` · `rows` · `selectable`+`selectedIds/onSelectChange` · `sort/filters`(controlled 가능) · `maxHeight`(sticky 헤더) · `bordered` · `draggableRows`+`onRowsReorder`(행 드래그, `dragHandleColKey`로 그립을 셀 안에) |
 | [Tag / NewTag](https://love9320-glitch.github.io/enterprise-design-system/#tag) | `color`(blue·red·gray·black) · `width` / NewTag: 원형 N 뱃지 |
 | [Chip](https://love9320-glitch.github.io/enterprise-design-system/#chip) | `color`(8색) · `onRemove`(X 버튼) |
+| [Avatar](https://love9320-glitch.github.io/enterprise-design-system/#avatar) | `src`(있으면 사진, 없으면 이니셜) · `initial` · `size`(24~56 5단) · `interactive`(false=hover·클릭·포커스 차단, 정적 표시) · `onClick` |
 | [Tooltip / Divider / ScrollArea](https://love9320-glitch.github.io/enterprise-design-system/#tooltip-scrollbar) | Tooltip: `variant` `beak` / Divider: `direction` `color` / ScrollArea: `maxHeight` 오버레이 스크롤 |
 | [Accordion / AccordionItem](https://love9320-glitch.github.io/enterprise-design-system/#accordion) | Item: `title` · `defaultOpen/open` · `nameEditable/onTitleChange` · `deletable/onDelete` |
 | [Modal 계열](https://love9320-glitch.github.io/enterprise-design-system/#modal) | `Modal`(범용)·`FormModal`(취소/저장+form)·`AlertModal`·`ConfirmModal`(재확인 체크) — 공통: `open/onClose` · `title` · `size`(sm~4xl·fill) · `confirmText/onConfirm` · `footerStart`. 포커스 트랩·복원 내장 |
@@ -136,13 +139,16 @@ export default {
 
 ### 기능 훅·유틸 (커스텀용)
 
-`usePopoverPosition` · `useOutsideDismiss` · `useFocusTrap` · `usePanelKeyboard` · `useHoverTooltip` · `popoverLayers` · `Slot` · `applySort/applyColumnFilters/compareValues` · `iconCellWidth` · `formatDate/formatDateTime/formatDateTimeRange` · `formatPhoneNumber` — 용도·조립 예시는 [커스텀 가이드](https://love9320-glitch.github.io/enterprise-design-system/#customization) 3단계 참조.
+`usePopoverPosition` · `useOutsideDismiss` · `useFocusTrap` · `usePanelKeyboard` · `useHoverTooltip` · `popoverLayers` · `Slot` · `applySort/applyColumnFilters/compareValues` · `iconCellWidth` · `formatDate/formatDateTime/formatDateTimeRange` · `formatPhoneNumber` · `REQUIRED_INPUT_MESSAGE/REQUIRED_SELECT_MESSAGE/INVALID_FORMAT_MESSAGE`(벨리데이션 표준 카피) — 용도·조립 예시는 [커스텀 가이드](https://love9320-glitch.github.io/enterprise-design-system/#customization) 3단계 참조.
 
 ## 규칙·문서
 
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
 ## 변경 내역
+
+### v1.0.1 (2026-07-31)
+- 문서 업데이트 — 컴포넌트 API 표에 Gnb/GnbGroup/GnbLogo·RightPanel·Avatar 추가, AppLayout 최신 API 반영, 벨리데이션 표준 카피 상수 안내
 
 ### v1.0.0 (2026-07-31) — 정식 릴리스 🎉
 
