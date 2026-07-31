@@ -9,7 +9,6 @@ import { Button } from '../components/Button';
 import { ButtonGroup } from '../components/ButtonGroup';
 import { Avatar } from '../components/Avatar';
 import DEMO_IMG from '../assets/avatar-sample.png';
-import { Button } from '../components/Button';
 import { Checkbox } from '../components/Checkbox';
 import { Select } from '../components/Select';
 import { Divider } from '../components/Divider';
