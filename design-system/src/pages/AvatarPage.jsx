@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { Avatar } from '../components/Avatar';
+import DEMO_IMG from '../assets/avatar-sample.png'; // Figma 시안 샘플 이미지(8942:19689)
 import { Checkbox } from '../components/Checkbox';
 import { Divider } from '../components/Divider';
 import { UsageExample } from '../components/UsageExample';
 
 const USAGE = `import { Avatar } from '../components/Avatar';
+import DEMO_IMG from '../assets/avatar-sample.png'; // Figma 시안 샘플 이미지(8942:19689)
 
 // text 타입 — 이니셜 + 파란 배경(hover 시 진한 파랑)
 <Avatar initial="G" onClick={openProfile} />
@@ -28,12 +30,6 @@ const USAGE_PROPS = [
 ];
 
 const SIZES = ['16', '24', '32', '40', '48', '56'];
-// 데모 이미지 — 외부 의존 없이 data URI 그라디언트(고정 시드)
-const DEMO_IMG =
-  'data:image/svg+xml,' +
-  encodeURIComponent(
-    '<svg xmlns="http://www.w3.org/2000/svg" width="112" height="112"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f2b3c5"/><stop offset="0.5" stop-color="#e9edf2"/><stop offset="1" stop-color="#26356d"/></linearGradient></defs><rect width="112" height="112" fill="url(#g)"/></svg>',
-  );
 
 export function AvatarPage() {
   const [interactive, setInteractive] = useState(true);
