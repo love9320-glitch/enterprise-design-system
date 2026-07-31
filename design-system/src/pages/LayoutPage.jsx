@@ -3,6 +3,9 @@ import { PanelRight, PanelRightClose, ExternalLink } from 'lucide-react';
 import { LAYOUT_DEMO_MENU } from './layoutDemoMenu';
 import { AppLayout } from '../components/AppLayout';
 import { Lnb } from '../components/Lnb';
+import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
+import { Avatar } from '../components/Avatar';
+import DEMO_IMG from '../assets/avatar-sample.png';
 import { Button } from '../components/Button';
 import { Checkbox } from '../components/Checkbox';
 import { Select } from '../components/Select';
@@ -11,6 +14,9 @@ import { UsageExample } from '../components/UsageExample';
 
 const USAGE = `import { AppLayout } from '../components/AppLayout';
 import { Lnb } from '../components/Lnb';
+import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
+import { Avatar } from '../components/Avatar';
+import DEMO_IMG from '../assets/avatar-sample.png';
 
 // App Shell — GNB·LNB·Main·Right Panel을 슬롯으로 조립(템플릿보다 한 단위 큰 계층)
 <AppLayout
@@ -35,7 +41,7 @@ import { Lnb } from '../components/Lnb';
 
 const USAGE_PROPS = [
   { name: 'children', type: 'ReactNode', default: '—', desc: 'Page Container 콘텐츠 — Content(fill 영역)와 분리된 실제 UI 컨테이너. pageWidth 최대 폭 + 중앙 정렬' },
-  { name: 'gnb', type: 'ReactNode', default: 'null', desc: 'GNB 바(64px) — 전역 탐색·제품 전환·계정. null이면 미표시(집중 모드 등 세로 공간 확보)' },
+  { name: 'gnb', type: 'ReactNode', default: 'null', desc: 'GNB 바(56px+하단 구분선 1px=57) — Gnb 컴포넌트(그룹 구조) 권장. null이면 미표시(집중 모드 등 세로 공간 확보)' },
   { name: 'lnb', type: 'ReactNode', default: 'null', desc: 'LNB — 현재 제품/업무 영역 로컬 탐색. <Lnb width="100%" height="100%"> 권장. null이면 Hidden' },
   { name: 'rightPanel', type: 'ReactNode', default: 'null', desc: 'Right Panel(360px) — AI·상세 정보·활동 기록 등 보조 작업 영역(Secondary Workspace). null이면 Closed' },
   { name: 'panelMode', type: "'auto' | 'push' | 'overlay' | 'fullscreen'", default: "'auto'", desc: 'auto=레이아웃 폭 반응형(breakpoint 이상 Push·미만 Overlay 자동 전환) / push=본문 축소·지속 병행(Pinned) / overlay=본문 위 겹침·dim 없음·일시적 보조 / fullscreen=작업 영역 전체·집중형' },
@@ -160,7 +166,15 @@ export function LayoutPage() {
           height={height}
           gnb={
             showGnb ? (
-              <span className="text-20 font-semibold leading-25 text-font-icon-5">GNB</span>
+              /* GNB 컴포넌트(그룹 구조) 적용 — fill 그룹(로고) + 아바타 그룹(2026-07-31) */
+              <Gnb>
+                <GnbGroup fill justify="between">
+                  <GnbLogo>GNB</GnbLogo>
+                </GnbGroup>
+                <GnbGroup>
+                  <Avatar src={DEMO_IMG} alt="사용자" interactive={false} />
+                </GnbGroup>
+              </Gnb>
             ) : null
           }
           lnb={
@@ -201,7 +215,7 @@ export function LayoutPage() {
       <UsageExample
         code={USAGE}
         props={USAGE_PROPS}
-        note="영역 폭(GNB 64 / LNB 180·220·260 / Panel 360·480)은 콘텐츠 크기 기준이고 구분선 1px는 별도 점유(+1)입니다. 레이아웃 계산에는 점유 크기를 사용하세요."
+        note="영역 폭(GNB 56 / LNB 180·220·260 / Panel 360·480)은 콘텐츠 크기 기준이고 구분선 1px는 별도 점유(+1)입니다. 레이아웃 계산에는 점유 크기를 사용하세요."
       />
 
       {/* 통합 플레이그라운드 */}
@@ -236,7 +250,7 @@ export function LayoutPage() {
       {/* App Shell 구조 */}
       <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">App Shell 구조와 Divider 점유 규칙</h3>
       <ul className="list-disc space-y-spacing-3 pl-spacing-8 text-14 text-font-icon-4">
-        <li><span className="text-font-icon-5">GNB</span> — 64px(+하단 구분선 1px = 65), 좌우 패딩 spacing-8(20px) · 전역 탐색, 제품 전환, 계정 및 공통 액션</li>
+        <li><span className="text-font-icon-5">GNB</span> — 56px(+하단 구분선 1px = 57), Gnb 그룹 구조(흰 그룹+1px 갭) · 전역 탐색, 제품 전환, 계정 및 공통 액션</li>
         <li><span className="text-font-icon-5">LNB</span> — 180 | 220 | 260px 3단(+우측 구분선 1px) · 현재 제품/업무 영역의 로컬 탐색</li>
         <li><span className="text-font-icon-5">Main Content</span> — Fill(min-width 0) · 화면에 따라 유동적으로 확장되는 핵심 작업 영역. 계산식: Main = Viewport − LNB − Right Panel</li>
         <li><span className="text-font-icon-5">Right Panel</span> — 360px(+좌측 구분선 1px = 361) · AI, 상세 정보, 속성, 활동 기록 등 보조 작업 영역</li>

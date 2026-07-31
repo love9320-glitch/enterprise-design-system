@@ -7,13 +7,14 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
 import { ScrollArea } from './components/ScrollArea';
 import { AppLayout } from './components/AppLayout';
 import { Lnb } from './components/Lnb';
+import { Gnb, GnbGroup } from './components/Gnb';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Select } from './components/Select';
 import { Tag } from './components/Tag';
@@ -92,6 +93,7 @@ const NAV_GROUPS = [
           { id: 'pagination', label: 'Pagination', Page: PaginationPage },
           { id: 'side-navigation', label: 'Side Navigation', Page: SideNavigationPage },
           { id: 'lnb', label: 'LNB Menu', Page: LnbPage },
+          { id: 'gnb', label: 'GNB', Page: GnbPage },
         ],
       },
       {
@@ -248,29 +250,32 @@ export default function App() {
         pagePadding="none"
         mainScroll={false}
         gnb={
-          <div className="flex w-full items-center justify-between">
-            <div className="flex items-center gap-spacing-5">
-              {/* 심볼 — font-icon-5 사각 + 흰 이니셜(임시 로고, 추후 브랜드 자산으로 교체 가능) */}
-              <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-round-4 bg-font-icon-5 text-12 font-semibold text-font-icon-1">
-                DS
-              </span>
-              <h1 className="text-16 font-semibold text-font-icon-5">ATS Design System</h1>
-              {/* 버전 배지 — package.json version 직접 참조(하드코딩 금지, 2026-07-28) */}
-              <Tag color="gray">v{pkgVersion}</Tag>
-            </div>
-            {/* 전역 컴포넌트 검색 — 선택 즉시 해당 데모 페이지로 이동(선택 후 트리거는 비움) */}
-            <Select
-              width={240}
-              searchable
-              placeholder="컴포넌트 검색"
-              searchPlaceholder="이름으로 검색"
-              options={ALL_ITEMS.map((it) => ({ value: it.id, label: it.label }))}
-              value={null}
-              onChange={(e) => {
-                window.location.hash = e.target.value;
-              }}
-            />
-          </div>
+          /* GNB 그룹 구조 도그푸딩(2026-07-31) — 단일 fill 그룹(좌 로고 · 우 검색 셀렉트) */
+          <Gnb>
+            <GnbGroup fill justify="between">
+              <div className="flex items-center gap-spacing-5">
+                {/* 심볼 — font-icon-5 사각 + 흰 이니셜(임시 로고, 추후 브랜드 자산으로 교체 가능) */}
+                <span className="flex h-[28px] w-[28px] shrink-0 items-center justify-center rounded-round-4 bg-font-icon-5 text-12 font-semibold text-font-icon-1">
+                  DS
+                </span>
+                <h1 className="text-16 font-semibold text-font-icon-5">ATS Design System</h1>
+                {/* 버전 배지 — package.json version 직접 참조(하드코딩 금지, 2026-07-28) */}
+                <Tag color="gray">v{pkgVersion}</Tag>
+              </div>
+              {/* 전역 컴포넌트 검색 — 선택 즉시 해당 데모 페이지로 이동(선택 후 트리거는 비움) */}
+              <Select
+                width={240}
+                searchable
+                placeholder="컴포넌트 검색"
+                searchPlaceholder="이름으로 검색"
+                options={ALL_ITEMS.map((it) => ({ value: it.id, label: it.label }))}
+                value={null}
+                onChange={(e) => {
+                  window.location.hash = e.target.value;
+                }}
+              />
+            </GnbGroup>
+          </Gnb>
         }
         lnb={<Sidebar active={activeId} onSelect={navigate} />}
       >

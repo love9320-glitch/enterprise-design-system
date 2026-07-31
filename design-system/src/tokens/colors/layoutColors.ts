@@ -8,7 +8,8 @@ import { baseColors } from '../colors';
 const b = baseColors.base;
 
 export const layoutColors = {
-  'gnb-bg': b.white, // #ffffff — GNB 바 배경 (Figma gnb/bg)
+  'gnb-bg': b.white, // #ffffff — GNB 그룹 배경 (Figma gnb/bg)
+  'gnb-inline': b.gray[50], // #f2f2f2 — GNB 그룹 사이 1px 갭으로 비치는 배경 (Figma gnb/inline)
   'main-bg': b.white, // #ffffff — 메인 콘텐츠 영역 배경 (Figma bg)
   'panel-bg': b.white, // #ffffff — 우측 패널 배경 (Figma bg)
 };
