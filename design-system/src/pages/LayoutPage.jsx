@@ -304,9 +304,9 @@ export function LayoutPage() {
       {/* Workspace 표시 상태 */}
       <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">Workspace 표시 상태와 집중 모드</h3>
       <ul className="list-disc space-y-spacing-3 pl-spacing-8 text-14 text-font-icon-4">
-        <li>상태 모델 — GNB: <span className="text-font-icon-5">Visible | Hidden</span>(세로 공간 확보) · LNB: <span className="text-font-icon-5">Expanded(180/220/260) | Compact | Hidden</span>(가로 공간 확보 — Compact 64~72px 아이콘 모드는 Lnb 컴포넌트 확장 예정) · Right Panel: <span className="text-font-icon-5">Closed | Overlay | Pinned</span> · Main Content: 항상 표시</li>
+        <li>상태 모델 — GNB: <span className="text-font-icon-5">Visible | Hidden</span>(세로 공간 확보) · LNB: <span className="text-font-icon-5">Expanded(180/220/260) | Hidden</span>(가로 공간 확보) · Right Panel: <span className="text-font-icon-5">Closed | Overlay | Pinned</span> · Main Content: 항상 표시</li>
         <li><span className="text-font-icon-5">Focus Mode</span> — GNB·LNB 숨김 + 패널 Closed로 Main Content만 남기는 상태. 스크리닝 빌더·대규모 테이블처럼 작업 공간이 중요한 화면에 적합. 진입/종료는 동일 위치의 명시적 컨트롤로, 복구 수단(버튼·단축키)을 항상 제공</li>
-        <li>공간 부족 시 우선순위 — ① GNB 숨김/축소 → ② Panel Pinned→Overlay → ③ LNB Compact→Hidden → ④ Main Content 최소 폭 유지. 숨김은 공간 확보를 위한 선택이며 복구 가능성과 작업 연속성(현재 위치·저장 상태·필수 알림)을 항상 보장한다</li>
+        <li>공간 부족 시 우선순위 — ① GNB 숨김/축소 → ② Panel Pinned→Overlay → ③ LNB Hidden → ④ Main Content 최소 폭 유지. 숨김은 공간 확보를 위한 선택이며 복구 가능성과 작업 연속성(현재 위치·저장 상태·필수 알림)을 항상 보장한다</li>
       </ul>
     </section>
   );
