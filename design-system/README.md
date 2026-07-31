@@ -144,7 +144,21 @@ export default {
 
 ## 변경 내역
 
-### v0.3.0 (2026-07-30)
+### v1.0.0 (2026-07-31) — 정식 릴리스 🎉
+
+레이아웃 시스템(AppLayout·Gnb·RightPanel)까지 갖춰 정식 버전으로 올립니다. npm 미배포였던 v0.3.0 변경 내역을 포함합니다.
+
+**신규**
+- **`Gnb` / `GnbGroup` / `GnbLogo`** — 글로벌 내비게이션 바(그룹 조립 구조): 그룹을 자유 추가/삭제, 그룹 사이 1px 갭으로 `layout/gnb-inline` 배경 노출, 구분선은 그룹 안 자유 배치, `bar` 모드(56px+하단 구분선 1px)
+- **`RightPanel`** — 보조 작업 영역 표준 구조: 헤더(타이틀+닫기 X)/바디(내부 스크롤·자유 슬롯)/푸터(자유 슬롯) 3단+1px 헤어라인, 슬롯 null=영역 미표시, `width` 360/480/fill(Fullscreen)
+- **`Avatar`** — 이미지/이니셜(text) 자동 전환, size 24~56 5단, hover(text=blue 500·image=오버레이), `interactive=false`(hover·클릭·포커스 차단, 정적 표시)
+- AppLayout 통합 — GNB 영역 56px(+구분선 1px)·패널 슬롯 bare 개편(크롬은 Gnb/RightPanel 담당, ESC는 onPanelClose)
+
+**변경**
+- **Figma 변형 값 명명 규칙 통일** — 전 세트 변형 값 첫 글자 대문자(Default/Hover/…), Code Connect 매핑 동기화(코드 prop 값은 기존 소문자 API 그대로 — 소비자 코드 영향 없음)
+- 신규 토큰: `layout/gnb-inline` · `right-panel/*` 3종 · `avatar/*` 5종(photo-inline 900-25)
+
+### v0.3.0 (2026-07-30) — npm 미배포(코드 반영만, 본 릴리스에 포함)
 
 **신규**
 - **`AppLayout`** — 사이트 전체 구조 레이아웃(템플릿보다 한 단위 큰 계층): GNB(56px+구분선 1px)·LNB·Main Content·Right Panel 슬롯 조립. Content/Page 분리(`pageWidth` readable/standard/wide/fluid + `pagePadding` 24/32/40), Right Panel 3모드(`panelMode` push/overlay/fullscreen + `auto` 반응형 — 폭 1440 기준 자동 전환, `onPanelClose`로 닫기 버튼+ESC), Divider 1px 별도 점유 규칙. 데모 사이트 셸도 AppLayout으로 교체(도그푸딩)
