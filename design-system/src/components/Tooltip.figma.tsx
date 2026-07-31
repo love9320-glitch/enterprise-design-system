@@ -10,7 +10,7 @@ figma.connect(
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7202-8648',
   {
     props: {
-      variant: figma.enum('type', { error: 'error', normal: 'normal' }),
+      variant: figma.enum('type', { Error: 'error', Normal: 'normal' }),
     },
     example: ({ variant }) => <Tooltip variant={variant}>안내 문구</Tooltip>,
   },

@@ -13,14 +13,14 @@ figma.connect(
   {
     props: {
       color: figma.enum('color', {
-        gray: 'gray',
-        red: 'red',
-        blue: 'blue',
-        black: 'black',
-        green: 'green',
-        violet: 'violet',
-        pink: 'pink',
-        orange: 'orange',
+        Gray: 'gray',
+        Red: 'red',
+        Blue: 'blue',
+        Black: 'black',
+        Green: 'green',
+        Violet: 'violet',
+        Pink: 'pink',
+        Orange: 'orange',
       }),
     },
     example: ({ color }) => (

@@ -12,9 +12,9 @@ figma.connect(
   {
     props: {
       defaultValue: figma.enum('state', {
-        filled: '검색어',
-        'filled hover': '검색어',
-        'filled focused': '검색어',
+        Filled: '검색어',
+        'Filled hover': '검색어',
+        'Filled focused': '검색어',
       }),
     },
     example: ({ defaultValue }) => (

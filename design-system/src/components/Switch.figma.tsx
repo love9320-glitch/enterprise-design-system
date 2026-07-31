@@ -13,13 +13,13 @@ figma.connect(
   {
     props: {
       checked: figma.enum('state', {
-        'selected default': true,
-        'selected hover': true,
-        'selected disabled': true,
+        'Selected default': true,
+        'Selected hover': true,
+        'Selected disabled': true,
       }),
       disabled: figma.enum('state', {
-        'unselected disabled': true,
-        'selected disabled': true,
+        'Unselected disabled': true,
+        'Selected disabled': true,
       }),
       label: figma.string('right text'),
     },
