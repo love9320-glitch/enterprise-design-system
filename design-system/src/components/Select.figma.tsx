@@ -1,5 +1,6 @@
-// Select 계열 Code Connect 매핑(2026-08-01) — select - text SET(7334:1756247) +
-// select group SET(8174:36980) + select chip SET(8219:81717).
+// Select 계열 Code Connect 매핑(2026-08-01) — select SET(7206:10669, box solid/solid label) +
+// select - text SET(7334:1756247) + select group SET(8174:36980) + select chip SET(8219:81717).
+//   - box: type Solid(기본 필드형)/Solid label(내부 라벨 — "라벨 ⋮ 값" 표시) × state.
 //   - text: state(Default/Filled·hover·focused ×error·Disabled·Read only — hover/focused는 CSS) × size(24/20).
 //     error 계열은 표준 카피(규칙 21) '필수 선택사항입니다.' 사용.
 //   - group: direction(Horizontal/Vertical) × gap(3~7).
@@ -10,6 +11,90 @@
 import figma from '@figma/code-connect';
 import { Select, SelectChip } from './Select';
 import { SelectGroup } from './SelectGroup';
+
+// select (box) — Solid: 기본 필드형
+figma.connect(
+  Select,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7206-10669',
+  {
+    variant: { type: 'Solid' },
+    props: {
+      error: figma.enum('state', {
+        'Default error': true,
+        'Default hover error': true,
+        'Default focused error': true,
+        'Filled error': true,
+        'Filled hover error': true,
+        'Filled focused error': true,
+      }),
+      errorMessage: figma.enum('state', {
+        'Default error': '필수 선택사항입니다.',
+        'Default hover error': '필수 선택사항입니다.',
+        'Default focused error': '필수 선택사항입니다.',
+        'Filled error': '필수 선택사항입니다.',
+        'Filled hover error': '필수 선택사항입니다.',
+        'Filled focused error': '필수 선택사항입니다.',
+      }),
+      disabled: figma.enum('state', { Disabled: true }),
+      readOnly: figma.enum('state', { 'Read only': true }),
+      defaultValue: figma.enum('state', {
+        Filled: 'a',
+        'Filled hover': 'a',
+        'Filled focused': 'a',
+        'Filled error': 'a',
+        'Filled hover error': 'a',
+        'Filled focused error': 'a',
+        Disabled: 'a',
+        'Read only': 'a',
+      }),
+    },
+    example: ({ error, errorMessage, disabled, readOnly, defaultValue }) => (
+      <Select
+        options={[
+          { value: 'a', label: '옵션' },
+          { value: 'b', label: '다른 옵션' },
+        ]}
+        defaultValue={defaultValue}
+        error={error}
+        errorMessage={errorMessage}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    ),
+  },
+);
+
+// select (box) — Solid label: 내부 라벨형(값 선택 시 "라벨 ⋮ 값")
+figma.connect(
+  Select,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7206-10669',
+  {
+    variant: { type: 'Solid label' },
+    props: {
+      disabled: figma.enum('state', { Disabled: true }),
+      readOnly: figma.enum('state', { 'Read only': true }),
+      defaultValue: figma.enum('state', {
+        Filled: 'a',
+        'Filled hover': 'a',
+        'Filled focused': 'a',
+        Disabled: 'a',
+        'Read only': 'a',
+      }),
+    },
+    example: ({ disabled, readOnly, defaultValue }) => (
+      <Select
+        label="라벨"
+        options={[
+          { value: 'a', label: '옵션' },
+          { value: 'b', label: '다른 옵션' },
+        ]}
+        defaultValue={defaultValue}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    ),
+  },
+);
 
 // select - text — 인라인 텍스트형(필터·문단 사이용)
 figma.connect(
