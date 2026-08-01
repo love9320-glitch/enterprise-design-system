@@ -4,7 +4,7 @@ import { UsageExample } from '../components/UsageExample';
 
 const TAG_USAGE = `import { Tag } from '../components/Tag';
 
-// color: blue(기본) · red · gray · black(솔리드)
+// color: 8색 — blue(기본)·red·gray·black(솔리드)·green·violet·pink·orange
 <Tag color="blue">신규</Tag>
 <Tag color="red">마감</Tag>
 <Tag color="black">Solid</Tag>
@@ -14,7 +14,7 @@ const TAG_USAGE = `import { Tag } from '../components/Tag';
 
 const TAG_PROPS = [
   { name: 'children', type: 'ReactNode', default: "'태그'", desc: '태그 내용' },
-  { name: 'color', type: "'blue' | 'red' | 'gray' | 'black'", default: "'blue'", desc: '색상 종류 (black=gray500 솔리드+흰 텍스트)' },
+  { name: 'color', type: "'blue' | 'red' | 'gray' | 'black' | 'green' | 'violet' | 'pink' | 'orange'", default: "'blue'", desc: '색상 종류 8색 (black=gray500 솔리드+흰 텍스트, 나머지는 400 알파 bg+400 텍스트)' },
   { name: 'width', type: "'hug' | 'fill'", default: "'hug'", desc: 'hug=콘텐츠 맞춤, fill=부모 폭 채움' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
 ];
@@ -52,6 +52,10 @@ export function TagPage() {
         <Tag color="red">red</Tag>
         <Tag color="gray">gray</Tag>
         <Tag color="black">black</Tag>
+        <Tag color="green">green</Tag>
+        <Tag color="violet">violet</Tag>
+        <Tag color="pink">pink</Tag>
+        <Tag color="orange">orange</Tag>
       </div>
       <p className="mb-spacing-5 text-12 text-font-icon-3">width — hug / fill</p>
       <div className="w-[240px] space-y-spacing-4">
