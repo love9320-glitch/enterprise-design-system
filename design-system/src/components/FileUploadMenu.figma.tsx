@@ -1,7 +1,7 @@
 // 업로드 메뉴 Code Connect 매핑(2026-08-01) — file upload menu SET(7957:5287) +
 // image upload menu SET(7959:5598).
-//   - file: state(목록/empty/max — 'Variant5'는 미정리 이름이라 기본 예시 폴백) ×
-//     up and down(Upload/Up and down — 후자는 onTemplateDownload 푸터).
+//   - file: state(Upload file list 기본/empty/max + Download template=onTemplateDownload 푸터,
+//     2026-08-01 'Variant5' 개명 반영) × up and down(Upload/Download — 소문자는 대문자 규칙으로 정리).
 //   - image: Property 1(Upload image/empty) → image 유무.
 // 발행: main 머지 시 자동(.github/workflows/figma-code-connect.yml)
 // 파서 제약 — URL·props는 리터럴만(변수·스프레드·as const 금지).
@@ -70,12 +70,12 @@ figma.connect(
   },
 );
 
-// file upload menu — 양식 다운로드형(up and down)
+// file upload menu — 양식 다운로드형(Download template)
 figma.connect(
   FileUploadMenu,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=7957-5287',
   {
-    variant: { 'up and down': 'Up and down' },
+    variant: { state: 'Download template' },
     example: () => (
       <FileUploadMenu
         guide={'양식을 내려받아 작성한 뒤 업로드하세요. (.xlsx)'}
