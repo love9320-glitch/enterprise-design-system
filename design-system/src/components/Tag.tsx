@@ -1,5 +1,5 @@
 // Tag — 작은 칩 라벨 (Figma option list / tag)
-// color 속성으로 색을 바꾼다: 'blue' | 'red' | 'gray' | 'black'. lookup 객체로 분기. (Figma Tag의 color variant와 동일)
+// color 속성으로 색을 바꾼다: blue·red·gray·black + green·violet·pink·orange(2026-08-01 Figma 8색 확장).
 //   black = gray500 솔리드 배경 + 흰 텍스트(Figma 변형명 'color4', Chip black과 동일 값)
 // width 속성으로 너비를 바꾼다: 'hug'(콘텐츠 맞춤, 기본) | 'fill'(부모 폭 채움).
 // 색은 tag-* 시멘틱 토큰(base 경유)만 사용.
@@ -11,6 +11,10 @@ const COLOR_STYLE = {
   red: 'bg-tag-red-bg text-tag-red-text',
   gray: 'bg-tag-gray-bg text-tag-gray-text',
   black: 'bg-tag-black-bg text-tag-black-text',
+  green: 'bg-tag-green-bg text-tag-green-text',
+  violet: 'bg-tag-violet-bg text-tag-violet-text',
+  pink: 'bg-tag-pink-bg text-tag-pink-text',
+  orange: 'bg-tag-orange-bg text-tag-orange-text',
 };
 
 interface TagProps extends ComponentPropsWithoutRef<'span'> {

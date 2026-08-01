@@ -19,4 +19,13 @@ export const tagColors = {
   'gray-text': b.gray[600],      // #3f3f3f
   'black-bg':   b.gray[500],     // #505050
   'black-text': b.white,         // #ffffff
+  // 유채 4색 확장(2026-08-01, Figma tag 8색) — blue/red와 동일 사다리(bg=400 알파 16%, text=400)
+  'green-bg':    b['green-400-50'],  // #0daf4e29
+  'green-text':  b.green[400],       // #0daf4e
+  'violet-bg':   b['violet-400-50'], // #7c57ef29
+  'violet-text': b.violet[400],      // #7c57ef
+  'pink-bg':     b['pink-400-50'],   // #f246b929
+  'pink-text':   b.pink[400],        // #f246b9
+  'orange-bg':   b['orange-400-50'], // #f06e2d29
+  'orange-text': b.orange[400],      // #f06e2d
 };

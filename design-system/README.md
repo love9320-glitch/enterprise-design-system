@@ -121,7 +121,7 @@ export default {
 | 컴포넌트 | 핵심 props |
 |---|---|
 | [Table](https://love9320-glitch.github.io/enterprise-design-system/#table) | `columns[{key,label,width?,render?,filter?,headerMenu?}]` · `rows` · `selectable`+`selectedIds/onSelectChange` · `sort/filters`(controlled 가능) · `maxHeight`(sticky 헤더) · `bordered` · `draggableRows`+`onRowsReorder`(행 드래그, `dragHandleColKey`로 그립을 셀 안에) |
-| [Tag / NewTag](https://love9320-glitch.github.io/enterprise-design-system/#tag) | `color`(blue·red·gray·black) · `width` / NewTag: 원형 N 뱃지 |
+| [Tag / NewTag](https://love9320-glitch.github.io/enterprise-design-system/#tag) | `color`(8색 — blue·red·gray·black·green·violet·pink·orange) · `width` / NewTag: 원형 N 뱃지(blue·red·black) |
 | [Chip](https://love9320-glitch.github.io/enterprise-design-system/#chip) | `color`(8색) · `onRemove`(X 버튼) |
 | [Avatar](https://love9320-glitch.github.io/enterprise-design-system/#avatar) | `src`(있으면 사진, 없으면 이니셜) · `initial` · `size`(24~56 5단) · `interactive`(false=hover·클릭·포커스 차단, 정적 표시) · `onClick` |
 | [Tooltip / Divider / ScrollArea](https://love9320-glitch.github.io/enterprise-design-system/#tooltip-scrollbar) | Tooltip: `variant` `beak` / Divider: `direction` `color` / ScrollArea: `maxHeight` 오버레이 스크롤 |

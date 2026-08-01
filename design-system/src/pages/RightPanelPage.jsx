@@ -75,12 +75,17 @@ export function RightPanelPage() {
       {/* 플레이그라운드 */}
       <div className="mb-spacing-6 flex flex-wrap items-center gap-spacing-6">
         <p className="text-12 text-font-icon-3">옵션</p>
-        <Select width="hug" options={WIDTH_OPTIONS} value={width} onChange={(e) => setWidth(e.target.value)} />
+        <Select width={160} options={WIDTH_OPTIONS} value={width} onChange={(e) => setWidth(e.target.value)} />
         <Checkbox label="헤더" checked={showHeader} onChange={() => setShowHeader((v) => !v)} />
         <Checkbox label="닫기 버튼" checked={showClose} onChange={() => setShowClose((v) => !v)} />
         <Checkbox label="푸터" checked={showFooter} onChange={() => setShowFooter((v) => !v)} />
       </div>
-      <div className="h-[520px] overflow-hidden rounded-round-6 ring-1 ring-modal-outline">
+      {/* 프리뷰 박스 — 패널 폭에 맞춰 hug(2026-07-31 지시). fill 선택 시엔 전체 폭 유지 */}
+      <div
+        className={`h-[520px] overflow-hidden rounded-round-6 ring-1 ring-modal-outline ${
+          width === 'fill' ? '' : 'w-fit'
+        }`}
+      >
         <RightPanel
           width={width}
           title={showHeader ? '라이트 패널 타이틀' : null}
