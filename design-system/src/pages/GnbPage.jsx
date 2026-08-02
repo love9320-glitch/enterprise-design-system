@@ -18,7 +18,7 @@ const USAGE = `import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
   <GnbGroup fill justify="between">
     <GnbLogo>LOGO</GnbLogo>
     <div className="flex items-center gap-spacing-6">
-      <ButtonGroup gap="4">
+      <ButtonGroup gap="6">
         <Button variant="ghost" icon={Search} aria-label="검색" />
         <Button variant="ghost" icon={Bell} aria-label="알림" />
       </ButtonGroup>
@@ -31,7 +31,7 @@ const USAGE = `import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
 </Gnb>
 
 // 구분선은 그룹 '안'에서 필요한 위치에 자유롭게 추가한다(예: 종(알림) 버튼 왼쪽)
-<ButtonGroup gap="4">
+<ButtonGroup gap="6">
   <Button variant="ghost" icon={History} aria-label="히스토리" />
   <Divider direction="vertical" className="h-[16px] my-auto" />
   <Button variant="ghost" icon={Bell} aria-label="알림" />
@@ -92,7 +92,7 @@ export function GnbPage() {
             <GnbLogo>LOGO</GnbLogo>
             <div className="flex items-center gap-spacing-6">
               {items.iconButtons && (
-                <ButtonGroup gap="4">
+                <ButtonGroup gap="6">
                   <Button variant="ghost" icon={Search} aria-label="검색" />
                   <Button variant="ghost" icon={FolderOpen} aria-label="보관함" />
                   <Button variant="ghost" icon={History} aria-label="히스토리" />
@@ -112,7 +112,7 @@ export function GnbPage() {
           )}
           {items.group3 && (
             <GnbGroup>
-              <ButtonGroup gap="4">
+              <ButtonGroup gap="6">
                 <Button variant="line">취소</Button>
                 <Button variant="fill">저장</Button>
               </ButtonGroup>
