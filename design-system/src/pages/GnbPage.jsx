@@ -37,12 +37,12 @@ const USAGE = `import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
   <Button variant="ghost" icon={Bell} aria-label="알림" />
 </ButtonGroup>
 
-// AppLayout gnb 슬롯에 조립 — 영역 높이(56px)와 하단 구분선은 AppLayout이 제공하므로 bar 없이
+// AppLayout gnb 슬롯에 조립 — 영역 높이(54px)와 하단 구분선은 AppLayout이 제공하므로 bar 없이
 <AppLayout gnb={<Gnb><GnbGroup fill>…</GnbGroup></Gnb>}>…</AppLayout>`;
 
 const USAGE_PROPS = [
   { name: 'Gnb · children', type: 'ReactNode', default: '—', desc: 'GnbGroup들 — 필요에 따라 자유롭게 추가/삭제. 그룹 사이 1px 갭(spacing-1)으로 배경(layout/gnb-inline)이 비쳐 구분' },
-  { name: 'Gnb · bar', type: 'boolean', default: 'false', desc: 'true면 자체 바 크롬(높이 56px+하단 구분선 1px=점유 57) — 단독 배치용. AppLayout gnb 슬롯에서는 false(기본)' },
+  { name: 'Gnb · bar', type: 'boolean', default: 'false', desc: 'true면 자체 바 크롬(높이 54px+하단 구분선 1px=점유 55) — 단독 배치용. AppLayout gnb 슬롯에서는 false(기본)' },
   { name: 'GnbGroup · fill', type: 'boolean', default: 'false', desc: 'true면 남는 폭 채움(flex-1) — 기본은 콘텐츠 폭(hug)' },
   { name: 'GnbGroup · justify', type: "'start' | 'between' | 'end' | 'center'", default: "'start'", desc: '그룹 내부 정렬 — fill 그룹에서 양끝 배치(between) 등' },
   { name: 'GnbGroup · gap', type: "'4' | '5' | '6' | '7'", default: "'6'", desc: '그룹 내부 간격 토큰 키(6/8/12/16px) — ButtonGroup과 동일 규칙' },
@@ -73,7 +73,7 @@ export function GnbPage() {
       <UsageExample
         code={USAGE}
         props={USAGE_PROPS}
-        note="바 크롬(높이 56px+하단 구분선)은 bar=true일 때만 렌더합니다. AppLayout gnb 슬롯에 꽂을 때는 bar 없이 그룹 행만 렌더되어 이중 크롬이 생기지 않습니다."
+        note="바 크롬(높이 54px+하단 구분선)은 bar=true일 때만 렌더합니다. AppLayout gnb 슬롯에 꽂을 때는 bar 없이 그룹 행만 렌더되어 이중 크롬이 생기지 않습니다."
       />
 
       {/* 그룹 자유 조립 플레이그라운드 */}
@@ -127,7 +127,7 @@ export function GnbPage() {
       <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">구성 규격</h3>
       <ul className="list-disc space-y-spacing-3 pl-spacing-8 text-14 text-font-icon-4">
         <li><span className="text-font-icon-5">Gnb(루트)</span> — 그룹들을 담는 행. 배경 layout/gnb-inline(gray 50)이 그룹 사이 1px 갭(spacing-1)으로 비쳐 그룹을 구분한다(bar 여부와 무관한 공통 구조)</li>
-        <li><span className="text-font-icon-5">bar=true</span> — 단독 배치용 크롬: 높이 56px + 하단 구분선 1px(점유 57). AppLayout gnb 슬롯에서는 bar 없이 쓴다(높이·하단 구분선을 AppLayout이 제공)</li>
+        <li><span className="text-font-icon-5">bar=true</span> — 단독 배치용 크롬: 높이 54px + 하단 구분선 1px(점유 55). AppLayout gnb 슬롯에서는 bar 없이 쓴다(높이·하단 구분선을 AppLayout이 제공)</li>
         <li><span className="text-font-icon-5">GnbGroup</span> — 흰 배경(layout/gnb-bg)·높이 100%, 좌우 패딩 spacing-7(16px), 내부 간격 gap 옵션(기본 spacing-6=12px), fill=남는 폭 채움 + justify로 내부 정렬(start/between/end/center)</li>
         <li><span className="text-font-icon-5">그룹 안 구분선</span> — Divider를 그룹 children의 원하는 위치·개수만큼 자유 배치: {'<Divider direction="vertical" className="h-[16px] my-auto" />'}</li>
         <li><span className="text-font-icon-5">역할</span>(레이아웃 가이드라인) — 전역 탐색, 제품 전환, 계정 및 공통 액션</li>

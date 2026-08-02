@@ -3,7 +3,7 @@
 // gray 50)이 비쳐 구분되고, 사용자는 필요에 따라 그룹을 자유롭게 추가/삭제한다.
 // 구분선(Divider)은 그룹 '안'에서 사용한다(예: <Divider direction="vertical" className="h-[16px] my-auto" />).
 //   - Gnb bar=false(기본): 그룹 행만(h/w 100%) — AppLayout gnb 슬롯에 꽂는 용도.
-//   - Gnb bar=true: 자체 바 크롬(높이 56px + 하단 구분선 1px = 점유 57) — 단독 배치용.
+//   - Gnb bar=true: 자체 바 크롬(높이 54px + 하단 구분선 1px = 점유 55) — 단독 배치용.
 //   - GnbGroup: 흰 배경(h-full)·좌우 패딩 spacing-7(16px)·내부 갭 spacing-6(12px, gap 옵션).
 //     fill이면 남는 폭을 채우고(justify로 내부 정렬 제어), 기본은 콘텐츠 폭(hug).
 //   - GnbLogo: 로고 텍스트 스타일 헬퍼(semibold 20, Figma 스펙) — ReactNode 로고는 그대로 배치.
@@ -29,7 +29,7 @@ const JUSTIFY_STYLE = {
 
 interface GnbProps extends ComponentPropsWithoutRef<'div'> {
   children?: ReactNode; // GnbGroup들 — 필요에 따라 자유롭게 추가/삭제(그룹 사이 1px 갭 자동)
-  bar?: boolean; // true면 자체 바 크롬(높이 56px+하단 구분선 1px=점유 57) — 단독 배치용. 기본 false(AppLayout 슬롯용)
+  bar?: boolean; // true면 자체 바 크롬(높이 54px+하단 구분선 1px=점유 55) — 단독 배치용. 기본 false(AppLayout 슬롯용)
 }
 
 export function Gnb({ children, bar = false, className = '', ...props }: GnbProps) {
@@ -46,7 +46,7 @@ export function Gnb({ children, bar = false, className = '', ...props }: GnbProp
   if (!bar) return row;
   return (
     <div className={`flex w-full flex-col ${className}`} {...props}>
-      <div className="h-[56px]">{row}</div>
+      <div className="h-[54px]">{row}</div>
       <Divider />
     </div>
   );
