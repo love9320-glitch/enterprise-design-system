@@ -1,27 +1,58 @@
-// Lnb 계열 Code Connect 매핑(2026-07-29) — menu(8843:8836) / menu group 1depth(8843:9185) ·
+// Lnb 계열 Code Connect 매핑(2026-08-02 개정) — menu(8843:8836) / menu group 1depth(8843:9185) ·
 // 2depth(8844:9428) / site title area(8844:9348) / LNB(8844:9329).
-//   - menu: depth(1depth/2depth/sub depth)·state(select→selected, disabled — hover/click은 CSS 상태).
-//   - 아이콘 스왑은 대표 아이콘(Users) 예시. 2depth의 select는 '펼침'이라 open도 함께 표기.
+//   - menu: depth 4종(1depth icon=아이콘형 / 1depth=플레인(iconArea=false) / 2depth / Sub depth)
+//     × state(Select→selected, Disabled — Hover/Click은 CSS 상태). 2depth의 Select는 '펼침'=open.
+//   - 아이콘 스왑은 대표 아이콘(Users) 예시.
 // 발행: main 머지 시 자동(.github/workflows/figma-code-connect.yml)
 // 파서 제약 — URL·props는 리터럴만(변수·스프레드·as const 금지).
 import figma from '@figma/code-connect';
 import { Users } from 'lucide-react';
 import { Lnb, LnbMenu, LnbMenuGroup } from './Lnb';
 
-// menu — 메뉴 한 줄. depth별로 매핑 분리(2026-07-29): 1depth·sub의 select는 selected,
-// 2depth의 select는 '펼침'이라 open으로 번역(1depth 스니펫에 open이 붙던 오류 수정)
+// menu — 메뉴 한 줄. depth별로 매핑 분리: 1depth icon=아이콘형 / 1depth=플레인(iconArea=false) /
+// Sub depth / 2depth(Select='펼침'=open — 1depth 스니펫에 open이 붙던 오류의 재발 방지)
 figma.connect(
   LnbMenu,
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8843-8836',
   {
+    variant: { depth: '1depth icon' },
     props: {
-      depth: figma.enum('depth', { '1depth': '1', 'Sub depth': 'sub' }),
       selected: figma.enum('state', { Select: true }),
       disabled: figma.enum('state', { Disabled: true }),
       label: figma.string('menu name'),
     },
-    example: ({ depth, selected, disabled, label }) => (
-      <LnbMenu depth={depth} icon={Users} selected={selected} disabled={disabled} label={label} />
+    example: ({ selected, disabled, label }) => (
+      <LnbMenu depth="1" icon={Users} selected={selected} disabled={disabled} label={label} />
+    ),
+  },
+);
+figma.connect(
+  LnbMenu,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8843-8836',
+  {
+    variant: { depth: '1depth' },
+    props: {
+      selected: figma.enum('state', { Select: true }),
+      disabled: figma.enum('state', { Disabled: true }),
+      label: figma.string('menu name'),
+    },
+    example: ({ selected, disabled, label }) => (
+      <LnbMenu depth="1" iconArea={false} selected={selected} disabled={disabled} label={label} />
+    ),
+  },
+);
+figma.connect(
+  LnbMenu,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8843-8836',
+  {
+    variant: { depth: 'Sub depth' },
+    props: {
+      selected: figma.enum('state', { Select: true }),
+      disabled: figma.enum('state', { Disabled: true }),
+      label: figma.string('menu name'),
+    },
+    example: ({ selected, disabled, label }) => (
+      <LnbMenu depth="sub" selected={selected} disabled={disabled} label={label} />
     ),
   },
 );
