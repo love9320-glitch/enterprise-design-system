@@ -20,7 +20,7 @@ figma.connect(
         <GnbGroup fill justify="between">
           <GnbLogo>LOGO</GnbLogo>
           <div className="flex items-center gap-spacing-6">
-            <ButtonGroup gap="4">
+            <ButtonGroup gap="6">
               <Button variant="ghost" icon={Search} aria-label="검색" />
               <Button variant="ghost" icon={Bell} aria-label="알림" />
             </ButtonGroup>
