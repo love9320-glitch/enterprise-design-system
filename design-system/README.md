@@ -107,13 +107,13 @@ export default {
 | [Pagination](https://love9320-glitch.github.io/enterprise-design-system/#pagination) | `page/onChange` · `totalCount` `pageSize/onPageSizeChange` · `maxButtons` |
 | [SideNavigation](https://love9320-glitch.github.io/enterprise-design-system/#side-navigation) | `width`(180·220·260) · `showAdd/onAdd` · 버튼: `selected` `icon` `showNewTag` |
 | [Lnb](https://love9320-glitch.github.io/enterprise-design-system/#lnb) | `groups`(1/2depth+sub) · `value/onChange` · `siteTitle` · `width/height`(지정 시 내부 스크롤) · `defaultExpanded` · 메뉴: `icon` `iconArea` `wrap` `disabled` |
-| [Gnb / GnbGroup / GnbLogo](https://love9320-glitch.github.io/enterprise-design-system/#gnb) | 글로벌 내비 바(그룹 조립): GnbGroup을 자유 추가/삭제(그룹 사이 1px 갭 자동 구분) · Group: `fill` `justify`(start·between·end·center) `gap` · Gnb: `bar`(단독 배치 크롬 56px+구분선) · 구분선은 그룹 안 자유 배치 |
+| [Gnb / GnbGroup / GnbLogo](https://love9320-glitch.github.io/enterprise-design-system/#gnb) | 글로벌 내비 바(그룹 조립): GnbGroup을 자유 추가/삭제(그룹 사이 1px 갭 자동 구분) · Group: `fill` `justify`(start·between·end·center) `gap` · Gnb: `bar`(단독 배치 크롬 54px+구분선) · 구분선은 그룹 안 자유 배치 |
 
 ### 레이아웃
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [AppLayout](https://love9320-glitch.github.io/enterprise-design-system/#layout) | 사이트 골격(템플릿 상위 계층): `gnb`(56px+구분선 1px — Gnb 조립 권장)/`lnb`/`rightPanel`(RightPanel 조립 권장) 슬롯(null=미표시) · `panelMode`(auto·push·overlay·fullscreen — auto는 폭 1440 기준 반응형)+`panelBreakpoint`+`onPanelClose`(ESC 닫기) · `pageWidth`(readable 840·standard 1200·wide 1440·fluid)+`pagePadding`(24·32·40·none) · `lnbWidth`(180·220·260) · `rightPanelWidth`(360·480) |
+| [AppLayout](https://love9320-glitch.github.io/enterprise-design-system/#layout) | 사이트 골격(템플릿 상위 계층): `gnb`(54px+구분선 1px — Gnb 조립 권장)/`lnb`/`rightPanel`(RightPanel 조립 권장) 슬롯(null=미표시) · `panelMode`(auto·push·overlay·fullscreen — auto는 폭 1440 기준 반응형)+`panelBreakpoint`+`onPanelClose`(ESC 닫기) · `pageWidth`(readable 840·standard 1200·wide 1440·fluid)+`pagePadding`(24·32·40·none) · `lnbWidth`(180·220·260) · `rightPanelWidth`(360·480) |
 | [RightPanel](https://love9320-glitch.github.io/enterprise-design-system/#right-panel) | 보조 작업 패널(헤더/바디/푸터 3단+1px 헤어라인): `title`(null=헤더 미표시) · `onClose`(닫기 X) · `footer`(자유 슬롯, null=미표시) · `width`(360·480·fill) · `bodyPadding` — 바디는 내부 스크롤 |
 
 ### 데이터 표시
@@ -169,10 +169,10 @@ export default {
 레이아웃 시스템(AppLayout·Gnb·RightPanel)까지 갖춰 정식 버전으로 올립니다. npm 미배포였던 v0.3.0 변경 내역을 포함합니다.
 
 **신규**
-- **`Gnb` / `GnbGroup` / `GnbLogo`** — 글로벌 내비게이션 바(그룹 조립 구조): 그룹을 자유 추가/삭제, 그룹 사이 1px 갭으로 `layout/gnb-inline` 배경 노출, 구분선은 그룹 안 자유 배치, `bar` 모드(56px+하단 구분선 1px)
+- **`Gnb` / `GnbGroup` / `GnbLogo`** — 글로벌 내비게이션 바(그룹 조립 구조): 그룹을 자유 추가/삭제, 그룹 사이 1px 갭으로 `layout/gnb-inline` 배경 노출, 구분선은 그룹 안 자유 배치, `bar` 모드(54px+하단 구분선 1px)
 - **`RightPanel`** — 보조 작업 영역 표준 구조: 헤더(타이틀+닫기 X)/바디(내부 스크롤·자유 슬롯)/푸터(자유 슬롯) 3단+1px 헤어라인, 슬롯 null=영역 미표시, `width` 360/480/fill(Fullscreen)
 - **`Avatar`** — 이미지/이니셜(text) 자동 전환, size 24~56 5단, hover(text=blue 500·image=오버레이), `interactive=false`(hover·클릭·포커스 차단, 정적 표시)
-- AppLayout 통합 — GNB 영역 56px(+구분선 1px)·패널 슬롯 bare 개편(크롬은 Gnb/RightPanel 담당, ESC는 onPanelClose)
+- AppLayout 통합 — GNB 영역 54px(+구분선 1px)·패널 슬롯 bare 개편(크롬은 Gnb/RightPanel 담당, ESC는 onPanelClose)
 
 **변경**
 - **Figma 변형 값 명명 규칙 통일** — 전 세트 변형 값 첫 글자 대문자(Default/Hover/…), Code Connect 매핑 동기화(코드 prop 값은 기존 소문자 API 그대로 — 소비자 코드 영향 없음)
@@ -181,7 +181,7 @@ export default {
 ### v0.3.0 (2026-07-30) — npm 미배포(코드 반영만, 본 릴리스에 포함)
 
 **신규**
-- **`AppLayout`** — 사이트 전체 구조 레이아웃(템플릿보다 한 단위 큰 계층): GNB(56px+구분선 1px)·LNB·Main Content·Right Panel 슬롯 조립. Content/Page 분리(`pageWidth` readable/standard/wide/fluid + `pagePadding` 24/32/40), Right Panel 3모드(`panelMode` push/overlay/fullscreen + `auto` 반응형 — 폭 1440 기준 자동 전환, `onPanelClose`로 닫기 버튼+ESC), Divider 1px 별도 점유 규칙. 데모 사이트 셸도 AppLayout으로 교체(도그푸딩)
+- **`AppLayout`** — 사이트 전체 구조 레이아웃(템플릿보다 한 단위 큰 계층): GNB(54px+구분선 1px)·LNB·Main Content·Right Panel 슬롯 조립. Content/Page 분리(`pageWidth` readable/standard/wide/fluid + `pagePadding` 24/32/40), Right Panel 3모드(`panelMode` push/overlay/fullscreen + `auto` 반응형 — 폭 1440 기준 자동 전환, `onPanelClose`로 닫기 버튼+ESC), Divider 1px 별도 점유 규칙. 데모 사이트 셸도 AppLayout으로 교체(도그푸딩)
 - **`Lnb`** — 좌측 내비게이션 메뉴(1/2depth·서브메뉴, 사이트 타이틀 옵션, 내부 스크롤, 말줄임/전체 표시 옵션). 데모 사이트 사이드바 도그푸딩
 - **벨리데이션 접근성** — 에러 툴팁을 입력과 `aria-describedby`로 연결하고 `role="alert"` 부여(스크린리더가 같은 문구 낭독). Input·Select·DateField·TimeField·TextArea 공통
 - **벨리데이션 카피 표준 3종** — `utils/validationMessages`(`REQUIRED_INPUT_MESSAGE` "필수 입력사항입니다." / `REQUIRED_SELECT_MESSAGE` "필수 선택사항입니다." / `INVALID_FORMAT_MESSAGE` "잘못된 양식입니다.")를 export하고, 각 컴포넌트 `errorMessage`/`formatErrorMessage` **기본값**으로 적용 — `error=true`만 켜면 표준 문구 툴팁이 자동 표시
