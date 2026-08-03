@@ -4,7 +4,9 @@
 // 하나 더 생긴다(맨 위에 추가). 각 공고는 자기 폼 값·채용 분야 행을 독립으로 갖는다.
 // 흐름: 폼의 [채용 분야 등록] 클릭 → 모달에서 기준·값 입력 후 저장 → 그 공고 폼 아래 테이블로
 // 들어온다(fill state). 재오픈 시 등록된 행 유지(교체 저장, 사용 스위치 보존).
-// 색은 job-posting-template/* 시멘틱 토큰만 사용(title-text/default-out-bg 포함).
+// 색은 job-posting-template/* 시멘틱 토큰만 사용(default-out-bg 등).
+// 타이틀은 DS Label 컴포넌트(size 14) — Figma에서 외부 DS 요소를 로컬 label 인스턴스로
+// 교체(2026-08-03)한 것과 1:1. title-text 토큰은 미사용(Figma 변수 미러로만 유지).
 import { useRef, useState } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { DatabaseArrowDown, Plus, Trash2 } from 'lucide-react';
@@ -17,6 +19,7 @@ import { DateField } from './DateField';
 import { Checkbox } from './Checkbox';
 import { Switch } from './Switch';
 import { Button } from './Button';
+import { Label } from './Label';
 import { Modal } from './Modal';
 import { JobPositionTemplate } from './JobPositionTemplate';
 import type { JobPositionTemplateHandle } from './JobPositionTemplate';
@@ -371,7 +374,7 @@ export function JobPostingTemplate({
     <div className={`flex flex-col gap-spacing-4 ${className}`} {...props}>
       {title != null && (
         <div className="flex min-h-[24px] items-center justify-between gap-spacing-5">
-          <div className="flex items-center text-14 text-job-posting-template-title-text">{title}</div>
+          <Label size="14">{title}</Label>
           {/* 타이틀 우측 — [공고 추가 | 생성된 공고 불러오기] ghost 아이콘 텍스트형(2026-07-28 지시) */}
           <div className="flex items-center gap-spacing-5">
             <Button variant="ghost" leftIcon={Plus} onClick={addPosting}>
