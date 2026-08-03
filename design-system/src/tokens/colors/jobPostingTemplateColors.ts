@@ -6,7 +6,7 @@ import { baseColors } from '../colors';
 const b = baseColors.base;
 
 export const jobPostingTemplateColors = {
-  'title-text': b.gray[900], // #0d0d0d — 템플릿 타이틀(채용 공고 설정)
+  'title-text': b.gray[900], // #0d0d0d — (미사용) 타이틀이 DS Label 인스턴스로 교체됨(2026-08-03), Figma 변수 미러로만 유지
   'default-out-bg': b.gray[50], // #f2f2f2 — 폼·테이블을 감싸는 회색 아우터 박스
   'default-bg': b.white, // #ffffff — 셀 배경
   'default-inline': b.gray[100], // #e3e3e3 — 셀 사이 1px 헤어라인(그리드 배경)
