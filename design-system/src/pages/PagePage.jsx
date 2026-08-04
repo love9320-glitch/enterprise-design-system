@@ -3,7 +3,7 @@ import { Page } from '../components/Page';
 import { PageHeader } from '../components/PageHeader';
 import { Button } from '../components/Button';
 import { Checkbox } from '../components/Checkbox';
-import { Select } from '../components/Select';
+import { ScrollArea } from '../components/ScrollArea';
 import { UsageExample } from '../components/UsageExample';
 
 const USAGE = `import { Page, PageHeader } from '../components';
@@ -13,6 +13,7 @@ const USAGE = `import { Page, PageHeader } from '../components';
 <Page
   title="페이지 타이틀"
   description="고객사를 대신해, 그 고객사에 이미 등록된 발신 정보로 대량 안내를 일괄 발송합니다."
+  stickyHeader // 스크롤 시 헤더 상단 고정(옵션)
   actions={
     <>
       <Button variant="line">이전 단계</Button>
@@ -23,7 +24,7 @@ const USAGE = `import { Page, PageHeader } from '../components';
   {/* page body — FormTemplateA/B, TableTemplate 등 템플릿을 조립 */}
 </Page>
 
-// PageHeader 단독 사용 — 단독 스케일은 padding '16'(상 12/좌우 16)
+// PageHeader 단독 사용 — 패딩은 20 스케일(상 16/좌우 20) 고정
 <PageHeader
   title="페이지 타이틀"
   description="설명 텍스트"
@@ -31,14 +32,16 @@ const USAGE = `import { Page, PageHeader } from '../components';
 />`;
 
 const USAGE_PROPS = [
-  { name: 'Page · title/description', type: 'ReactNode', default: '—', desc: 'PageHeader로 전달 — title이 없으면 헤더 미표시. 헤더는 padding 20 스케일(Figma page 내 인스턴스와 동일)' },
+  { name: 'Page · title/description', type: 'ReactNode', default: '—', desc: 'PageHeader로 전달 — title이 없으면 헤더 미표시' },
   { name: 'Page · actions / descriptionActions', type: 'ReactNode', default: '—', desc: '헤더 타이틀/설명 우측 버튼 슬롯(Figma button group) — Button 등을 자유 조립' },
   { name: 'Page · header', type: 'ReactNode', default: '—', desc: '커스텀 헤더로 통째 교체(지정 시 title 계열 무시)' },
+  { name: 'Page · stickyHeader', type: 'boolean', default: 'false', desc: '스크롤 시 헤더 상단 고정(PageHeader sticky 전달) — 가장 가까운 스크롤 컨테이너 기준' },
   { name: 'Page · children', type: 'ReactNode', default: '—', desc: 'page body 슬롯(p 20 / gap 20) — 템플릿·콘텐츠 조립 영역' },
   { name: 'PageHeader · title', type: 'ReactNode', default: '—', desc: '페이지 타이틀(semibold 18, font-icon-5), 행 높이 32' },
   { name: 'PageHeader · description', type: 'ReactNode', default: '—', desc: '설명 행(regular 14, font-icon-3) — 없으면 행 미표시 (Figma description boolean)' },
   { name: 'PageHeader · actions / descriptionActions', type: 'ReactNode', default: '—', desc: '타이틀/설명 우측 버튼 슬롯 (Figma heading button / description button boolean)' },
-  { name: 'PageHeader · padding', type: "'16' | '20'", default: "'16'", desc: '패딩 스케일 — 단독 16(상 12), Page 내부 20(상 16). 하단 Divider 포함' },
+  { name: 'PageHeader · (패딩)', type: '—', default: '고정', desc: '패딩 20 스케일(상 16/좌우 20/갭 16) 고정, 하단 Divider 포함' },
+  { name: 'PageHeader · sticky', type: 'boolean', default: 'false', desc: '스크롤 시 상단 고정(sticky top-0, 배경 heading/bg가 지나가는 콘텐츠를 가림)' },
 ];
 
 export function PagePage() {
@@ -48,7 +51,7 @@ export function PagePage() {
     headingButton: true,
     descriptionButton: true,
   });
-  const [padding, setPadding] = useState('16');
+  const [stickyHeader, setStickyHeader] = useState(true); // Page 조립 예시 — 스크롤 시 헤더 상단 고정 체험
   const toggle = (k) => setOpts((s) => ({ ...s, [k]: !s[k] }));
 
   const buttons = (
@@ -84,15 +87,6 @@ export function PagePage() {
           onChange={() => toggle('descriptionButton')}
           label="설명 버튼"
         />
-        <Select
-          width={200}
-          value={padding}
-          onChange={(e) => setPadding(e.target.value)}
-          options={[
-            { value: '16', label: 'padding 16 (단독 기본)' },
-            { value: '20', label: 'padding 20 (Page 내부)' },
-          ]}
-        />
       </div>
       <div className="mb-spacing-9 overflow-hidden rounded-round-4 border border-base-gray-100">
         <PageHeader
@@ -104,22 +98,36 @@ export function PagePage() {
           }
           actions={opts.headingButton ? buttons : undefined}
           descriptionActions={opts.descriptionButton ? buttons : undefined}
-          padding={padding}
         />
       </div>
 
-      {/* Page 전체 조립 예시 */}
+      {/* Page 전체 조립 예시 — 스크롤 컨테이너(ScrollArea) 안에서 stickyHeader 고정 체험 */}
       <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">Page 조립</h3>
+      <div className="mb-spacing-6">
+        <Checkbox
+          checked={stickyHeader}
+          onChange={() => setStickyHeader((v) => !v)}
+          label="헤더 상단 고정(stickyHeader) — 아래 박스를 스크롤해 확인"
+        />
+      </div>
       <div className="overflow-hidden rounded-round-4 border border-base-gray-100">
-        <Page
-          title="페이지 타이틀"
-          description="고객사를 대신해, 그 고객사에 이미 등록된 발신 정보로 대량 안내를 일괄 발송합니다."
-          actions={buttons}
-        >
-          <div className="flex min-h-[160px] items-center justify-center rounded-round-4 border border-dashed border-base-gray-200 text-14 text-font-icon-3">
-            page body 슬롯 — FormTemplateA/B·TableTemplate 등 템플릿 조립 영역
-          </div>
-        </Page>
+        <ScrollArea maxHeight={360}>
+          <Page
+            title="페이지 타이틀"
+            description="고객사를 대신해, 그 고객사에 이미 등록된 발신 정보로 대량 안내를 일괄 발송합니다."
+            actions={buttons}
+            stickyHeader={stickyHeader}
+          >
+            {Array.from({ length: 8 }, (_, i) => (
+              <div
+                key={i}
+                className="flex min-h-[80px] items-center justify-center rounded-round-4 border border-dashed border-base-gray-200 text-14 text-font-icon-3"
+              >
+                page body 콘텐츠 블록 {i + 1} — FormTemplateA/B·TableTemplate 등 템플릿 조립 영역
+              </div>
+            ))}
+          </Page>
+        </ScrollArea>
       </div>
     </section>
   );

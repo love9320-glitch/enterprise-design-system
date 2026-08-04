@@ -1,5 +1,5 @@
 // Page — 페이지 셸 (Figma "page" 9216:16009): page header + page body 슬롯 조립.
-// 헤더는 Figma page 안 인스턴스와 동일한 padding='20' 스케일로 렌더하고,
+// 헤더는 PageHeader(패딩 20 스케일 고정)를 렌더하고,
 // 바디는 p 20 / gap 20(spacing-8)의 세로 슬롯이다. 폭은 부모(레이아웃 Page Container)가
 // 결정하므로 w-full — Figma의 1200은 standard 컨테이너 폭이며 여기서 고정하지 않는다.
 // 바디 배경은 Figma에서 변수 미바인딩(캔버스 흰색 그대로)이라 별도 토큰 없이 투명으로 둔다.
@@ -12,6 +12,7 @@ interface PageProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'> {
   actions?: ReactNode;            // PageHeader 타이틀 우측 버튼 슬롯
   descriptionActions?: ReactNode; // PageHeader 설명 우측 버튼 슬롯
   header?: ReactNode;             // 커스텀 헤더로 통째 교체(지정 시 title 계열 무시)
+  stickyHeader?: boolean;         // 헤더 스크롤 시 상단 고정(PageHeader sticky 전달)
 }
 
 export function Page({
@@ -20,6 +21,7 @@ export function Page({
   actions,
   descriptionActions,
   header,
+  stickyHeader = false,
   children,
   className = '',
   ...props
@@ -30,7 +32,7 @@ export function Page({
         ? header
         : title != null && (
             <PageHeader
-              padding="20"
+              sticky={stickyHeader}
               title={title}
               description={description}
               actions={actions}

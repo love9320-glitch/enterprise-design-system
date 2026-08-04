@@ -64,6 +64,7 @@ export const LAYOUT_DEMO_MENU = [
           { value: 'pagination', label: 'Pagination' },
           { value: 'side-navigation', label: 'Side Navigation' },
           { value: 'lnb', label: 'LNB Menu' },
+          { value: 'gnb', label: 'GNB' },
         ],
       },
       {
@@ -73,6 +74,7 @@ export const LAYOUT_DEMO_MENU = [
           { value: 'table', label: 'Table' },
           { value: 'tag', label: 'Tag' },
           { value: 'chip', label: 'Chip' },
+          { value: 'avatar', label: 'Avatar' },
           { value: 'tooltip-scrollbar', label: 'Tooltip / Scrollbar / Divider' },
           { value: 'accordion', label: 'Accordion' },
         ],
@@ -91,7 +93,11 @@ export const LAYOUT_DEMO_MENU = [
   {
     key: '레이아웃',
     title: '레이아웃',
-    items: [{ value: 'layout', label: 'Layout', iconArea: false }],
+    items: [
+      { value: 'layout', label: 'Layout', iconArea: false },
+      { value: 'page', label: 'Page', iconArea: false },
+      { value: 'right-panel', label: 'Right Panel', iconArea: false },
+    ],
   },
   {
     key: '템플릿',

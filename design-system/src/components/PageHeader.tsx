@@ -2,23 +2,16 @@
 // 구성: 타이틀 행(타이틀 + 우측 버튼 슬롯) + 설명 행(설명 + 우측 버튼 슬롯) + 하단 Divider.
 // Figma boolean(description / heading button / description button)은 코드에선
 // description·actions·descriptionActions "전달 여부"로 표현한다(없으면 해당 요소 미표시).
-// padding: Figma 단독 심볼은 상 12/좌우 16, page(9216:16009) 안 인스턴스는 상 16/좌우 20으로
-// 오버라이드돼 있어 두 스케일을 prop으로 노출한다 — '16'(기본) | '20'(Page가 사용).
+// 패딩은 20 스케일(상 16/좌우 20/갭 16) 고정 — page(9216:16009) 내 인스턴스 규격으로 통일(2026-08-04 지시).
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { Divider } from './Divider';
-
-// 키 = 좌우 패딩(px). 상단 패딩·행간 갭은 스케일에 따라 12↔16으로 함께 움직인다.
-const PADDING_STYLES = {
-  '16': 'gap-spacing-6 px-spacing-7 pt-spacing-6',
-  '20': 'gap-spacing-7 px-spacing-8 pt-spacing-7',
-};
 
 interface PageHeaderProps extends Omit<ComponentPropsWithoutRef<'header'>, 'title'> {
   title: ReactNode;               // 페이지 타이틀(semibold 18)
   description?: ReactNode;        // 설명 행(regular 14, font-icon-3) — 없으면 행 미표시
   actions?: ReactNode;            // 타이틀 우측 버튼 슬롯(Figma heading button + button group)
   descriptionActions?: ReactNode; // 설명 우측 버튼 슬롯(Figma description button + button group)
-  padding?: keyof typeof PADDING_STYLES; // '16'(단독 기본) | '20'(Page 내부 스케일)
+  sticky?: boolean;               // 스크롤 시 상단 고정 — 가장 가까운 스크롤 컨테이너 기준(sticky top-0)
 }
 
 export function PageHeader({
@@ -26,13 +19,15 @@ export function PageHeader({
   description,
   actions,
   descriptionActions,
-  padding = '16',
+  sticky = false,
   className = '',
   ...props
 }: PageHeaderProps) {
   return (
     <header
-      className={`flex w-full flex-col bg-heading-bg ${PADDING_STYLES[padding] ?? PADDING_STYLES['16']} ${className}`}
+      className={`flex w-full flex-col gap-spacing-7 bg-heading-bg px-spacing-8 pt-spacing-7 ${
+        sticky ? 'sticky top-0 z-10' : ''
+      } ${className}`}
       {...props}
     >
       <div className="flex w-full flex-col">
