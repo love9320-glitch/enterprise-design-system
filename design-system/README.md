@@ -114,6 +114,7 @@ export default {
 | 컴포넌트 | 핵심 props |
 |---|---|
 | [AppLayout](https://love9320-glitch.github.io/enterprise-design-system/#layout) | 사이트 골격(템플릿 상위 계층): `gnb`(54px+구분선 1px — Gnb 조립 권장)/`lnb`/`rightPanel`(RightPanel 조립 권장) 슬롯(null=미표시) · `panelMode`(auto·push·overlay·fullscreen — auto는 폭 1440 기준 반응형)+`panelBreakpoint`+`onPanelClose`(ESC 닫기) · `pageWidth`(readable 840·standard 1200·wide 1440·fluid)+`pagePadding`(24·32·40·none) · `lnbWidth`(180·220·260) · `rightPanelWidth`(360·480) |
+| [Page / PageHeader](https://love9320-glitch.github.io/enterprise-design-system/#page) | 페이지 셸: PageHeader(타이틀 semibold 18+설명 행+우측 버튼 슬롯 2곳+하단 Divider, 패딩 20 고정) + body 슬롯(p 20·gap 20 — 템플릿 조립). `title/description/actions/descriptionActions` · `stickyHeader`(스크롤 시 헤더 상단 고정) · `header`(커스텀 교체) — 폭은 AppLayout Page Container가 결정 |
 | [RightPanel](https://love9320-glitch.github.io/enterprise-design-system/#right-panel) | 보조 작업 패널(헤더/바디/푸터 3단+1px 헤어라인): `title`(null=헤더 미표시) · `onClose`(닫기 X) · `footer`(자유 슬롯, null=미표시) · `width`(360·480·fill) · `bodyPadding` — 바디는 내부 스크롤 |
 
 ### 데이터 표시
@@ -157,6 +158,13 @@ export default {
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
 ## 변경 내역
+
+### v1.1.0 (2026-08-04)
+- **`Page` / `PageHeader` 신설** — 페이지 셸 컴포넌트. PageHeader(타이틀·설명 행·우측 버튼 슬롯 2곳·하단 Divider, 패딩 20 스케일 고정, 신규 `heading/bg` 토큰) + Page body 슬롯(p 20·gap 20, 템플릿 조립 영역). `sticky`/`stickyHeader`로 스크롤 시 헤더 상단 고정
+- **`Tag` 8색 확장** — green·violet·pink·orange 추가(Chip과 동일 팔레트, 함수 계열 색 대응)
+- `JobPostingTemplate` 타이틀을 DS Label 컴포넌트로 교체(Figma 동기화)
+- 컴포넌트·템플릿 전량 **Code Connect CLI 매핑 완비(112건)** — 코드 동작 무관, Figma Dev Mode 연동 강화
+- 데모: Page 데모 페이지 신설, 레이아웃 데모 본문을 Page로 조립(헤더 상단 고정 토글 포함), Component Colors에 Page Header 그룹 추가
 
 ### v1.0.2 (2026-07-31)
 - 문서 업데이트 — 컴포넌트 API 그룹을 데모 사이트 내비게이션 구조와 일치(액션/입력/폼 구성/내비게이션/데이터 표시/오버레이·메뉴/레이아웃/템플릿), Gnb를 내비게이션 그룹으로 이동, 누락됐던 ConditionOrderSlot 추가
