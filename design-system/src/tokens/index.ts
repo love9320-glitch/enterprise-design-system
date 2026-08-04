@@ -7,6 +7,7 @@ export { textFieldColors } from './colors/textFieldColors';
 export { labelFieldColors } from './colors/labelFieldColors';
 export { jobPostingTemplateColors } from './colors/jobPostingTemplateColors';
 export { lnbColors } from './colors/lnbColors';
+export { headingColors } from './colors/headingColors';
 export { layoutColors } from './colors/layoutColors';
 export { avatarColors } from './colors/avatarColors';
 export { rightPanelColors } from './colors/rightPanelColors';
