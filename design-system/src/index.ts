@@ -36,6 +36,8 @@ export * from './components/List';
 export * from './components/ListEmpty';
 export * from './components/ListGroup';
 export * from './components/Modal';
+export * from './components/Page';
+export * from './components/PageHeader';
 export * from './components/Pagination';
 export * from './components/Popover';
 export * from './components/PopoverMenu';
