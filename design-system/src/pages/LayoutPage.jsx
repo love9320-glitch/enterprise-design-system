@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { PanelRight, PanelRightClose, ExternalLink } from 'lucide-react';
 import { LAYOUT_DEMO_MENU } from './layoutDemoMenu';
 import { AppLayout } from '../components/AppLayout';
+import { Page } from '../components/Page';
 import { Lnb } from '../components/Lnb';
 import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
 import { RightPanel } from '../components/RightPanel';
@@ -90,21 +91,24 @@ const PAGE_PADDING_OPTIONS = [
   { value: 'none', label: 'none' },
 ];
 
-function DemoMainContent({ panelUsed, panelOpen, onTogglePanel }) {
+function DemoMainContent({ panelUsed, panelOpen, onTogglePanel, stickyHeader }) {
+  // Page 컴포넌트 도그푸딩(2026-08-04 지시) — 레이아웃 본문을 Page(PageHeader+body 슬롯)로 조립.
+  // 패널 토글은 PageHeader의 버튼 슬롯(actions)에 배치. 설명 행은 높이 32 한 줄 규격이라
+  // 보조 문장은 body 첫 블록으로 내린다.
   return (
-    <div className="space-y-spacing-7">
-      <div className="flex h-[32px] items-center justify-between">
-        <p className="text-20 font-semibold leading-20 text-font-icon-5">Main Content / Page Container</p>
-        {panelUsed && (
+    <Page
+      title="Main Content / Page Container"
+      description="Content는 App Shell이 확보한 fill 영역이고, 이 Page는 실제 UI가 배치되는 내부 컨테이너입니다."
+      stickyHeader={stickyHeader}
+      actions={
+        panelUsed ? (
           <Button variant="ghost" leftIcon={panelOpen ? PanelRightClose : PanelRight} onClick={onTogglePanel}>
             {panelOpen ? '패널 닫기' : '패널 열기'}
           </Button>
-        )}
-      </div>
+        ) : undefined
+      }
+    >
       <p className="text-14 text-font-icon-4">
-        Content는 App Shell이 확보한 fill 영역이고, 이 Page Container는 실제 UI가 배치되는 내부
-        컨테이너입니다.
-        <br />
         둘을 분리해야 LNB 축소·Right Panel 열림/닫힘·해상도 변화에 대응할 수 있습니다.
       </p>
       {Array.from({ length: 12 }, (_, i) => (
@@ -112,7 +116,7 @@ function DemoMainContent({ panelUsed, panelOpen, onTogglePanel }) {
           콘텐츠 블록 {i + 1}
         </div>
       ))}
-    </div>
+    </Page>
   );
 }
 
@@ -152,6 +156,7 @@ export function LayoutPage() {
   const [panelWidth, setPanelWidth] = useState('360');
   const [pageWidth, setPageWidth] = useState('standard');
   const [pagePadding, setPagePadding] = useState('32');
+  const [stickyHeader, setStickyHeader] = useState(true); // Page 헤더 스크롤 시 상단 고정(2026-08-04 지시)
   const [lnbValue, setLnbValue] = useState('layout');
 
   const panelOpen = panelUsed && panelState !== 'closed';
@@ -174,6 +179,7 @@ export function LayoutPage() {
       panelw: panelWidth,
       pw: pageWidth,
       pp: pagePadding,
+      sticky: stickyHeader ? '1' : '0',
     });
     window.open(`${window.location.pathname}${window.location.search}#layout-preview?${qs}`, '_blank');
   };
@@ -213,7 +219,12 @@ export function LayoutPage() {
           pageWidth={pageWidth}
           pagePadding={pagePadding}
         >
-          <DemoMainContent panelUsed={panelUsed} panelOpen={panelOpen} onTogglePanel={togglePanel} />
+          <DemoMainContent
+            panelUsed={panelUsed}
+            panelOpen={panelOpen}
+            onTogglePanel={togglePanel}
+            stickyHeader={stickyHeader}
+          />
         </AppLayout>
   );
 
@@ -253,6 +264,7 @@ export function LayoutPage() {
           <p className="text-12 text-font-icon-3">Page</p>
           <Select width="hug" options={PAGE_WIDTH_OPTIONS} value={pageWidth} onChange={(e) => setPageWidth(e.target.value)} />
           <Select width="hug" options={PAGE_PADDING_OPTIONS} value={pagePadding} onChange={(e) => setPagePadding(e.target.value)} />
+          <Checkbox label="헤더 상단 고정" checked={stickyHeader} onChange={() => setStickyHeader((v) => !v)} />
         </div>
         <Button variant="line" leftIcon={ExternalLink} onClick={openPreviewWindow}>
           새 창으로 보기

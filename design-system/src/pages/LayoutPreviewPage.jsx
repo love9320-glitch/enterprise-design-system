@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { PanelRight, PanelRightClose } from 'lucide-react';
 import { LAYOUT_DEMO_MENU } from './layoutDemoMenu';
 import { AppLayout } from '../components/AppLayout';
+import { Page } from '../components/Page';
 import { Lnb } from '../components/Lnb';
 import { Gnb, GnbGroup, GnbLogo } from '../components/Gnb';
 import { RightPanel } from '../components/RightPanel';
@@ -31,6 +32,7 @@ export function LayoutPreviewPage() {
   const panelWidth = Number(params.get('panelw') || 360);
   const pageWidth = params.get('pw') || 'standard';
   const pagePadding = params.get('pp') || '32';
+  const stickyHeader = params.get('sticky') !== '0'; // Page 헤더 스크롤 시 상단 고정(기본 켬)
 
   const [panelState, setPanelState] = useState(panelUsed ? initialPanel : 'closed');
   const [lnbValue, setLnbValue] = useState('layout');
@@ -86,10 +88,13 @@ export function LayoutPreviewPage() {
       pageWidth={pageWidth}
       pagePadding={pagePadding}
     >
-      <div className="space-y-spacing-7">
-        <div className="flex h-[32px] items-center justify-between">
-          <p className="text-20 font-semibold leading-20 text-font-icon-5">Main Content / Page Container</p>
-          {panelUsed && (
+      {/* Page 컴포넌트 도그푸딩(2026-08-04 지시) — 본문을 Page(PageHeader+body 슬롯)로 조립 */}
+      <Page
+        title="Main Content / Page Container"
+        description="Content는 App Shell이 확보한 fill 영역이고, 이 Page는 실제 UI가 배치되는 내부 컨테이너입니다."
+        stickyHeader={stickyHeader}
+        actions={
+          panelUsed ? (
             <Button
               variant="ghost"
               leftIcon={panelOpen ? PanelRightClose : PanelRight}
@@ -97,12 +102,10 @@ export function LayoutPreviewPage() {
             >
               {panelOpen ? '패널 닫기' : '패널 열기'}
             </Button>
-          )}
-        </div>
+          ) : undefined
+        }
+      >
         <p className="text-14 text-font-icon-4">
-          Content는 App Shell이 확보한 fill 영역이고, 이 Page Container는 실제 UI가 배치되는 내부
-          컨테이너입니다.
-          <br />
           둘을 분리해야 LNB 축소·Right Panel 열림/닫힘·해상도 변화에 대응할 수 있습니다. 이 창의
           크기를 직접 바꿔가며 반응형(auto Push↔Overlay, 1440 기준)을 확인하세요.
         </p>
@@ -111,7 +114,7 @@ export function LayoutPreviewPage() {
             콘텐츠 블록 {i + 1}
           </div>
         ))}
-      </div>
+      </Page>
     </AppLayout>
   );
 }
