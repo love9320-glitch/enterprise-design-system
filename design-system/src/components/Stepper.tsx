@@ -4,7 +4,8 @@
 // item.disabled = disabled(우선). hover는 CSS 상태 — onStepClick이 있는 인터랙티브 모드에서
 // default 스텝에만 적용(Figma hover 변형은 default의 hover만 정의).
 // 각 스텝은 [좌 연결선 · 숫자 원(36, 안쪽 28) · 우 연결선] + 타이틀(14) + 설명(12, 옵션) 구조로,
-// 스텝끼리 나란히 두면 연결선이 이어져 보인다(Figma와 동일 — 양끝 선 포함).
+// 스텝끼리 나란히 두면 연결선이 이어져 보인다. 양끝(첫 스텝 좌·마지막 스텝 우) 선은
+// invisible로 숨긴다(2026-08-05 지시) — 자리는 유지해 원 중심 정렬·스텝 등분이 흔들리지 않는다.
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { Check } from 'lucide-react';
 
@@ -67,9 +68,9 @@ export function Stepper({ items, value, onStepClick, className = '', ...props }:
         }`;
         const content = (
           <>
-            {/* 연결선 + 숫자 원 — 스텝마다 좌·우 선을 가져 나란히 두면 이어진다 */}
+            {/* 연결선 + 숫자 원 — 스텝마다 좌·우 선을 가져 나란히 두면 이어진다(양끝 선은 숨김) */}
             <div className="flex w-full items-center gap-spacing-2">
-              <div className={lineClass} />
+              <div className={`${lineClass} ${i === 0 ? 'invisible' : ''}`} />
               <div
                 className={`flex h-[36px] w-[36px] shrink-0 items-center justify-center rounded-round-00 ${ITEM_BG[state]} ${
                   hoverable ? 'group-hover:bg-stepper-line-type-hover-item' : ''
@@ -95,7 +96,7 @@ export function Stepper({ items, value, onStepClick, className = '', ...props }:
                   )}
                 </div>
               </div>
-              <div className={lineClass} />
+              <div className={`${lineClass} ${i === items.length - 1 ? 'invisible' : ''}`} />
             </div>
             {/* 타이틀(14) + 설명(12, 옵션) — 가운데 정렬 */}
             <div className="flex w-full min-w-0 flex-col text-center">
