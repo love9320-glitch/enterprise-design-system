@@ -55,6 +55,7 @@ export * from './components/SelectGroup';
 export * from './components/SelectOrInput';
 export * from './components/SideNavigation';
 export * from './components/SideNavigationTemplate';
+export * from './components/Stepper';
 export * from './components/Switch';
 export * from './components/Table';
 export * from './components/TableTemplate';

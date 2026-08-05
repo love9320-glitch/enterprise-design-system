@@ -65,6 +65,7 @@ export const LAYOUT_DEMO_MENU = [
           { value: 'side-navigation', label: 'Side Navigation' },
           { value: 'lnb', label: 'LNB Menu' },
           { value: 'gnb', label: 'GNB' },
+          { value: 'stepper', label: 'Stepper' },
         ],
       },
       {

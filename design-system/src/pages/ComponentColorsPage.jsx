@@ -1,7 +1,7 @@
 import {
   baseColors,
   buttonColors, textFieldColors, labelFieldColors, dividerColors, chipColors, listColors, tagColors,
-  newTagColors, sideNavColors, lnbColors, layoutColors, avatarColors, rightPanelColors, headingColors,
+  newTagColors, sideNavColors, lnbColors, layoutColors, avatarColors, rightPanelColors, headingColors, stepperLineTypeColors,
   checkboxColors, radioColors, switchColors, tabColors, segmentedColors,
   tableColors, modalColors, editorColors, calendarColors,
   conditionOrderSlotColors, conditionCardColors, formulaColors, builderAreaColors, toolbarColors,
@@ -52,6 +52,7 @@ const COMPONENTS = [
   { title: 'Right Panel',           prefix: 'right-panel', tokens: rightPanelColors },
   { title: 'Page Header',           prefix: 'heading',    tokens: headingColors },
   { title: 'Segmented Tabs',        prefix: 'segmented',  tokens: segmentedColors },
+  { title: 'Stepper (Line Type)',   prefix: 'stepper-line-type', tokens: stepperLineTypeColors },
   { title: 'Accordion',             prefix: 'accordion',  tokens: accordionColors },
   { title: 'Table',                 prefix: 'table',      tokens: tableColors },
   { title: 'Modal',                 prefix: 'modal',      tokens: modalColors },
