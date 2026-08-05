@@ -413,14 +413,14 @@ export function Table({
           {showDragCol && (
             // grip 핸들 컬럼 헤더 — 라벨 없는 빈 셀(폭만 확보)
             <th
-              className={`${cellLine(false)} ${headCorner(true, false)} h-[32px] align-middle`}
+              className={`${headLine(false)} ${headCorner(true, false)} h-[32px] align-middle`}
               style={{ width: DRAG_COL_WIDTH, ...headDivider }}
             />
           )}
           {selectable && (
             // 체크박스 컬럼 헤더만 상하좌우 패딩을 8px(spacing-5)로 통일 — 공통 headCellProps의 좌(spacing-6) 패딩 대신.
             <th
-              className={`${cellLine(false)} ${headCorner(!showDragCol, false)} p-spacing-5 align-middle`}
+              className={`${headLine(false)} ${headCorner(!showDragCol, false)} p-spacing-5 align-middle`}
               style={{ width: CHECKBOX_COL_WIDTH, ...headDivider }}
             >
               <div className="flex items-center justify-center">

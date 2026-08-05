@@ -7,11 +7,10 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage, RightPanelPage, PagePage, StepperPage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage, RightPanelPage, PagePage, StepperPage, SendHistoryPage, MultiStepFormTemplatePage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
-import { ScrollArea } from './components/ScrollArea';
 import { AppLayout } from './components/AppLayout';
 import { Lnb } from './components/Lnb';
 import { Gnb, GnbGroup } from './components/Gnb';
@@ -132,11 +131,19 @@ const NAV_GROUPS = [
     items: [
       { id: 'table-template', label: 'Table Template', Page: TableTemplatePage },
       { id: 'form-template', label: 'Form Template', Page: FormTemplatePage },
+      { id: 'multi-step-form-template', label: 'Multi-step Form Template', Page: MultiStepFormTemplatePage },
       { id: 'side-nav-template', label: 'Side Navigation Template', Page: SideNavTemplatePage },
       { id: 'notice-template', label: 'Notice Writing Template', Page: NoticeTemplatePage },
       { id: 'job-position-template', label: 'Job Position Template', Page: JobPositionTemplatePage },
       { id: 'job-posting-template', label: 'Job Posting Template', Page: JobPostingTemplatePage },
       { id: 'screening-builder-template', label: 'Screening Builder Template', Page: ScreeningBuilderTemplatePage },
+    ],
+  },
+  {
+    // 페이지 — 템플릿을 실제 화면으로 조립한 실전 예제(페이지>템플릿>컴포넌트 계층의 최상위 단위)
+    label: '페이지',
+    items: [
+      { id: 'send-history', label: '발송 이력', Page: SendHistoryPage },
     ],
   },
   {
@@ -162,6 +169,9 @@ const NAV_GROUPS = [
 // 그룹은 items(1뎁스) 또는 subgroups(2뎁스) 중 하나를 가진다 — 항목 평탄화는 둘 다 지원
 const groupItems = (g) => g.items ?? g.subgroups.flatMap((s) => s.items);
 const ALL_ITEMS = NAV_GROUPS.flatMap(groupItems);
+
+// Page 셸 기반 페이지 — PageHeader/바디가 자체 패딩(20)을 가지므로 셸 pagePadding을 none으로(이중 패딩 방지)
+const PAGE_SHELL_IDS = new Set(['send-history']);
 
 // 사이드바 — DS Lnb 컴포넌트로 조립(도그푸딩, 2026-07-29 — site title은 헤더 로고가 대신하므로 숨김).
 // NAV_GROUPS를 Lnb 데이터로 변환: items=1depth(아이콘 없음), subgroups=2depth 펼침 부모+sub 하위.
@@ -244,14 +254,17 @@ export default function App() {
   return (
     <NavContext.Provider value={{ navigate, groups: NAV_GROUPS }}>
       {/* 셸 = AppLayout 도그푸딩(2026-07-30) — GNB 64 + LNB 220 + Right Panel 미사용.
-          페이지가 폭·패딩을 자체 관리하므로 fluid+none, 스크롤 리셋(viewportRef) 때문에
-          mainScroll=false로 두고 기존 ScrollArea를 본문에서 유지한다. */}
+          콘텐츠 영역은 Page Container 정식 옵션 사용(2026-08-05 전환): 기본 standard(1200)+24,
+          레이아웃 데모만 fluid, Page 셸 기반 페이지(자체 패딩 20)는 padding none으로 이중 패딩 방지.
+          스크롤은 mainScroll(ScrollArea) + onMainViewport로 페이지 전환 시 최상단 리셋. */}
       <AppLayout
         height="100vh"
         lnbWidth="220"
-        pageWidth="fluid"
-        pagePadding="none"
-        mainScroll={false}
+        pageWidth={activeId === 'layout' ? 'fluid' : 'standard'}
+        pagePadding={PAGE_SHELL_IDS.has(activeId) ? 'none' : '24'}
+        onMainViewport={(el) => {
+          viewportRef.current = el;
+        }}
         gnb={
           /* GNB 그룹 구조 도그푸딩(2026-07-31) — 단일 fill 그룹(좌 로고 · 우 검색 셀렉트) */
           <Gnb>
@@ -282,39 +295,16 @@ export default function App() {
         }
         lnb={<Sidebar active={activeId} onSelect={navigate} />}
       >
-        {/* mainScroll=false + fluid/none — children이 main(h-full)을 그대로 받아 자체 스크롤 관리.
-            relative + ScrollArea absolute inset-0: explicit height로 내부 스크롤을 가두는 기존 판례 유지 */}
-        <div className="relative h-full min-w-0 overflow-hidden">
-          <ScrollArea
-            className="absolute inset-0"
-            contentClassName="h-full"
-            onViewport={(el) => {
-              viewportRef.current = el;
-            }}
+        {/* 폭·좌우 패딩·스크롤은 AppLayout(Page Container)이 담당 — 수제 래퍼 제거(2026-08-05).
+            페이지 하나가 렌더 중 throw해도 셸·메뉴는 유지되도록 ErrorBoundary로 감싼다.
+            resetKey=activeId: 다른 메뉴로 이동하면 에러가 자동 해제된다. */}
+        <ErrorBoundary resetKey={activeId}>
+          <Suspense
+            fallback={<div className="py-spacing-10 text-14 text-font-icon-3">불러오는 중…</div>}
           >
-            {/* 페이지 하나가 렌더 중 throw해도 셸·메뉴는 유지되도록 ErrorBoundary로 감싼다.
-                resetKey=activeId: 다른 메뉴로 이동하면 에러가 자동 해제된다. */}
-            <ErrorBoundary resetKey={activeId}>
-              {/* Page Container(2026-07-30) — 폭·좌우 패딩은 셸이 일괄 결정(페이지 수제 래퍼 제거):
-                  레이아웃 데모=Fluid+24 / 나머지=Standard 1200 중앙 정렬+24 */}
-              <div
-                className={
-                  activeId === 'layout'
-                    ? 'w-full px-spacing-9'
-                    : 'mx-auto w-full max-w-[1200px] px-spacing-9'
-                }
-              >
-                <Suspense
-                  fallback={
-                    <div className="py-spacing-10 text-14 text-font-icon-3">불러오는 중…</div>
-                  }
-                >
-                  {Page && <Page />}
-                </Suspense>
-              </div>
-            </ErrorBoundary>
-          </ScrollArea>
-        </div>
+            {Page && <Page />}
+          </Suspense>
+        </ErrorBoundary>
       </AppLayout>
     </NavContext.Provider>
   );
