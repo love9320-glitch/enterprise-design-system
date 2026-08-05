@@ -42,6 +42,7 @@ export { AvatarPage } from './AvatarPage';
 export { GnbPage } from './GnbPage';
 export { RightPanelPage } from './RightPanelPage';
 export { PagePage } from './PagePage';
+export { StepperPage } from './StepperPage';
 export { ScreeningBuilderTemplatePage } from './ScreeningBuilderTemplatePage';
 export { ModalPage } from './ModalPage';
 // EditorPage·ModalTestPage(안내 작성 모달=Editor 포함)는 App.jsx에서 지연 로드(lazy import)하므로 정적 재export하지 않는다

@@ -7,7 +7,7 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage, RightPanelPage, PagePage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage, RightPanelPage, PagePage, StepperPage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
@@ -94,6 +94,7 @@ const NAV_GROUPS = [
           { id: 'side-navigation', label: 'Side Navigation', Page: SideNavigationPage },
           { id: 'lnb', label: 'LNB Menu', Page: LnbPage },
           { id: 'gnb', label: 'GNB', Page: GnbPage },
+          { id: 'stepper', label: 'Stepper', Page: StepperPage },
         ],
       },
       {
