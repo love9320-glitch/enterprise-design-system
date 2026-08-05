@@ -204,6 +204,9 @@ const USAGE_B = `import { FormTemplateB } from '../components/FormTemplateB';
 // columns — 셀 기본 폭(1=한 줄 하나 · 2=6칸 · 3=4칸). 혼합은 셀별 span(12칸 기준)으로
 <FormTemplateB columns={2} cells={...} />
 
+// 타이틀 — title(폼 밖 상단)·subtitle(폼 안 최상단 전체폭 로우)은 각각 지정 시에만 렌더
+<FormTemplateB title="채용 공고" subtitle="기본 정보" cells={...} />
+
 // 버튼 셀 — flush(패딩 0) + Button area(영역 채움)로 셀 전체가 버튼이 된다
 { key: 'register', span: 2, flush: true,
   control: <Button variant="ghost" area leftIcon={Plus}>채용 분야 등록</Button> }`;
@@ -212,7 +215,10 @@ const USAGE_B_PROPS = [
   { name: 'cells', type: '{ key, label?, required?, span?, control, trailing?, flush?, labelWidth? }[]', default: '[]', desc: '셀 목록. label=회색 라벨(Field horizontal), trailing=셀 오른쪽 끝 부가 요소, flush=패딩 제거(Button area용), span=1~12(12칸 기준)' },
   { name: 'columns', type: '1 | 2 | 3', default: '1', desc: '셀 기본 폭 — 12/columns칸. 혼합 배치는 셀별 span으로' },
   { name: 'labelWidth', type: 'number | string', default: '—', desc: '라벨 영역 공통 너비(셀별 labelWidth 우선) — 컨트롤 시작점 정렬용' },
-  { name: 'shadow', type: 'boolean', default: 'true', desc: '박스 그림자(0 2px 5px 12%) on/off' },
+  { name: 'shadow', type: 'boolean', default: 'true', desc: '박스 그림자(0 2px 5px 12%) on/off — 끄면 외곽선이 inline 색(셀 구분선과 동일)으로 낮아짐' },
+  { name: 'round', type: "'6' | '12' | '16' | '20'", default: "'6'", desc: '모서리 라운드(px) — 등록 라운드 토큰 경유(round-4/7/8/9)' },
+  { name: 'title', type: 'ReactNode', default: '—', desc: '폼 밖 상단 타이틀(text-15 semibold, 박스와 6px 간격) — 지정 시에만 렌더' },
+  { name: 'subtitle', type: 'ReactNode', default: '—', desc: '폼 안 최상단 전체폭(span 12) 타이틀 로우(text-14 semibold) — 지정 시에만 렌더' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
 ];
 
@@ -287,11 +293,21 @@ const LABEL_WIDTHS = [
   { value: '100', label: '100px' },
 ];
 
-// Playground B — 레이아웃 · 라벨 너비 · 그림자 (셀 간격은 1px 헤어라인 고정이라 갭 옵션 없음)
+const ROUNDS = [
+  { value: '6', label: '6px (기본)' },
+  { value: '12', label: '12px' },
+  { value: '16', label: '16px' },
+  { value: '20', label: '20px' },
+];
+
+// Playground B — 레이아웃 · 라벨 너비 · 그림자 · 라운드 · 타이틀 (셀 간격은 1px 헤어라인 고정이라 갭 옵션 없음)
 function PlaygroundB() {
   const [layout, setLayout] = useState('1');
   const [labelWidth, setLabelWidth] = useState('60');
   const [shadow, setShadow] = useState(true);
+  const [round, setRound] = useState('6');
+  const [withTitle, setWithTitle] = useState(true);
+  const [withSubtitle, setWithSubtitle] = useState(true);
   const mixed = layout === 'mixed';
 
   return (
@@ -303,7 +319,12 @@ function PlaygroundB() {
         <OptionControl label="labelWidth">
           <Select value={labelWidth} onChange={(e) => setLabelWidth(e.target.value)} options={LABEL_WIDTHS} width={100} />
         </OptionControl>
+        <OptionControl label="round">
+          <Select value={round} onChange={(e) => setRound(e.target.value)} options={ROUNDS} width={110} />
+        </OptionControl>
         <Checkbox checked={shadow} onChange={() => setShadow((s) => !s)} label="그림자(shadow)" />
+        <Checkbox checked={withTitle} onChange={() => setWithTitle((s) => !s)} label="타이틀(title)" />
+        <Checkbox checked={withSubtitle} onChange={() => setWithSubtitle((s) => !s)} label="서브 타이틀(subtitle)" />
       </div>
 
       <div className="rounded-round-5 border border-base-gray-100 bg-white p-spacing-8">
@@ -312,6 +333,9 @@ function PlaygroundB() {
           columns={mixed ? 1 : Number(layout)}
           labelWidth={labelWidth === 'hug' ? undefined : Number(labelWidth)}
           shadow={shadow}
+          round={round}
+          title={withTitle ? '채용 공고' : undefined}
+          subtitle={withSubtitle ? '기본 정보' : undefined}
         />
       </div>
     </div>
@@ -348,7 +372,7 @@ export function FormTemplatePage() {
         Button area 버튼 셀을 포함합니다. 셀 간격은 헤어라인 고정이라 갭 옵션이 없습니다.
       </p>
       <UsageExample code={USAGE_B} props={USAGE_B_PROPS} note="라벨은 회색(label-field/gray-text)이며 labelWidth로 컨트롤 시작점을 정렬합니다." />
-      <h4 className="mb-spacing-5 text-14 font-semibold text-font-icon-5">Playground — 레이아웃 · 라벨 너비 · 그림자</h4>
+      <h4 className="mb-spacing-5 text-14 font-semibold text-font-icon-5">Playground — 레이아웃 · 라벨 너비 · 그림자 · 라운드 · 타이틀</h4>
       <PlaygroundB />
     </section>
   );

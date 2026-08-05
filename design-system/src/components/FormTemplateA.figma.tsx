@@ -59,6 +59,8 @@ figma.connect(
     example: ({ columns }) => (
       <FormTemplateB
         columns={columns}
+        title="TITLE"
+        subtitle="Sub title"
         labelWidth={60}
         cells={[
           { key: 'a', label: '라벨', required: true, control: <Input variant="transparent" width="100%" placeholder="텍스트를 입력하세요" /> },
@@ -78,6 +80,8 @@ figma.connect(
     variant: { column: 'Mixed column' },
     example: () => (
       <FormTemplateB
+        title="TITLE"
+        subtitle="Sub title"
         labelWidth={60}
         cells={[
           { key: 'a', label: '라벨', span: 8, control: <Input variant="transparent" width="100%" placeholder="텍스트를 입력하세요" /> },
