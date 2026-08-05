@@ -55,6 +55,7 @@ interface AppLayoutProps {
   pageWidth?: keyof typeof PAGE_WIDTH_CLASS; // Page Container 타입 — readable(840)|standard(1200)|wide(1440)|fluid(무제한)
   pagePadding?: keyof typeof PAGE_PADDING_CLASS; // Page 좌우 패딩 — '24'|'32'|'40'|'none'
   mainScroll?: boolean; // 메인 콘텐츠 내부 스크롤(ScrollArea) — 기본 true. false면 콘텐츠가 영역을 직접 관리
+  onMainViewport?: (el: HTMLElement | null) => void; // mainScroll ScrollArea 뷰포트 참조 — 페이지 전환 시 스크롤 리셋 등 호출부 제어용(2026-08-05 셸 도그푸딩 승격)
   className?: string;
 }
 
@@ -74,6 +75,7 @@ export function AppLayout({
   pageWidth = 'standard', // Page Container 타입(가이드라인 — 일반 폼 기본 1200 중앙 정렬)
   pagePadding = '32', // Page 좌우 패딩('24'|'32'|'40'|'none')
   mainScroll = true, // 메인 콘텐츠 내부 스크롤(ScrollArea)
+  onMainViewport, // mainScroll 뷰포트 참조 콜백(스크롤 리셋 등)
   className = '',
 }: AppLayoutProps) {
   const rootStyle: CSSProperties = { height: toLen(height) };
@@ -112,13 +114,15 @@ export function AppLayout({
   // fluid + none이면 래퍼 없이 그대로 — 페이지/템플릿이 폭·패딩·(mainScroll=false 시)스크롤을
   // 직접 관리하는 조합(데모 사이트 셸처럼 children이 h-full 체인을 이어야 할 때 필수).
   const isBare = pageWidth === 'fluid' && pagePadding === 'none';
+  // pagePadding은 문서 그대로 '좌우' 패딩만 담당한다 — 상하 여백은 페이지(Page 바디 p 20,
+  // 데모 페이지 py 40 등)가 소유(2026-08-05 정리: 기존 py-spacing-8 동반 지급이 이중 여백을 만들던 것 제거)
   const pageInner = isBare ? (
     children
   ) : (
     <div
-      className={`mx-auto w-full ${pagePadding === 'none' ? '' : 'py-spacing-8'} ${
-        PAGE_WIDTH_CLASS[pageWidth] ?? PAGE_WIDTH_CLASS.standard
-      } ${PAGE_PADDING_CLASS[pagePadding] ?? PAGE_PADDING_CLASS['32']}`}
+      className={`mx-auto w-full ${PAGE_WIDTH_CLASS[pageWidth] ?? PAGE_WIDTH_CLASS.standard} ${
+        PAGE_PADDING_CLASS[pagePadding] ?? PAGE_PADDING_CLASS['32']
+      }`}
     >
       {children}
     </div>
@@ -152,7 +156,7 @@ export function AppLayout({
         {lnb != null && <Divider direction="vertical" className="h-full" />}
         <main className="h-full min-w-0 flex-1 bg-layout-main-bg">
           {mainScroll ? (
-            <ScrollArea maxHeight="100%" style={{ height: '100%' }}>
+            <ScrollArea maxHeight="100%" style={{ height: '100%' }} onViewport={onMainViewport}>
               {pageInner}
             </ScrollArea>
           ) : (
