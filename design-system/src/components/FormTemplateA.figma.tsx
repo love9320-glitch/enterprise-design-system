@@ -2,6 +2,8 @@
 // 오타는 Figma에서 수정) + form template type b SET(8620:13367).
 //   - A(여백 그리드형): Property 1 → columns 1/2/3, Mixed는 span 혼합 예시.
 //   - B(테이블형 1px 헤어라인 박스): column → columns, Mixed는 span 혼합 예시.
+//     shadow(on/off) → shadow true/false, title(boolean) → title 지정/미지정(2026-08-05 변형 신설 반영).
+//     subtitle은 Figma 속성이 없어(항상 표시) 리터럴 예시로 유지.
 // 발행: main 머지 시 자동(.github/workflows/figma-code-connect.yml)
 // 파서 제약 — URL·props는 리터럴만(변수·스프레드·as const 금지).
 import figma from '@figma/code-connect';
@@ -55,11 +57,14 @@ figma.connect(
   {
     props: {
       columns: figma.enum('column', { '1 column': 1, '2 column': 2, '3 column': 3 }),
+      shadow: figma.enum('shadow', { on: true, off: false }),
+      title: figma.boolean('title', { true: 'TITLE', false: undefined }),
     },
-    example: ({ columns }) => (
+    example: ({ columns, shadow, title }) => (
       <FormTemplateB
         columns={columns}
-        title="TITLE"
+        shadow={shadow}
+        title={title}
         subtitle="Sub title"
         labelWidth={60}
         cells={[
@@ -78,9 +83,14 @@ figma.connect(
   'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=8620-13367',
   {
     variant: { column: 'Mixed column' },
-    example: () => (
+    props: {
+      shadow: figma.enum('shadow', { on: true, off: false }),
+      title: figma.boolean('title', { true: 'TITLE', false: undefined }),
+    },
+    example: ({ shadow, title }) => (
       <FormTemplateB
-        title="TITLE"
+        shadow={shadow}
+        title={title}
         subtitle="Sub title"
         labelWidth={60}
         cells={[
