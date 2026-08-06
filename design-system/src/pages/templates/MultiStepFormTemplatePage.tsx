@@ -444,11 +444,9 @@ function ReviewStep({ method }: { method: MethodKey }) {
   return (
     <FormTemplateB
       labelWidth={100}
+      subtitle="Step 3. 내용 검토 및 발송"
+      subtitleTrailing={<TestSendButton />}
       cells={[
-        // 타이틀 로우 — 우측 '테스트 발송' 버튼이 있어 subtitle 대신 trailing 셀로 구성
-        { key: 'title', span: 12,
-          control: <span className="text-14 font-semibold text-font-icon-5">Step 3. 내용 검토 및 발송</span>,
-          trailing: <TestSendButton /> },
         ...reviewFields.map((f) => ({
           key: f.key,
           label: f.label,

@@ -8,7 +8,8 @@
 //   - columns: 1 | 2 | 3 — 셀 기본 폭(12/columns칸). 혼합 배치는 셀별 span(12칸 기준)으로 지정
 //   - labelWidth: 라벨 영역 공통 너비(셀별 labelWidth가 우선) — 컨트롤 시작점 정렬용
 //   - shadow: 박스 그림자 on/off
-//   - cellPaddingTop/cellPaddingBottom: 셀 위/아래 패딩 각각 12(기본)/20 — subtitle 로우 포함 공통(좌우는 20 고정)
+//   - cellPaddingTop/cellPaddingBottom: 셀 위/아래 패딩 각각 12(기본)/20 — subtitle 로우 포함 공통
+//     (좌우는 20 고정, 단 subtitle 로우만 오른쪽 12 — 2026-08-06 지시)
 //     · 셀별 paddingTop/paddingBottom이 공통값보다 우선(labelWidth와 같은 오버라이드 패턴)
 //   - title: 폼 밖 상단 타이틀(Figma "TITLE" — text-15 semibold, 32px 행 + 박스와 6px 간격) — 지정 시에만 렌더
 //   - subtitle: 폼 안 최상단 전체폭(span 12) 타이틀 로우(Figma "Sub title" — text-14 semibold) — 지정 시에만 렌더
@@ -63,6 +64,7 @@ interface FormTemplateBProps extends Omit<ComponentPropsWithoutRef<'div'>, 'titl
   cellPaddingBottom?: keyof typeof CELL_PADDING_BOTTOM_CLASS; // 셀 아래 패딩 — '12'(기본) | '20'
   title?: ReactNode; // 폼 밖 상단 타이틀 — 지정 시에만 렌더(2026-08-05 지시)
   subtitle?: ReactNode; // 폼 안 최상단 전체폭 타이틀 로우 — 지정 시에만 렌더(2026-08-05 지시)
+  subtitleTrailing?: ReactNode; // subtitle 로우 우측 슬롯(테스트 발송 버튼 등) — 우측 패딩 12에 맞닿음(2026-08-06 지시)
 }
 
 // 코너 셀 라운드 클래스 — 컨테이너 overflow-clip 없이 라운드 코너를 유지하기 위한 정적 맵(purge-safe)
@@ -83,6 +85,7 @@ export function FormTemplateB({
   cellPaddingBottom = '12',
   title,
   subtitle,
+  subtitleTrailing,
   className = '',
   ...props
 }: FormTemplateBProps) {
@@ -147,12 +150,16 @@ export function FormTemplateB({
       {...(hasTitle ? undefined : props)}
     >
       {subtitle != null && (
-        // 폼 안 최상단 타이틀 로우 — 전체 폭(span 12), 셀과 같은 패딩(좌우 20·상하 12)에 수직 중앙
+        // 폼 안 최상단 타이틀 로우 — 전체 폭(span 12), 셀과 같은 패딩(좌 20·우 12·상하 12)에 수직 중앙.
+        // subtitleTrailing이 있으면 우측 끝에 배치(justify-between)
         <div
           style={{ gridColumn: 'span 12 / span 12' }}
-          className={`flex min-h-[56px] items-center bg-job-posting-template-default-bg px-spacing-8 ${padY()} ${cornerOf(0)} text-14 font-semibold text-font-icon-5`}
+          className={`flex min-h-[56px] items-center ${
+            subtitleTrailing != null ? 'justify-between gap-spacing-5' : ''
+          } bg-job-posting-template-default-bg pl-spacing-8 pr-spacing-6 ${padY()} ${cornerOf(0)} text-14 font-semibold text-font-icon-5`}
         >
           {subtitle}
+          {subtitleTrailing != null && <div className="flex shrink-0 items-center">{subtitleTrailing}</div>}
         </div>
       )}
       {cells.map((c, i) => {
