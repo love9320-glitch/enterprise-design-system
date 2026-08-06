@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { Button } from '../components/Button';
-import { SideNavigationTemplate } from '../components/SideNavigationTemplate';
+import { SideNavigationTemplate } from '../templates/SideNavigationTemplate';
 import { Field } from '../components/Field';
 import { Input } from '../components/Input';
 import { Table } from '../components/Table';

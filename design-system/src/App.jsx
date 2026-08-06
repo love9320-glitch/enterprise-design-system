@@ -11,9 +11,9 @@ import {
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
-import { AppLayout } from './components/AppLayout';
-import { Lnb } from './components/Lnb';
-import { Gnb, GnbGroup } from './components/Gnb';
+import { AppLayout } from './layouts/AppLayout';
+import { Lnb } from './layouts/Lnb';
+import { Gnb, GnbGroup } from './layouts/Gnb';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { Select } from './components/Select';
 import { Tag } from './components/Tag';
@@ -21,11 +21,11 @@ import { NavContext } from './navContext';
 
 // Editor는 Tiptap 엔진이 무거워 초기 번들에서 분리(지연 로드). 컴포넌트 자체는 변경 없음.
 const EditorPage = lazy(() =>
-  import('./pages/EditorPage').then((m) => ({ default: m.EditorPage })),
+  import('./pages/components/EditorPage').then((m) => ({ default: m.EditorPage })),
 );
 // Notice Writing Template도 Editor(Tiptap)를 포함하므로 동일하게 지연 로드한다.
 const NoticeTemplatePage = lazy(() =>
-  import('./pages/NoticeTemplatePage').then((m) => ({ default: m.NoticeTemplatePage })),
+  import('./pages/templates/NoticeTemplatePage').then((m) => ({ default: m.NoticeTemplatePage })),
 );
 // 모달 테스트 페이지도 '안내 작성' 모달(NoticeWritingTemplate=Editor 포함) 때문에 지연 로드한다.
 const ModalTestPage = lazy(() =>
