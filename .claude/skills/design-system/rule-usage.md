@@ -66,6 +66,7 @@
 | 11c 옵션 적어도 그대로 매핑 | 1 | 06-26 | 06-26 Figma 단순매핑(prop명 Property1↔코드 size 차이는 codegen 표기차일 뿐, 코드 기능 영향 0) |
 | 11d 매핑 후 코드 불변 확인 | 0 | – | |
 | 12a 에러 툴팁 상위 프레임 clip 끄기 | 0 | – | (과거 Input 작업서 적용) |
+| 22 로딩 정책(최초=컨테이너 중앙 일괄 / 재조회=부분) | 1 | 08-06 | **2026-08-06 사용자 지시로 신설.** 컨테이너 최초 로딩=Page loading·Modal bodyLoading·RightPanel loading·PopoverMenu loading이 바디 중앙 공용 LoadingIndicator("불러오는 중…") — 모든 데이터 준비 후 일괄 표시. 재조회(검색·필터·페이지 전환)=Table loading 등 부분 로딩, 쓰기 진행=Button loading(confirmLoading). 신설과 동시에 컴포넌트·데모 4곳 구현, Table 로딩 행도 공용 인디케이터로 통일 |
 | 12b (코드)overflow:visible | 1 | 08-06 | 채용 분야 모달 스크롤 테이블서 Select 포털 툴팁 4연속 마찰(모달 밖 유출→푸터 겹침→스크롤 출렁임→행 삭제 어긋남) — 배치 자동 3분기+MutationObserver 재측정으로 해소(1.3.2, PR #176~178). 판례를 규칙 12 본문에 반영: 스크롤 컨테이너 안은 fixed 포털 대신 '컨테이너 안 absolute'가 정답 |
 | 13a table 인스턴스→detach→편집 | 10 | 06-26 | 슬롯 안 편집=detach 안전 원칙 확립 — 슬롯 미러링 ID 재생성은 모달부터 재탐색+null 가드, 다중 편집 전 button group/테이블 detach, detach 후 FILL 일괄 재설정(규칙 13 본문 반영). 판례 원문 → rule-usage-archive.md §13a |
 | 13b detach해도 디자인 유지 | 8 | 06-25 | 06-25 테이블 템플릿 detach 후에도 셀 색·태그·구분선 유지됨 확인('지원자 배경'서도 컬럼/너비 재구성 후 구분선·정렬 유지) |

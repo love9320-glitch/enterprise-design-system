@@ -41,6 +41,7 @@ const MODAL_PROPS = [
   { name: 'showHeader / showClose / showFooter / showCancel', type: 'boolean', default: 'true', desc: '헤더 / X 버튼 / 푸터 / 취소 버튼 노출' },
   { name: 'closeOnOverlayClick / closeOnEsc', type: 'boolean', default: 'true', desc: '딤 클릭 / ESC로 닫기 허용' },
   { name: 'bodyMaxHeight', type: 'number | string', default: "'70vh'", desc: '본문 최대 높이(초과 시 ScrollArea 내부 스크롤)' },
+  { name: 'bodyLoading / bodyLoadingMessage', type: 'boolean / ReactNode', default: 'false / 불러오는 중…', desc: '모달 최초 로딩(로딩 정책) — 바디 대신 중앙 로딩(스피너+문구), 모달의 모든 데이터 준비 후 일괄 표시. loading(FormModal)·confirmLoading은 푸터 확인 버튼용이라 이름 구분' },
 ];
 
 // ───────────── FormModal ─────────────
@@ -217,6 +218,7 @@ export function ModalPage() {
   const [scrollOpen, setScrollOpen] = useState(false);
   const [footerStartOpen, setFooterStartOpen] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
+  const [bodyLoadingOpen, setBodyLoadingOpen] = useState(false); // 최초 로딩(로딩 정책) 체험
   const [placeOpen, setPlaceOpen] = useState<any>(null); // 'center' | 'top'
   const [sizeOpen, setSizeOpen] = useState<any>(null); // 현재 열린 사이즈 키
   // FormModal
@@ -252,6 +254,7 @@ export function ModalPage() {
         <Button variant="line" onClick={() => setScrollOpen(true)}>긴 본문(스크롤)</Button>
         <Button variant="line" onClick={() => setFooterStartOpen(true)}>푸터 좌측 영역</Button>
         <Button variant="line" onClick={() => setTableOpen(true)}>테이블 템플릿 (상단 정렬)</Button>
+        <Button variant="line" onClick={() => setBodyLoadingOpen(true)}>최초 로딩(bodyLoading)</Button>
       </div>
       <h4 className="mb-spacing-4 text-14 font-semibold text-font-icon-5">Placement</h4>
       <div className="mb-spacing-7 flex flex-wrap gap-spacing-5">
@@ -310,6 +313,18 @@ export function ModalPage() {
         onConfirm={() => setBase(false)}
       >
         ModalBody 영역입니다. 외부에서 주입한 컴포넌트나 텍스트가 이 자리에 들어갑니다.
+      </Modal>
+      {/* 최초 로딩(로딩 정책) — 바디 중앙 로딩, 모달의 모든 데이터 준비 후 일괄 표시 */}
+      <Modal
+        open={bodyLoadingOpen}
+        onClose={() => setBodyLoadingOpen(false)}
+        title="모달 타이틀"
+        size="md"
+        bodyLoading
+        confirmDisabled
+        onConfirm={() => setBodyLoadingOpen(false)}
+      >
+        {null}
       </Modal>
 
       <Modal

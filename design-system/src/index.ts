@@ -34,6 +34,7 @@ export * from './components/Input';
 export * from './templates/JobPositionTemplate';
 export * from './components/Label';
 export * from './components/List';
+export * from './components/LoadingIndicator';
 export * from './components/ListEmpty';
 export * from './components/ListGroup';
 export * from './components/Modal';

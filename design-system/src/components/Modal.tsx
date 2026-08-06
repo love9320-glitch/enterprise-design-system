@@ -30,6 +30,7 @@ import { useFocusTrap } from './useFocusTrap';
 import { X } from 'lucide-react';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
+import { LoadingIndicator } from './LoadingIndicator';
 import { ScrollArea } from './ScrollArea';
 import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
 import { Checkbox } from './Checkbox';
@@ -98,6 +99,10 @@ export interface ModalProps
   /** 푸터 패딩 직접 지정(토큰 클래스) — 미지정 시 footerStartType 기반 기본값(좌 16/12·우 12·상하 12). Alert/Confirm은 px-spacing-8 py-spacing-7 */
   footerPadding?: string | null;
   bodyClassName?: string;
+  /** 모달 최초 로딩(규칙 22) — 바디를 중앙 로딩(스피너+불러오는 중…)으로 대체, 모든 데이터 준비 후 일괄 표시.
+      이름이 bodyLoading인 이유: loading(FormModal)·confirmLoading은 푸터 확인 버튼용이라 구분 */
+  bodyLoading?: boolean;
+  bodyLoadingMessage?: ReactNode;
   /** 주면 본문+푸터를 <form>으로 감싸고 주동작 버튼 type=submit */
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void;
 }
@@ -130,6 +135,8 @@ export function Modal({
   bodyPadding = 'p-spacing-7',
   footerPadding = null,
   bodyClassName = '',
+  bodyLoading = false,
+  bodyLoadingMessage,
   onSubmit,
   className = '',
   ...props
@@ -346,7 +353,8 @@ export function Modal({
               <div ref={contentRef} className={`${bodyPadding} text-14 text-font-icon-4 ${bodyClassName}`}>
                 <ModalBodyMaxContext.Provider value={layout.bodyInner ?? null}>
                   <ModalFooterStartContext.Provider value={setInjectedFooterStart}>
-                    {children}
+                    {/* 최초 로딩(규칙 22): 바디 중앙 로딩으로 대체 — 모든 데이터 준비 후 일괄 표시 */}
+                    {bodyLoading ? <LoadingIndicator message={bodyLoadingMessage} /> : children}
                   </ModalFooterStartContext.Provider>
                 </ModalBodyMaxContext.Provider>
               </div>

@@ -119,6 +119,7 @@ const USAGE_PROPS = [
   { name: 'PopoverMenu · showCancel', type: 'boolean', default: 'true', desc: '취소 버튼 표시' },
   { name: 'PopoverMenu · showConfirm', type: 'boolean', default: 'true', desc: '확인 버튼 표시' },
   { name: 'PopoverMenu · width', type: 'number | string', default: '304', desc: '팝오버 너비' },
+  { name: 'PopoverMenu · loading / loadingMessage', type: 'boolean / ReactNode', default: 'false / 불러오는 중…', desc: '메뉴 최초 로딩(로딩 정책) — 목록(children) 대신 중앙 로딩(스피너+문구), 모든 데이터 준비 후 일괄 표시' },
   { name: 'PopoverMenu · className', type: 'string', default: "''", desc: '추가 클래스' },
 ];
 
@@ -582,6 +583,12 @@ export function OptionListPage() {
             <PopoverMenu topArea="search" searchValue="없는 옵션" onSearchChange={() => {}}>
               <ListGroup empty />
             </PopoverMenu>
+          </div>
+          <div>
+            <p className="mb-spacing-4 text-12 text-font-icon-3">
+              최초 로딩(loading) — 목록 대신 중앙 로딩, 데이터 준비 후 일괄 표시
+            </p>
+            <PopoverMenu loading />
           </div>
         </div>
       </div>

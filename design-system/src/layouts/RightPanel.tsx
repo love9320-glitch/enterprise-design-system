@@ -11,6 +11,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '../components/Button';
+import { LoadingIndicator } from '../components/LoadingIndicator';
 import { ScrollArea } from '../components/ScrollArea';
 
 // 폭 3단 — Figma width size 변형(Fullscreen=fill)
@@ -27,6 +28,9 @@ interface RightPanelProps extends Omit<ComponentPropsWithoutRef<'div'>, 'title'>
   footer?: ReactNode; // 푸터 슬롯 — null이면 푸터 영역 미표시(Figma bottom=false). 좌우 배치는 슬롯 안에서 자유
   width?: keyof typeof WIDTH_STYLE; // '360'(기본) | '480' | 'fill'(Fullscreen — 부모 폭 채움)
   bodyPadding?: boolean; // 바디 기본 패딩(p-spacing-7) — 기본 false(Figma 바디는 무패딩 슬롯)
+  // 패널 최초 로딩(규칙 22) — 바디 중앙 로딩(스피너+불러오는 중…), 모든 데이터 준비 후 일괄 표시
+  loading?: boolean;
+  loadingMessage?: ReactNode;
 }
 
 export function RightPanel({
@@ -36,6 +40,8 @@ export function RightPanel({
   footer = null, // null이면 푸터 미표시
   width = '360', // '360' | '480' | 'fill'
   bodyPadding = false, // 바디 기본 패딩(p-spacing-7)
+  loading = false,
+  loadingMessage,
   className = '',
   ...props
 }: RightPanelProps) {
@@ -53,9 +59,14 @@ export function RightPanel({
         </header>
       )}
       <div className="min-h-0 w-full flex-1 bg-right-panel-bg">
-        <ScrollArea maxHeight="100%" style={{ height: '100%' }}>
-          {bodyPadding ? <div className="p-spacing-7">{children}</div> : children}
-        </ScrollArea>
+        {/* 최초 로딩(규칙 22): 바디 중앙 로딩으로 대체 — 스크롤 영역 대신 패널 높이 중앙 배치 */}
+        {loading ? (
+          <LoadingIndicator message={loadingMessage} />
+        ) : (
+          <ScrollArea maxHeight="100%" style={{ height: '100%' }}>
+            {bodyPadding ? <div className="p-spacing-7">{children}</div> : children}
+          </ScrollArea>
+        )}
       </div>
       {footer != null && (
         <footer className="flex w-full shrink-0 items-center bg-right-panel-bg py-spacing-6 pl-spacing-7 pr-spacing-6">

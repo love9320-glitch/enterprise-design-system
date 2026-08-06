@@ -29,10 +29,11 @@
 // box-shadow(토큰 색 인라인)로 그린다. — Tooltip/ScrollArea의 토큰값 인라인 적용과 동일한 예외.
 import { useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ComponentPropsWithoutRef, ReactNode } from 'react';
-import { GripVertical, LoaderCircle, MoreVertical } from 'lucide-react';
+import { GripVertical, MoreVertical } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { Checkbox } from './Checkbox';
 import { DragGhost } from './DragGhost';
+import { LoadingIndicator } from './LoadingIndicator';
 import { ScrollArea } from './ScrollArea';
 import { TruncatingText } from './TruncatingText';
 import { Select } from './Select';
@@ -440,10 +441,8 @@ export function Table({
         {loading ? (
           <tr className="bg-table-row-bg">
             <td colSpan={totalCols} className={`${stateLine} px-spacing-5-5 py-spacing-12`}>
-              <div className="flex items-center justify-center gap-spacing-4 text-14 text-font-icon-3">
-                <LoaderCircle size={16} strokeWidth={1.8} className="animate-spin" />
-                {loadingMessage}
-              </div>
+              {/* 공용 LoadingIndicator(규칙 22)와 동일 구성 — 재조회(검색·필터·페이지 전환) 로딩 담당 */}
+              <LoadingIndicator center={false} message={loadingMessage} />
             </td>
           </tr>
         ) : displayRows.length === 0 ? (

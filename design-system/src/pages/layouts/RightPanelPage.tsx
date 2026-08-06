@@ -42,6 +42,7 @@ const USAGE_PROPS = [
   { name: 'footer', type: 'ReactNode', default: 'null', desc: '푸터 슬롯 — null이면 영역 미표시(Figma bottom 토글). 좌우 배치는 슬롯 안에서 자유' },
   { name: 'width', type: "'360' | '480' | 'fill'", default: "'360'", desc: '패널 폭 — 360(기본)/480(상세 작업 밀도)/fill(Figma Fullscreen, 부모 폭 채움). AppLayout 안에서는 fill 권장' },
   { name: 'bodyPadding', type: 'boolean', default: 'false', desc: '바디 기본 패딩(p-spacing-7) — Figma 바디는 무패딩 슬롯이라 기본 꺼짐' },
+  { name: 'loading / loadingMessage', type: 'boolean / ReactNode', default: 'false / 불러오는 중…', desc: '패널 최초 로딩(로딩 정책) — 바디 대신 중앙 로딩(스피너+문구), 패널의 모든 데이터 준비 후 일괄 표시' },
 ];
 
 const WIDTH_OPTIONS = [
@@ -55,6 +56,7 @@ export function RightPanelPage() {
   const [showHeader, setShowHeader] = useState(true);
   const [showClose, setShowClose] = useState(true);
   const [showFooter, setShowFooter] = useState(true);
+  const [loading, setLoading] = useState(false); // 최초 로딩(로딩 정책) 체험
 
   return (
     <section className="py-spacing-10 text-left">
@@ -79,6 +81,7 @@ export function RightPanelPage() {
         <Checkbox label="헤더" checked={showHeader} onChange={() => setShowHeader((v) => !v)} />
         <Checkbox label="닫기 버튼" checked={showClose} onChange={() => setShowClose((v) => !v)} />
         <Checkbox label="푸터" checked={showFooter} onChange={() => setShowFooter((v) => !v)} />
+        <Checkbox label="최초 로딩(loading)" checked={loading} onChange={() => setLoading((v) => !v)} />
       </div>
       {/* 프리뷰 박스 — 패널 폭에 맞춰 hug(2026-07-31 지시). fill 선택 시엔 전체 폭 유지 */}
       <div
@@ -91,6 +94,7 @@ export function RightPanelPage() {
           title={showHeader ? '라이트 패널 타이틀' : null}
           onClose={showClose ? () => {} : undefined}
           bodyPadding
+          loading={loading}
           footer={
             showFooter ? (
               <div className="flex w-full items-center justify-between">
