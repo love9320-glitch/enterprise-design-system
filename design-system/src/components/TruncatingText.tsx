@@ -10,11 +10,15 @@ import { Tooltip } from './Tooltip';
 
 interface TruncatingTextProps extends ComponentPropsWithoutRef<'p'> {
   as?: ElementType; // 'p' | 'span' | 'div' 등
+  // 잘렸을 때 cursor-help 표시 여부. 기본 false — Button·List 행·클릭 테이블 행 등 클릭 요소 안에서
+  // 쓰이는 경우가 많아 pointer를 덮지 않는 게 기본값이고, 정보성(비클릭) 텍스트에만 옵트인한다.
+  helpCursor?: boolean;
 }
 
 export function TruncatingText({
   children,
   as: Component = 'p', // 'p' | 'span' | 'div' 등
+  helpCursor = false,
   className = '',
   ...props
 }: TruncatingTextProps) {
@@ -28,13 +32,13 @@ export function TruncatingText({
   // 폭은 부모 레이아웃(테이블 컬럼 등) 변화로도 바뀌므로 ResizeObserver로 추적한다.
   useLayoutEffect(() => {
     const el = ref.current;
-    if (!el) return;
+    if (!el || !helpCursor) return;
     const check = () => setTruncated(el.scrollWidth > el.clientWidth);
     check();
     const ro = new ResizeObserver(check);
     ro.observe(el);
     return () => ro.disconnect();
-  }, [children]);
+  }, [children, helpCursor]);
 
   const onEnter = () => {
     const el = ref.current;
@@ -66,7 +70,7 @@ export function TruncatingText({
         ref={ref}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
-        className={`truncate ${truncated ? 'cursor-help' : ''} ${className}`}
+        className={`truncate ${helpCursor && truncated ? 'cursor-help' : ''} ${className}`}
         {...props}
       >
         {children}

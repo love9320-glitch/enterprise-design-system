@@ -115,7 +115,7 @@ function ResultCell({ value, fail, reason }: { value: string; fail: boolean; rea
   return (
     // 셀 내장 flex 래퍼 안에서 내용 폭만 차지하지 않도록 w-full — 태그가 셀 오른쪽 끝에 붙는다
     <div className="flex w-full min-w-0 items-center gap-spacing-5">
-      <TruncatingText as="span" className="min-w-0">
+      <TruncatingText as="span" helpCursor className="min-w-0">
         {value}
       </TruncatingText>
       <Tag color={fail ? 'red' : 'blue'} className={`ml-auto ${fail ? 'cursor-help' : ''}`} onMouseEnter={t.onMouseEnter} onMouseLeave={t.onMouseLeave}>
@@ -282,7 +282,7 @@ function SendHistoryDetail({ row, onBack }: { row: ListRow | null; onBack: () =>
   return (
     <Page
       // 헤더에 발송 사유 표시 — 사유가 길면 말줄임+hover 툴팁(규칙 8 TruncatingText, 2026-08-06)
-      title={<TruncatingText as="span" className="block">{`발송 이력 - ${reason}`}</TruncatingText>}
+      title={<TruncatingText as="span" helpCursor className="block">{`발송 이력 - ${reason}`}</TruncatingText>}
       stickyHeader // 스크롤 시 페이지 헤더 상단 고정(2026-08-05 지시)
       actions={
         <Button variant="line" leftIcon={ArrowLeft} onClick={onBack}>
