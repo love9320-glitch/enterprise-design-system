@@ -427,10 +427,9 @@ function ReviewStep({ method, targetCount }: { method: MethodKey; targetCount: n
   return (
     <FormTemplateB
       labelWidth={100}
+      subtitle="Step 3. 내용 검토 및 발송"
+      subtitleTrailing={<TestSendButton />}
       cells={[
-        { key: 'title', span: 12,
-          control: <span className="text-14 font-semibold text-font-icon-5">Step 3. 내용 검토 및 발송</span>,
-          trailing: <TestSendButton /> },
         ...reviewFields.map((f) => ({
           key: f.key,
           label: f.label,
