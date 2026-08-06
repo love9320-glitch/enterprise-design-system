@@ -13,10 +13,12 @@ import { TableTemplate } from '../components/TableTemplate';
 import { SegmentControlGroup } from '../components/SegmentControl';
 import { Tag } from '../components/Tag';
 import { Divider } from '../components/Divider';
+import { TruncatingText } from '../components/TruncatingText';
 import { Input } from '../components/Input';
 import { FormTemplateB } from '../components/FormTemplateB';
 import { iconCellWidth } from '../components/tableView';
 import { formatDateTime } from '../utils/datetime';
+import { useNav } from '../navContext';
 
 // ── 목록 데모 데이터 — 상태 분포는 결정적으로 생성(순번 내림차순, 최신이 위) ──────────
 const STATUS_TAG = {
@@ -43,13 +45,15 @@ const LIST_ROWS = Array.from({ length: 100 }, (_, i) => {
   const no = 100 - i;
   const sentAt = new Date(2026, 7, 10 - Math.floor(i / 10), 9, 0); // 8월 10일부터 하루씩 과거로
   const reservedAt = new Date(2026, 7, 12, 0, i + 1); // 대기 행의 발송 예약 시간
+  // 안내방법 혼합(개발 정책 2026-08-06) — 이메일+문자 / 이메일만 / 문자만 케이스가 모두 존재
+  const method = i % 7 === 3 ? '이메일' : i % 7 === 5 ? '문자' : '이메일, 문자';
   return {
     id: no,
     no,
     status,
     client: CLIENTS[i % CLIENTS.length],
     reason: REASONS[i % REASONS.length],
-    method: '이메일, 문자',
+    method,
     total: '999,999건',
     success: status === '대기' ? '-' : '444,444건',
     fail: status === '완료' ? '0건' : status === '대기' ? '-' : '444,444건',
@@ -105,23 +109,38 @@ function ResultCell({ fail, reason }) {
   );
 }
 
-const DETAIL_COLUMNS = [
+// 대상자 테이블 컬럼 — 채널 조건부(개발 정책 2026-08-06): 발송하지 않은 채널의 결과 컬럼은 제외,
+// 재발송 활성도 발송한 채널의 실패만 본다. 이메일/문자 결과·발송시각은 width 미지정 = 가변(fill)
+const buildDetailColumns = (hasEmail, hasSms) => [
   { key: 'no', label: '순번', width: 66 },
   { key: 'name', label: '이름', width: 80 },
-  { key: 'emailResult', label: '이메일 발송 결과', render: (row) => <ResultCell fail={row.emailFail} reason={EMAIL_FAIL_REASON} /> },
-  { key: 'smsResult', label: '문자 발송 결과', render: (row) => <ResultCell fail={row.smsFail} reason={SMS_FAIL_REASON} /> },
-  { key: 'sentAt', label: '발송시각', width: 160 },
+  ...(hasEmail
+    ? [{ key: 'emailResult', label: '이메일 발송 결과', render: (row) => <ResultCell fail={row.emailFail} reason={EMAIL_FAIL_REASON} /> }]
+    : []),
+  ...(hasSms
+    ? [{ key: 'smsResult', label: '문자 발송 결과', render: (row) => <ResultCell fail={row.smsFail} reason={SMS_FAIL_REASON} /> }]
+    : []),
+  { key: 'sentAt', label: '발송시각' },
   {
     key: 'resend',
     label: '재발송',
     width: iconCellWidth(1, { buttonSize: 32 }), // 규칙 17 — ghost 32 버튼 단독 셀
-    render: (row) => <Button variant="ghost" size="32" icon={Send} disabled={!row.emailFail && !row.smsFail} tooltip="재발송" />,
+    render: (row) => (
+      <Button
+        variant="ghost"
+        size="32"
+        icon={Send}
+        disabled={!((hasEmail && row.emailFail) || (hasSms && row.smsFail))}
+        tooltip="재발송"
+      />
+    ),
   },
 ];
 
 // 상세 '발송 정보' 필드 — 상수 배열 정의 후 셀로 매핑
+// 발송사유는 페이지 헤더 타이틀로 노출(셀 제거, 2026-08-06 지시) · 고객사는 클릭한 행 값 우선
+const DEFAULT_REASON = '채용 일정 변경 안내';
 const INFO_FIELDS = [
-  { key: 'reason', label: '발송사유', span: 12, value: '채용 일정 변경 안내' },
   { key: 'client', label: '고객사', span: 4, value: '마이다스아이티' },
   { key: 'sentAt', label: '발송 시점', span: 4, value: formatDateTime(new Date(2026, 4, 15, 0, 1), new Date(2026, 4, 15, 0, 1)) },
   { key: 'method', label: '안내 방법', span: 4, value: '이메일 + 문자' },
@@ -163,6 +182,7 @@ function ContentBlock({ label, children }) {
 // ── 목록 뷰 ──────────────────────────────────────────────────────────
 function SendHistoryList({ onOpenDetail }) {
   const [status, setStatus] = useState('all');
+  const { navigate } = useNav(); // 헤더 버튼 → 대량 메일/문자 발송 페이지 이동(실제 플로우 연결)
 
   // 상태 필터 항목 — 건수는 데이터에서 파생
   const statusItems = useMemo(() => {
@@ -180,8 +200,8 @@ function SendHistoryList({ onOpenDetail }) {
       title="발송 이력"
       stickyHeader // 스크롤 시 페이지 헤더 상단 고정(2026-08-05 지시)
       actions={
-        <Button variant="fill" leftIcon={Mail}>
-          대량메일/SMS 발송
+        <Button variant="fill" leftIcon={Mail} onClick={() => navigate('bulk-send')}>
+          대량 메일/문자 발송
         </Button>
       }
     >
@@ -189,6 +209,9 @@ function SendHistoryList({ onOpenDetail }) {
         columns={LIST_COLUMNS}
         rows={rows}
         rowKey="id"
+        searchWidth={280}
+        searchPlaceholder="고객사, 발송사유로 검색"
+        searchKeys={['client', 'reason']} // 검색 대상을 플레이스홀더 안내와 일치시킴
         actions={<SegmentControlGroup items={statusItems} value={status} onChange={setStatus} />}
         searchable
         pagination
@@ -200,11 +223,58 @@ function SendHistoryList({ onOpenDetail }) {
   );
 }
 
-// ── 상세 뷰 ──────────────────────────────────────────────────────────
-function SendHistoryDetail({ onBack }) {
+// ── 상세 뷰 — row: 목록에서 클릭한 행(발송 사유·고객사·안내방법을 헤더/정보/내용에 반영) ──
+function SendHistoryDetail({ row, onBack }) {
+  const reason = row?.reason ?? DEFAULT_REASON;
+  // 채널(개발 정책 2026-08-06): 이메일+문자 / 이메일만 / 문자만 — 발송 내용 구성이 달라진다
+  const method = row?.method ?? '이메일, 문자';
+  const hasEmail = method.includes('이메일');
+  const hasSms = method.includes('문자');
+  // 행 값으로 고객사·안내 방법 덮어쓰기 — 나머지 정보는 대표 데모 값 유지
+  const infoFields = INFO_FIELDS.map((f) =>
+    f.key === 'client' && row?.client
+      ? { ...f, value: row.client }
+      : f.key === 'method'
+        ? { ...f, value: method.replace(', ', ' + ') }
+        : f,
+  );
+
+  // 발송 내용 셀(개발 정책): 둘 다=이메일 8칸+문자 4칸 / 단일 채널=그 채널이 전체 폭(span 12)
+  const emailContentCell = {
+    key: 'email',
+    span: hasSms ? 8 : 12,
+    paddingTop: '20',
+    paddingBottom: '20',
+    control: (
+      <div className="flex w-full flex-col gap-spacing-7 self-start">
+        <ContentBlock label="이메일 주소">MidasHR@midasin.com</ContentBlock>
+        <Divider />
+        <ContentBlock label="이메일 제목">
+          현재 이용 중인 서비스의 원활한 사용을 위해, 아래 내용을 확인해 주시기 바랍니다.
+        </ContentBlock>
+        <Divider />
+        <ContentBlock label="이메일 내용">{EMAIL_BODY}</ContentBlock>
+      </div>
+    ),
+  };
+  const smsContentCell = {
+    key: 'sms',
+    span: hasEmail ? 4 : 12,
+    paddingTop: '20',
+    paddingBottom: '20',
+    control: (
+      <div className="flex w-full flex-col gap-spacing-7 self-start">
+        <ContentBlock label="발신 번호">010-1234-1234</ContentBlock>
+        <Divider />
+        <ContentBlock label="문자 내용">{SMS_BODY}</ContentBlock>
+      </div>
+    ),
+  };
+  const contentCells = [...(hasEmail ? [emailContentCell] : []), ...(hasSms ? [smsContentCell] : [])];
   return (
     <Page
-      title="발송 이력"
+      // 헤더에 발송 사유 표시 — 사유가 길면 말줄임+hover 툴팁(규칙 8 TruncatingText, 2026-08-06)
+      title={<TruncatingText as="span" className="block">{`발송 이력 - ${reason}`}</TruncatingText>}
       stickyHeader // 스크롤 시 페이지 헤더 상단 고정(2026-08-05 지시)
       actions={
         <Button variant="line" leftIcon={ArrowLeft} onClick={onBack}>
@@ -217,7 +287,7 @@ function SendHistoryDetail({ onBack }) {
         title="발송 정보"
         labelWidth={70} // 라벨 영역 통일 — 컨트롤 시작점 정렬(2026-08-05 지시, 100→70 정정)
         cells={[
-          ...INFO_FIELDS.map((f) => ({
+          ...infoFields.map((f) => ({
             key: f.key,
             label: f.label,
             span: f.span,
@@ -231,7 +301,7 @@ function SendHistoryDetail({ onBack }) {
             control: (
               <TableTemplate
                 className="w-full min-w-0"
-                columns={DETAIL_COLUMNS}
+                columns={buildDetailColumns(hasEmail, hasSms)}
                 rows={DETAIL_ROWS}
                 rowKey="id"
                 actions={
@@ -253,45 +323,11 @@ function SendHistoryDetail({ onBack }) {
         ]}
       />
 
-      {/* 섹션 구분선 — 발송 정보 ↔ 발송 내용(2026-08-05 지시) */}
-      <Divider />
+      {/* 섹션 구분선 — 발송 정보 ↔ 발송 내용. 위쪽이 박스 외곽선이라 좁아 보여 marginTop으로 보정(2026-08-06) */}
+      <Divider marginTop="12" />
 
-      {/* 발송 내용 — 좌(이메일) 8칸 : 우(문자) 4칸, 라벨/값 + Divider 스택(상단 정렬) */}
-      <FormTemplateB
-        title="발송 내용"
-        cells={[
-          {
-            key: 'email',
-            span: 8,
-            paddingTop: '20',
-            paddingBottom: '20',
-            control: (
-              <div className="flex w-full flex-col gap-spacing-7 self-start">
-                <ContentBlock label="이메일 주소">MidasHR@midasin.com</ContentBlock>
-                <Divider />
-                <ContentBlock label="이메일 제목">
-                  현재 이용 중인 서비스의 원활한 사용을 위해, 아래 내용을 확인해 주시기 바랍니다.
-                </ContentBlock>
-                <Divider />
-                <ContentBlock label="이메일 내용">{EMAIL_BODY}</ContentBlock>
-              </div>
-            ),
-          },
-          {
-            key: 'sms',
-            span: 4,
-            paddingTop: '20',
-            paddingBottom: '20',
-            control: (
-              <div className="flex w-full flex-col gap-spacing-7 self-start">
-                <ContentBlock label="발신 번호">010-1234-1234</ContentBlock>
-                <Divider />
-                <ContentBlock label="문자 내용">{SMS_BODY}</ContentBlock>
-              </div>
-            ),
-          },
-        ]}
-      />
+      {/* 발송 내용(개발 정책 2026-08-06) — 채널 조건부: 둘 다=이메일 8칸+문자 4칸 / 단일=전체 폭 */}
+      <FormTemplateB title="발송 내용" cells={contentCells} />
     </Page>
   );
 }
@@ -300,9 +336,16 @@ function SendHistoryDetail({ onBack }) {
 export function SendHistoryPage({ defaultView = 'list' }) {
   const [view, setView] = useState(defaultView); // 'list' | 'detail'
 
+  const [detailRow, setDetailRow] = useState(null); // 목록에서 클릭한 행 — 상세 헤더·발송 정보에 반영
+
   return view === 'list' ? (
-    <SendHistoryList onOpenDetail={() => setView('detail')} />
+    <SendHistoryList
+      onOpenDetail={(row) => {
+        setDetailRow(row);
+        setView('detail');
+      }}
+    />
   ) : (
-    <SendHistoryDetail onBack={() => setView('list')} />
+    <SendHistoryDetail row={detailRow} onBack={() => setView('list')} />
   );
 }
