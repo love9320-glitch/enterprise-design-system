@@ -14,6 +14,7 @@ const USAGE = `import { Page, PageHeader } from '@gusun/design-system';
   title="페이지 타이틀"
   description="고객사를 대신해, 그 고객사에 이미 등록된 발신 정보로 대량 안내를 일괄 발송합니다."
   stickyHeader // 스크롤 시 헤더 상단 고정(옵션)
+  loading={isLoading} // 최초 로딩(로딩 정책) — 바디 중앙 "불러오는 중…", 모든 데이터 준비 후 일괄 표시
   actions={
     <>
       <Button variant="line">이전 단계</Button>
@@ -37,6 +38,7 @@ const USAGE_PROPS = [
   { name: 'Page · header', type: 'ReactNode', default: '—', desc: '커스텀 헤더로 통째 교체(지정 시 title 계열 무시)' },
   { name: 'Page · stickyHeader', type: 'boolean', default: 'false', desc: '스크롤 시 헤더 상단 고정(PageHeader sticky 전달) — 가장 가까운 스크롤 컨테이너 기준' },
   { name: 'Page · children', type: 'ReactNode', default: '—', desc: 'page body 슬롯(p 20 / gap 20) — 템플릿·콘텐츠 조립 영역' },
+  { name: 'Page · loading / loadingMessage', type: 'boolean / ReactNode', default: 'false / 불러오는 중…', desc: '페이지 최초 로딩(로딩 정책) — 바디 대신 중앙 로딩(스피너+문구), 페이지의 모든 데이터 준비 후 일괄 표시. 표시 이후 재조회는 Table loading 등 부분 로딩 담당' },
   { name: 'PageHeader · title', type: 'ReactNode', default: '—', desc: '페이지 타이틀(semibold 18, font-icon-5), 행 높이 32' },
   { name: 'PageHeader · description', type: 'ReactNode', default: '—', desc: '설명 행(regular 14, font-icon-3) — 없으면 행 미표시 (Figma description boolean)' },
   { name: 'PageHeader · actions / descriptionActions', type: 'ReactNode', default: '—', desc: '타이틀/설명 우측 버튼 슬롯 (Figma heading button / description button boolean)' },
@@ -52,6 +54,7 @@ export function PagePage() {
     descriptionButton: true,
   });
   const [stickyHeader, setStickyHeader] = useState(true); // Page 조립 예시 — 스크롤 시 헤더 상단 고정 체험
+  const [loading, setLoading] = useState(false); // 최초 로딩(로딩 정책) 체험
   const toggle = (k: any) => setOpts((s) => ({ ...s, [k]: !s[k] }));
 
   const buttons = (
@@ -103,11 +106,16 @@ export function PagePage() {
 
       {/* Page 전체 조립 예시 — 스크롤 컨테이너(ScrollArea) 안에서 stickyHeader 고정 체험 */}
       <h3 className="mb-spacing-5 text-16 font-semibold text-font-icon-5">Page 조립</h3>
-      <div className="mb-spacing-6">
+      <div className="mb-spacing-6 flex flex-wrap items-center gap-spacing-6">
         <Checkbox
           checked={stickyHeader}
           onChange={() => setStickyHeader((v) => !v)}
           label="헤더 상단 고정(stickyHeader) — 아래 박스를 스크롤해 확인"
+        />
+        <Checkbox
+          checked={loading}
+          onChange={() => setLoading((v) => !v)}
+          label="최초 로딩(loading) — 바디 중앙 '불러오는 중…'"
         />
       </div>
       <div className="overflow-hidden rounded-round-4 border border-base-gray-100">
@@ -117,6 +125,7 @@ export function PagePage() {
             description="고객사를 대신해, 그 고객사에 이미 등록된 발신 정보로 대량 안내를 일괄 발송합니다."
             actions={buttons}
             stickyHeader={stickyHeader}
+            loading={loading}
           >
             {Array.from({ length: 8 }, (_, i) => (
               <div

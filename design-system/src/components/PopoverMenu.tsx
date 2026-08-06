@@ -13,6 +13,7 @@ import { Input } from './Input';
 import { Button } from './Button';
 import { ButtonGroup } from './ButtonGroup';
 import { Checkbox } from './Checkbox';
+import { LoadingIndicator } from './LoadingIndicator';
 
 export interface PopoverMenuProps extends ComponentPropsWithoutRef<'div'> {
   // ── 상단 영역 ─────────────────────────────────────────
@@ -66,6 +67,9 @@ export interface PopoverMenuProps extends ComponentPropsWithoutRef<'div'> {
   footerButtonsFill?: boolean;
   // ──────────────────────────────────────────────────────
   width?: number | string;
+  /** 메뉴 최초 로딩(규칙 22) — 목록(children) 대신 중앙 로딩(스피너+불러오는 중…), 모든 데이터 준비 후 일괄 표시 */
+  loading?: boolean;
+  loadingMessage?: ReactNode;
 }
 
 export function PopoverMenu({
@@ -103,6 +107,8 @@ export function PopoverMenu({
   showConfirm = true,
   footerButtonsFill = false,
   width = 304,
+  loading = false,
+  loadingMessage,
   className = '',
   ...props
 }: PopoverMenuProps) {
@@ -174,7 +180,14 @@ export function PopoverMenu({
           />
         </div>
       )}
-      {children}
+      {/* 최초 로딩(규칙 22): 목록 대신 중앙 로딩 — 배경은 목록 영역과 동일(list-group-bg) */}
+      {loading ? (
+        <div className="w-full bg-list-group-bg">
+          <LoadingIndicator message={loadingMessage} />
+        </div>
+      ) : (
+        children
+      )}
       {/* footer area — 흰 배경. 위쪽 gap-spacing-1(1px) 틈이 목록과의 구분선이 된다.
           기본: 좌측 footerStart 슬롯 + 우측 취소/확인 버튼 그룹(justify-between).
           footerButtonsFill: 좌측 슬롯 없이 버튼 그룹을 fill(균등 분할 전체폭)로. */}
