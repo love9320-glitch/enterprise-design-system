@@ -597,7 +597,8 @@ export function Table({
                         ) : wrap ? (
                           <span className="break-words">{row[c.key] as ReactNode}</span>
                         ) : (
-                          <TruncatingText as="span" className="min-w-0">
+                          // 행 클릭 테이블은 pointer 유지(클릭 어포던스 우선) — 비클릭 테이블만 잘림 help 커서
+                          <TruncatingText as="span" helpCursor={!onRowClick} className="min-w-0">
                             {row[c.key] as ReactNode}
                           </TruncatingText>
                         )}
