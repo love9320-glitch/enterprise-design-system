@@ -43,7 +43,7 @@ import { SelectGroup } from '../components/SelectGroup';
 <SelectGroup width="fill">…</SelectGroup> // 부모 폭 균등 분할`;
 
 const USAGE_PROPS = [
-  { name: 'options', type: '{ value, label, disabled? }[]', default: '[]', desc: '선택지 목록 — disabled 옵션은 비활성 행으로 표시(클릭·키보드 선택 불가)' },
+  { name: 'options', type: '{ value, label, disabled?, rightSlot? }[]', default: '[]', desc: '선택지 목록 — disabled=비활성 행, rightSlot=메뉴 행 우측 콘텐츠(승인 태그 등, 트리거 표시는 label만)' },
   { name: 'multiple', type: 'boolean', default: 'false', desc: '체크박스 다중 선택 — value/defaultValue/onChange 값이 배열이 되고, 행 클릭=토글(메뉴 유지)' },
   { name: 'confirm / selectAllLabel', type: "boolean / ReactNode", default: "false / '전체 선택'", desc: 'multiple 전용 — 선택을 draft로 들고 푸터(전체 선택 체크박스 + 취소/확인)에서 확인 시에만 반영. selectAllLabel로 전체 선택 문구 변경' },
   { name: 'confirmSeed', type: 'string[]', default: '—', desc: 'confirm 전용 — 팝오버가 열릴 때 체크 초기값(미지정 시 현재 선택값). 표시값(value)과 체크 상태를 분리할 때 사용' },
@@ -60,7 +60,7 @@ const USAGE_PROPS = [
   { name: 'errorMessage', type: 'string', default: "'필수 선택사항입니다.'", desc: '에러 툴팁 문구 — 표준 카피 자동 적용, 필요 시만 덮어쓰기' },
   { name: 'width', type: "number | string | 'hug' | 'fill'", default: '200', desc: "트리거 너비 — px/CSS 길이/'hug'(콘텐츠 맞춤). text variant는 기본 hug이며 'fill'이면 부모 전체 폭(텍스트 왼쪽·chevron 오른쪽 끝)" },
   { name: 'maxWidth', type: 'number | string', default: '—', desc: 'hug일 때 최대 너비 제한(넘으면 말줄임)' },
-  { name: 'menuWidth', type: 'number | string', default: '—', desc: '드롭다운 너비 (미지정 시 box=트리거와 동일 / text=120px)' },
+  { name: 'menuWidth', type: "number | string | 'trigger'", default: '—', desc: "드롭다운 너비 (미지정 시 box=트리거와 동일 / text=120px). 'trigger'=트리거와 동일 강제 — fill 트리거 텍스트 셀렉트용" },
   { name: 'placement', type: "'auto' | 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'", default: "'auto'", desc: '드롭다운 펼침 방향 (auto=공간 따라 자동)' },
   { name: 'searchable', type: 'boolean', default: 'false', desc: '드롭다운 상단 검색바로 옵션 필터' },
   { name: 'searchPlaceholder', type: 'string', default: "'검색어를 입력하세요'", desc: '검색바 플레이스홀더' },

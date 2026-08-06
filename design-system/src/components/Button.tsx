@@ -73,7 +73,10 @@ export function Button({
       return;
     }
     el.style.width = '';
-    el.style.width = el.offsetWidth + 'px';
+    // display:none 조상 아래(hidden 스텝/탭 등)서 마운트되면 offsetWidth=0 — 0px로 고정하면
+    // 표시 시점에 버튼이 찌그러진다(2026-08-05 MultiStepFormTemplate keepMounted 판례) → auto 유지
+    const w = el.offsetWidth;
+    if (w > 0) el.style.width = w + 'px';
   }, [children, size, variant, LeftIcon, RightIcon, Icon, disabled, loading, truncate, isFill, isArea]);
 
   // 텍스트 두께 — underline 변형만 semibold 옵션 지원(2026-07-15), 그 외는 400 고정

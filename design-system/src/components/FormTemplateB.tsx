@@ -30,6 +30,7 @@ export interface FormTemplateBCell {
   labelWidth?: number | string; // 이 셀의 라벨 영역 너비(공통 labelWidth보다 우선)
   paddingTop?: '12' | '20'; // 이 셀의 위 패딩(공통 cellPaddingTop보다 우선)
   paddingBottom?: '12' | '20'; // 이 셀의 아래 패딩(공통 cellPaddingBottom보다 우선)
+  disabled?: boolean; // 라벨 비활성 스타일(Field disabled 패스스루) — 컨트롤 disabled는 컨트롤에 직접(2026-08-06)
 }
 
 // 모서리 라운드 옵션(2026-08-05 지시) — 6(기본)/12/16/20px, 등록 라운드 토큰 경유
@@ -123,6 +124,7 @@ export function FormTemplateB({
                 direction="horizontal"
                 label={c.label}
                 labelColor="gray"
+                disabled={c.disabled}
                 required={c.required}
                 labelWidth={c.labelWidth ?? labelWidth}
                 className="min-w-0 flex-1"

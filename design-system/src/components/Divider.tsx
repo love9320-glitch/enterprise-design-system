@@ -13,24 +13,55 @@ const COLOR = {
   strong: 'bg-divider-strong',
 };
 
+// 위/아래 여백 옵션(2026-08-06 지시) — 부모 gap이 균등이라 양옆 콘텐츠 밀도 차(박스 vs 텍스트)로
+// 생기는 시각 불균형을 구분선 단위로 보정한다. 값은 spacing 토큰 키만(px 표기, 규칙 2).
+// flex gap 안에서는 기존 gap에 '더해진다'. 가로선용 — 세로선은 self-stretch 높이라 적용 대상 아님.
+const MARGIN_TOP = {
+  '4': 'mt-spacing-3',
+  '6': 'mt-spacing-4',
+  '8': 'mt-spacing-5',
+  '12': 'mt-spacing-6',
+  '16': 'mt-spacing-7',
+  '20': 'mt-spacing-8',
+  '24': 'mt-spacing-9',
+  '28': 'mt-spacing-10',
+  '32': 'mt-spacing-11',
+};
+const MARGIN_BOTTOM = {
+  '4': 'mb-spacing-3',
+  '6': 'mb-spacing-4',
+  '8': 'mb-spacing-5',
+  '12': 'mb-spacing-6',
+  '16': 'mb-spacing-7',
+  '20': 'mb-spacing-8',
+  '24': 'mb-spacing-9',
+  '28': 'mb-spacing-10',
+  '32': 'mb-spacing-11',
+};
+
 interface DividerProps extends ComponentPropsWithoutRef<'div'> {
   direction?: 'horizontal' | 'vertical';
   color?: keyof typeof COLOR;
+  marginTop?: keyof typeof MARGIN_TOP; // 위 여백(px 키 — spacing 토큰 경유) — 미지정 시 없음
+  marginBottom?: keyof typeof MARGIN_BOTTOM; // 아래 여백(px 키 — spacing 토큰 경유) — 미지정 시 없음
 }
 
 export function Divider({
   direction = 'horizontal',
   color = 'default',
+  marginTop,
+  marginBottom,
   className = '',
   ...props
 }: DividerProps) {
   const isVertical = direction === 'vertical';
   const shape = isVertical ? 'w-px self-stretch' : 'h-px w-full';
+  const marginStyle = `${marginTop ? MARGIN_TOP[marginTop] : ''} ${marginBottom ? MARGIN_BOTTOM[marginBottom] : ''}`;
   return (
     <div
       role="separator"
       aria-orientation={isVertical ? 'vertical' : 'horizontal'}
-      className={`shrink-0 ${shape} ${COLOR[color] ?? COLOR.default} ${className}`}
+      className={`shrink-0 ${shape} ${marginStyle} ${COLOR[color] ?? COLOR.default} ${className}`}
       {...props}
     />
   );
