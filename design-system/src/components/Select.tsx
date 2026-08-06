@@ -71,13 +71,33 @@ function ErrorTipPortal({
   //     CSS overflow가 자연 처리한다(모달 푸터 위로 쏟아지던 문제 해소).
   //   fixed: 스크롤 조상이 없으면 body 포털 + fixed(기존) — 클립 래퍼(규칙 12) 탈출 유지,
   //     완전히 가려진 앵커는 숨김.
+  //   container 모드에서 툴팁이 콘텐츠 바닥(scrollHeight)을 넘으면 필드 '위'로 반전(beak bottom) —
+  //   absolute 툴팁이 스크롤 영역을 아래로 늘리는 문제 방지(2026-08-06 보고). 실측 높이가 필요해
+  //   렌더 후 2차 측정(flip 판정) 전까지는 visibility hidden.
+  const tipRef = useRef<HTMLDivElement | null>(null);
   const [tip, setTip] = useState<{
     host: HTMLElement;
     position: 'absolute' | 'fixed';
-    top: number;
+    belowTop: number; // 필드 아래 배치 시 top
+    aboveBase: number; // 필드 위 반전 시 top 기준(툴팁 높이를 빼서 사용)
     left: number;
+    contentH: number | null; // container 모드: 콘텐츠 전체 높이(반전 판정용), fixed 모드: null
   } | null>(null);
+  const [placed, setPlaced] = useState<{ top: number; beak: 'top' | 'bottom' } | null>(null);
   useLayoutEffect(() => {
+    // 값이 같으면 이전 상태 유지 — 스크롤(capture) 이벤트마다 불필요한 재렌더 방지
+    const updateTip = (next: NonNullable<typeof tip>) =>
+      setTip((prev) =>
+        prev &&
+        prev.host === next.host &&
+        prev.position === next.position &&
+        prev.belowTop === next.belowTop &&
+        prev.aboveBase === next.aboveBase &&
+        prev.left === next.left &&
+        prev.contentH === next.contentH
+          ? prev
+          : next,
+      );
     const measure = () => {
       const el = anchorRef.current;
       const r = el?.getBoundingClientRect();
@@ -95,11 +115,13 @@ function ErrorTipPortal({
         // absolute 기준점이 컨테이너가 되도록 보정(static이면 relative 부여 — 레이아웃 영향 없음)
         if (getComputedStyle(sc).position === 'static') sc.style.position = 'relative';
         const c = sc.getBoundingClientRect();
-        setTip({
+        updateTip({
           host: sc,
           position: 'absolute',
-          top: r.bottom - c.top + sc.scrollTop + 2, // +2 = 기존 mt-spacing-2 간격
+          belowTop: r.bottom - c.top + sc.scrollTop + 2, // +2 = 기존 mt-spacing-2 간격
+          aboveBase: r.top - c.top + sc.scrollTop - 2,
           left: r.left - c.left + sc.scrollLeft,
+          contentH: sc.scrollHeight,
         });
         return;
       }
@@ -114,7 +136,14 @@ function ErrorTipPortal({
           }
         }
       }
-      setTip({ host: document.body, position: 'fixed', top: r.bottom + 2, left: r.left });
+      updateTip({
+        host: document.body,
+        position: 'fixed',
+        belowTop: r.bottom + 2,
+        aboveBase: r.top - 2,
+        left: r.left,
+        contentH: null,
+      });
     };
     measure();
     let raf = 0;
@@ -127,21 +156,44 @@ function ErrorTipPortal({
     };
     window.addEventListener('resize', schedule);
     window.addEventListener('scroll', schedule, true);
+    // 행 삭제/추가/재정렬 같은 레이아웃 변화는 스크롤·리사이즈 이벤트가 없어 좌표가 낡는다(2026-08-06
+    // 보고: 행 삭제 시 아래 행 툴팁 어긋남) — DOM 자식 변화를 감지해 재측정(rAF 코얼레싱 공유)
+    const mo = new MutationObserver(schedule);
+    mo.observe(document.body, { childList: true, subtree: true });
     return () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener('resize', schedule);
       window.removeEventListener('scroll', schedule, true);
+      mo.disconnect();
     };
   }, [anchorRef]);
+
+  // 2차 측정 — 렌더된 툴팁의 실측 높이로 반전 여부 판정. 콘텐츠 바닥을 넘을 때만 필드 위(beak bottom)
+  useLayoutEffect(() => {
+    if (!tip || !tipRef.current) return;
+    const tipH = tipRef.current.offsetHeight;
+    const flip = tip.contentH != null && tipH > 0 && tip.belowTop + tipH > tip.contentH;
+    const next: { top: number; beak: 'top' | 'bottom' } = flip
+      ? { top: tip.aboveBase - tipH, beak: 'bottom' }
+      : { top: tip.belowTop, beak: 'top' };
+    setPlaced((prev) => (prev && prev.top === next.top && prev.beak === next.beak ? prev : next));
+  }, [tip]);
+
   if (!tip) return null;
   return createPortal(
     <div
       id={id}
+      ref={tipRef}
       role="alert" // 등장 시 스크린리더 즉시 낭독
-      style={{ position: tip.position, top: tip.top, left: tip.left }}
+      style={{
+        position: tip.position,
+        top: placed ? placed.top : tip.belowTop,
+        left: tip.left,
+        visibility: placed ? 'visible' : 'hidden',
+      }}
       className="z-[1000]"
     >
-      <Tooltip variant="error" beak="top">
+      <Tooltip variant="error" beak={placed?.beak ?? 'top'}>
         {children}
       </Tooltip>
     </div>,
