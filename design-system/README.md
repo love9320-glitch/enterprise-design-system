@@ -1,6 +1,6 @@
 # @gusun/design-system
 
-코드↔Figma가 1:1로 동기화된 **ATS 디자인 시스템** — 토큰 기반 React 컴포넌트 라이브러리입니다. 60+ 컴포넌트와 8종 템플릿, 디자인 토큰을 TypeScript(strict)로 제공합니다.
+코드↔Figma가 1:1로 동기화된 **ATS 디자인 시스템** — 토큰 기반 React 컴포넌트 라이브러리입니다. 60+ 컴포넌트와 9종 템플릿, 디자인 토큰을 TypeScript(strict)로 제공합니다.
 
 - **데모·문서 사이트**: https://love9320-glitch.github.io/enterprise-design-system/ — 모든 컴포넌트의 실행 예제·props 표·복사 가능한 코드
 - **처음이라면**: [시작 가이드](https://love9320-glitch.github.io/enterprise-design-system/#getting-started) — 개발 경험이 없어도 0부터 실행까지
@@ -22,6 +22,8 @@ React 18/19 프로젝트에서 동작합니다(react·react-dom은 peer — 앱�
 ```js
 import '@gusun/design-system/styles.css';
 ```
+
+이 한 장에는 컴포넌트 스타일뿐 아니라 **토큰 유틸리티 클래스**(`gap-spacing-5` · `p-spacing-7` · `text-font-icon-4` · `bg-base-white` 등 스페이싱·권장 컬러 전 조합)도 포함되어 있어(v1.3.0), 데모 사이트의 코드 예제를 여러분 마크업에 그대로 복사해 써도 스타일이 온전히 적용됩니다.
 
 폰트(Pretendard)는 `index.html`의 `<head>`에 한 줄:
 
@@ -45,7 +47,7 @@ import { Button, Input, Select, Tag } from '@gusun/design-system';
 import preset from '@gusun/design-system/preset';
 export default {
   presets: [preset],
-  content: ['./src/**/*.{js,jsx,ts,tsx}', './node_modules/@gusun/design-system/dist-lib/*.js'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}', './node_modules/@gusun/design-system/dist-lib/**/*.js'],
 };
 ```
 
@@ -105,6 +107,7 @@ export default {
 | [Tabs](https://love9320-glitch.github.io/enterprise-design-system/#tabs) | `items[{value,label,icon?,tag?}]` · `value/onChange` · `variant`(hug·fill) · `rightSlot` |
 | [SegmentedTabs](https://love9320-glitch.github.io/enterprise-design-system/#segmented-tabs) | `items` · `value/onChange` · `width` — 슬라이딩 pill |
 | [Pagination](https://love9320-glitch.github.io/enterprise-design-system/#pagination) | `page/onChange` · `totalCount` `pageSize/onPageSizeChange` · `maxButtons` |
+| [Stepper](https://love9320-glitch.github.io/enterprise-design-system/#stepper) | 라인형 스텝 표시기: `items[{title,description?,disabled?}]` · `value`(현재 스텝 — 이전=완료·이후=대기 자동) · `onStepClick`(지정 시 클릭 내비게이션) · 양끝 연결선 자동 숨김 |
 | [SideNavigation](https://love9320-glitch.github.io/enterprise-design-system/#side-navigation) | `width`(180·220·260) · `showAdd/onAdd` · 버튼: `selected` `icon` `showNewTag` |
 | [Lnb](https://love9320-glitch.github.io/enterprise-design-system/#lnb) | `groups`(1/2depth+sub) · `value/onChange` · `siteTitle` · `width/height`(지정 시 내부 스크롤) · `defaultExpanded` · 메뉴: `icon` `iconArea` `wrap` `disabled` |
 | [Gnb / GnbGroup / GnbLogo](https://love9320-glitch.github.io/enterprise-design-system/#gnb) | 글로벌 내비 바(그룹 조립): GnbGroup을 자유 추가/삭제(그룹 사이 1px 갭 자동 구분) · Group: `fill` `justify`(start·between·end·center) `gap` · Gnb: `bar`(단독 배치 크롬 54px+구분선) · 구분선은 그룹 안 자유 배치 |
@@ -143,6 +146,7 @@ export default {
 | [TableTemplate](https://love9320-glitch.github.io/enterprise-design-system/#table-template) | 툴바(제목·버튼·셀렉트·검색)+테이블+페이지네이션 일체형 |
 | [FormTemplateA](https://love9320-glitch.github.io/enterprise-design-system/#form-template) | 여백 그리드형 폼 레이아웃(12칸 그리드 + Field) — 구 FormTemplate(v0.2.0 개명) |
 | [FormTemplateB](https://love9320-glitch.github.io/enterprise-design-system/#form-template) | 테이블형 폼 박스 — 1px 헤어라인 셀 + 투명 계열 컨트롤 + 영역 채움 버튼 셀 |
+| [MultiStepFormTemplate](https://love9320-glitch.github.io/enterprise-design-system/#multi-step-form-template) | Stepper + 스텝별 콘텐츠 주입형 멀티 스텝 폼 — `steps[{title,description?,content}]` · `value/defaultValue/onChange` · `clickableSteps` · `keepMounted`(비활성 스텝 입력 상태 보존) |
 | [SideNavigationTemplate](https://love9320-glitch.github.io/enterprise-design-system/#side-nav-template) | 좌 내비 + 우 콘텐츠 슬롯 · 메뉴 추가/이름 수정/삭제(editable) |
 | [JobPositionTemplate](https://love9320-glitch.github.io/enterprise-design-system/#job-position-template) | 채용 분야 설정 — 기준 카드 조합 → 칩 테이블 등록(검증·엑셀 대량 등록·행 드래그) |
 | [JobPostingTemplate](https://love9320-glitch.github.io/enterprise-design-system/#job-posting-template) | 채용 공고 설정 — 다중 공고 폼(FormTemplateB) + 채용 분야 등록 모달 왕복 + 등록 테이블 |
@@ -158,6 +162,43 @@ export default {
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
 ## 변경 내역
+
+### v1.3.0 (2026-08-06)
+
+**Tailwind 없는 사용처 완전 지원**
+- **`styles.css`에 토큰 유틸리티 클래스 포함** — 스페이싱 유틸(p/px/py/m/mx/my/gap 등 17계열 × 간격 토큰 전 조합)과 권장 컬러 그룹(base·font-icon·label-field·divider·heading × text/bg/border)을 항상 생성. **Tailwind를 안 쓰는 프로젝트도 `import '@gusun/design-system/styles.css'` 한 줄로 문서·데모 예제의 마크업이 그대로 동작**합니다(기존에는 컴포넌트 스타일만 완전했고, 소비자 마크업의 토큰 유틸은 빠질 수 있었음)
+- preset safelist도 동일하게 확장 — Tailwind preset 사용처에서도 토큰 유틸이 purge와 무관하게 항상 존재
+
+**데모 사이트 = 사용처 예제**
+- 데모 사이트의 모든 코드 예제가 **소비자 import 문법(`@gusun/design-system` · `/editor` · `/tokens`)과 TypeScript**로 전환 — 데모의 코드를 복사하면 여러분 프로젝트에서 수정 없이 동작합니다
+
+**타입·API**
+- `TableTemplateColumn` 타입 export — 컬럼 정의를 `satisfies TableTemplateColumn[]` 등으로 정식 타이핑 가능
+- Input `inputProps` / TextArea `textareaProps` 타입이 `ref` 전달 허용(React 19 ref-as-prop)
+
+### v1.2.3 (2026-08-06)
+- **FormTemplateB 클립 제거** — 에러 툴팁이 폼 박스 경계에 잘리던 문제 해결(`overflow-clip` 제거, 모서리 라운딩은 모서리 셀 단위 계산 적용으로 유지 — 폼 크기 변화 없음)
+- DateField `variant="text"` 에러 시 텍스트가 red로 바뀌지 않던 버그 수정
+- 데모: 대량 발송 Step 1 벨리데이션 게이트 예제(필수 입력 미충족 시 다음 단계 차단 + 표준 카피 툴팁)
+
+### v1.2.2 (2026-08-06)
+- 내부 소스 계층 분리(components/layouts/templates) — **공개 API(배럴·서브패스)는 그대로**, 소비자 코드 영향 없음. Figma Code Connect 소스 경로 동기화
+
+### v1.2.1 (2026-08-06)
+- MultiStepFormTemplate가 메인 엔트리에서 export되지 않던 누락 패치
+
+### v1.2.0 (2026-08-06)
+
+**신규**
+- **`Stepper`** — 라인형 스텝 표시기: `items[{title,description?,disabled?}]` · `value`(현재 스텝 — 이전 스텝 완료·이후 대기 자동 계산) · `onStepClick`(클릭 내비게이션), 상태 4종(default/progress/complete/disabled) 토큰, 첫/마지막 스텝 양끝 연결선 자동 숨김
+- **`MultiStepFormTemplate`** — Stepper + 스텝별 콘텐츠 주입 슬롯 멀티 스텝 폼: `steps[].content`에 폼/테이블 자유 조립, controlled(`value/onChange`)·uncontrolled(`defaultValue`) 모두 지원, `clickableSteps` · `keepMounted`(스텝 전환 시 입력 상태 보존)
+
+**개선**
+- FormTemplateB — `title/subtitle` 옵션(박스 상단 타이틀 영역), 셀 상하 패딩 12/20 선택(`paddingTop/paddingBottom` — 템플릿 기본값+셀별 오버라이드), 셀 `disabled`(라벨 dim), 좌우 패딩 20으로 조정, 그림자 없는 변형(Figma 동기화)
+- Divider `marginTop/marginBottom`(4~32px 토큰 키) — 구분선 단위 상하 여백 조정
+- Select `menuWidth="trigger"`(팝오버 메뉴를 트리거 폭에 맞춤) · 옵션 `rightSlot`(태그 등 우측 슬롯)
+- Button — 숨김 상태(`display:none`) 마운트 시 로딩 width가 0으로 고정되던 문제 가드
+- 데모: '페이지' 카테고리 신설 — 발송 이력(목록↔상세)·대량 메일/문자 발송(3스텝 실전 예제: 매핑 코드 팝오버·테스트 발송·예약 발송 확인 모달·벨리데이션)
 
 ### v1.1.0 (2026-08-04)
 - **`Page` / `PageHeader` 신설** — 페이지 셸 컴포넌트. PageHeader(타이틀·설명 행·우측 버튼 슬롯 2곳·하단 Divider, 패딩 20 스케일 고정, 신규 `heading/bg` 토큰) + Page body 슬롯(p 20·gap 20, 템플릿 조립 영역). `sticky`/`stickyHeader`로 스크롤 시 헤더 상단 고정
