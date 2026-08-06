@@ -46,6 +46,16 @@ export type SelectPlacement = 'auto' | `${'top' | 'bottom' | 'auto'}-${'left' | 
 // 에러 툴팁 포털(2026-07-24) — 필드 아래 absolute 오버레이는 테이블 바디 등 스크롤/클립
 // 컨테이너 안에서 잘리거나 스크롤을 만든다(규칙 12의 코드 등가). TruncatingText와 같은
 // 패턴으로 body 포털 + fixed 배치, 스크롤(capture)·리사이즈 시 rAF 코얼레싱으로 위치 갱신.
+// 클립/스크롤 조상 탐지 — 있으면 포털로 탈출(규칙 12), 없으면 인라인 absolute를 쓴다.
+// 인라인이면 스크롤과 자연 동행해 포털 fixed 재계산의 스크롤 지연(출렁임)이 없다(2026-08-06 지시).
+function hasClippingAncestor(el: HTMLElement | null): boolean {
+  for (let n = el?.parentElement; n && n !== document.body; n = n.parentElement) {
+    const s = getComputedStyle(n);
+    if (/hidden|clip|auto|scroll/.test(`${s.overflow}${s.overflowX}${s.overflowY}`)) return true;
+  }
+  return false;
+}
+
 function ErrorTipPortal({
   anchorRef,
   children,
@@ -241,6 +251,12 @@ export function Select({
   // 에러 툴팁 id — 표시 중일 때 트리거 aria-describedby로 연결(스크린리더가 같은 문구 낭독)
   const errTipId = useId();
   const showErrTip = error && !!errorMessage && !open;
+  // 에러 툴팁 배치 모드 — 클립/스크롤 조상이 있을 때만 포털(fixed), 아니면 Input과 동일한
+  // 인라인 absolute(스크롤 자연 동행). 표시 시점에 한 번 판별한다.
+  const [errTipPortal, setErrTipPortal] = useState(false);
+  useLayoutEffect(() => {
+    if (showErrTip) setErrTipPortal(hasClippingAncestor(rootRef.current));
+  }, [showErrTip]);
   // text/chip variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
   // 'trigger' = 트리거와 동일을 명시(폼 셀 fill 트리거처럼 넓은 텍스트 셀렉트용, 2026-08-06 지시)
   const effectiveMenuWidth =
@@ -690,12 +706,20 @@ export function Select({
           document.body,
         )}
 
-      {/* 에러 툴팁 — 닫혔을 때 필드 아래(포털·fixed — 테이블 등 클립/스크롤 컨테이너 영향 없음) */}
-      {showErrTip && (
-        <ErrorTipPortal anchorRef={rootRef} id={errTipId}>
-          {errorMessage}
-        </ErrorTipPortal>
-      )}
+      {/* 에러 툴팁 — 닫혔을 때 필드 아래. 클립/스크롤 컨테이너 안에서만 포털(fixed)로 탈출하고,
+          평범한 폼 문맥에서는 Input과 동일한 인라인 absolute(스크롤 지연 없음, 2026-08-06) */}
+      {showErrTip &&
+        (errTipPortal ? (
+          <ErrorTipPortal anchorRef={rootRef} id={errTipId}>
+            {errorMessage}
+          </ErrorTipPortal>
+        ) : (
+          <div id={errTipId} role="alert" className="absolute left-0 top-full z-10 mt-spacing-2">
+            <Tooltip variant="error" beak="top">
+              {errorMessage}
+            </Tooltip>
+          </div>
+        ))}
     </div>
   );
 }

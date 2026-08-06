@@ -124,19 +124,12 @@ function MappingCodeButton({ onInsert }: { onInsert?: (code: string) => void }) 
         </Button>
       }
     >
-      {(close) => (
+      {/* 항목 클릭으로는 닫지 않는다 — 코드를 연달아 삽입할 수 있게 유지, 배경(외부) 클릭 시 닫힘(2026-08-06 지시) */}
+      {() => (
         <PopoverMenu width="100%">
           <ListGroup>
             {MAPPING_CODES.map((code) => (
-              <List
-                key={code}
-                icon={Plus}
-                title={code}
-                onClick={() => {
-                  onInsert?.(code);
-                  close();
-                }}
-              />
+              <List key={code} icon={Plus} title={code} onClick={() => onInsert?.(code)} />
             ))}
           </ListGroup>
         </PopoverMenu>
