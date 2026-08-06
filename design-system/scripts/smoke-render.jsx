@@ -4,10 +4,10 @@
 // 실행: npm run check:render  (esbuild 번들 → node 실행)
 // 한계: portal(모달·팝오버 패널)은 SSR 미지원 — 모달은 '컴포넌트 로직 실행'까지만 검증된다.
 import { renderToString } from 'react-dom/server';
-import { ScreeningFormula } from '../src/components/ScreeningFormula';
-import { ScreeningConditionCard } from '../src/components/ScreeningConditionCard';
-import { ScreeningIndividualSettingModal } from '../src/components/ScreeningIndividualSettingModal';
-import { ScreeningBuilderTemplate } from '../src/components/ScreeningBuilderTemplate';
+import { ScreeningFormula } from '../src/templates/ScreeningFormula';
+import { ScreeningConditionCard } from '../src/templates/ScreeningConditionCard';
+import { ScreeningIndividualSettingModal } from '../src/templates/ScreeningIndividualSettingModal';
+import { ScreeningBuilderTemplate } from '../src/templates/ScreeningBuilderTemplate';
 import { Button } from '../src/components/Button';
 import { Slot } from '../src/components/Slot';
 

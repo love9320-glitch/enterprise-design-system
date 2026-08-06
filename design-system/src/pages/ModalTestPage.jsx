@@ -3,18 +3,18 @@
 import { useRef, useState } from 'react';
 import { Plus, Trash2, Upload, Download, ChevronDown, ChevronRight, Pencil } from 'lucide-react';
 import { Modal } from '../components/Modal';
-import { JobPositionTemplate } from '../components/JobPositionTemplate';
+import { JobPositionTemplate } from '../templates/JobPositionTemplate';
 import { Button } from '../components/Button';
 import { Tag } from '../components/Tag';
-import { TableTemplate } from '../components/TableTemplate';
-import { NoticeWritingTemplate } from '../components/NoticeWritingTemplate';
-import { FormTemplateA } from '../components/FormTemplateA';
+import { TableTemplate } from '../templates/TableTemplate';
+import { NoticeWritingTemplate } from '../templates/NoticeWritingTemplate';
+import { FormTemplateA } from '../templates/FormTemplateA';
 import { Input } from '../components/Input';
 import { Select } from '../components/Select';
 import { DateField } from '../components/DateField';
 import { EmailField, PhoneField } from '../components/SelectOrInput';
 import { iconCellWidth } from '../components/tableView';
-import { NOTICE_SAMPLE_BODIES, NOTICE_TEMPLATE_BODIES } from './noticeSampleBodies';
+import { NOTICE_SAMPLE_BODIES, NOTICE_TEMPLATE_BODIES } from './templates/noticeSampleBodies';
 import { CodeCreateModal } from './CodeCreateModal';
 
 const FIELDS = ['프론트엔드', '백엔드', '디자인', '마케팅', '기획'];
