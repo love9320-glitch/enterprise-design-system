@@ -64,7 +64,7 @@ function EmailAuthTag({ approved }: { approved: boolean }) {
   const t = useHoverTooltip(approved ? null : EMAIL_AUTH_TOOLTIP);
   return (
     <>
-      <Tag color={approved ? 'blue' : 'gray'} onMouseEnter={t.onMouseEnter} onMouseLeave={t.onMouseLeave}>
+      <Tag color={approved ? 'blue' : 'gray'} className={approved ? '' : 'cursor-help'} onMouseEnter={t.onMouseEnter} onMouseLeave={t.onMouseLeave}>
         {approved ? '인증' : '미인증'}
       </Tag>
       {t.tooltip}

@@ -4,21 +4,21 @@
 //   상세 = FormTemplateB(title="발송 정보", 마지막 셀에 TableTemplate 삽입 — 셀별 패딩 20 오버라이드)
 //        + FormTemplateB(title="발송 내용", 8:4 커스텀 텍스트 셀 — 라벨/값+Divider 구조 마크업)
 // 행 클릭 → 상세, 상세 헤더 '발송 목록으로' → 목록 복귀(내부 view 상태).
-// 날짜 표기는 utils/datetime(formatDateTime) 경유(규칙 10), 재발송 아이콘 셀 폭은 iconCellWidth(규칙 17).
+// 날짜 표기는 utils/datetime(formatDateTime) 경유(규칙 10).
 import { useMemo, useState } from 'react';
 import type { ComponentProps, ReactNode } from 'react';
-import { ArrowLeft, Download, Mail, Send } from 'lucide-react';
+import { ArrowLeft, Download, Mail } from 'lucide-react';
 import { Page } from '@gusun/design-system';
 import { Button } from '@gusun/design-system';
 import { TableTemplate } from '@gusun/design-system';
 import { SegmentControlGroup } from '@gusun/design-system';
 import { Tag } from '@gusun/design-system';
+import { useHoverTooltip } from '@gusun/design-system';
 import { Divider } from '@gusun/design-system';
 import { TruncatingText } from '@gusun/design-system';
 import { Input } from '@gusun/design-system';
 import { FormTemplateB } from '@gusun/design-system';
 import type { FormTemplateBCell, TableTemplateColumn } from '@gusun/design-system';
-import { iconCellWidth } from '@gusun/design-system';
 import { formatDateTime } from '@gusun/design-system';
 import { useNav } from '../../navContext';
 
@@ -97,48 +97,50 @@ const DETAIL_ROWS = Array.from({ length: 100 }, (_, i) => {
     id: i + 1,
     no: i + 1,
     name: '권구선',
+    posting: '2019 하반기 신입 공채',
+    job: '경기도 · 판매 · 데이터 분석',
+    // 일부 행은 긴 주소 — 말줄임+태그 우측 고정 확인용(2026-08-06 지시)
+    email: i % 9 === 2 ? 'recruit.notification.gusun.kwon@midas-enterprise-solution.co.kr' : 'midasin@midasin.com',
+    phone: '010-1234-1234',
     emailFail,
     smsFail,
     sentAt: formatDateTime(new Date(2026, 4, 15, 0, 0), new Date(2026, 4, 15, 0, 0)),
   };
 });
 
-// 발송 결과 셀 — 성공/실패 Tag + (실패 시) 사유 텍스트
-function ResultCell({ fail, reason }: { fail: boolean; reason: string }) {
+// 발송 결과 셀 — 주소/번호 텍스트 + 성공/실패 Tag(이메일 주소·휴대폰 번호 컬럼에 통합, 2026-08-06 지시).
+// 실패 사유는 Tag hover 툴팁(포털·자동반전 — useHoverTooltip 공용 훅)
+function ResultCell({ value, fail, reason }: { value: string; fail: boolean; reason: string }) {
+  const t = useHoverTooltip(fail ? reason : null);
   return (
-    <div className="flex min-w-0 items-center gap-spacing-5">
-      <Tag color={fail ? 'red' : 'blue'}>{fail ? '실패' : '성공'}</Tag>
-      {fail && <span className="truncate">{reason}</span>}
+    // 셀 내장 flex 래퍼 안에서 내용 폭만 차지하지 않도록 w-full — 태그가 셀 오른쪽 끝에 붙는다
+    <div className="flex w-full min-w-0 items-center gap-spacing-5">
+      <TruncatingText as="span" className="min-w-0">
+        {value}
+      </TruncatingText>
+      <Tag color={fail ? 'red' : 'blue'} className={`ml-auto ${fail ? 'cursor-help' : ''}`} onMouseEnter={t.onMouseEnter} onMouseLeave={t.onMouseLeave}>
+        {fail ? '실패' : '성공'}
+      </Tag>
+      {t.tooltip}
     </div>
   );
 }
 
-// 대상자 테이블 컬럼 — 채널 조건부(개발 정책 2026-08-06): 발송하지 않은 채널의 결과 컬럼은 제외,
-// 재발송 활성도 발송한 채널의 실패만 본다. 이메일/문자 결과·발송시각은 width 미지정 = 가변(fill)
+// 대상자 테이블 컬럼 — 채널 조건부(개발 정책 2026-08-06): 발송하지 않은 채널의 컬럼은 제외.
+// 성공/실패 Tag는 별도 컬럼 없이 이메일 주소·휴대폰 번호 셀에 통합(2026-08-06 지시). 발송시각 = 가변(fill)
 const buildDetailColumns = (hasEmail: boolean, hasSms: boolean): TableTemplateColumn[] => [
   { key: 'no', label: '순번', width: 66 },
   { key: 'name', label: '이름', width: 80 },
+  { key: 'posting', label: '공고명' },
+  { key: 'job', label: '직무 분야', width: 200 },
   ...(hasEmail
-    ? ([{ key: 'emailResult', label: '이메일 발송 결과', render: (row: any) => <ResultCell fail={!!row.emailFail} reason={EMAIL_FAIL_REASON} /> }] satisfies TableTemplateColumn[])
+    ? ([{ key: 'email', label: '이메일 발송 결과', width: 230, render: (row: any) => <ResultCell value={String(row.email)} fail={!!row.emailFail} reason={EMAIL_FAIL_REASON} /> }] satisfies TableTemplateColumn[])
     : []),
   ...(hasSms
-    ? ([{ key: 'smsResult', label: '문자 발송 결과', render: (row: any) => <ResultCell fail={!!row.smsFail} reason={SMS_FAIL_REASON} /> }] satisfies TableTemplateColumn[])
+    ? ([{ key: 'phone', label: '문자 발송 결과', width: 175, render: (row: any) => <ResultCell value={String(row.phone)} fail={!!row.smsFail} reason={SMS_FAIL_REASON} /> }] satisfies TableTemplateColumn[])
     : []),
-  { key: 'sentAt', label: '발송시각' },
-  {
-    key: 'resend',
-    label: '재발송',
-    width: iconCellWidth(1, { buttonSize: 32 }), // 규칙 17 — ghost 32 버튼 단독 셀
-    render: (row: any) => (
-      <Button
-        variant="ghost"
-        size="32"
-        icon={Send}
-        disabled={!((hasEmail && !!row.emailFail) || (hasSms && !!row.smsFail))}
-        tooltip="재발송"
-      />
-    ),
-  },
+  // 테이블 컬럼은 고정 px/가변(fill)만 지원 — hug 대신 내용('2026.05.15 (00:01)') 맞춤 고정폭(목록 발송 일시와 동일 140)
+  { key: 'sentAt', label: '발송 시간', width: 140 },
 ];
 
 // 상세 '발송 정보' 필드 — 상수 배열 정의 후 셀로 매핑
@@ -321,6 +323,9 @@ function SendHistoryDetail({ row, onBack }: { row: ListRow | null; onBack: () =>
                   </>
                 }
                 searchable
+                searchWidth={280}
+                searchPlaceholder="이름, 이메일, 전화번호로 검색"
+                searchKeys={['name', 'email', 'phone']} // 검색 대상을 플레이스홀더 안내와 일치시킴
                 pagination
                 emptyMessage="발송 대상자가 없습니다."
               />
