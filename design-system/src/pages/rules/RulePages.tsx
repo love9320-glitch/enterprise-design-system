@@ -8,14 +8,12 @@ import skillMd from '../../../../.claude/skills/design-system/SKILL.md?raw';
 import foundationMd from '../../../../.claude/skills/design-system/foundation.md?raw';
 import componentsMd from '../../../../.claude/skills/design-system/components.md?raw';
 import tplModalMd from '../../../../.claude/skills/design-system/templates/modal.md?raw';
-import tplListMd from '../../../../.claude/skills/design-system/templates/list-page.md?raw';
-import tplDetailMd from '../../../../.claude/skills/design-system/templates/detail-page.md?raw';
-import tplFormMd from '../../../../.claude/skills/design-system/templates/form-page.md?raw';
+import tplPageMd from '../../../../.claude/skills/design-system/templates/page.md?raw';
 import ruleUsageMd from '../../../../.claude/skills/design-system/rule-usage.md?raw';
 import customizationMd from '../../../../.claude/skills/design-system/customization.md?raw';
 import gettingStartedMd from '../../../../.claude/skills/design-system/getting-started.md?raw';
 
-const templatesMd = [tplModalMd, tplListMd, tplDetailMd, tplFormMd].join('\n\n');
+const templatesMd = [tplModalMd, tplPageMd].join('\n\n');
 
 function DocPage({ source }: any) {
   return (
