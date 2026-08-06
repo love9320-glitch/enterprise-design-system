@@ -196,5 +196,6 @@ const sizeStyle = SIZE_STYLES[size];
 - [ ] 인라인 `style`을 쓰지 않았는가
 - [ ] `disabled`/`loading` 등 비활성 상태에서 이벤트가 차단되는가
 - [ ] 아이콘은 lucide-react 컴포넌트를 props로 받는가 (`<Icon/>`이 아닌 `Icon`)
+- [ ] **라이브러리 배럴에 export를 추가했는가** — `src/index.ts`(Tiptap 의존 컴포넌트는 `src/editor.ts`) 누락 시 npm 소비자가 import 불가(2026-08-06 MultiStepFormTemplate 1.2.0 누락 판례)
 - [ ] 데모 페이지를 추가/갱신했는가
 - [ ] 데모 페이지의 섹션 사이에 구분선(`<Divider className="mt-spacing-9 mb-spacing-8" />`)을 넣었는가 (첫 섹션 제외)

@@ -21,6 +21,7 @@ export * from './components/FileUploadMenu';
 export * from './components/FormTemplateA';
 export * from './components/FormTemplateB';
 export * from './components/JobPostingTemplate';
+export * from './components/MultiStepFormTemplate';
 export * from './components/Lnb';
 export * from './components/AppLayout';
 export * from './components/Avatar';
