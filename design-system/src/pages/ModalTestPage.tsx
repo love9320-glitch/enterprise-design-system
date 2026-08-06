@@ -441,7 +441,7 @@ function EvalSettingsModal({ open, onClose }: { open: boolean; onClose: () => vo
         pagination={false}
         actions={({ selectedIds: ids }) => (
           <>
-            {/* 순서 규칙(list-page.md): 삭제 → 추가 → 복사 → 붙여넣기 */}
+            {/* 순서 규칙(templates/page.md §목록): 삭제 → 추가 → 복사 → 붙여넣기 */}
             <Button variant="line" rightIcon={ChevronDown} disabled={ids.length === 0}>
               삭제
             </Button>

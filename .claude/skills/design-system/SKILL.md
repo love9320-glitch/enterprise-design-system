@@ -12,7 +12,7 @@ description: 이 프로젝트(design-system)에서 UI 컴포넌트·페이지·�
 
 규칙을 **적용 범위별 3구역**으로 나눈다 — (A) 피그마 작도·코드 작성 양쪽에 적용되는 **공통 설계 원칙**, (B) **코드 작성 전용**, (C) **Figma 작도 전용**. 다른 규칙·메모리에서 "규칙 N"으로 참조하는 번호는 아래 통합 번호를 가리킨다.
 
-> **신설 규칙 번호(15~)**: 15=카피 띄어쓰기(A구역, 아래) · 16=목록 버튼그룹 순서(`templates/list-page.md`) · 17=아이콘 전용 셀 width=iconCellWidth(`templates/list-page.md`) · 18=모달 안 무한 스크롤 테이블 설정(`templates/modal.md`) · 19=알파 라인은 outline(B구역, 아래) · 20=키보드 Tab 체인 규약(B구역, 아래) · 21=벨리데이션 에러 카피 표준(A구역, 아래). 이후 신설 규칙은 22부터 이어 붙이고 여기 색인에 등록한다. (신설 5개 도달 — 2026-07-14 가지치기 감사 수행: 비대 행 아카이브 2차 이관, 15~19 전부 사용 중이라 통합·삭제 없음)
+> **신설 규칙 번호(15~)**: 15=카피 띄어쓰기(A구역, 아래) · 16=목록 버튼그룹 순서(`templates/page.md` §목록 — 구 list-page.md, 2026-08-06 통합) · 17=아이콘 전용 셀 width=iconCellWidth(`templates/page.md` §목록) · 18=모달 안 무한 스크롤 테이블 설정(`templates/modal.md`) · 19=알파 라인은 outline(B구역, 아래) · 20=키보드 Tab 체인 규약(B구역, 아래) · 21=벨리데이션 에러 카피 표준(A구역, 아래). 이후 신설 규칙은 22부터 이어 붙이고 여기 색인에 등록한다. (신설 5개 도달 — 2026-07-14 가지치기 감사 수행: 비대 행 아카이브 2차 이관, 15~19 전부 사용 중이라 통합·삭제 없음)
 
 ### A. 공통 설계 원칙 (피그마·코드 양쪽 적용)
 
@@ -49,7 +49,7 @@ description: 이 프로젝트(design-system)에서 UI 컴포넌트·페이지·�
 ### C. Figma 작도 전용
 
 11. **Figma 연결(Code Connect)은 개발환경 기능을 절대 훼손하지 않는다** — Figma 컴포넌트를 코드에 연결할 때, 개발환경에 구현된 컴포넌트의 기능·옵션(props·동작)에 **어떤 문제도 발생시키지 않아야** 한다. Code Connect는 코드↔디자인을 잇는 단방향 메타데이터 매핑일 뿐이므로, 연결을 위해 코드의 기능을 줄이거나 prop을 제거·변경하지 말 것. Figma 컴포넌트가 코드보다 옵션이 적어도(기본형만 있어도) 그대로 매핑하며, 부족한 표현은 코드 기본값/수동 지정으로 둔다(코드를 Figma에 맞춰 깎지 않는다). 매핑 후 코드 컴포넌트가 변경되지 않았는지 확인한다.
-12. **에러 툴팁이 있는 입력은 감싸는 프레임의 clip content를 끈다** — Input 등의 에러 상태는 인풋 박스 아래로 absolute 오버레이(툴팁)로 표시된다. 이 인스턴스를 담는 프레임/오토레이아웃에 `clipsContent`(clip content)가 켜져 있으면 툴팁이 잘리므로, 에러 툴팁이 나오는 input을 Figma에 배치할 때는 그 상위 프레임들의 clip content를 **모두 꺼야** 한다. (코드 등가: 툴팁을 감싸는 요소의 `overflow: visible`로 잘림 방지)
+12. **에러 툴팁이 있는 입력은 감싸는 프레임의 clip content를 끈다** — Input 등의 에러 상태는 인풋 박스 아래로 absolute 오버레이(툴팁)로 표시된다. 이 인스턴스를 담는 프레임/오토레이아웃에 `clipsContent`(clip content)가 켜져 있으면 툴팁이 잘리므로, 에러 툴팁이 나오는 input을 Figma에 배치할 때는 그 상위 프레임들의 clip content를 **모두 꺼야** 한다. (코드 등가: 툴팁을 감싸는 요소의 `overflow: visible`로 잘림 방지. **판례 2026-08-06 — Select 에러 툴팁은 코드가 자동 처리**: 클립/스크롤 조상을 감지해 인라인 absolute ↔ 스크롤 컨테이너 내부 포털 ↔ body 포털 fixed로 스스로 분기하므로 사용처 조치 불필요. 스크롤 컨테이너 안에서는 fixed 포털이 한 박자 늦게 따라와 출렁이므로 '컨테이너 안 absolute'가 정답 패턴)
 13. **Figma에 테이블을 그릴 때는 연결된 table 컴포넌트를 detach해서 편집한다 — 컬럼·행 대량 편집이나 슬롯(ModalBody 등) 내부 편집 시 권장** — 연결된 `table` 컴포넌트(state 변형: table/outline/empty)를 **인스턴스로 생성 → `detachInstance()` → 셀/행을 자유롭게 편집**(컬럼 축소·행 정리·텍스트 입력)한다. detach해도 색·간격·구분선·텍스트 스타일 등 **디자인은 그대로 유지**되고, 잃는 것은 그 결과물의 컴포넌트 연결뿐이다. **단 detach 직후 자식들의 FILL 사이징이 풀릴 수 있다(2026-07-03 확인)** — detach하면 곧바로 프레임·테이블·바디 컨테이너·각 행의 `layoutSizingHorizontal='FILL'`을 일괄 재설정할 것(빼먹으면 원본 폭으로 남아 잘림/어긋남). **안정성(2026-06-24 검증):** table 컴포넌트 자체는 건강하다(단독 인스턴스는 `findAll`·셀 편집 모두 정상, 고스트 0). 다만 **`ModalBody` 같은 슬롯 안에 넣으면 슬롯 미러링 때문에 'node not found'류 노드(고스트)가 생겨** 깊은 순회·저장 참조 편집이 불안정하다 → **슬롯 안에서 표를 편집할 땐 detach가 안전**. 단순 인스턴스를 한두 군데만 손대는 정도면 detach 없이도 가능(과거의 '필수' → 현재 '대량/슬롯 편집 시 권장'). 단순·안정 컴포넌트(Button·Input·Tag 등)는 연결 인스턴스를 유지한다. **체크박스 셀: 테이블에 체크박스 셀을 쓸 때 셀 너비는 44px(FIXED)로 고정한다**(헤더·본문 동일, 콘텐츠 가운데 정렬). (코드에서는 detach 없이 DS `Table` 컴포넌트를 그대로 조립)
 14. **DS 컴포넌트·템플릿은 Code Connect로 연결된 것을 찾아 인스턴스화한다** — Figma 작도에서 개별 컴포넌트(Button·Input·Select·Tag·Checkbox·Table·Pagination 등)**뿐 아니라 템플릿(TableTemplate 등 복합 단위)도 Code Connect로 연결돼 있다.** 그러므로 **레이어를 막 뒤지거나 임의로 새로 그리지 말고 Code Connect 맵에서 찾아 쓴다** — 규칙 3·4(페이지>템플릿>컴포넌트, **큰 단위 먼저**)에 따라 **템플릿으로 덮이면 템플릿을, 안 되는 부분만 개별 컴포넌트를** 찾아 조립한다. 이 파일의 DS 자산은 **컴포넌트·템플릿 전부 Code Connect 연결돼 있다(Editor도 2026-06-30 연결 — 2026-07-03 라이브 확인).** `get_code_connect_map(nodeId)`은 `{figmaNodeId: {componentName, source}}`를 주므로 이를 **뒤집어 "이름 → Figma nodeId"로 역조회** → `getNodeByIdAsync → createInstance`로 꽂는다(메모리 레시피에 node id가 있으면 그걸 우선 사용). **주의:** ① 맵은 **조회한 노드의 서브트리 범위만** 반환하므로 한 번 호출의 부분 결과만 보고 "미연결"이라 단정하지 말 것(필요하면 여러 노드/페이지로 확인). ② 연결 여부가 의심되면 추측 말고 `get_code_connect_map`으로 **라이브 확인**. ③ variant뿐 아니라 **컴포넌트/템플릿 SET 노드도 매핑돼 있어야** 읽기/Dev Mode 표시가 안정적. (상세·현황: 메모리 `reference_code_connect_coverage`)
 ## 작업 유형별 라우팅 — 아래 표에서 해당 행의 파일을 읽어라
@@ -59,9 +59,8 @@ description: 이 프로젝트(design-system)에서 UI 컴포넌트·페이지·�
 | **토큰 정의·수정** (색상/타이포/간격/라운드/보더/아이콘) | `foundation.md` |
 | **공통 컴포넌트 생성·수정** (버튼/뱃지/카드/인풋 등) | `foundation.md` + `components.md` |
 | **모달·팝업·다이얼로그·confirm 창** | `foundation.md` + `components.md` + `templates/modal.md` |
-| **목록·리스트·테이블 페이지** | `foundation.md` + `components.md` + `templates/list-page.md` |
-| **상세·디테일 페이지** | `foundation.md` + `components.md` + `templates/detail-page.md` |
-| **폼·입력·등록·수정 페이지** | `foundation.md` + `components.md` + `templates/form-page.md` |
+| **페이지** (목록·상세·폼·멀티 스텝·실전 조립 — 유형이 섞여도 한 파일, 2026-08-06 통합) | `foundation.md` + `components.md` + `templates/page.md`(화면에 포함된 §목록/§상세/§폼 영역만 골라 적용) |
+| **레이아웃·사이트 셸** (AppLayout/Gnb/Lnb/RightPanel/Page/PageHeader) | `foundation.md` + `components.md`(레이아웃 카탈로그 행 — 전용 templates 문서 없음, 2026-08-06) |
 
 > 원칙: **foundation.md는 거의 항상** 읽는다(토큰 없이는 무엇도 못 만든다). 컴포넌트/페이지 작업이면 **components.md를 더한다**. 특정 페이지 유형이면 해당 **templates 파일을 더한다**.
 
