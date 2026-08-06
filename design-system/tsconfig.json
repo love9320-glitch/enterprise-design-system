@@ -8,13 +8,19 @@
     "strict": true,
     "noEmit": true,
     "skipLibCheck": true,
+    "types": ["vite/client"],
     "isolatedModules": true,
     "esModuleInterop": true,
     "allowJs": true,
     "checkJs": false,
     "noFallthroughCasesInSwitch": true,
     "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedParameters": false,
+    "paths": {
+      "@gusun/design-system": ["./src/index.ts"],
+      "@gusun/design-system/editor": ["./src/editor.ts"],
+      "@gusun/design-system/tokens": ["./src/tokens/index.ts"]
+    }
   },
   "include": ["src", "scripts"]
 }

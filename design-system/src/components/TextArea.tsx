@@ -10,7 +10,7 @@
 //
 // 에러 표현 규칙: Input과 동일 — 테두리 대신 박스 아래 absolute 툴팁 오버레이(레이아웃 영향 0).
 import { useState, useRef, useCallback, useEffect, useLayoutEffect, useId } from 'react';
-import type { ChangeEvent, ComponentPropsWithoutRef, MouseEvent as ReactMouseEvent } from 'react';
+import type { ChangeEvent, ComponentProps, ComponentPropsWithoutRef, MouseEvent as ReactMouseEvent } from 'react';
 import { listColors } from '../tokens';
 import { REQUIRED_INPUT_MESSAGE } from '../utils/validationMessages';
 import { Tooltip } from './Tooltip';
@@ -40,7 +40,7 @@ interface TextAreaProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChange'
   error?: boolean;
   errorMessage?: string;
   width?: number | string;  // 너비: 숫자(px) 또는 CSS 길이 문자열. 미지정 시 320px
-  textareaProps?: ComponentPropsWithoutRef<'textarea'>;
+  textareaProps?: ComponentProps<'textarea'>; // ref 포함(React 19 ref-as-prop)
 }
 
 export function TextArea({

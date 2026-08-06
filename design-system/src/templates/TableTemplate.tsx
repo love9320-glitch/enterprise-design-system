@@ -29,7 +29,7 @@ import { SelectGroup } from '../components/SelectGroup';
 
 // 컬럼 정의 — Table 패스스루(headerMenu·sortable·filter 등 추가 옵션 허용)
 // Table의 TableColumn과 동일 계약 + 템플릿 전용 부가 옵션 통과(인덱스 시그니처)
-interface TableTemplateColumn extends TableColumn {
+export interface TableTemplateColumn extends TableColumn { // 소비자 컬럼 타이핑용 export(2026-08-06)
   [option: string]: unknown;
 }
 

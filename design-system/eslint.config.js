@@ -24,6 +24,14 @@ export default defineConfig([
     },
   },
   {
+    // 데모 페이지(사용처 예제) — 데모 데이터·플레이그라운드 특성상 명시적 any 허용(2026-08-06 TS 전환).
+    // 라이브러리 코드(components/layouts/templates)는 위 ts 블록의 no-explicit-any가 그대로 적용된다.
+    files: ['src/pages/**/*.{ts,tsx}'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  },
+  {
     files: ['**/*.{js,jsx}'],
     extends: [
       js.configs.recommended,
