@@ -461,6 +461,7 @@ export function DateField({
         open={open}
         disabled={disabled}
         readOnly={readOnly}
+        error={showErr} // 에러 시 값·플레이스홀더 red 400 — box variant와 동일(전달 누락 버그 수정, 2026-08-06)
         maxWidth={maxWidthStyle}
         fill={isTextFill}
         chevron={false} // 인라인형은 화살표 없이 아이콘+날짜만(2026-07-27 지시), hover 회색은 기본 동작
