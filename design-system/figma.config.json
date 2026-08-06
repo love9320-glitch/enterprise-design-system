@@ -1,5 +1,12 @@
 {
   "codeConnect": {
-    "include": ["src/components/**/*.figma.tsx", "src/components/**/*.tsx"]
+    "include": [
+      "src/components/**/*.figma.tsx",
+      "src/components/**/*.tsx",
+      "src/layouts/**/*.figma.tsx",
+      "src/layouts/**/*.tsx",
+      "src/templates/**/*.figma.tsx",
+      "src/templates/**/*.tsx"
+    ]
   }
 }
