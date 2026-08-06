@@ -171,7 +171,9 @@ const insertAtCursor = (ref, setValue, code) => {
 };
 
 // ── Step 1 — 고객사 발신정보 입력 (채널 조건부: 단일 채널이면 그 작성 영역이 전체 폭) ──
-function SenderStep({ method, onMethodChange }) {
+// form/setField/showErrors는 페이지 소유 — '다음 단계' 게이트 검증에 쓰인다(규칙 21:
+// error=true만 켜면 표준 카피 툴팁 자동, 값 채우면 에러가 파생값이라 자동 해제)
+function SenderStep({ method, onMethodChange, form, setField, showErrors }) {
   const hasEmail = method !== 'sms';
   const hasSms = method !== 'email';
   // 발신 수단 선택값 — 비활성 시 값 대신 '미사용' 표시(placeholder), 재활성화하면 이전 선택 복원
@@ -181,11 +183,10 @@ function SenderStep({ method, onMethodChange }) {
   const [smsType, setSmsType] = useState('auto');
   const smsMaxLength = smsType === 'sms' ? 45 : 1000;
 
-  // 매핑 코드 삽입 대상 — 이메일 버튼→내용 TextArea(2026-08-06 정정), 문자 버튼→문자 내용 TextArea
-  const [emailBody, setEmailBody] = useState('');
-  const [smsBody, setSmsBody] = useState('');
+  // 매핑 코드 삽입 대상 refs — 값은 페이지 form이 소유(커서 삽입용 ref만 로컬)
   const emailBodyRef = useRef(null);
   const smsBodyRef = useRef(null);
+
 
   const emailWriteCell = { key: 'emailBody', span: hasSms ? 8 : 12, paddingTop: '12', paddingBottom: '20',
     control: (
@@ -193,16 +194,24 @@ function SenderStep({ method, onMethodChange }) {
         <div className="flex w-full flex-col gap-spacing-5">
           {/* 제목 행 — Input fill + 매핑 코드 추가 라인 버튼(2026-08-06 지시, 삽입은 내용 TextArea로) */}
           <div className="flex w-full items-center gap-spacing-5">
-            <Input width="100%" placeholder="이메일 제목을 입력하세요" className="min-w-0 flex-1" />
-            <MappingCodeButton onInsert={(code) => insertAtCursor(emailBodyRef, setEmailBody, code)} />
+            <Input
+              width="100%"
+              placeholder="이메일 제목을 입력하세요"
+              className="min-w-0 flex-1"
+              value={form.emailSubject}
+              onChange={(e) => setField('emailSubject')(e.target.value)}
+              error={showErrors && !form.emailSubject.trim()}
+            />
+            <MappingCodeButton onInsert={(code) => insertAtCursor(emailBodyRef, setField('emailBody'), code)} />
           </div>
           <TextArea
             width="100%"
             rows={18}
             showCount={false}
             placeholder="이메일 내용을 입력하세요"
-            value={emailBody}
-            onChange={(e) => setEmailBody(e.target.value)}
+            value={form.emailBody}
+            onChange={(e) => setField('emailBody')(e.target.value)}
+            error={showErrors && !form.emailBody.trim()}
             textareaProps={{ ref: emailBodyRef }}
           />
         </div>
@@ -215,7 +224,7 @@ function SenderStep({ method, onMethodChange }) {
           {/* 타입 행 — Select fill + 매핑 코드 추가 라인 버튼(제목 행과 동일 패턴) */}
           <div className="flex w-full items-center gap-spacing-5">
             <Select width="fill" className="min-w-0 flex-1" options={SMS_TYPE_OPTIONS} value={smsType} onChange={(e) => setSmsType(e.target.value)} />
-            <MappingCodeButton onInsert={(code) => insertAtCursor(smsBodyRef, setSmsBody, code)} />
+            <MappingCodeButton onInsert={(code) => insertAtCursor(smsBodyRef, setField('smsBody'), code)} />
           </div>
           <TextArea
             width="100%"
@@ -223,8 +232,9 @@ function SenderStep({ method, onMethodChange }) {
             maxLength={smsMaxLength}
             showCount
             placeholder="문자 내용을 입력하세요"
-            value={smsBody}
-            onChange={(e) => setSmsBody(e.target.value)}
+            value={form.smsBody}
+            onChange={(e) => setField('smsBody')(e.target.value)}
+            error={showErrors && !form.smsBody.trim()}
             textareaProps={{ ref: smsBodyRef }}
           />
         </div>
@@ -238,13 +248,13 @@ function SenderStep({ method, onMethodChange }) {
       cells={[
         { key: 'client', label: '고객사', span: 4,
           // menuWidth=trigger — 팝오버 메뉴 폭을 셀렉트(fill 트리거) 폭에 맞춤(2026-08-06 지시)
-          control: <Select variant="text" width="fill" menuWidth="trigger" options={CLIENT_OPTIONS} placeholder="고객사를 선택하세요" /> },
+          control: <Select variant="text" width="fill" menuWidth="trigger" options={CLIENT_OPTIONS} placeholder="고객사를 선택하세요" value={form.client} onChange={(e) => setField('client')(e.target.value)} error={showErrors && !form.client} /> },
         { key: 'reason', label: '발송 사유', span: 4,
-          control: <Input variant="transparent" width="100%" placeholder="발송 사유를 입력하세요" /> },
+          control: <Input variant="transparent" width="100%" placeholder="발송 사유를 입력하세요" value={form.reason} onChange={(e) => setField('reason')(e.target.value)} error={showErrors && !form.reason.trim()} /> },
         { key: 'method', label: '안내 방법', span: 4,
           control: <Select variant="text" width="fill" menuWidth="trigger" options={METHOD_OPTIONS} value={method} onChange={(e) => onMethodChange(e.target.value)} /> },
         { key: 'schedule', label: '예약 발송', span: 4,
-          control: <DateField variant="text" width="fill" showIcon={false} showTime disablePast placeholder="발송 날짜와 시간을 선택하세요" /> },
+          control: <DateField variant="text" width="fill" showIcon={false} showTime disablePast placeholder="발송 날짜와 시간을 선택하세요" value={form.schedule} onChange={(v) => setField('schedule')(v)} error={showErrors && !form.schedule} /> },
         { key: 'senderEmail', label: '발신 이메일', span: 4, disabled: !hasEmail,
           control: <Select variant="text" width="fill" menuWidth="trigger" disabled={!hasEmail} options={SENDER_EMAIL_OPTIONS} value={hasEmail ? senderEmail : null} onChange={(e) => setSenderEmail(e.target.value)} placeholder="미사용" /> },
         { key: 'senderPhone', label: '발신 번호', span: 4, disabled: !hasSms,
@@ -426,11 +436,35 @@ export function BulkSendPage() {
   const [confirmOpen, setConfirmOpen] = useState(false); // 예약 발송 확인 모달(2026-08-06 지시)
   const isLast = stepIndex === STEP_META.length - 1;
 
+  // Step 1 폼 값 — '다음 단계' 게이트 검증 대상(2026-08-06 지시). 채널 미사용 필드는 검증 제외
+  const [form, setForm] = useState({ client: null, reason: '', schedule: null, emailSubject: '', emailBody: '', smsBody: '' });
+  const [showErrors, setShowErrors] = useState(false); // 첫 '다음 단계' 시도 후부터 에러 표시
+  const setField = (key) => (value) =>
+    setForm((f) => ({ ...f, [key]: typeof value === 'function' ? value(f[key]) : value }));
+
+  const hasEmail = method !== 'sms';
+  const hasSms = method !== 'email';
+  const step1Valid =
+    !!form.client &&
+    !!form.reason.trim() &&
+    !!form.schedule &&
+    (!hasEmail || (!!form.emailSubject.trim() && !!form.emailBody.trim())) &&
+    (!hasSms || !!form.smsBody.trim());
+
+  // 스텝 전진 게이트 — Step 1 미완성이면 에러 툴팁을 켜고 이동 차단(스테퍼 클릭·헤더 버튼 공통)
+  const tryGoTo = (index) => {
+    if (stepIndex === 0 && index > 0 && !step1Valid) {
+      setShowErrors(true);
+      return;
+    }
+    setStepIndex(index);
+  };
+
   const steps = STEP_META.map((meta, i) => ({
     ...meta,
     content:
       i === 0 ? (
-        <SenderStep method={method} onMethodChange={setMethod} />
+        <SenderStep method={method} onMethodChange={setMethod} form={form} setField={setField} showErrors={showErrors} />
       ) : i === 1 ? (
         <TargetsStep rows={targetRows} onUpload={() => setTargetRows(TARGET_ROWS)} />
       ) : (
@@ -453,7 +487,7 @@ export function BulkSendPage() {
           <Button
             variant="fill"
             rightIcon={isLast ? undefined : ChevronRight}
-            onClick={isLast ? () => setConfirmOpen(true) : () => setStepIndex((i) => i + 1)}
+            onClick={isLast ? () => setConfirmOpen(true) : () => tryGoTo(stepIndex + 1)}
           >
             {isLast ? '예약 발송' : '다음 단계'}
           </Button>
@@ -463,7 +497,7 @@ export function BulkSendPage() {
       <MultiStepFormTemplate
         steps={steps}
         value={STEP_META[stepIndex].value}
-        onChange={(_, index) => setStepIndex(index)}
+        onChange={(_, index) => tryGoTo(index)}
         keepMounted
       />
 

@@ -65,6 +65,14 @@ interface FormTemplateBProps extends Omit<ComponentPropsWithoutRef<'div'>, 'titl
   subtitle?: ReactNode; // 폼 안 최상단 전체폭 타이틀 로우 — 지정 시에만 렌더(2026-08-05 지시)
 }
 
+// 코너 셀 라운드 클래스 — 컨테이너 overflow-clip 없이 라운드 코너를 유지하기 위한 정적 맵(purge-safe)
+const CORNER_CLASS: Record<keyof typeof ROUND_CLASS, { tl: string; tr: string; bl: string; br: string }> = {
+  '6': { tl: 'rounded-tl-round-4', tr: 'rounded-tr-round-4', bl: 'rounded-bl-round-4', br: 'rounded-br-round-4' },
+  '12': { tl: 'rounded-tl-round-7', tr: 'rounded-tr-round-7', bl: 'rounded-bl-round-7', br: 'rounded-br-round-7' },
+  '16': { tl: 'rounded-tl-round-8', tr: 'rounded-tr-round-8', bl: 'rounded-bl-round-8', br: 'rounded-br-round-8' },
+  '20': { tl: 'rounded-tl-round-9', tr: 'rounded-tr-round-9', bl: 'rounded-bl-round-9', br: 'rounded-br-round-9' },
+};
+
 export function FormTemplateB({
   cells = [],
   columns = 1,
@@ -87,12 +95,51 @@ export function FormTemplateB({
       CELL_PADDING_BOTTOM_CLASS[bottom] ?? CELL_PADDING_BOTTOM_CLASS['12']
     }`;
 
+  // 셀 그리드 좌표 계산 → 코너에 닿는 셀에만 라운드 부여(2026-08-06 개선).
+  // 기존에는 컨테이너 overflow-clip으로 코너를 잘랐는데, 그러면 셀 안 에러 툴팁(absolute 오버레이)이
+  // 박스 하단에서 잘린다(규칙 12) → 클립을 제거하고 코너 셀 라운드로 대체해 툴팁이 영역에 구애받지 않게 한다.
+  const spans = [
+    ...(subtitle != null ? [12] : []),
+    ...cells.map((c) => Math.min(Math.max(c.span ?? defaultSpan, 1), 12)),
+  ];
+  let col = 0;
+  let row = 0;
+  const coords = spans.map((span) => {
+    if (col + span > 12) {
+      row += 1;
+      col = 0;
+    }
+    const pos = { row, start: col, end: col + span };
+    col += span;
+    if (col >= 12) {
+      row += 1;
+      col = 0;
+    }
+    return pos;
+  });
+  const lastRow = col === 0 ? row - 1 : row;
+  const corner = CORNER_CLASS[round] ?? CORNER_CLASS['6'];
+  const cornerOf = (i: number) => {
+    const pos = coords[i];
+    if (!pos) return '';
+    return [
+      pos.row === 0 && pos.start === 0 ? corner.tl : '',
+      pos.row === 0 && pos.end >= 12 ? corner.tr : '',
+      pos.row === lastRow && pos.start === 0 ? corner.bl : '',
+      pos.row === lastRow && pos.end >= 12 ? corner.br : '',
+    ]
+      .filter(Boolean)
+      .join(' ');
+  };
+  const cellIndexOffset = subtitle != null ? 1 : 0;
+
   const box = (
     <div
       // 그리드 배경(inline 토큰)이 1px gap 사이로 비쳐 셀 구분 헤어라인이 된다(Figma 구조 그대로)
       // 외곽선: 그림자 있음=outline / 그림자 없음=inline(셀 구분선과 같은 색으로 존재감 축소)
+      // 클립 없음 — 코너는 코너 셀 라운드로 유지(에러 툴팁 등 오버레이가 박스를 벗어날 수 있게, 규칙 12)
       // title이 있으면 래퍼가 루트가 되므로 className/props는 래퍼로 보낸다
-      className={`grid grid-cols-12 gap-spacing-1 overflow-clip ${ROUND_CLASS[round] ?? ROUND_CLASS['6']} border bg-job-posting-template-default-inline ${
+      className={`grid grid-cols-12 gap-spacing-1 ${ROUND_CLASS[round] ?? ROUND_CLASS['6']} border bg-job-posting-template-default-inline ${
         shadow
           ? 'border-job-posting-template-default-outline shadow-[0px_2px_5px_0px_rgba(0,0,0,0.12)]'
           : 'border-job-posting-template-default-inline'
@@ -103,19 +150,19 @@ export function FormTemplateB({
         // 폼 안 최상단 타이틀 로우 — 전체 폭(span 12), 셀과 같은 패딩(좌우 20·상하 12)에 수직 중앙
         <div
           style={{ gridColumn: 'span 12 / span 12' }}
-          className={`flex min-h-[56px] items-center bg-job-posting-template-default-bg px-spacing-8 ${padY()} text-14 font-semibold text-font-icon-5`}
+          className={`flex min-h-[56px] items-center bg-job-posting-template-default-bg px-spacing-8 ${padY()} ${cornerOf(0)} text-14 font-semibold text-font-icon-5`}
         >
           {subtitle}
         </div>
       )}
-      {cells.map((c) => {
+      {cells.map((c, i) => {
         const span = Math.min(Math.max(c.span ?? defaultSpan, 1), 12);
         return (
           // span은 12칸 기준 — Tailwind purge를 피해 인라인 grid-column으로 지정(FormTemplateA와 동일)
           <div
             key={c.key}
             style={{ gridColumn: `span ${span} / span ${span}` }}
-            className={`flex min-h-[56px] items-center gap-spacing-5 bg-job-posting-template-default-bg ${
+            className={`flex min-h-[56px] items-center gap-spacing-5 bg-job-posting-template-default-bg ${cornerOf(i + cellIndexOffset)} ${
               c.flush ? '' : `px-spacing-8 ${padY(c.paddingTop, c.paddingBottom)}` // 좌우 20 고정·상하는 공통값+셀별 오버라이드
             }`}
           >
