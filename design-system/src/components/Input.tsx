@@ -9,7 +9,7 @@
 //  - 툴팁은 인풋 박스 아래에 absolute 오버레이로 띄워, 레이아웃 흐름과
 //    형제 컴포넌트 영역에 전혀 영향을 주지 않는다(공간을 차지하지 않음).
 import { useId } from 'react';
-import type { ChangeEvent, ComponentPropsWithoutRef } from 'react';
+import type { ChangeEvent, ComponentProps, ComponentPropsWithoutRef } from 'react';
 import { REQUIRED_INPUT_MESSAGE } from '../utils/validationMessages';
 import { Tooltip } from './Tooltip';
 
@@ -36,7 +36,7 @@ interface InputProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChange'> {
   error?: boolean;
   errorMessage?: string;
   width?: number | string; // 너비: 숫자(px) 또는 CSS 길이 문자열('100%' 등). 미지정 시 200px
-  inputProps?: ComponentPropsWithoutRef<'input'>;
+  inputProps?: ComponentProps<'input'>; // ref 포함(React 19 ref-as-prop) — 커서 삽입 등 DOM 접근용
 }
 
 export function Input({
