@@ -65,11 +65,56 @@ function ErrorTipPortal({
   children: ReactNode;
   id?: string; // aria-describedby 연결용(스크린리더가 같은 문구 낭독)
 }) {
-  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  // 배치 2모드(2026-08-06) — 스크롤 지연(출렁임) 없는 추적을 위해:
+  //   container: 세로 스크롤 중인 조상이 있으면 그 '컨테이너 안'에 포털 + absolute(콘텐츠 좌표).
+  //     스크롤 시 콘텐츠와 함께 네이티브로 움직여 재계산 지연이 없고, 컨테이너 경계 클리핑도
+  //     CSS overflow가 자연 처리한다(모달 푸터 위로 쏟아지던 문제 해소).
+  //   fixed: 스크롤 조상이 없으면 body 포털 + fixed(기존) — 클립 래퍼(규칙 12) 탈출 유지,
+  //     완전히 가려진 앵커는 숨김.
+  const [tip, setTip] = useState<{
+    host: HTMLElement;
+    position: 'absolute' | 'fixed';
+    top: number;
+    left: number;
+  } | null>(null);
   useLayoutEffect(() => {
     const measure = () => {
-      const r = anchorRef.current?.getBoundingClientRect();
-      if (r) setPos({ top: r.bottom + 2, left: r.left }); // +2 = 기존 mt-spacing-2 간격
+      const el = anchorRef.current;
+      const r = el?.getBoundingClientRect();
+      if (!el || !r) return;
+      // 세로 스크롤 중인 가장 가까운 조상 탐색
+      let sc: HTMLElement | null = null;
+      for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+        const s = getComputedStyle(n);
+        if (/auto|scroll/.test(`${s.overflow}${s.overflowY}`) && n.scrollHeight > n.clientHeight + 1) {
+          sc = n;
+          break;
+        }
+      }
+      if (sc) {
+        // absolute 기준점이 컨테이너가 되도록 보정(static이면 relative 부여 — 레이아웃 영향 없음)
+        if (getComputedStyle(sc).position === 'static') sc.style.position = 'relative';
+        const c = sc.getBoundingClientRect();
+        setTip({
+          host: sc,
+          position: 'absolute',
+          top: r.bottom - c.top + sc.scrollTop + 2, // +2 = 기존 mt-spacing-2 간격
+          left: r.left - c.left + sc.scrollLeft,
+        });
+        return;
+      }
+      // fixed 모드 — 클립 조상 밖으로 완전히 밀려난 앵커면 숨김
+      for (let n = el.parentElement; n && n !== document.body; n = n.parentElement) {
+        const s = getComputedStyle(n);
+        if (/hidden|clip|auto|scroll/.test(`${s.overflow}${s.overflowX}${s.overflowY}`)) {
+          const c = n.getBoundingClientRect();
+          if (r.bottom < c.top || r.top > c.bottom || r.right < c.left || r.left > c.right) {
+            setTip(null);
+            return;
+          }
+        }
+      }
+      setTip({ host: document.body, position: 'fixed', top: r.bottom + 2, left: r.left });
     };
     measure();
     let raf = 0;
@@ -88,19 +133,19 @@ function ErrorTipPortal({
       window.removeEventListener('scroll', schedule, true);
     };
   }, [anchorRef]);
-  if (!pos) return null;
+  if (!tip) return null;
   return createPortal(
     <div
       id={id}
       role="alert" // 등장 시 스크린리더 즉시 낭독
-      style={{ position: 'fixed', top: pos.top, left: pos.left }}
+      style={{ position: tip.position, top: tip.top, left: tip.left }}
       className="z-[1000]"
     >
       <Tooltip variant="error" beak="top">
         {children}
       </Tooltip>
     </div>,
-    document.body,
+    tip.host,
   );
 }
 
