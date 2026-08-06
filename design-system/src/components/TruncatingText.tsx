@@ -22,6 +22,19 @@ export function TruncatingText({
   const tipRef = useRef<HTMLDivElement | null>(null);
   const [tipRect, setTipRect] = useState<DOMRect | null>(null);
   const [tipPos, setTipPos] = useState<{ top: number; left: number } | null>(null);
+  const [truncated, setTruncated] = useState(false);
+
+  // 실제로 잘린 상태에서만 cursor-help — "올리면 전체 텍스트가 보인다" 신호(2026-08-06).
+  // 폭은 부모 레이아웃(테이블 컬럼 등) 변화로도 바뀌므로 ResizeObserver로 추적한다.
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const check = () => setTruncated(el.scrollWidth > el.clientWidth);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [children]);
 
   const onEnter = () => {
     const el = ref.current;
@@ -53,7 +66,7 @@ export function TruncatingText({
         ref={ref}
         onMouseEnter={onEnter}
         onMouseLeave={onLeave}
-        className={`truncate ${className}`}
+        className={`truncate ${truncated ? 'cursor-help' : ''} ${className}`}
         {...props}
       >
         {children}
