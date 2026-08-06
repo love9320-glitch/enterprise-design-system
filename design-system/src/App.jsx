@@ -7,7 +7,7 @@ import {
   ComponentColorsPage,
   SearchBarPage, InputPage, TextAreaPage, SelectPage, LabelPage, FieldPage, TagPage, ChipPage, TooltipScrollbarPage, SideNavigationPage, CheckboxPage, RadioPage, SwitchPage, TabsPage, SegmentedTabsPage, OptionListPage,
   UploadMenuPage,
-  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage, RightPanelPage, PagePage, StepperPage, SendHistoryPage, MultiStepFormTemplatePage,
+  ConditionOrderSlotPage, JobPositionTemplatePage, JobPostingTemplatePage, ScreeningBuilderTemplatePage, LayoutPage, LayoutPreviewPage, AvatarPage, GnbPage, RightPanelPage, PagePage, StepperPage, SendHistoryPage, BulkSendPage, MultiStepFormTemplatePage,
   PaginationPage, TablePage, TableTemplatePage, FormTemplatePage, SideNavTemplatePage, ModalPage, DatePickerPage, LnbPage,
   RuleOverviewPage, RuleFoundationPage, RuleComponentsPage, RuleTemplatesPage, RuleUsagePage, CustomizationGuidePage, GettingStartedPage,
 } from './pages/index';
@@ -144,6 +144,7 @@ const NAV_GROUPS = [
     label: '페이지',
     items: [
       { id: 'send-history', label: '발송 이력', Page: SendHistoryPage },
+      { id: 'bulk-send', label: '대량 메일/문자 발송', Page: BulkSendPage },
     ],
   },
   {
@@ -171,7 +172,7 @@ const groupItems = (g) => g.items ?? g.subgroups.flatMap((s) => s.items);
 const ALL_ITEMS = NAV_GROUPS.flatMap(groupItems);
 
 // Page 셸 기반 페이지 — PageHeader/바디가 자체 패딩(20)을 가지므로 셸 pagePadding을 none으로(이중 패딩 방지)
-const PAGE_SHELL_IDS = new Set(['send-history']);
+const PAGE_SHELL_IDS = new Set(['send-history', 'bulk-send']);
 
 // 사이드바 — DS Lnb 컴포넌트로 조립(도그푸딩, 2026-07-29 — site title은 헤더 로고가 대신하므로 숨김).
 // NAV_GROUPS를 Lnb 데이터로 변환: items=1depth(아이콘 없음), subgroups=2depth 펼침 부모+sub 하위.
