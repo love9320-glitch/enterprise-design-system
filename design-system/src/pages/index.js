@@ -35,6 +35,7 @@ export { TableTemplatePage } from './TableTemplatePage';
 export { FormTemplatePage } from './FormTemplatePage';
 export { JobPostingTemplatePage } from './JobPostingTemplatePage';
 export { SendHistoryPage } from './SendHistoryPage';
+export { BulkSendPage } from './BulkSendPage';
 export { MultiStepFormTemplatePage } from './MultiStepFormTemplatePage';
 export { LnbPage } from './LnbPage';
 export { JobPositionTemplatePage } from './JobPositionTemplatePage';

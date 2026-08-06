@@ -47,6 +47,7 @@ const DIVIDER_USAGE = `import { Divider } from '../components/Divider';
 const DIVIDER_PROPS = [
   { name: 'direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '가로선/세로선 (세로는 부모 높이를 따름)' },
   { name: 'color', type: "'subtle' | 'default' | 'strong'", default: "'default'", desc: '선 색 (divider-* 토큰: subtle=gray.50/default=gray.100/strong=gray.150)' },
+  { name: 'marginTop / marginBottom', type: "'4'~'32'(px 키)", default: '—', desc: '위/아래 여백(spacing 토큰 경유) — 부모 gap에 더해져 구분선 단위로 시각 균형 보정(가로선용)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스 (간격 등)' },
 ];
 

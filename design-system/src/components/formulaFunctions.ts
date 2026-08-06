@@ -3,10 +3,13 @@
 // 함수 → 계열 (Figma 함수 조건 색상표 8384:114813 — 계열별 고유 텍스트 컬러는 formula-* 토큰)
 
 // ── 수식 노드 모델 타입(2026-07-18 TS 전환) — 템플릿·수식·툴바가 공유하는 트리 구조 ──
+import type { ReactNode } from 'react';
+
 export interface OptionItem {
   value: string;
   label: string;
   disabled?: boolean;
+  rightSlot?: ReactNode; // 드롭다운 행 우측 콘텐츠(태그 등) — Select 메뉴 전용, 트리거 표시는 label만(2026-08-06)
 }
 export interface ConditionTab {
   value: string;

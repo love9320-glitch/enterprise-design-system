@@ -212,7 +212,7 @@ const USAGE_B = `import { FormTemplateB } from '../components/FormTemplateB';
   control: <Button variant="ghost" area leftIcon={Plus}>채용 분야 등록</Button> }`;
 
 const USAGE_B_PROPS = [
-  { name: 'cells', type: '{ key, label?, required?, span?, control, trailing?, flush?, labelWidth?, paddingTop?, paddingBottom? }[]', default: '[]', desc: '셀 목록. label=회색 라벨(Field horizontal), trailing=셀 오른쪽 끝 부가 요소, flush=패딩 제거(Button area용), span=1~12(12칸 기준), paddingTop/paddingBottom=이 셀의 상/하 패딩(공통 cellPadding*보다 우선)' },
+  { name: 'cells', type: '{ key, label?, required?, span?, control, trailing?, flush?, labelWidth?, paddingTop?, paddingBottom?, disabled? }[]', default: '[]', desc: '셀 목록. label=회색 라벨(Field horizontal), trailing=셀 오른쪽 끝 부가 요소, flush=패딩 제거(Button area용), span=1~12(12칸 기준), paddingTop/paddingBottom=이 셀의 상/하 패딩(공통 cellPadding*보다 우선), disabled=라벨 비활성(컨트롤 disabled는 컨트롤에 직접)' },
   { name: 'columns', type: '1 | 2 | 3', default: '1', desc: '셀 기본 폭 — 12/columns칸. 혼합 배치는 셀별 span으로' },
   { name: 'labelWidth', type: 'number | string', default: '—', desc: '라벨 영역 공통 너비(셀별 labelWidth 우선) — 컨트롤 시작점 정렬용' },
   { name: 'shadow', type: 'boolean', default: 'true', desc: '박스 그림자(0 2px 5px 12%) on/off — 끄면 외곽선이 inline 색(셀 구분선과 동일)으로 낮아짐' },

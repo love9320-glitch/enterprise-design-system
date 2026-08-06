@@ -38,24 +38,24 @@ const [image, setImage] = useState(null);
 
 const FILE_PROPS = [
   { name: 'files', type: '{name,size?,id?}[]', default: '[]', desc: '업로드된 파일(컨트롤드). size 숫자=MB 표기' },
-  { name: 'guide', type: 'string', default: '—', desc: '상단 안내 문구(여러 줄 \\n)' },
+  { name: '[파일] guide', type: 'string', default: '—', desc: '상단 안내 문구(여러 줄 \\n)' },
   { name: 'maxCount', type: 'number', default: '5', desc: '최대 개수 — 도달 시 푸터 비활성+안내' },
-  { name: 'accept', type: 'string', default: '—', desc: '<input accept>' },
+  { name: '[파일] accept', type: 'string', default: '—', desc: '<input accept>' },
   { name: 'onAdd', type: '(FileList)=>void', default: '—', desc: "'파일 찾기' 선택 콜백" },
   { name: 'onDelete', type: '(file,index)=>void', default: '—', desc: '행 삭제 콜백' },
   { name: 'findText / maxText', type: 'string', default: "'파일 찾기' / 자동", desc: '버튼·최대 안내 문구' },
   { name: 'onTemplateDownload / templateDownloadText / uploadText', type: "() => void / string / string", default: "— / '양식 다운로드' / '엑셀 업로드'", desc: '양식 다운로드 타입 — onTemplateDownload를 주면 푸터가 [양식 다운로드(line·↓) | 엑셀 업로드(fill·↑)] 반반 구성으로 바뀜(양식 받아 수정 후 업로드 플로우)' },
-  { name: 'width', type: 'number|string', default: '420', desc: '팝오버 너비' },
+  { name: '[파일] width', type: 'number|string', default: '420', desc: '팝오버 너비' },
 ];
 
 const IMAGE_PROPS = [
   { name: 'image', type: 'string', default: '—', desc: '미리보기 URL(없으면 empty 상태)' },
-  { name: 'guide', type: 'string', default: '—', desc: '상단 안내 문구(여러 줄 \\n)' },
-  { name: 'accept', type: 'string', default: '—', desc: '<input accept>' },
+  { name: '[이미지] guide', type: 'string', default: '—', desc: '상단 안내 문구(여러 줄 \\n)' },
+  { name: '[이미지] accept', type: 'string', default: '—', desc: '<input accept>' },
   { name: 'onSelect', type: '(File)=>void', default: '—', desc: "'파일 찾기' 선택 콜백" },
   { name: 'onRemove', type: '()=>void', default: '—', desc: "'파일 삭제' 콜백" },
   { name: 'findText / removeText', type: 'string', default: "'파일 찾기' / '파일 삭제'", desc: '버튼 문구' },
-  { name: 'width', type: 'number|string', default: '320', desc: '팝오버 너비' },
+  { name: '[이미지] width', type: 'number|string', default: '320', desc: '팝오버 너비' },
 ];
 
 // 버튼 트리거(FileUploadButton/ImageUploadButton) 전용 props — 위 메뉴 props에 더해 사용

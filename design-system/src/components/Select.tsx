@@ -112,7 +112,7 @@ function LabelSeparatorIcon({ className = '' }: { className?: string }) {
 
 // 공통 props — ...props는 루트 컨테이너(div)로 전달된다.
 interface SelectBaseProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChange' | 'defaultValue'> {
-  options?: OptionItem[];  // [{ value, label, disabled? }] — disabled 옵션은 목록에 비활성 행으로 표시(선택 불가)
+  options?: OptionItem[];  // [{ value, label, disabled?, rightSlot? }] — disabled=비활성 행, rightSlot=행 우측 콘텐츠(승인 태그 등, 메뉴 전용)
   selectAllLabel?: ReactNode; // confirm 전용 — 푸터 전체 선택 체크박스 라벨(기본 '전체 선택')
   // confirm 전용 — 팝오버가 열릴 때 체크 초기값(미지정 시 현재 선택값). 표시값(value)과
   // 체크 상태를 분리하고 싶을 때 사용(예: B타입 마지막 칩 — 표시=자기 행 값, 체크=그룹 전체 값)
@@ -137,7 +137,7 @@ interface SelectBaseProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChang
   errorMessage?: string;
   width?: number | string; // 트리거 너비: 숫자(px) | CSS 길이 | 'hug'(콘텐츠 맞춤). 미지정 시 200px
   maxWidth?: number | string; // 트리거 최대 너비(숫자 px/CSS 길이). hug일 때 제한용 — 넘으면 말줄임
-  menuWidth?: number | string; // 드롭다운 너비: 숫자(px)/CSS 길이. 미지정 시 트리거와 동일
+  menuWidth?: number | string; // 드롭다운 너비: 숫자(px)/CSS 길이/'trigger'(트리거와 동일 강제 — text/chip 기본 120 대신). 미지정 시 트리거와 동일(text/chip은 120)
   placement?: SelectPlacement; // 'auto' | 'bottom-left' | 'bottom-right' | 'top-left' | 'top-right'
   searchable?: boolean;    // 드롭다운 상단 검색바로 옵션 필터
   searchPlaceholder?: string;
@@ -242,7 +242,9 @@ export function Select({
   const errTipId = useId();
   const showErrTip = error && !!errorMessage && !open;
   // text/chip variant는 트리거가 좁으므로(hug) 드롭다운 기본 너비를 120px로 둔다(menuWidth 미지정 시).
-  const effectiveMenuWidth = menuWidth ?? (isText || isChip ? 120 : undefined);
+  // 'trigger' = 트리거와 동일을 명시(폼 셀 fill 트리거처럼 넓은 텍스트 셀렉트용, 2026-08-06 지시)
+  const effectiveMenuWidth =
+    menuWidth === 'trigger' ? undefined : (menuWidth ?? (isText || isChip ? 120 : undefined));
   const selectedOption = multiple ? undefined : options.find((o) => o.value === current);
   // 트리거 표시 텍스트 — multiple은 선택 라벨을 ', '로 연결(옵션 순서 기준), 넘치면 TruncatingText가 말줄임
   const selectedLabels = multiple
@@ -656,6 +658,7 @@ export function Select({
                       <List
                         key={opt.value}
                         title={opt.label}
+                        rightSlot={opt.rightSlot}
                         checkbox
                         disabled={opt.disabled}
                         checked={checkedValues.includes(opt.value)}
@@ -668,6 +671,7 @@ export function Select({
                       <List
                         key={opt.value}
                         title={opt.label}
+                        rightSlot={opt.rightSlot}
                         disabled={opt.disabled}
                         selected={opt.value === current}
                         highlighted={!opt.disabled && i === highlight}
