@@ -61,7 +61,8 @@ function Thumb({ orientation, thumb, active, colors, onDown, onEnter, onLeave }:
       onMouseDown={onDown}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
-      className={`absolute cursor-pointer rounded-round-00 ${THUMB_HIT} ${placement}`}
+      // z-20: sticky 헤더(z-10, PageHeader 등)보다 위 — 네이티브 스크롤바처럼 콘텐츠 내 고정 요소에 가려지지 않는다(2026-08-07)
+      className={`absolute z-20 cursor-pointer rounded-round-00 ${THUMB_HIT} ${placement}`}
       style={{
         ...extent,
         opacity: thumb.visible ? 1 : 0,

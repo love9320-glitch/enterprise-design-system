@@ -3,6 +3,7 @@ import { Page } from '@gusun/design-system';
 import { PageHeader } from '@gusun/design-system';
 import { Button } from '@gusun/design-system';
 import { Checkbox } from '@gusun/design-system';
+import { Select } from '@gusun/design-system';
 import { ScrollArea } from '@gusun/design-system';
 import { UsageExample } from '../../components/UsageExample';
 
@@ -39,6 +40,7 @@ const USAGE_PROPS = [
   { name: 'Page · stickyHeader', type: 'boolean', default: 'false', desc: '스크롤 시 헤더 상단 고정(PageHeader sticky 전달) — 가장 가까운 스크롤 컨테이너 기준' },
   { name: 'Page · children', type: 'ReactNode', default: '—', desc: 'page body 슬롯(p 20 / gap 20) — 템플릿·콘텐츠 조립 영역' },
   { name: 'Page · loading / loadingMessage', type: 'boolean / ReactNode', default: 'false / 불러오는 중…', desc: '페이지 최초 로딩(로딩 정책) — 바디 대신 중앙 로딩(스피너+문구), 페이지의 모든 데이터 준비 후 일괄 표시. 표시 이후 재조회는 Table loading 등 부분 로딩 담당' },
+  { name: 'Page · paddingTop', type: "'none' | '16' | '24' | '32'", default: "'32'", desc: '페이지 상단 여백(헤더 위) — 간격 토큰(spacing-7/9/11) 경유, none=여백 없음' },
   { name: 'PageHeader · title', type: 'ReactNode', default: '—', desc: '페이지 타이틀(semibold 18, font-icon-5), 행 높이 32' },
   { name: 'PageHeader · description', type: 'ReactNode', default: '—', desc: '설명 행(regular 14, font-icon-3) — 없으면 행 미표시 (Figma description boolean)' },
   { name: 'PageHeader · actions / descriptionActions', type: 'ReactNode', default: '—', desc: '타이틀/설명 우측 버튼 슬롯 (Figma heading button / description button boolean)' },
@@ -55,6 +57,7 @@ export function PagePage() {
   });
   const [stickyHeader, setStickyHeader] = useState(true); // Page 조립 예시 — 스크롤 시 헤더 상단 고정 체험
   const [loading, setLoading] = useState(false); // 최초 로딩(로딩 정책) 체험
+  const [paddingTop, setPaddingTop] = useState('32'); // 페이지 상단 여백 옵션(2026-08-07)
   const toggle = (k: any) => setOpts((s) => ({ ...s, [k]: !s[k] }));
 
   const buttons = (
@@ -117,6 +120,20 @@ export function PagePage() {
           onChange={() => setLoading((v) => !v)}
           label="최초 로딩(loading) — 바디 중앙 '불러오는 중…'"
         />
+        <div className="flex items-center gap-spacing-4">
+          <p className="text-12 text-font-icon-3">상단 여백(paddingTop)</p>
+          <Select
+            width={120}
+            options={[
+              { value: 'none', label: '없음' },
+              { value: '16', label: '16px' },
+              { value: '24', label: '24px' },
+              { value: '32', label: '32px (기본)' },
+            ]}
+            value={paddingTop}
+            onChange={(e: any) => setPaddingTop(e.target.value)}
+          />
+        </div>
       </div>
       <div className="overflow-hidden rounded-round-4 border border-base-gray-100">
         <ScrollArea maxHeight={360}>
@@ -126,6 +143,7 @@ export function PagePage() {
             actions={buttons}
             stickyHeader={stickyHeader}
             loading={loading}
+            paddingTop={paddingTop as any}
           >
             {Array.from({ length: 8 }, (_, i) => (
               <div
