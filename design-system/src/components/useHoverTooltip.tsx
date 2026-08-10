@@ -8,11 +8,13 @@ import { useRef, useState, useLayoutEffect, useEffect, useCallback } from 'react
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Tooltip } from './Tooltip';
+import { usePortalContainer } from './portalContext';
 
 export function useHoverTooltip(label: ReactNode, { delay = 300 }: { delay?: number } = {}) {
   const [rect, setRect] = useState<DOMRect | null>(null);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const tipRef = useRef<HTMLDivElement | null>(null);
+  const portalContainer = usePortalContainer();
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const enabled = !!label;
 
@@ -66,7 +68,7 @@ export function useHoverTooltip(label: ReactNode, { delay = 300 }: { delay?: num
             {label}
           </Tooltip>
         </div>,
-        document.body,
+        portalContainer,
       )
     : null;
 

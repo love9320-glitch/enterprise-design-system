@@ -5,6 +5,7 @@
 // 첫 클릭 = 닫기 전용, 두 번째 클릭부터 평소처럼 동작한다. (Esc capture 처리와 동일한 우선순위 원칙)
 import { useEffect } from 'react';
 import type { RefObject } from 'react';
+import { deepActiveElement, eventTargetOf } from '../utils/shadowDom';
 
 interface UseOutsideDismissOptions {
   open: boolean;
@@ -17,7 +18,10 @@ export function useOutsideDismiss({ open, refs, onDismiss, guard }: UseOutsideDi
   useEffect(() => {
     if (!open) return;
     const onDown = (e: MouseEvent) => {
-      const inside = refs.some((r) => r.current && r.current.contains(e.target as Node));
+      // shadow-root 안 클릭은 document 리스너에서 target이 host로 리타게팅된다 —
+      // composedPath로 실제 타깃을 복원해야 '안쪽 클릭'을 바깥으로 오판하지 않는다.
+      const target = eventTargetOf(e);
+      const inside = refs.some((r) => r.current && target && r.current.contains(target));
       if (inside) return;
       if (guard && !guard(e)) return; // 예: 중첩 팝오버 — 맨 위가 아니면 닫지 않음(삼키지도 않음)
       // 바깥 클릭 — 닫기만 하고 클릭은 삼킨다.
@@ -36,7 +40,7 @@ export function useOutsideDismiss({ open, refs, onDismiss, guard }: UseOutsideDi
       // preventDefault로 포커스 이동까지 막히므로, 트리거/패널 안에 남은 포커스는 직접 blur해
       // 원래 일어났을 blur(입력 확정·focused 해제)를 복원한다 — 안 하면 인풋이 활성 상태로 남아
       // 재클릭 시 focus 이벤트가 없어 팝오버가 다시 열리지 않는다(DateField 등 onFocus 오픈형).
-      const active = document.activeElement;
+      const active = deepActiveElement();
       if (
         active instanceof HTMLElement &&
         refs.some((r) => r.current && r.current.contains(active))

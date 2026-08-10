@@ -15,7 +15,8 @@
     "build:preset": "npx esbuild tailwind.preset.js --bundle --format=esm --platform=neutral --outfile=dist-lib/tailwind-preset.mjs --log-level=error && npx esbuild tailwind.preset.js --bundle --format=cjs --platform=neutral --outfile=dist-lib/tailwind-preset.cjs --log-level=error",
     "build:package": "npm run build:lib && npm run build:css && npm run build:preset",
     "prepublishOnly": "npm run check:types && npm run build:package",
-    "check:focus": "npx esbuild scripts/focus-trap-test.mjs --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.cache/focus-trap-test.mjs --log-level=error && node node_modules/.cache/focus-trap-test.mjs"
+    "check:focus": "npx esbuild scripts/focus-trap-test.mjs --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.cache/focus-trap-test.mjs --log-level=error && node node_modules/.cache/focus-trap-test.mjs",
+    "check:shadow": "npx esbuild scripts/shadow-portal-test.mjs --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.cache/shadow-portal-test.mjs --log-level=error && node node_modules/.cache/shadow-portal-test.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.27.0"

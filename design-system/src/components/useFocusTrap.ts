@@ -6,6 +6,7 @@
 // 컨테이너 안 위젯(Select 옵션 순회·설정 패널 키보드 등)이 Tab을 이미 처리(preventDefault)하면 존중해 건너뛴다.
 import { useEffect } from 'react';
 import type { RefObject } from 'react';
+import { deepActiveElement } from '../utils/shadowDom';
 
 const FOCUSABLE = [
   'a[href]',
@@ -30,7 +31,8 @@ export function useFocusTrap(
     if (!active) return;
     const container = containerRef.current;
     if (!container) return;
-    const previouslyFocused = document.activeElement as HTMLElement | null;
+    // shadow-root 안에서는 document.activeElement가 host로 뭉개진다 — 실제 포커스 요소 추적
+    const previouslyFocused = deepActiveElement() as HTMLElement | null;
 
     const focusables = () =>
       Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
@@ -55,7 +57,7 @@ export function useFocusTrap(
       }
       const first = els[0];
       const last = els[els.length - 1];
-      const activeEl = document.activeElement;
+      const activeEl = deepActiveElement();
       if (activeEl && !container.contains(activeEl)) {
         // 어쩌다 포커스가 밖에 있으면 안으로 회수
         e.preventDefault();
@@ -74,7 +76,8 @@ export function useFocusTrap(
     return () => {
       container.removeEventListener('keydown', onKeyDown);
       // ③ 포커스 복원 — 열기 직전 요소가 아직 문서에 살아 있을 때만
-      if (previouslyFocused && document.contains(previouslyFocused)) {
+      // (isConnected: shadow-root 안 요소는 document.contains가 false라 경계 무관 판정으로)
+      if (previouslyFocused && previouslyFocused.isConnected) {
         previouslyFocused.focus();
       }
     };

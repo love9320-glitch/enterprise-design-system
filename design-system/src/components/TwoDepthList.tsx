@@ -19,6 +19,7 @@ import { INVALID_FORMAT_MESSAGE } from '../utils/validationMessages';
 import { ListGroup } from './ListGroup';
 import { List } from './List';
 import { Tooltip } from './Tooltip';
+import { usePortalContainer } from './portalContext';
 
 // 컬럼 옵션 한 개 — { value, label, disabled? }
 interface TwoDepthOption {
@@ -133,6 +134,7 @@ export function TwoDepthList({
   className = '',
   ...props
 }: TwoDepthListProps) {
+  const portalContainer = usePortalContainer();
   const widthStyle = typeof width === 'number' ? `${width}px` : width;
   const [lPlaceholder, rPlaceholder] = splitParts(inputPlaceholder, separator);
 
@@ -267,7 +269,7 @@ export function TwoDepthList({
               {error.message}
             </Tooltip>
           </div>,
-          document.body,
+          portalContainer,
         )}
     </div>
   );

@@ -85,10 +85,16 @@ export function usePopoverPosition({ open, anchorRef, menuRef, placement = 'auto
     };
     window.addEventListener('resize', schedule);
     window.addEventListener('scroll', schedule, true);
+    // scroll은 composed:false — shadow-root 안 컨테이너 스크롤은 window(capture)까지
+    // 올라오지 않는다. 앵커가 shadow-root 안이면 그 루트에도 capture 리스너를 건다.
+    const rootNode = anchorRef.current?.getRootNode();
+    const shadowRoot = rootNode instanceof ShadowRoot ? rootNode : null;
+    shadowRoot?.addEventListener('scroll', schedule, true);
     return () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener('resize', schedule);
       window.removeEventListener('scroll', schedule, true);
+      shadowRoot?.removeEventListener('scroll', schedule, true);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, placement, menuWidth, ...deps]);

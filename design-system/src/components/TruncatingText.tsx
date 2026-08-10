@@ -7,6 +7,7 @@ import { useRef, useState, useLayoutEffect } from 'react';
 import type { ComponentPropsWithoutRef, ElementType } from 'react';
 import { createPortal } from 'react-dom';
 import { Tooltip } from './Tooltip';
+import { usePortalContainer } from './portalContext';
 
 interface TruncatingTextProps extends ComponentPropsWithoutRef<'p'> {
   as?: ElementType; // 'p' | 'span' | 'div' 등
@@ -24,6 +25,7 @@ export function TruncatingText({
 }: TruncatingTextProps) {
   const ref = useRef<HTMLElement | null>(null);
   const tipRef = useRef<HTMLDivElement | null>(null);
+  const portalContainer = usePortalContainer();
   const [tipRect, setTipRect] = useState<DOMRect | null>(null);
   const [tipPos, setTipPos] = useState<{ top: number; left: number } | null>(null);
   const [truncated, setTruncated] = useState(false);
@@ -91,7 +93,7 @@ export function TruncatingText({
               {children}
             </Tooltip>
           </div>,
-          document.body,
+          portalContainer,
         )}
     </>
   );
