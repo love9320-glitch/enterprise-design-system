@@ -9,6 +9,8 @@ import { Popover } from './Popover';
 import { TwoDepthList } from './TwoDepthList';
 import { Tooltip } from './Tooltip';
 import { INVALID_FORMAT_MESSAGE, REQUIRED_SELECT_MESSAGE } from '../utils/validationMessages';
+import { usePortalContainer } from './portalContext';
+import { deepActiveElement } from '../utils/shadowDom';
 
 const RING = 'ring-inset ring-text-field-hover-line hover:ring-2 focus-within:ring-2 focus-within:ring-text-field-focused-line';
 const pad2 = (n: number) => String(n).padStart(2, '0');
@@ -58,6 +60,7 @@ export function TimeField({
   className = '',
   ...props
 }: TimeFieldProps) {
+  const portalContainer = usePortalContainer();
   const interactive = !disabled && !readOnly;
   const [open, setOpen] = useState(false);
   const [focused, setFocused] = useState(false);
@@ -227,7 +230,7 @@ export function TimeField({
               {display}
             </Tooltip>
           </div>,
-          document.body,
+          portalContainer,
         )}
     </div>
   );
@@ -238,7 +241,7 @@ export function TimeField({
       onOpenChange={(o: boolean) => {
         setOpen(o);
         // ESC 닫힘 시 입력 편집도 해제(취소+blur) — 바로 재클릭하면 focus로 즉시 재활성(DateField와 동일)
-        if (!o && inputRef.current && document.activeElement === inputRef.current) {
+        if (!o && inputRef.current && deepActiveElement() === inputRef.current) {
           setText(display);
           setParseError(false);
           skipBlurCommitRef.current = true;

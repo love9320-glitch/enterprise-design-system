@@ -21,6 +21,7 @@ import { useOutsideDismiss } from './useOutsideDismiss';
 // 패널은 각자 portal이라 DOM이 분리되므로, "나보다 나중에 열린(위) 패널 안 클릭"은 바깥으로 보지 않는다
 // (예: 조건 팝오버 안 어학/자격 Select 메뉴 클릭에 조건 팝오버가 닫히지 않게). 공용 모듈로 추출(2026-07-16).
 import { pushPopoverLayer, removePopoverLayer, isTopPopoverLayer } from './popoverLayers';
+import { usePortalContainer } from './portalContext';
 
 export interface PopoverProps extends Omit<ComponentPropsWithoutRef<'span'>, 'children'> {
   /** 트리거 ReactNode (예: <Button>) — 클릭 시 패널 토글 */
@@ -54,6 +55,7 @@ export function Popover({
 
   const anchorRef = useRef<HTMLSpanElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const portalContainer = usePortalContainer();
 
   const setOpen = useCallback(
     (v: boolean) => {
@@ -125,7 +127,7 @@ export function Popover({
           >
             {typeof children === 'function' ? children(close) : children}
           </div>,
-          document.body,
+          portalContainer,
         )}
     </>
   );

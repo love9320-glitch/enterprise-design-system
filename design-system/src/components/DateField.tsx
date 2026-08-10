@@ -14,6 +14,8 @@ import { Popover } from './Popover';
 import { DatePicker } from './DatePicker';
 import { Tooltip } from './Tooltip';
 import { formatDateTime, formatDateTimeRange } from '../utils/datetime';
+import { usePortalContainer } from './portalContext';
+import { deepActiveElement } from '../utils/shadowDom';
 import { INVALID_FORMAT_MESSAGE, REQUIRED_SELECT_MESSAGE } from '../utils/validationMessages';
 
 // 편집 가능 상태의 테두리(ring) — SearchBar/Input과 동일(hover/focus-within 2px, tf-* 토큰)
@@ -211,6 +213,7 @@ export function DateField({
   maxYear,
   ...props
 }: DateFieldProps) {
+  const portalContainer = usePortalContainer();
   const isRange = mode === 'range';
   const effPlaceholder = placeholder ?? (isRange ? '시작일과 마감일을 선택하세요' : '날짜를 선택하세요');
   const interactive = !disabled && !readOnly;
@@ -446,7 +449,7 @@ export function DateField({
               {display}
             </Tooltip>
           </div>,
-          document.body,
+          portalContainer,
         )}
     </div>
   );
@@ -490,7 +493,7 @@ export function DateField({
         // 여기서 입력 편집을 해제한다 — 초안은 버리고(취소) blur해서, 필드를 바로 다시
         // 클릭하면 focus 이벤트로 즉시 재활성된다(2026-07-07 사용자 지적).
         // 외부 클릭 닫힘은 useOutsideDismiss가 먼저 blur를 복원해(activeElement가 이미 아님) 여기 안 탄다.
-        if (!o && inputRef.current && document.activeElement === inputRef.current) {
+        if (!o && inputRef.current && deepActiveElement() === inputRef.current) {
           setText(display);
           setParseError(false);
           skipBlurCommitRef.current = true;

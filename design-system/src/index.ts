@@ -43,6 +43,7 @@ export * from './layouts/PageHeader';
 export * from './components/Pagination';
 export * from './components/Popover';
 export * from './components/PopoverMenu';
+export * from './components/PortalProvider';
 export * from './components/Radio';
 export * from './templates/ScreeningBuilderTemplate';
 export * from './templates/ScreeningConditionCard';

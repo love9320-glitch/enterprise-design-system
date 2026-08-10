@@ -34,6 +34,7 @@ import { LoadingIndicator } from './LoadingIndicator';
 import { ScrollArea } from './ScrollArea';
 import { ModalBodyMaxContext, ModalFooterStartContext } from './modalContext';
 import { Checkbox } from './Checkbox';
+import { usePortalContainer } from './portalContext';
 
 // 중첩 모달 전역 관리(2026-07-07 감사) —
 //  openModalStack: ESC는 '맨 위' 모달만 닫는다(없으면 ESC 한 번에 중첩 모달이 전부 닫혀 폼 유실).
@@ -141,6 +142,7 @@ export function Modal({
   className = '',
   ...props
 }: ModalProps) {
+  const portalContainer = usePortalContainer();
   const boxRef = useRef<HTMLDivElement | null>(null);
   const headerRef = useRef<HTMLElement | null>(null);
   const footerRef = useRef<HTMLElement | null>(null);
@@ -377,7 +379,7 @@ export function Modal({
         </Inner>
       </div>
     </div>,
-    document.body,
+    portalContainer,
   );
 }
 

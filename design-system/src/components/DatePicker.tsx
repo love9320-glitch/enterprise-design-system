@@ -25,6 +25,7 @@ import { CalendarDayButton } from './CalendarDayButton';
 import { ScrollArea } from './ScrollArea';
 import { Tooltip } from './Tooltip';
 import { INVALID_FORMAT_MESSAGE } from '../utils/validationMessages';
+import { usePortalContainer } from './portalContext';
 
 // ── 타입 ─────────────────────────────────────────────────────────────────
 // 범위 선택값 — mode='range'의 value 형태
@@ -364,6 +365,7 @@ export function DatePicker({
   className = '',
   ...props
 }: DatePickerProps) {
+  const portalContainer = usePortalContainer();
   const today = startOfDay(new Date());
 
   // ── 선택값 (controlled/uncontrolled) ─────────────────────────
@@ -664,7 +666,7 @@ export function DatePicker({
               {hover.label}
             </Tooltip>
           </div>,
-          document.body,
+          portalContainer,
         )}
     </div>
   );

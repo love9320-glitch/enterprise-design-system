@@ -32,6 +32,7 @@ import { useOutsideDismiss } from './useOutsideDismiss';
 import { pushPopoverLayer, removePopoverLayer, isTopPopoverLayer } from './popoverLayers';
 import type { OptionItem } from './formulaFunctions';
 import { REQUIRED_SELECT_MESSAGE } from '../utils/validationMessages';
+import { usePortalContainer } from './portalContext';
 
 // 편집 가능 상태의 테두리(ring) — hover/focus 모두 2px(border-2 토큰), 색은 hover-line(gray-900 알파) 공통.
 // 포커스 링은 focus-visible(키보드 포커스)에만 — 마우스 클릭/프레스 후 링이 남지 않게(2026-07-16 지시)
@@ -74,6 +75,7 @@ function ErrorTipPortal({
   //   container 모드에서 툴팁이 콘텐츠 바닥(scrollHeight)을 넘으면 필드 '위'로 반전(beak bottom) —
   //   absolute 툴팁이 스크롤 영역을 아래로 늘리는 문제 방지(2026-08-06 보고). 실측 높이가 필요해
   //   렌더 후 2차 측정(flip 판정) 전까지는 visibility hidden.
+  const portalContainer = usePortalContainer();
   const tipRef = useRef<HTMLDivElement | null>(null);
   const [tip, setTip] = useState<{
     host: HTMLElement;
@@ -137,7 +139,7 @@ function ErrorTipPortal({
         }
       }
       updateTip({
-        host: document.body,
+        host: portalContainer,
         position: 'fixed',
         belowTop: r.bottom + 2,
         aboveBase: r.top - 2,
@@ -156,17 +158,28 @@ function ErrorTipPortal({
     };
     window.addEventListener('resize', schedule);
     window.addEventListener('scroll', schedule, true);
+    // scroll은 composed:false — shadow-root 안 스크롤은 window까지 안 올라온다(루트에 별도 capture)
+    const scrollRoot = anchorRef.current?.getRootNode();
+    const shadowScrollRoot = scrollRoot instanceof ShadowRoot ? scrollRoot : null;
+    shadowScrollRoot?.addEventListener('scroll', schedule, true);
     // 행 삭제/추가/재정렬 같은 레이아웃 변화는 스크롤·리사이즈 이벤트가 없어 좌표가 낡는다(2026-08-06
     // 보고: 행 삭제 시 아래 행 툴팁 어긋남) — DOM 자식 변화를 감지해 재측정(rAF 코얼레싱 공유)
     const mo = new MutationObserver(schedule);
-    mo.observe(document.body, { childList: true, subtree: true });
+    // shadow-root 안에서는 document.body 관찰이 shadow 경계를 넘지 못한다 — 앵커가 속한
+    // 루트(ShadowRoot면 그 루트, 일반 문서면 body)를 관찰해야 내부 DOM 변화가 잡힌다.
+    const rootNode = anchorRef.current?.getRootNode();
+    mo.observe(rootNode instanceof ShadowRoot ? rootNode : document.body, {
+      childList: true,
+      subtree: true,
+    });
     return () => {
       if (raf) cancelAnimationFrame(raf);
       window.removeEventListener('resize', schedule);
       window.removeEventListener('scroll', schedule, true);
+      shadowScrollRoot?.removeEventListener('scroll', schedule, true);
       mo.disconnect();
     };
-  }, [anchorRef]);
+  }, [anchorRef, portalContainer]);
 
   // 2차 측정 — 렌더된 툴팁의 실측 높이로 반전 여부 판정. 콘텐츠 바닥을 넘을 때만 필드 위(beak bottom)
   useLayoutEffect(() => {
@@ -304,6 +317,7 @@ export function Select({
   className = '',
   ...props
 }: SelectProps) {
+  const portalContainer = usePortalContainer();
   // 단일/다중 onChange 유니언을 구현부 공용 시그니처로 좁힌다(외부 계약은 SelectProps가 보장 — 런타임 동일 참조)
   const onChange = onChangeProp as ((e: { target: { value: string | string[] } }) => void) | undefined;
   const isControlled = value !== undefined;
@@ -800,7 +814,7 @@ export function Select({
               )}
             </PopoverMenu>
           </div>,
-          document.body,
+          portalContainer,
         )}
 
       {/* 에러 툴팁 — 닫혔을 때 필드 아래. 클립/스크롤 컨테이너 안에서만 포털(fixed)로 탈출하고,
