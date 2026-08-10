@@ -40,6 +40,20 @@ import { Button, Input, Select, Tag } from '@gusun/design-system';
 <Button asChild variant="line"><a href="/docs">링크를 버튼처럼</a></Button>
 ```
 
+**③ (선택) shadow-root 스타일 격리 임베드** — 앱을 shadow-root 안에 넣어 스타일을 격리하는 경우, 모달·팝오버·드롭다운·툴팁 같은 포탈 요소가 기본값(`document.body`)으로 렌더되면 격리 스타일을 받지 못합니다. shadow-root 안에 포탈용 요소를 만들고 `PortalProvider`로 앱을 감싸세요(미사용 시 기존과 동일하게 body 포탈):
+
+```jsx
+import { PortalProvider } from '@gusun/design-system';
+
+const shadow = host.attachShadow({ mode: 'open' });
+// shadow 안에 styles.css 주입 + appRoot/portalRoot div 생성
+createRoot(appRoot).render(
+  <PortalProvider container={portalRoot}>
+    <App />
+  </PortalProvider>
+);
+```
+
 **Tailwind 프로젝트라면** CSS 대신 preset으로 토큰을 통합할 수 있습니다:
 
 ```js
@@ -138,6 +152,7 @@ export default {
 | [Modal 계열](https://love9320-glitch.github.io/enterprise-design-system/#modal) | `Modal`(범용)·`FormModal`(취소/저장+form)·`AlertModal`·`ConfirmModal`(재확인 체크) — 공통: `open/onClose` · `title` · `size`(sm~4xl·fill) · `confirmText/onConfirm` · `footerStart`. 포커스 트랩·복원 내장 |
 | [Popover / PopoverMenu / List](https://love9320-glitch.github.io/enterprise-design-system/#option-list) | Popover: `trigger` + children(close 렌더 함수) · PopoverMenu: `footer`(확인/취소·전체선택) `topArea`(검색) · List: `radio/checkbox` `selected` `rightButton` |
 | [FileUpload· / ImageUpload·](https://love9320-glitch.github.io/enterprise-design-system/#upload-menu) | 버튼+메뉴 세트 — `files/onAdd/onDelete` · `maxCount` `accept` |
+| PortalProvider | `container`(포탈 렌더 컨테이너 — 미지정 시 `document.body`) — 모달·팝오버·드롭다운·툴팁의 포탈 위치를 일괄 지정. shadow-root 스타일 격리 임베드용(빠른 시작 ③) |
 
 ### 템플릿
 
@@ -162,6 +177,24 @@ export default {
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
 ## 변경 내역
+
+### v1.5.0 (2026-08-10)
+
+**PortalProvider — shadow-root 스타일 격리 대응**
+- `PortalProvider`/`usePortalContainer` 신설 — 포탈(모달·팝오버·드롭다운·툴팁) 렌더 컨테이너를 지정(미지정 시 `document.body` — 기존 동작 무변경). shadow-root 임베드 시 앱을 감싸면 포탈이 shadow 안에 렌더돼 격리 스타일을 그대로 받습니다(빠른 시작 ③)
+- 포탈 9곳 적용: Modal · Popover · Select(드롭다운+에러 툴팁) · DatePicker · DateField · TimeField · TwoDepthList · TruncatingText · useHoverTooltip
+- shadow DOM 동반 보정: 외부클릭 판정 `composedPath()` 복원(내부 클릭 오닫힘 방지) · 포커스 트랩/blur 판정 `deepActiveElement` · shadow 안 컨테이너 스크롤 시 드롭다운 위치 추적(ShadowRoot capture 리스너) · Select 에러 툴팁 재측정 옵저버 루트 관찰
+
+**기타**
+- Page `paddingTop`('none'/'16'/'24'/'32' 기본) — 페이지 상단 여백 옵션화
+- ScrollArea 오버레이 thumb z-20 — sticky 헤더(PageHeader 등)에 스크롤바가 가려지던 문제 해소
+- TableTemplate 상단 영역·테이블·페이지네이션 세로 갭 8→12(spacing-6)
+
+### v1.4.0 (2026-08-06)
+
+**로딩 정책 일원화**
+- `LoadingIndicator` 신설(스피너+"불러오는 중…") + 컨테이너 최초 로딩 옵션 4종: Page `loading` · Modal `bodyLoading` · RightPanel `loading` · PopoverMenu `loading` — 최초 로딩은 바디 중앙 표시, 데이터 전체 준비 후 일괄 렌더(재조회는 Table `loading` 등 부분 로딩)
+- FormTemplateB `subtitleTrailing` 슬롯(subtitle 로우 우측 버튼 등) + subtitle 우측 패딩 12
 
 ### v1.3.0 (2026-08-06)
 
