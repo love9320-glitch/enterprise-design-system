@@ -44,6 +44,36 @@ const MODAL_PROPS = [
   { name: 'bodyLoading / bodyLoadingMessage', type: 'boolean / ReactNode', default: 'false / 불러오는 중…', desc: '모달 최초 로딩(로딩 정책) — 바디 대신 중앙 로딩(스피너+문구), 모달의 모든 데이터 준비 후 일괄 표시. loading(FormModal)·confirmLoading은 푸터 확인 버튼용이라 이름 구분' },
 ];
 
+// ───────────── 조립형 (Composition API) ─────────────
+const COMPOSITION_NOTE =
+  '고급 API — props에 없는 배치(헤더 뱃지, 푸터 자유 구성 등)가 필요할 때. Header/Body/Footer는 스킨(패딩·배경·타이포)이 구워진 슬롯이라 무엇을 배치해도 디자인 일관성이 유지됩니다. 기본 Modal이 이 조립형 위에서 구현되므로 두 API의 비주얼·동작(딤·ESC·포커스 트랩·푸터 안 가림)은 항상 동일합니다.';
+const COMPOSITION_USAGE = `import { Modal, Tag, ButtonGroup, Button } from '@gusun/design-system';
+
+<Modal.Root open={open} onClose={close} size="md">
+  <Modal.Header title="지원자 상세">
+    <Tag color="blue">심사중</Tag>          {/* props로는 못 넣는 헤더 뱃지 */}
+  </Modal.Header>
+
+  <Modal.Body>
+    본문 자유 구성 — 내부 스크롤·가용 높이·로딩 정책은 Body가 알아서 처리합니다.
+  </Modal.Body>
+
+  <Modal.Footer className="justify-between">
+    <span className="text-13 text-font-icon-3">마지막 수정 2026.08.11</span>
+    <ButtonGroup>
+      <Button variant="line" onClick={close}>취소</Button>
+      <Button variant="fill" onClick={save}>저장</Button>
+    </ButtonGroup>
+  </Modal.Footer>
+</Modal.Root>`;
+const COMPOSITION_PROPS = [
+  { name: 'Modal.Root', type: 'open · onClose · size · placement · closeOnOverlayClick · closeOnEsc · bodyMaxHeight · onSubmit', default: '—', desc: '뼈대 — 딤·패널 셸·portal·ESC 스택·스크롤 잠금·포커스 트랩·레이아웃 측정(푸터 안 가림)을 소유. onSubmit을 주면 내부가 <form>으로 래핑' },
+  { name: 'Modal.Header', type: 'title · showClose · children', default: 'showClose=true', desc: '헤더 슬롯 — title은 표준 타이포(h2), children은 그 옆에 배치(뱃지 등). 닫기(X)는 Root의 onClose와 자동 연결' },
+  { name: 'Modal.Body', type: 'padding · loading · loadingMessage · children', default: "padding='p-spacing-7'", desc: '본문 슬롯 — 내부 스크롤(측정된 maxHeight)·height=fill 자식 가용 높이·최초 로딩(로딩 정책)을 내장' },
+  { name: 'Modal.Footer', type: 'padding · children', default: '좌16·우12·상하12', desc: '푸터 슬롯 — children 자유 배치(좌측 텍스트 + ButtonGroup 등). 스킨은 고정' },
+  { name: '(사용 기준)', type: '—', default: '—', desc: '90%는 기본 Modal(props)로 충분 — 조립형은 props에 없는 배치가 필요할 때만. 새 요구가 반복되면 옵션 승격을 요청하세요' },
+];
+
 // ───────────── FormModal ─────────────
 const FORM_NOTE = '요소 구성 — 기본 Modal과 동일(Header + Body + Footer) + 본문 <form> 래핑 · Footer[취소 · 저장(submit)]';
 const FORM_USAGE = `import { FormModal } from '@gusun/design-system';
@@ -199,6 +229,34 @@ function TableInModalDemo({ open, onClose }: { open: boolean; onClose: () => voi
   );
 }
 
+// 조립형(Composition API) 데모 — 헤더 뱃지 + 푸터 자유 구성(좌 안내 텍스트 + 우 버튼).
+// props에 없는 배치를 슬롯 조립으로 해결하는 예. 스킨은 슬롯이 소유해 일관성 유지.
+function CompositionModalDemo({ open, onClose }: { open: boolean; onClose: () => void }) {
+  return (
+    <Modal.Root open={open} onClose={onClose} size="md">
+      <Modal.Header title="지원자 상세">
+        <Tag color="blue">심사중</Tag>
+      </Modal.Header>
+      <Modal.Body>
+        <div className="flex flex-col gap-spacing-5">
+          <p>헤더의 뱃지, 아래 푸터의 좌측 안내 텍스트는 기본 Modal props에 없는 배치입니다.</p>
+          <p>
+            조립형에서도 내부 스크롤·가용 높이·ESC/딤 닫기·포커스 트랩은 Root와 Body가 그대로
+            처리합니다 — 기본 Modal이 이 조립형 위에서 구현되기 때문입니다.
+          </p>
+        </div>
+      </Modal.Body>
+      <Modal.Footer className="justify-between">
+        <span className="text-13 text-font-icon-3">마지막 수정 2026.08.11</span>
+        <ButtonGroup>
+          <Button variant="line" onClick={onClose}>취소</Button>
+          <Button variant="fill" onClick={onClose}>저장</Button>
+        </ButtonGroup>
+      </Modal.Footer>
+    </Modal.Root>
+  );
+}
+
 // 섹션 헤더 — 변형별 제목 + 설명
 function SectionHeader({ title, children, first = false }: any) {
   return (
@@ -219,6 +277,7 @@ export function ModalPage() {
   const [footerStartOpen, setFooterStartOpen] = useState(false);
   const [tableOpen, setTableOpen] = useState(false);
   const [bodyLoadingOpen, setBodyLoadingOpen] = useState(false); // 최초 로딩(로딩 정책) 체험
+  const [compositionOpen, setCompositionOpen] = useState(false); // 조립형(Composition API)
   const [placeOpen, setPlaceOpen] = useState<any>(null); // 'center' | 'top'
   const [sizeOpen, setSizeOpen] = useState<any>(null); // 현재 열린 사이즈 키
   // FormModal
@@ -268,6 +327,17 @@ export function ModalPage() {
             {s} · {(SIZE_LABEL as any)[s]}
           </Button>
         ))}
+      </div>
+
+      {/* ───────────── 조립형 (Composition API) ───────────── */}
+      <SectionHeader title="조립형 — Modal.Root / Header / Body / Footer">
+        props에 없는 배치(헤더 뱃지·푸터 자유 구성 등)가 필요할 때 쓰는 고급 API.
+        Header/Body/Footer는 스킨이 구워진 슬롯이라 자유 배치에도 디자인 일관성이 유지되고,
+        기본 Modal이 이 조립형 위에서 구현되므로 동작·비주얼은 항상 동일합니다.
+      </SectionHeader>
+      <UsageExample title="조립형 사용 예시" note={COMPOSITION_NOTE} code={COMPOSITION_USAGE} props={COMPOSITION_PROPS} />
+      <div className="mb-spacing-9 flex flex-wrap gap-spacing-5">
+        <Button variant="line" onClick={() => setCompositionOpen(true)}>조립형 (헤더 뱃지 + 커스텀 푸터)</Button>
       </div>
 
       {/* ───────────── FormModal ───────────── */}
@@ -369,6 +439,7 @@ export function ModalPage() {
       </Modal>
 
       <TableInModalDemo open={tableOpen} onClose={() => setTableOpen(false)} />
+      <CompositionModalDemo open={compositionOpen} onClose={() => setCompositionOpen(false)} />
 
       <Modal
         open={placeOpen != null}
