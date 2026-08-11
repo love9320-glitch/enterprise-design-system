@@ -149,7 +149,7 @@ export default {
 
 | 컴포넌트 | 핵심 props |
 |---|---|
-| [Modal 계열](https://love9320-glitch.github.io/enterprise-design-system/#modal) | `Modal`(범용)·`FormModal`(취소/저장+form)·`AlertModal`·`ConfirmModal`(재확인 체크) — 공통: `open/onClose` · `title` · `size`(sm~4xl·fill) · `confirmText/onConfirm` · `footerStart`. 포커스 트랩·복원 내장 |
+| [Modal 계열](https://love9320-glitch.github.io/enterprise-design-system/#modal) | `Modal`(범용)·`FormModal`(취소/저장+form)·`AlertModal`·`ConfirmModal`(재확인 체크) — 공통: `open/onClose` · `title` · `size`(sm~4xl·fill) · `confirmText/onConfirm` · `footerStart`. 포커스 트랩·복원 내장. **고급: `Modal.Root/Header/Body/Footer` 조립형 병행(v1.6.0)** — props에 없는 배치(헤더 뱃지·푸터 자유 구성)가 필요할 때, 슬롯 스킨은 고정이라 일관성 유지 |
 | [Popover / PopoverMenu / List](https://love9320-glitch.github.io/enterprise-design-system/#option-list) | Popover: `trigger` + children(close 렌더 함수) · PopoverMenu: `footer`(확인/취소·전체선택) `topArea`(검색) · List: `radio/checkbox` `selected` `rightButton` |
 | [FileUpload· / ImageUpload·](https://love9320-glitch.github.io/enterprise-design-system/#upload-menu) | 버튼+메뉴 세트 — `files/onAdd/onDelete` · `maxCount` `accept` |
 | PortalProvider | `container`(포탈 렌더 컨테이너 — 미지정 시 `document.body`) — 모달·팝오버·드롭다운·툴팁의 포탈 위치를 일괄 지정. shadow-root 스타일 격리 임베드용(빠른 시작 ③) |
@@ -177,6 +177,23 @@ export default {
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
 ## 변경 내역
+
+### v1.6.0 (2026-08-11)
+
+**Modal 조립형 API — 두 API 병행 제공**
+- 기존 props 방식은 그대로(90% 케이스), props에 없는 배치가 필요할 때 쓰는 고급 API 추가:
+  ```jsx
+  <Modal.Root open={open} onClose={close}>
+    <Modal.Header title="지원자 상세"><Tag color="blue">심사중</Tag></Modal.Header>
+    <Modal.Body>본문 자유 구성</Modal.Body>
+    <Modal.Footer className="justify-between">…</Modal.Footer>
+  </Modal.Root>
+  ```
+- 기존 Modal이 이 조립형 위에서 구현되어 두 API의 비주얼·동작(딤·ESC·포커스 트랩·푸터 안 가림)이 항상 동일합니다. 슬롯은 패딩·배경·타이포가 고정된 "스타일 슬롯"이라 자유 배치에도 디자인 일관성이 유지됩니다. (named export `ModalRoot/ModalHeader/ModalBody/ModalFooter`도 제공)
+
+**DOM 상태 꼬리표(data-state) — 24개 컴포넌트**
+- 컴포넌트가 자기 상태를 DOM에 표기합니다(자동 부착, 시각 변화 없음): `data-state="error|disabled|readonly|…"`(배타 상태 하나·우선순위 보장) + 독립 축 `data-variant/size/open/loading/disabled`, 체크류는 `checked/unchecked`, Tag·Chip은 `data-color`
+- DevTools에서 상태를 바로 읽고, 테스트 셀렉터(`[data-state="selected"]`)로 활용하세요. 적용: 입력 계열 전체·Table 행·체크류·탭류·내비류·Accordion 등 (각 데모 페이지 옵션표의 "(DOM 상태 꼬리표)" 행 참고)
 
 ### v1.5.0 (2026-08-10)
 
