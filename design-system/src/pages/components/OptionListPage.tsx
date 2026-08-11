@@ -121,6 +121,7 @@ const USAGE_PROPS = [
   { name: 'PopoverMenu · width', type: 'number | string', default: '304', desc: '팝오버 너비' },
   { name: 'PopoverMenu · loading / loadingMessage', type: 'boolean / ReactNode', default: 'false / 불러오는 중…', desc: '메뉴 최초 로딩(로딩 정책) — 목록(children) 대신 중앙 로딩(스피너+문구), 모든 데이터 준비 후 일괄 표시' },
   { name: 'PopoverMenu · className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state', default: '자동', desc: 'List 행에 자동 부착(규칙 23) — disabled > selected > highlighted > default 우선순위' },
 ];
 
 const SAMPLE = Array.from({ length: 12 }, (_, i) => `옵션 ${i + 1}`);

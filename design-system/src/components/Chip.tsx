@@ -33,6 +33,7 @@ export function Chip({
 
   return (
     <span
+      data-color={color}
       onClick={clickable ? onClick : undefined}
       className={`${base} ${CHIP_COLOR_CLASS[color] ?? CHIP_COLOR_CLASS.gray} ${clickable ? 'cursor-pointer' : ''} ${className}`}
       {...props}

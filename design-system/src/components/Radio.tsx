@@ -61,6 +61,8 @@ export function Radio({
 
   return (
     <label
+      data-state={isChecked ? 'checked' : 'unchecked'}
+      data-disabled={disabled || undefined}
       className={`group relative inline-flex items-center gap-spacing-4 ${
         disabled ? 'cursor-not-allowed' : 'cursor-pointer'
       } ${className}`}

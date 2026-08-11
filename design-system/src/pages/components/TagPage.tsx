@@ -17,6 +17,7 @@ const TAG_PROPS = [
   { name: 'color', type: "'blue' | 'red' | 'gray' | 'black' | 'green' | 'violet' | 'pink' | 'orange'", default: "'blue'", desc: '색상 종류 8색 (black=gray500 솔리드+흰 텍스트, 나머지는 400 알파 bg+400 텍스트)' },
   { name: 'width', type: "'hug' | 'fill'", default: "'hug'", desc: 'hug=콘텐츠 맞춤, fill=부모 폭 채움' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-color', default: '자동', desc: '루트에 자동 부착(규칙 23) — 분류색 축(blue/red/gray/black 등) DOM 표기' },
 ];
 
 const NEW_TAG_USAGE = `import { NewTag } from '@gusun/design-system';

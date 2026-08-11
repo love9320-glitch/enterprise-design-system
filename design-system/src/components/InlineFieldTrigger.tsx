@@ -69,6 +69,8 @@ export const InlineFieldTrigger = forwardRef<HTMLSpanElement, InlineFieldTrigger
   return (
     <span
       ref={ref}
+      data-state={error ? 'error' : disabled ? 'disabled' : readOnly ? 'readonly' : 'default'}
+      data-open={open || undefined}
       className={`group min-w-0 select-none items-center gap-spacing-3 focus:outline-none ${
         fill ? 'flex w-full justify-between' : 'inline-flex'
       } ${canInteract ? 'cursor-pointer' : disabled ? 'cursor-not-allowed' : 'cursor-default'} ${className}`}

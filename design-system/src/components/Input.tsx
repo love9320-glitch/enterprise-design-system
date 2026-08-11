@@ -84,6 +84,9 @@ export function Input({
   return (
     <div
       style={{ width: widthStyle }}
+      data-variant={variant}
+      data-size={size}
+      data-state={error ? 'error' : disabled ? 'disabled' : readOnly ? 'readonly' : 'default'}
       className={
         isTransparent
           ? // transparent: 배경·링 없음(포커스에도), 가로 패딩 0 — hover 텍스트 회색은 group으로 전달

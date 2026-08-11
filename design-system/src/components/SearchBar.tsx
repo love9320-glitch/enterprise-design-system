@@ -36,6 +36,7 @@ export function SearchBar({
   return (
     <div
       style={{ width: widthStyle }}
+      data-state={disabled ? 'disabled' : 'default'}
       className={`group relative flex min-h-[32px] items-center gap-spacing-3 rounded-round-4 bg-text-field-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
         disabled ? 'cursor-not-allowed' : RING
       } ${className}`}

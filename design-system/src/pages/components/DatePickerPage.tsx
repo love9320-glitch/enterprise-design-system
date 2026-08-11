@@ -128,6 +128,7 @@ const USAGE_PROPS = [
   { name: 'TwoDepthList · onLeftChange / onRightChange', type: '(value) => void', default: '—', desc: '좌/우 선택 변경' },
   { name: 'TwoDepthList · maxVisible', type: 'number', default: '5', desc: '각 컬럼 표시 행 수(초과 시 내부 스크롤)' },
   { name: 'TwoDepthList · width', type: 'number | string', default: '201', desc: '팝오버 너비' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state · data-open', default: '자동', desc: 'DateField·TimeField 필드 박스에 자동 부착(규칙 23) — data-state는 error(형식 오류 포함) > disabled > readonly > default, data-open은 캘린더/시간 팝오버 열림' },
 ];
 
 const DAY_STATES = [

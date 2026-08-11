@@ -139,6 +139,7 @@ const USAGE_PROPS = [
   { name: 'area', type: 'boolean', default: 'false', desc: '영역 채움형 — 부모 영역 전체(가로·세로)를 채우고 라운드 제거, hover 배경이 영역에 꽉 참(셀/구획 안 ghost 버튼용). underline 미적용' },
   { name: 'onClick', type: '(e) => void', default: '—', desc: '클릭 핸들러 (비활성/로딩 시 차단)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스 (나머지 속성은 ...props로 전달)' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-variant · data-size · data-loading', default: '자동', desc: '루트 버튼에 자동 부착(규칙 23) — variant/size/loading 상태를 DOM에서 확인·테스트 셀렉터로 사용. 비활성은 표준 disabled 속성 그대로' },
 ];
 
 const BUTTON_ROWS = [

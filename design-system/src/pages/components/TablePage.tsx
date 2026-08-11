@@ -89,6 +89,7 @@ const USAGE_PROPS = [
   { name: 'dragHandleColKey', type: 'string', default: '—', desc: 'grip을 별도 컬럼 대신 이 key 컬럼의 셀 안(내용 앞)에 렌더 — 예: 순서 셀' },
   { name: 'rowDragLabel', type: '(row) => ReactNode', default: '첫 컬럼 값', desc: '드래그 고스트(조건 카드식 축약형 필)의 라벨' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: '행 data-state', default: '자동', desc: '각 행 <tr>에 자동 부착(규칙 23) — 체크 선택된 행 selected / 그 외 default' },
 ];
 
 // 헤더 필터 — '구분' 컬럼 헤더에 인라인 텍스트형 Select(size 20). 선택값(row.type)으로 행을 거른다.

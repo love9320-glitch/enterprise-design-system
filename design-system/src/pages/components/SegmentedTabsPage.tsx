@@ -22,6 +22,7 @@ const USAGE_PROPS = [
   { name: 'onChange', type: '(value) => void', default: '—', desc: '선택 변경 콜백' },
   { name: 'width', type: 'number | string', default: '—', desc: '컨테이너 너비(px/CSS) — 미지정 시 부모 전체 폭' },
   { name: 'className', type: 'string', default: "''", desc: '컨테이너 추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: '탭별 data-state', default: '자동', desc: '각 탭 버튼에 자동 부착(규칙 23) — disabled > selected > default' },
 ];
 
 function Demo({ items, ...rest }: any) {

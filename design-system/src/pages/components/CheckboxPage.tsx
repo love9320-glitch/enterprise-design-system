@@ -21,6 +21,7 @@ const USAGE_PROPS = [
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 클릭 차단(회색)' },
   { name: 'label', type: 'string', default: '—', desc: '오른쪽 라벨 텍스트 (생략 시 박스만)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state · data-disabled', default: '자동', desc: '라벨 루트에 자동 부착(규칙 23) — checked/unchecked + 비활성 시에만 data-disabled(독립 축, Radix 관례)' },
 ];
 
 const GROUP_PROPS = [

@@ -60,6 +60,7 @@ const USAGE_PROPS = [
   { name: 'TabMenu · selected', type: 'boolean', default: 'false', desc: '선택 상태(하단 2px underline)' },
   { name: 'TabMenu · disabled', type: 'boolean', default: 'false', desc: '비활성' },
   { name: 'TabMenu · onClick', type: '() => void', default: '—', desc: '클릭 핸들러' },
+  { name: '(DOM 상태 꼬리표)', type: '탭별 data-state', default: '자동', desc: '각 탭 버튼에 자동 부착(규칙 23) — disabled > selected > default' },
 ];
 
 const ITEMS = [

@@ -626,6 +626,10 @@ export function Select({
         isTextFill ? 'flex w-full' : isText || isChip ? 'inline-flex max-w-full align-middle' : ''
       } ${className}`}
       style={isText || isChip ? undefined : { width: widthStyle, maxWidth: maxWidthStyle }}
+      data-variant={variant}
+      data-size={size}
+      data-open={open || undefined}
+      data-state={error ? 'error' : disabled ? 'disabled' : readOnly ? 'readonly' : 'default'}
       {...props}
     >
       {/* 트리거 — 상호작용(클릭·키보드·포커스·위치 anchor)은 box·text·chip 공통, 비주얼은 분기 */}

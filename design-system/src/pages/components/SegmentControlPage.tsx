@@ -58,6 +58,7 @@ const BUTTON_PROPS = [
   { name: 'icon', type: 'lucide 컴포넌트', default: 'null', desc: '아이콘 전용 버튼(텍스트 없음)' },
   { name: 'onClick', type: '(e) => void', default: '—', desc: '클릭 핸들러(비활성 시 차단)' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state', default: '자동', desc: '버튼에 자동 부착(규칙 23) — disabled > selected > default' },
 ];
 
 // 버튼 종류 × 상태 매트릭스

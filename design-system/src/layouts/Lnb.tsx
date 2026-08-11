@@ -59,6 +59,8 @@ export function LnbMenu({
   return (
     <button
       type="button"
+      data-state={disabled ? 'disabled' : selected ? 'selected' : 'default'}
+      data-open={(depth === '2' && open) || undefined}
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       aria-expanded={depth === '2' ? open : undefined}

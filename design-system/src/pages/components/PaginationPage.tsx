@@ -36,6 +36,7 @@ const USAGE_PROPS = [
   { name: 'showTotal', type: 'boolean', default: 'true', desc: "좌측 '총 N개' 표시" },
   { name: 'showPageSize', type: 'boolean', default: 'true', desc: "우측 '페이지 행' Select 표시" },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: '버튼 data-state', default: '자동', desc: '페이지/화살표 버튼에 자동 부착(규칙 23) — default / selected(현재 페이지) / disabled' },
 ];
 
 export function PaginationPage() {

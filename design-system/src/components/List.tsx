@@ -112,6 +112,7 @@ export function List({
       role="option"
       aria-selected={selected || undefined}
       aria-disabled={disabled || undefined}
+      data-state={disabled ? 'disabled' : selected ? 'selected' : highlighted ? 'highlighted' : 'default'}
       onClick={interactive ? handleRowClick : undefined}
       className={`flex min-h-[32px] w-full items-center justify-between px-spacing-6 ${
         noHover ? '' : 'py-spacing-3'

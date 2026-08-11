@@ -117,6 +117,7 @@ export function Stepper({ items, value, onStepClick, className = '', ...props }:
           <button
             key={keyOf(item, i)}
             type="button"
+            data-state={state}
             disabled={item.disabled}
             aria-current={i === currentIndex ? 'step' : undefined}
             onClick={() => onStepClick?.(keyOf(item, i), i)}
@@ -125,7 +126,7 @@ export function Stepper({ items, value, onStepClick, className = '', ...props }:
             {content}
           </button>
         ) : (
-          <div key={keyOf(item, i)} className={stepClass}>
+          <div key={keyOf(item, i)} data-state={state} className={stepClass}>
             {content}
           </div>
         );

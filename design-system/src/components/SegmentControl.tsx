@@ -82,6 +82,7 @@ export function SegmentControlButton({
       type="button"
       role="tab"
       aria-selected={selected}
+      data-state={disabled ? 'disabled' : selected ? 'selected' : 'default'}
       className={`${base} ${sizeStyle} ${colorStyle} ${className}`}
       disabled={disabled}
       onClick={!disabled ? onClick : undefined}
