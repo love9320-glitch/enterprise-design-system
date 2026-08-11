@@ -28,6 +28,7 @@ const USAGE_PROPS = [
   { name: 'deletable / onDelete', type: 'boolean / ()=>void', default: 'false / —', desc: '내부 삭제 버튼 옵션' },
   { name: 'keepMounted', type: 'boolean', default: 'false', desc: '접힘 상태에서도 본문 마운트 — 기본은 첫 펼침 때 마운트 후 유지(lazy)' },
   { name: 'maxHeight', type: 'number', default: '—', desc: '본문 내부 스크롤 상한(px, ScrollArea) — 미지정 시 자연 확장' },
+  { name: '(DOM 상태 꼬리표)', type: '항목 data-state', default: '자동', desc: 'AccordionItem 루트에 자동 부착(규칙 23) — open / closed' },
 ];
 
 const LONG = '내용이 들어갑니다.'.repeat(40);

@@ -86,6 +86,7 @@ export function SegmentedTabs<V extends string | number>({
               type="button"
               role="tab"
               aria-selected={isSel}
+              data-state={it.disabled ? 'disabled' : isSel ? 'selected' : 'default'}
               disabled={it.disabled}
               tabIndex={it.disabled ? -1 : 0}
               onClick={() => !it.disabled && select(it.value)}

@@ -49,6 +49,7 @@ const USAGE_PROPS = [
   { name: 'LnbMenu · selected / disabled', type: 'boolean', default: 'false', desc: '선택(1·sub=파란 배경+텍스트, 2=펼침 표현) / 비활성' },
   { name: 'LnbMenu · wrap / Lnb · menuWrap', type: 'boolean', default: 'false', desc: '긴 메뉴명 — false=말줄임+hover 툴팁 / true=줄바꿈으로 전체 표시(Table wrap과 동일 규약)' },
   { name: 'LnbMenuGroup · title', type: 'ReactNode', default: 'null', desc: '카테고리 텍스트(12px 회색) — null이면 숨김' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state · data-open', default: '자동', desc: '메뉴 버튼에 자동 부착(규칙 23) — disabled > selected > default, 2depth 펼침은 data-open' },
 ];
 
 // 전체 LNB 데모 — 선택·펼침이 실제로 동작

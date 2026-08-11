@@ -36,6 +36,7 @@ const USAGE_PROPS = [
   { name: 'error / errorMessage', type: 'boolean / string', default: "false / '필수 입력사항입니다.'", desc: '에러 상태 + 하단 툴팁 (텍스트 red 400)' },
   { name: 'width', type: 'number | string', default: '320', desc: '너비 — 숫자=px, 문자열=CSS' },
   { name: 'textareaProps', type: 'object', default: '{}', desc: '내부 <textarea>에 전달할 속성' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state', default: '자동', desc: '루트에 자동 부착(규칙 23) — error > disabled > readonly > default 우선순위 배타 상태 하나' },
 ];
 
 const ROWS = [

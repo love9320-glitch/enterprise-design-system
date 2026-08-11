@@ -351,6 +351,8 @@ export function DateField({
       style={fixedWidth ? { width: fixedWidth } : undefined}
     >
       <div
+        data-state={showErr ? 'error' : disabled ? 'disabled' : readOnly ? 'readonly' : 'default'}
+        data-open={open || undefined}
         className={`group flex min-h-[32px] ${isHug ? 'w-fit' : 'w-full'} items-center gap-spacing-3 rounded-round-4 bg-text-field-default-bg px-spacing-6 py-spacing-3 transition-shadow ${
           interactive ? `cursor-text ${RING}` : disabled ? 'cursor-not-allowed' : 'cursor-default'
         }`}

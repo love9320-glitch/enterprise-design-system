@@ -25,6 +25,7 @@ const USAGE_PROPS = [
   { name: 'width', type: 'number | string', default: '200', desc: '너비 — 숫자=px, 문자열=CSS 길이(예: "100%")' },
   { name: 'inputProps', type: 'object', default: '{}', desc: '내부 <input>에 전달할 속성(autoFocus 등)' },
   { name: 'className', type: 'string', default: "''", desc: '컨테이너 추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state', default: '자동', desc: '루트에 자동 부착(규칙 23) — disabled / default' },
 ];
 
 const ROWS = [

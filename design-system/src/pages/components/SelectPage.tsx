@@ -78,6 +78,7 @@ const USAGE_PROPS = [
   { name: 'SelectGroup · direction', type: "'horizontal' | 'vertical'", default: "'horizontal'", desc: '배치 방향' },
   { name: 'SelectGroup · gap', type: "'3' | '4' | '5' | '6' | '7'", default: "'5'", desc: '간격 토큰 키(4/6/8/12/16px) — ButtonGroup과 동일 규칙' },
   { name: 'SelectGroup · width', type: "'hug' | 'fill'", default: "'hug'", desc: "fill이면 부모 전체 폭을 셀렉트들이 균등 분할" },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state · data-variant · data-size · data-open', default: '자동', desc: '루트에 자동 부착(규칙 23) — data-state는 error > disabled > readonly > default, data-open은 드롭다운 열림에만 표기' },
 ];
 
 const OPTIONS = [

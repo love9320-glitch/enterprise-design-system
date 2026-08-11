@@ -55,6 +55,8 @@ export function Switch({
 
   return (
     <label
+      data-state={isOn ? 'checked' : 'unchecked'}
+      data-disabled={disabled || undefined}
       className={`group relative inline-flex items-center gap-spacing-4 ${
         disabled ? 'cursor-not-allowed' : 'cursor-pointer'
       } ${className}`}

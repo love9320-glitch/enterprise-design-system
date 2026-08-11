@@ -492,6 +492,7 @@ export function Table({
             return (
               <tr
                 key={key}
+                data-state={selectedSet.has(key) ? 'selected' : 'default'}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}
                 className={`${dragKey === key ? 'bg-table-row-hover-bg' : 'bg-table-row-bg'} transition-colors hover:bg-table-row-hover-bg ${
                   onRowClick ? 'cursor-pointer' : ''

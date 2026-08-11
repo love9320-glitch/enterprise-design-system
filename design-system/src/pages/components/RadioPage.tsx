@@ -31,6 +31,7 @@ const RADIO_PROPS = [
   { name: 'name', type: 'string', default: '—', desc: '라디오 그룹 name (단일 선택 묶음)' },
   { name: 'value', type: 'string', default: '—', desc: 'input value' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state · data-disabled', default: '자동', desc: '라벨 루트에 자동 부착(규칙 23) — checked/unchecked + 비활성 시에만 data-disabled' },
 ];
 
 const GROUP_PROPS = [

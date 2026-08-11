@@ -102,7 +102,7 @@ export function AccordionItem({
   };
 
   return (
-    <div className={`w-full ${className}`} {...props}>
+    <div data-state={open ? 'open' : 'closed'} className={`w-full ${className}`} {...props}>
       {/* 헤더 */}
       {editing ? (
         <div className="flex w-full items-start gap-spacing-5 py-spacing-5">

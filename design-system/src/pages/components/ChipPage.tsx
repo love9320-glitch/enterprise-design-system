@@ -41,6 +41,7 @@ const CHIP_PROPS = [
   { name: 'onClick', type: '(e) => void', default: '—', desc: '칩 전체 클릭(선택 등)' },
   { name: 'removeAriaLabel', type: 'string', default: "'삭제'", desc: 'X 버튼 aria-label' },
   { name: 'className', type: 'string', default: "''", desc: '추가 클래스' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-color', default: '자동', desc: '루트에 자동 부착(규칙 23) — 분류색 축 DOM 표기' },
 ];
 
 export function ChipPage() {

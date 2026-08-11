@@ -202,6 +202,9 @@ export function Button({
         ref={ref}
         content={innerContent}
         className={rootClassName}
+        data-variant={variant}
+        data-size={size}
+        data-loading={loading || undefined}
         aria-disabled={inactive || undefined}
         onClick={!inactive ? onClick : undefined}
         onMouseEnter={handleMouseEnter}
@@ -214,6 +217,9 @@ export function Button({
       <button
         ref={ref as Ref<HTMLButtonElement>}
         className={rootClassName}
+        data-variant={variant}
+        data-size={size}
+        data-loading={loading || undefined}
         disabled={inactive}
         onClick={!inactive ? onClick : undefined}
         onMouseEnter={handleMouseEnter}

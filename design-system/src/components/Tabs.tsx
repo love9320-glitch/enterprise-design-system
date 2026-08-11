@@ -55,6 +55,7 @@ export function TabMenu({
       type="button"
       role="tab"
       aria-selected={selected}
+      data-state={disabled ? 'disabled' : selected ? 'selected' : 'default'}
       disabled={disabled}
       onClick={!disabled ? onClick : undefined}
       className={`${base} ${colorStyle} ${className}`}

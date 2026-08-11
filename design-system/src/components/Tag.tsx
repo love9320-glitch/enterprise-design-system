@@ -34,6 +34,7 @@ export function Tag({
 
   return (
     <span
+      data-color={color}
       className={`${sizing} items-center justify-center rounded-round-4 px-spacing-4 py-spacing-1 text-12 ${colorStyle} ${className}`}
       {...props}
     >

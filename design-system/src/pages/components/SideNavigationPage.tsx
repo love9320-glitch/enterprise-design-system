@@ -45,6 +45,7 @@ const USAGE_PROPS = [
   { name: 'Button · actions', type: 'ReactNode', default: '—', desc: '행 hover/키보드 포커스 시 우측에 나타나는 아이콘 전용 버튼들(이름 수정·삭제 등) — chevron(›)은 유지되고 액션은 그 왼쪽에 표시. 디폴트 상태에선 라벨이 액션 자리까지 확장, hover 시 액션이 펼쳐지며 라벨 축소. 활용 예: Side Navigation Template의 editable 모드' },
   { name: 'Button · line', type: 'boolean', default: 'true', desc: 'true=우측 라인 접합형(왼쪽만 라운드) / false=독립형(전체 라운드)' },
   { name: 'Button · onClick', type: '(e) => void', default: '—', desc: '클릭 핸들러' },
+  { name: '(DOM 상태 꼬리표)', type: '버튼 data-state', default: '자동', desc: '메뉴 버튼에 자동 부착(규칙 23) — disabled > selected > default' },
 ];
 
 const MENUS = [

@@ -186,6 +186,7 @@ export function TextArea({
   return (
     <div
       style={{ width: widthStyle }}
+      data-state={error ? 'error' : disabled ? 'disabled' : readOnly ? 'readonly' : 'default'}
       className={`relative rounded-round-4 bg-text-field-default-bg pl-spacing-6 pr-spacing-4 transition-shadow ${
         interactive ? RING : 'cursor-not-allowed'
       } ${className}`}

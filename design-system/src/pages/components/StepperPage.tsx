@@ -24,6 +24,7 @@ const USAGE_PROPS = [
   { name: 'items', type: '{ value?, title, description?, disabled? }[]', default: '—', desc: '스텝 목록 — 숫자는 순서 자동(01~), description 있으면 설명 행(12px) 표시, disabled는 진행·클릭 제외' },
   { name: 'value', type: 'string | number', default: '첫 스텝', desc: '현재(진행 중) 스텝 — item.value 또는 인덱스. 이전 스텝은 완료(체크), 이후는 대기' },
   { name: 'onStepClick', type: '(value, index) => void', default: '—', desc: '지정 시 스텝 클릭으로 이동(버튼 렌더 + default 스텝 hover 효과). 미지정 시 정적 표시' },
+  { name: '(DOM 상태 꼬리표)', type: '스텝별 data-state', default: '자동', desc: '각 스텝에 자동 부착(규칙 23) — 스텝 상태(progress/complete 등) 그대로 표기' },
 ];
 
 const DEMO_ITEMS = [

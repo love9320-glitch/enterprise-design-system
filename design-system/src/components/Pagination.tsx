@@ -73,6 +73,7 @@ function PaginationButton({ state = 'default', type = 'number', icon: Icon, labe
     <>
     <button
       type="button"
+      data-state={state}
       className={`${BTN_BASE} ${stateStyle}`}
       aria-current={state === 'selected' ? 'page' : undefined}
       aria-label={type === 'icon' ? label : undefined}

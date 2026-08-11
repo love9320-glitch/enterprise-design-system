@@ -12,7 +12,7 @@ description: 이 프로젝트(design-system)에서 UI 컴포넌트·페이지·�
 
 규칙을 **적용 범위별 3구역**으로 나눈다 — (A) 피그마 작도·코드 작성 양쪽에 적용되는 **공통 설계 원칙**, (B) **코드 작성 전용**, (C) **Figma 작도 전용**. 다른 규칙·메모리에서 "규칙 N"으로 참조하는 번호는 아래 통합 번호를 가리킨다.
 
-> **신설 규칙 번호(15~)**: 15=카피 띄어쓰기(A구역, 아래) · 16=목록 버튼그룹 순서(`templates/page.md` §목록 — 구 list-page.md, 2026-08-06 통합) · 17=아이콘 전용 셀 width=iconCellWidth(`templates/page.md` §목록) · 18=모달 안 무한 스크롤 테이블 설정(`templates/modal.md`) · 19=알파 라인은 outline(B구역, 아래) · 20=키보드 Tab 체인 규약(B구역, 아래) · 21=벨리데이션 에러 카피 표준(A구역, 아래) · 22=로딩 정책(컨테이너 최초=중앙 LoadingIndicator·전체 준비 후 일괄 표시 / 재조회=부분 로딩, A구역, 아래). 이후 신설 규칙은 23부터 이어 붙이고 여기 색인에 등록한다. (신설 5개 도달 — 2026-07-14 가지치기 감사 수행: 비대 행 아카이브 2차 이관, 15~19 전부 사용 중이라 통합·삭제 없음)
+> **신설 규칙 번호(15~)**: 15=카피 띄어쓰기(A구역, 아래) · 16=목록 버튼그룹 순서(`templates/page.md` §목록 — 구 list-page.md, 2026-08-06 통합) · 17=아이콘 전용 셀 width=iconCellWidth(`templates/page.md` §목록) · 18=모달 안 무한 스크롤 테이블 설정(`templates/modal.md`) · 19=알파 라인은 outline(B구역, 아래) · 20=키보드 Tab 체인 규약(B구역, 아래) · 21=벨리데이션 에러 카피 표준(A구역, 아래) · 22=로딩 정책(컨테이너 최초=중앙 LoadingIndicator·전체 준비 후 일괄 표시 / 재조회=부분 로딩, A구역, 아래). 23=상태 꼬리표 data-state 표준(B구역, 아래). 이후 신설 규칙은 24부터 이어 붙이고 여기 색인에 등록한다. (신설 5개 도달 — 2026-07-14 가지치기 감사 수행: 비대 행 아카이브 2차 이관, 15~19 전부 사용 중이라 통합·삭제 없음)
 
 ### A. 공통 설계 원칙 (피그마·코드 양쪽 적용)
 
@@ -47,6 +47,8 @@ description: 이 프로젝트(design-system)에서 UI 컴포넌트·페이지·�
     - **⑷ 경계 규칙**: 마지막 요소에서 Tab → **완성이면 저장(onSave)+다음 단계 진행** / **미완성이면 onSkip = 저장 없이 닫고 다음 정거장으로**(값 미선택이어도 다음 카드/수식으로 진행). 처음 요소에서 Shift+Tab → 끝으로 순환.
     - **⑸ 다음 정거장 이동은 `focusNextChainStop(기준El)`** — 문서 전체 `[data-formula-chain]`에서 다음 마커를 찾아 포커스(setTimeout 0). 직접 `.focus()` 산발 호출 금지.
     새 순차 편집 UI를 만들 때도 이 규약(마커→트리거 오픈→내부 순회→경계 저장/skip→체인 이동)을 그대로 적용하고, 임의의 다른 Tab 순서를 만들지 않는다.
+
+23. **상태 꼬리표(data-*) 표준 (2026-08-11 지시 — 소비자 개발자 제안 채택)** — 컴포넌트의 상태 소유 요소(루트·필드 박스·행)에 상태를 data 속성으로 노출한다. **배타 상태는 `data-state` 하나**로(우선순위 순 — 입력류: error > disabled > readonly > default / List: disabled > selected > highlighted), **독립 축은 개별 속성**(`data-variant`·`data-size`·`data-open`·`data-loading`). 목적은 **DOM 상태 가시성·테스트 셀렉터 제공이지 스타일 분기가 아니다** — 클래스 분기는 기존 방식(삼항+토큰 클래스) 유지, 스타일까지 `data-[…]:` 변형으로 옮기는 전면 전환은 보류(2026-08-11 판단: 우선순위가 CSS 순서에 숨음·클래스 비대·회귀 위험 대비 실익 부족). 표준 속성이 있는 상태는 그것을 우선한다(`disabled:`/`read-only:`/`aria-invalid:` — 접근성 겸용). **신규 컴포넌트는 처음부터 적용**, 기존 컴포넌트는 손댈 때 점진 추가. 체크류는 Radix 관례로 `data-state="checked|unchecked"`+`data-disabled`(독립 축), Accordion=`open|closed`, 분류색(Tag·Chip)=`data-color`. (1~2티어 적용 완료 2026-08-11: Button·Input·TextArea·SearchBar·Select·DateField·TimeField·List·Table 행·Checkbox·Radio·Switch·Tabs·SegmentedTabs·SegmentControl·Stepper·CalendarDayButton·InlineFieldTrigger·SideNavigation·Lnb·Pagination·Accordion·Tag·Chip)
 
 ### C. Figma 작도 전용
 

@@ -75,6 +75,8 @@ export function CalendarDayButton({
   return (
     <button
       type="button"
+      data-state={state}
+      data-disabled={disabled || undefined}
       disabled={disabled}
       onClick={disabled ? undefined : onClick}
       aria-disabled={disabled || undefined}

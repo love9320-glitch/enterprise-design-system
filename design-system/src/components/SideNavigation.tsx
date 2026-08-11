@@ -137,6 +137,7 @@ export function SideNavigationButton({
   return (
     <button
       type="button"
+      data-state={disabled ? 'disabled' : selected ? 'selected' : 'default'}
       disabled={disabled}
       onClick={onClick}
       aria-current={selected || undefined}

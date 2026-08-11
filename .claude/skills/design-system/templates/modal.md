@@ -102,7 +102,27 @@ export function DeleteConfirm({ open, onClose, onConfirm }) {
 }
 ```
 
-> **Figma 작도 시**: 위와 대응되게 `Modal` **컴포넌트 인스턴스**를 만들고 `ModalBody` slot에 본문(테이블 템플릿 등)을 조립한다. 완성본 복제(clone) 금지 — 규칙 4 참조. 표를 slot 안에서 편집할 땐 detach(규칙 13).
+### (4) 조립형 — `Modal.Root/Header/Body/Footer` (props에 없는 배치가 필요할 때만)
+
+```jsx
+import { Modal, Tag, ButtonGroup, Button } from '@gusun/design-system';
+
+// 헤더에 뱃지, 푸터 자유 구성 등 props로 표현 안 되는 '배치'만 조립형으로.
+// 90% 케이스는 위 (1)~(3) props API가 정답 — 조립형 남용 금지.
+<Modal.Root open={open} onClose={close} size="md">
+  <Modal.Header title="지원자 상세"><Tag color="blue">심사중</Tag></Modal.Header>
+  <Modal.Body>본문 — 내부 스크롤·가용 높이·로딩 정책은 Body가 처리</Modal.Body>
+  <Modal.Footer className="justify-between">
+    <span className="text-13 text-font-icon-3">좌측 안내</span>
+    <ButtonGroup><Button variant="line" onClick={close}>취소</Button><Button variant="fill">저장</Button></ButtonGroup>
+  </Modal.Footer>
+</Modal.Root>
+```
+
+- **가드레일**: Header/Body/Footer는 스킨(패딩·배경·타이포)이 구워진 슬롯 — 배치만 자유이고 스킨을 다시 만들지 않는다. dim·ESC·포커스 트랩·푸터 안 가림(레이아웃 측정)은 Root가 자동 처리.
+- 같은 배치 요구가 **반복되면 조립형으로 계속 풀지 말고 props 옵션 승격을 검토**한다(조립형은 안전밸브, 표준은 Easy API).
+
+> **Figma 작도 시**: 위와 대응되게 `Modal` **컴포넌트 인스턴스**를 만들고 `ModalBody` slot에 본문(테이블 템플릿 등)을 조립한다. 완성본 복제(clone) 금지 — 규칙 4 참조. 표를 slot 안에서 편집할 땐 detach(규칙 13). 조립형 API는 코드 전용 고급 경로라 Figma 신규 컴포넌트 불필요(규칙 11 — 코드>Figma 옵션 허용).
 
 ## 규칙 18 — 모달 안 무한 스크롤(페이지네이션 없는) 테이블 설정 (2026-07-06 지시)
 
@@ -125,6 +145,6 @@ export function DeleteConfirm({ open, onClose, onConfirm }) {
 - [ ] `open`/`onClose`를 호출부에서 제어하는가
 - [ ] 본문(children)과 라벨·핸들러만 넘기고, 컴포넌트가 처리하는 dim·스크롤잠금·닫기·포커스를 다시 구현하지 않았는가
 - [ ] `size`를 단계값으로 지정했는가 (임의 px 폭 금지)
-- [ ] 컴포넌트로 안 덮는 부분만 `footer`/`footerStart` 슬롯으로 좁게 커스텀했는가
+- [ ] 컴포넌트로 안 덮는 부분만 `footer`/`footerStart` 슬롯으로 좁게 커스텀했는가 — 그것도 부족한 '배치' 요구만 조립형(`Modal.Root/Header/Body/Footer`)으로, 반복되는 요구는 옵션 승격 검토
 - [ ] 페이지네이션 없는 무한 스크롤 테이블에 규칙 18 설정(`bordered maxHeight="fill" min-h-0`)을 적용했는가
 - [ ] (Figma) `Modal` 인스턴스 + `ModalBody` slot 조립으로 그렸는가 (완성본 복제 금지)
