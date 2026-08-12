@@ -174,6 +174,8 @@ export interface TableProps extends ComponentPropsWithoutRef<'div'> {
   filters?: Record<string, unknown>;
   onFilterChange?: (filters: Record<string, unknown>) => void;
   sort?: TableSort | null;
+  /** 행 선택 체크박스의 접근 가능한 이름 — 예: (row) => `${row.name} 행 선택`. 미지정 시 '행 선택' */
+  getRowSelectionAriaLabel?: (row: TableRowData) => string;
   onSortChange?: (sort: TableSort | null) => void;
   bordered?: boolean;
   wrap?: boolean;
@@ -208,6 +210,7 @@ export function Table({
   onFilterChange,
   sort,
   onSortChange,
+  getRowSelectionAriaLabel,
   bordered = false,
   wrap = false,
   maxHeight,
@@ -352,7 +355,14 @@ export function Table({
   });
 
   const headCell = (c: TableColumn, isFirst: boolean, isLast: boolean) => (
-    <th key={c.key} {...headCellProps(isFirst, isLast, c.width)}>
+    <th
+      key={c.key}
+      // 정렬 상태를 보조 기술에 전달(aria-sort) — headerMenu sortable 정렬 결과 반영
+      aria-sort={
+        activeSort?.key === c.key ? (activeSort.dir === 'asc' ? 'ascending' : 'descending') : undefined
+      }
+      {...headCellProps(isFirst, isLast, c.width)}
+    >
       {/* 좌: 라벨 영역(renderHeader → filter → label) / 우: headerMenu(ghost 아이콘 버튼 + Popover). */}
       <div className="flex items-center gap-spacing-3">
       <div className={`flex min-w-0 flex-1 items-center ${ALIGN_STYLE[c.align as keyof typeof ALIGN_STYLE] ?? ALIGN_STYLE.left}`}>
@@ -563,7 +573,7 @@ export function Table({
                     <div className="flex items-center justify-center">
                       <Checkbox
                         checked={selectedSet.has(key)}
-                        aria-label="행 선택"
+                        aria-label={getRowSelectionAriaLabel?.(row) ?? '행 선택'}
                         onChange={() => toggleRow(key)}
                         onClick={(e) => e.stopPropagation()}
                       />
