@@ -193,7 +193,7 @@ export default {
 - 브라우저: 최신 Chrome·Edge·Safari·Firefox (에버그린). 데스크톱 1440px 기준으로 설계·검증하며 모바일 대응은 범위 밖입니다
 - `./editor` 서브패스만 Tiptap v3 peer가 필요하고, 메인 엔트리는 Tiptap 없이 동작합니다(CI에서 소비자 앱 설치·빌드로 상시 검증)
 
-**배포 전 자동 검증**: 모든 PR에서 타입·린트·테스트(Vitest+RTL+axe)·`npm pack` 산출물을 실제 소비자 앱에 설치→빌드하는 스모크가 실행되고, 배포 후에는 문서 사이트를 실제 브라우저로 여는 스모크가 실행됩니다.
+**배포 전 자동 검증**: 모든 PR에서 타입·린트·테스트(Vitest+RTL+axe)·**공개 API 변경 감지**(export·props 스냅샷 비교 — 의도치 않은 breaking 차단, `api-surface.json` diff가 semver 판정 근거)·`npm pack` 산출물을 실제 소비자 앱에 설치→빌드하는 스모크가 실행되고, 배포 후에는 문서 사이트를 실제 브라우저로 여는 스모크가 실행됩니다.
 
 ## 변경 내역
 

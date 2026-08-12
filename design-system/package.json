@@ -21,7 +21,9 @@
     "check:manifest": "node scripts/generate-manifest.mjs node_modules/.cache/components.json",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check:consumer": "node scripts/consumer-smoke.mjs"
+    "check:consumer": "node scripts/consumer-smoke.mjs",
+    "check:api": "node scripts/api-surface.mjs check",
+    "update:api": "node scripts/api-surface.mjs update"
   },
   "dependencies": {
     "lucide-react": "^1.27.0"
