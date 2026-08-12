@@ -36,6 +36,12 @@ jobs:
         working-directory: design-system
         run: npm test
 
+      # 공개 API 표면(export·props)을 스냅샷과 비교 — 의도치 않은 breaking을 머지 전에 차단.
+      # 의도한 변경은 `npm run update:api` 후 api-surface.json을 같은 PR에 커밋.
+      - name: Public API surface check
+        working-directory: design-system
+        run: npm run check:api
+
       - name: Build (demo SPA)
         working-directory: design-system
         run: npm run build

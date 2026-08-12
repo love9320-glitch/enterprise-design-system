@@ -1,0 +1,5682 @@
+{
+  "exports": {
+    ".": [
+      "Accordion",
+      "AccordionItem",
+      "AccordionItemProps",
+      "AlertModal",
+      "AlertModalProps",
+      "AppLayout",
+      "Avatar",
+      "Button",
+      "ButtonGroup",
+      "CHAIN_STOP_FOCUS",
+      "CHIP_COLOR_CLASS",
+      "CalendarDayButton",
+      "Checkbox",
+      "CheckboxGroup",
+      "Chip",
+      "ChipColor",
+      "ConditionMeta",
+      "ConditionOrderSlot",
+      "ConditionSettingMenu",
+      "ConditionSlotCard",
+      "ConditionTab",
+      "ConfirmModal",
+      "ConfirmModalProps",
+      "DateField",
+      "DatePicker",
+      "DatePickerProps",
+      "DatePickerValue",
+      "DateRange",
+      "Divider",
+      "EmailField",
+      "ErrorBoundary",
+      "FORMULA_FN_FAMILY",
+      "FORMULA_GROUP_FUNCTIONS",
+      "Field",
+      "FileUploadButton",
+      "FileUploadButtonProps",
+      "FileUploadMenu",
+      "FileUploadMenuProps",
+      "FormModal",
+      "FormModalProps",
+      "FormTemplateA",
+      "FormTemplateB",
+      "FormTemplateBCell",
+      "FormulaCatalog",
+      "FormulaGroupNode",
+      "FormulaLeafNode",
+      "FormulaNode",
+      "Gnb",
+      "GnbGroup",
+      "GnbLogo",
+      "INVALID_FORMAT_MESSAGE",
+      "ImageUploadButton",
+      "ImageUploadButtonProps",
+      "ImageUploadMenu",
+      "ImageUploadMenuProps",
+      "IndividualItemSetting",
+      "IndividualSetting",
+      "InlineFieldTrigger",
+      "Input",
+      "InputType",
+      "JobPositionTemplate",
+      "JobPositionTemplateHandle",
+      "JobPosting",
+      "JobPostingForm",
+      "JobPostingRow",
+      "JobPostingTemplate",
+      "Label",
+      "List",
+      "ListEmpty",
+      "ListGroup",
+      "Lnb",
+      "LnbGroup",
+      "LnbItem",
+      "LnbMenu",
+      "LnbMenuGroup",
+      "LoadingIndicator",
+      "Modal",
+      "ModalBody",
+      "ModalBodyMaxContext",
+      "ModalBodyProps",
+      "ModalFooter",
+      "ModalFooterProps",
+      "ModalFooterStartContext",
+      "ModalHeader",
+      "ModalHeaderProps",
+      "ModalProps",
+      "ModalRoot",
+      "ModalRootProps",
+      "MultiStepFormStep",
+      "MultiStepFormTemplate",
+      "NewTag",
+      "OptionItem",
+      "Page",
+      "PageHeader",
+      "Pagination",
+      "PaginationProps",
+      "PhoneField",
+      "Popover",
+      "PopoverMenu",
+      "PopoverMenuColumn",
+      "PopoverMenuColumns",
+      "PopoverMenuProps",
+      "PopoverMenuSection",
+      "PopoverProps",
+      "PortalContainerContext",
+      "PortalProvider",
+      "PortalProviderProps",
+      "REQUIRED_INPUT_MESSAGE",
+      "REQUIRED_SELECT_MESSAGE",
+      "Radio",
+      "RadioGroup",
+      "RightPanel",
+      "ScoreSettingMenu",
+      "ScreeningBuilderTemplate",
+      "ScreeningBuilderTemplateHandle",
+      "ScreeningCard",
+      "ScreeningConditionCard",
+      "ScreeningConditionValue",
+      "ScreeningFormula",
+      "ScreeningFormulaProps",
+      "ScreeningIndividualSettingModal",
+      "ScreeningScoreValue",
+      "ScrollArea",
+      "ScrollAreaProps",
+      "SearchBar",
+      "SegmentControlButton",
+      "SegmentControlGroup",
+      "SegmentedTabs",
+      "Select",
+      "SelectChip",
+      "SelectGroup",
+      "SelectMultipleProps",
+      "SelectOrInput",
+      "SelectPlacement",
+      "SelectProps",
+      "SelectSingleProps",
+      "SideNavigation",
+      "SideNavigationButton",
+      "SideNavigationButtonProps",
+      "SideNavigationProps",
+      "SideNavigationTemplate",
+      "Slot",
+      "SlotProps",
+      "Stepper",
+      "StepperItem",
+      "Switch",
+      "TabItem",
+      "TabMenu",
+      "TabMenuProps",
+      "TabValue",
+      "Table",
+      "TableColumn",
+      "TableColumnFilterOption",
+      "TableHeaderMenuItem",
+      "TableProps",
+      "TableRowData",
+      "TableRowKey",
+      "TableSort",
+      "TableTemplate",
+      "TableTemplateColumn",
+      "Tabs",
+      "TabsProps",
+      "Tag",
+      "TextArea",
+      "TimeField",
+      "ToolBar",
+      "ToolBarDivider",
+      "Tooltip",
+      "TruncatingText",
+      "TwoDepthList",
+      "UploadFileItem",
+      "UploadTriggerButtonProps",
+      "UseFocusTrapOptions",
+      "accordionColors",
+      "applyColumnFilters",
+      "applySort",
+      "avatarColors",
+      "baseColors",
+      "borderWidth",
+      "builderAreaColors",
+      "buttonColors",
+      "calendarColors",
+      "chainTriggerKey",
+      "checkboxColors",
+      "chipColors",
+      "compareValues",
+      "conditionCardColors",
+      "conditionOrderSlotColors",
+      "dividerColors",
+      "editorColors",
+      "editorHighlightPalette",
+      "editorTextPalette",
+      "focusNextChainStop",
+      "fontFamily",
+      "fontIconColors",
+      "fontSize",
+      "formatDate",
+      "formatDateTime",
+      "formatDateTimeRange",
+      "formatPhoneNumber",
+      "formulaColors",
+      "hasPointsScore",
+      "hasPopoverLayers",
+      "headingColors",
+      "iconCellWidth",
+      "iconTokens",
+      "isTopPopoverLayer",
+      "jobPostingTemplateColors",
+      "labelFieldColors",
+      "layoutColors",
+      "lineHeight",
+      "listColors",
+      "lnbColors",
+      "modalColors",
+      "newTagColors",
+      "pushPopoverLayer",
+      "radioColors",
+      "radius",
+      "removePopoverLayer",
+      "rightPanelColors",
+      "segmentedColors",
+      "sideNavColors",
+      "spacing",
+      "stepperLineTypeColors",
+      "switchColors",
+      "tabColors",
+      "tableColors",
+      "tagColors",
+      "textFieldColors",
+      "toolbarColors",
+      "useFocusTrap",
+      "useHoverTooltip",
+      "useOutsideDismiss",
+      "usePanelKeyboard",
+      "usePopoverPosition",
+      "usePortalContainer"
+    ],
+    "./editor": [
+      "Editor",
+      "EditorToolbar",
+      "MergeFieldNode",
+      "NoticeWritingTemplate"
+    ],
+    "./tokens": [
+      "accordionColors",
+      "avatarColors",
+      "baseColors",
+      "borderWidth",
+      "builderAreaColors",
+      "buttonColors",
+      "calendarColors",
+      "checkboxColors",
+      "chipColors",
+      "conditionCardColors",
+      "conditionOrderSlotColors",
+      "dividerColors",
+      "editorColors",
+      "editorHighlightPalette",
+      "editorTextPalette",
+      "fontFamily",
+      "fontIconColors",
+      "fontSize",
+      "formulaColors",
+      "headingColors",
+      "iconTokens",
+      "jobPostingTemplateColors",
+      "labelFieldColors",
+      "layoutColors",
+      "lineHeight",
+      "listColors",
+      "lnbColors",
+      "modalColors",
+      "newTagColors",
+      "radioColors",
+      "radius",
+      "rightPanelColors",
+      "segmentedColors",
+      "sideNavColors",
+      "spacing",
+      "stepperLineTypeColors",
+      "switchColors",
+      "tabColors",
+      "tableColors",
+      "tagColors",
+      "textFieldColors",
+      "toolbarColors"
+    ]
+  },
+  "componentProps": {
+    "AccordionItem": [
+      {
+        "name": "defaultOpen",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "deletable",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "deleteDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "keepMounted",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "maxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "nameEditable",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "onDelete",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((open: boolean) => void)"
+      },
+      {
+        "name": "onTitleChange",
+        "type": "((title: string) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "defaultValue": ""
+      }
+    ],
+    "AlertModal": [
+      {
+        "name": "bodyClassName",
+        "type": "string"
+      },
+      {
+        "name": "bodyLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "bodyLoadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "bodyMaxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "bodyPadding",
+        "type": "string"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "closeOnEsc",
+        "type": "boolean"
+      },
+      {
+        "name": "closeOnOverlayClick",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode",
+        "defaultValue": "확인"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum"
+      },
+      {
+        "name": "description",
+        "type": "ReactNode"
+      },
+      {
+        "name": "descriptionDetail",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerFullWidth",
+        "type": "boolean"
+      },
+      {
+        "name": "footerPadding",
+        "type": "string | null"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStartType",
+        "type": "enum"
+      },
+      {
+        "name": "initialFocus",
+        "type": "enum"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onClose",
+        "type": "() => void",
+        "required": true
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSubmit",
+        "type": "((e: FormEvent<HTMLFormElement>) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "required": true
+      },
+      {
+        "name": "placement",
+        "type": "enum",
+        "defaultValue": "center"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showClose",
+        "type": "boolean"
+      },
+      {
+        "name": "showFooter",
+        "type": "boolean"
+      },
+      {
+        "name": "showHeader",
+        "type": "boolean"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "sm"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "AppLayout": [
+      {
+        "name": "className",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "gnb",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "height",
+        "type": "string | number",
+        "defaultValue": "100vh"
+      },
+      {
+        "name": "lnb",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "lnbWidth",
+        "type": "enum",
+        "defaultValue": "220"
+      },
+      {
+        "name": "mainScroll",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "onMainViewport",
+        "type": "((el: HTMLElement | null) => void)"
+      },
+      {
+        "name": "onPanelClose",
+        "type": "(() => void)"
+      },
+      {
+        "name": "pagePadding",
+        "type": "enum",
+        "defaultValue": "32"
+      },
+      {
+        "name": "pageWidth",
+        "type": "enum",
+        "defaultValue": "standard"
+      },
+      {
+        "name": "panelBreakpoint",
+        "type": "number",
+        "defaultValue": "1440"
+      },
+      {
+        "name": "panelMode",
+        "type": "enum",
+        "defaultValue": "auto"
+      },
+      {
+        "name": "rightPanel",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "rightPanelWidth",
+        "type": "string | number",
+        "defaultValue": "360"
+      }
+    ],
+    "Avatar": [
+      {
+        "name": "alt",
+        "type": "string"
+      },
+      {
+        "name": "initial",
+        "type": "ReactNode",
+        "defaultValue": ""
+      },
+      {
+        "name": "interactive",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "onClick",
+        "type": "((e: MouseEvent<HTMLButtonElement, MouseEvent>) => void)"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "32"
+      },
+      {
+        "name": "src",
+        "type": "string | null",
+        "defaultValue": "null"
+      }
+    ],
+    "Button": [
+      {
+        "name": "area",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "asChild",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "color",
+        "type": "enum",
+        "defaultValue": "black"
+      },
+      {
+        "name": "icon",
+        "type": "ElementType | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "leftIcon",
+        "type": "ElementType | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "rightIcon",
+        "type": "ElementType | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "showTooltip",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "32"
+      },
+      {
+        "name": "tooltip",
+        "type": "ReactNode"
+      },
+      {
+        "name": "truncate",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "fill"
+      },
+      {
+        "name": "weight",
+        "type": "enum",
+        "defaultValue": "normal"
+      },
+      {
+        "name": "width",
+        "type": "enum",
+        "defaultValue": "hug"
+      }
+    ],
+    "ButtonGroup": [
+      {
+        "name": "direction",
+        "type": "enum",
+        "defaultValue": "horizontal"
+      },
+      {
+        "name": "gap",
+        "type": "enum",
+        "defaultValue": "5"
+      },
+      {
+        "name": "width",
+        "type": "enum",
+        "defaultValue": "hug"
+      }
+    ],
+    "CalendarDayButton": [
+      {
+        "name": "edge",
+        "type": "enum"
+      },
+      {
+        "name": "state",
+        "type": "enum",
+        "defaultValue": "default"
+      }
+    ],
+    "Checkbox": [
+      {
+        "name": "label",
+        "type": "ReactNode"
+      }
+    ],
+    "CheckboxGroup": [
+      {
+        "name": "defaultValue",
+        "type": "string[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "direction",
+        "type": "enum",
+        "defaultValue": "vertical"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "gap",
+        "type": "enum",
+        "defaultValue": "7"
+      },
+      {
+        "name": "items",
+        "type": "OptionItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "onChange",
+        "type": "((nextValues: string[], meta: { value: string; checked: boolean; }) => void)"
+      },
+      {
+        "name": "value",
+        "type": "string[]"
+      }
+    ],
+    "Chip": [
+      {
+        "name": "color",
+        "type": "enum",
+        "defaultValue": "gray"
+      },
+      {
+        "name": "onRemove",
+        "type": "((e: MouseEvent<HTMLButtonElement, MouseEvent>) => void)"
+      },
+      {
+        "name": "removeAriaLabel",
+        "type": "string",
+        "defaultValue": "삭제"
+      }
+    ],
+    "ConditionOrderSlot": [
+      {
+        "name": "cardWidth",
+        "type": "string | number",
+        "defaultValue": "202"
+      },
+      {
+        "name": "defaultOrder",
+        "type": "string[]"
+      },
+      {
+        "name": "direction",
+        "type": "enum",
+        "defaultValue": "vertical"
+      },
+      {
+        "name": "dragDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "enabledIds",
+        "type": "string[]"
+      },
+      {
+        "name": "items",
+        "type": "ConditionOrderItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "onEnabledChange",
+        "type": "((nextEnabledIds: string[], info: { id: string; enabled: boolean; }) => void)"
+      },
+      {
+        "name": "onOrderChange",
+        "type": "((ids: string[]) => void)"
+      },
+      {
+        "name": "order",
+        "type": "string[]"
+      },
+      {
+        "name": "showCardHeaders",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "switchesDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "switchesDisabledTooltip",
+        "type": "ReactNode"
+      },
+      {
+        "name": "titlePrefix",
+        "type": "string",
+        "defaultValue": "조건"
+      }
+    ],
+    "ConditionSettingMenu": [
+      {
+        "name": "initialItems",
+        "type": "string[] | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "initialOption",
+        "type": "string | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "initialTab",
+        "type": "string | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSave",
+        "type": "((v: ScreeningConditionValue) => void)"
+      },
+      {
+        "name": "onSkip",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onTabNext",
+        "type": "(() => void)"
+      },
+      {
+        "name": "options",
+        "type": "OptionItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "optionsByTab",
+        "type": "Record<string, OptionItem[]>",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "style",
+        "type": "CSSProperties"
+      },
+      {
+        "name": "tabs",
+        "type": "ConditionTab[]",
+        "defaultValue": "[]"
+      }
+    ],
+    "ConditionSlotCard": [
+      {
+        "name": "dragDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "dragging",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "dragHandleProps",
+        "type": "HTMLAttributes<HTMLSpanElement> | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "enabled",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "onEnabledChange",
+        "type": "((checked: boolean) => void)"
+      },
+      {
+        "name": "showHeader",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "switchDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "switchDisabledTooltip",
+        "type": "ReactNode"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "defaultValue": "조건 1."
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "202"
+      }
+    ],
+    "ConfirmModal": [
+      {
+        "name": "bodyClassName",
+        "type": "string"
+      },
+      {
+        "name": "bodyLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "bodyLoadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "bodyMaxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "bodyPadding",
+        "type": "string"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode",
+        "defaultValue": "취소"
+      },
+      {
+        "name": "checkboxLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "checked",
+        "type": "boolean"
+      },
+      {
+        "name": "closeOnEsc",
+        "type": "boolean"
+      },
+      {
+        "name": "closeOnOverlayClick",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode",
+        "defaultValue": "확인"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum",
+        "defaultValue": "fill"
+      },
+      {
+        "name": "description",
+        "type": "ReactNode"
+      },
+      {
+        "name": "descriptionDetail",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerFullWidth",
+        "type": "boolean"
+      },
+      {
+        "name": "footerPadding",
+        "type": "string | null"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStartType",
+        "type": "enum"
+      },
+      {
+        "name": "initialFocus",
+        "type": "enum"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onCheckChange",
+        "type": "((checked: boolean, e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onClose",
+        "type": "() => void",
+        "required": true
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSubmit",
+        "type": "((e: FormEvent<HTMLFormElement>) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "required": true
+      },
+      {
+        "name": "placement",
+        "type": "enum",
+        "defaultValue": "center"
+      },
+      {
+        "name": "requireCheck",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showClose",
+        "type": "boolean"
+      },
+      {
+        "name": "showFooter",
+        "type": "boolean"
+      },
+      {
+        "name": "showHeader",
+        "type": "boolean"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "sm"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "DateField": [
+      {
+        "name": "className",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "closeOnSelect",
+        "type": "boolean",
+        "defaultValue": "mode !== 'range'"
+      },
+      {
+        "name": "defaultEndTime",
+        "type": "string",
+        "defaultValue": "23:59"
+      },
+      {
+        "name": "defaultStartTime",
+        "type": "string",
+        "defaultValue": "00:00"
+      },
+      {
+        "name": "defaultValue",
+        "type": "DateFieldValue"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disabledDate",
+        "type": "((date: Date) => boolean)"
+      },
+      {
+        "name": "disableFuture",
+        "type": "boolean"
+      },
+      {
+        "name": "disablePast",
+        "type": "boolean"
+      },
+      {
+        "name": "endTime",
+        "type": "string"
+      },
+      {
+        "name": "error",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string",
+        "defaultValue": "필수 선택사항입니다."
+      },
+      {
+        "name": "formatErrorMessage",
+        "type": "string",
+        "defaultValue": "잘못된 양식입니다."
+      },
+      {
+        "name": "maxDate",
+        "type": "Date"
+      },
+      {
+        "name": "maxWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "maxYear",
+        "type": "number"
+      },
+      {
+        "name": "minDate",
+        "type": "Date"
+      },
+      {
+        "name": "minYear",
+        "type": "number"
+      },
+      {
+        "name": "mode",
+        "type": "enum",
+        "defaultValue": "single"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: DateFieldValue) => void)"
+      },
+      {
+        "name": "onEndTimeChange",
+        "type": "((time: string) => void)"
+      },
+      {
+        "name": "onStartTimeChange",
+        "type": "((time: string) => void)"
+      },
+      {
+        "name": "placeholder",
+        "type": "string"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showIcon",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showTime",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "24"
+      },
+      {
+        "name": "startTime",
+        "type": "string"
+      },
+      {
+        "name": "value",
+        "type": "DateFieldValue"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "box"
+      },
+      {
+        "name": "weekStartsOn",
+        "type": "number"
+      },
+      {
+        "name": "width",
+        "type": "string | number"
+      }
+    ],
+    "DatePicker": [
+      {
+        "name": "defaultMonth",
+        "type": "Date"
+      },
+      {
+        "name": "defaultValue",
+        "type": "DatePickerValue"
+      },
+      {
+        "name": "disabledDate",
+        "type": "((date: Date) => boolean)"
+      },
+      {
+        "name": "disableFuture",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disablePast",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "endTime",
+        "type": "string",
+        "defaultValue": "23:59"
+      },
+      {
+        "name": "maxDate",
+        "type": "Date"
+      },
+      {
+        "name": "maxYear",
+        "type": "number"
+      },
+      {
+        "name": "minDate",
+        "type": "Date"
+      },
+      {
+        "name": "minYear",
+        "type": "number"
+      },
+      {
+        "name": "mode",
+        "type": "enum",
+        "defaultValue": "single"
+      },
+      {
+        "name": "month",
+        "type": "Date"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: DatePickerValue) => void)"
+      },
+      {
+        "name": "onEndTimeChange",
+        "type": "((time: string) => void)"
+      },
+      {
+        "name": "onMonthChange",
+        "type": "((month: Date) => void)"
+      },
+      {
+        "name": "onStartTimeChange",
+        "type": "((time: string) => void)"
+      },
+      {
+        "name": "rangeEndLabel",
+        "type": "string",
+        "defaultValue": "마감일"
+      },
+      {
+        "name": "rangeStartLabel",
+        "type": "string",
+        "defaultValue": "시작일"
+      },
+      {
+        "name": "rangeTooltip",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "scrollNavigate",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showTime",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "startTime",
+        "type": "string",
+        "defaultValue": "00:00"
+      },
+      {
+        "name": "timeLabel",
+        "type": "ReactNode",
+        "defaultValue": "시간 입력"
+      },
+      {
+        "name": "todayLabel",
+        "type": "string",
+        "defaultValue": "오늘"
+      },
+      {
+        "name": "value",
+        "type": "DatePickerValue"
+      },
+      {
+        "name": "weekdayLabels",
+        "type": "string[]",
+        "defaultValue": "['일', '월', '화', '수', '목', '금', '토']"
+      },
+      {
+        "name": "weekStartsOn",
+        "type": "number",
+        "defaultValue": "0"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "276"
+      }
+    ],
+    "Divider": [
+      {
+        "name": "color",
+        "type": "enum",
+        "defaultValue": "default"
+      },
+      {
+        "name": "direction",
+        "type": "enum",
+        "defaultValue": "horizontal"
+      },
+      {
+        "name": "marginBottom",
+        "type": "enum"
+      },
+      {
+        "name": "marginTop",
+        "type": "enum"
+      }
+    ],
+    "DragGhost": [
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "required": true
+      }
+    ],
+    "Editor": [
+      {
+        "name": "allowSourceEdit",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "defaultValue",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "maxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "mergeFields",
+        "type": "(string | { label: string; value: string; })[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "minHeight",
+        "type": "string | number",
+        "defaultValue": "240"
+      },
+      {
+        "name": "mode",
+        "type": "enum"
+      },
+      {
+        "name": "onChange",
+        "type": "((html: string) => void)"
+      },
+      {
+        "name": "onModeChange",
+        "type": "((mode: EditorMode) => void)"
+      },
+      {
+        "name": "placeholder",
+        "type": "ReactNode",
+        "defaultValue": "내용을 입력하세요."
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showSource",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "toolbar",
+        "type": "string[]"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "fill"
+      }
+    ],
+    "EditorToolbar": [
+      {
+        "name": "editor",
+        "type": "Editor | null",
+        "required": true
+      },
+      {
+        "name": "mergeFields",
+        "type": "MergeFieldItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "toolbar",
+        "type": "string[]"
+      }
+    ],
+    "EmailField": [
+      {
+        "name": "defaultValue",
+        "type": "string"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean"
+      },
+      {
+        "name": "error",
+        "type": "boolean"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string"
+      },
+      {
+        "name": "formatInput",
+        "type": "((raw: string) => string)"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string",
+        "defaultValue": "이메일을 직접 입력하세요"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "onChange",
+        "type": "((e: { target: { value: string; source: SelectOrInputSource; }; }) => void)"
+      },
+      {
+        "name": "options",
+        "type": "(string | OptionItem)[]"
+      },
+      {
+        "name": "placement",
+        "type": "enum"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean"
+      },
+      {
+        "name": "searchable",
+        "type": "boolean"
+      },
+      {
+        "name": "selectPlaceholder",
+        "type": "string",
+        "defaultValue": "이메일 선택"
+      },
+      {
+        "name": "selectWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "showInput",
+        "type": "boolean"
+      },
+      {
+        "name": "showSelect",
+        "type": "boolean"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "name": "width",
+        "type": "string | number"
+      }
+    ],
+    "ErrorBoundary": [
+      {
+        "name": "description",
+        "type": "ReactNode"
+      },
+      {
+        "name": "fallback",
+        "type": "((args: { error: Error; reset: () => void; }) => ReactNode)"
+      },
+      {
+        "name": "onError",
+        "type": "((error: Error, info: ErrorInfo) => void)"
+      },
+      {
+        "name": "resetKey",
+        "type": "unknown"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "Field": [
+      {
+        "name": "controlsDirection",
+        "type": "enum",
+        "defaultValue": "column"
+      },
+      {
+        "name": "description",
+        "type": "ReactNode"
+      },
+      {
+        "name": "direction",
+        "type": "enum",
+        "defaultValue": "vertical"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "gap",
+        "type": "enum"
+      },
+      {
+        "name": "htmlFor",
+        "type": "string"
+      },
+      {
+        "name": "label",
+        "type": "ReactNode"
+      },
+      {
+        "name": "labelColor",
+        "type": "enum"
+      },
+      {
+        "name": "labelSize",
+        "type": "enum"
+      },
+      {
+        "name": "labelWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "FileUploadButton": [
+      {
+        "name": "accept",
+        "type": "string"
+      },
+      {
+        "name": "buttonProps",
+        "type": "UploadTriggerButtonProps",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "cancelIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum"
+      },
+      {
+        "name": "countSuffix",
+        "type": "string",
+        "defaultValue": "개 등록됨"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "files",
+        "type": "UploadFileItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "findText",
+        "type": "string"
+      },
+      {
+        "name": "footer",
+        "type": "boolean"
+      },
+      {
+        "name": "footerButtonsFill",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckbox",
+        "type": "boolean"
+      },
+      {
+        "name": "footerChecked",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerReset",
+        "type": "boolean"
+      },
+      {
+        "name": "footerResetIcon",
+        "type": "LucideIcon"
+      },
+      {
+        "name": "footerResetLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "guide",
+        "type": "string"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "inputValue",
+        "type": "string"
+      },
+      {
+        "name": "loading",
+        "type": "boolean"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "maxCount",
+        "type": "number"
+      },
+      {
+        "name": "maxText",
+        "type": "string"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number",
+        "defaultValue": "420"
+      },
+      {
+        "name": "multiple",
+        "type": "boolean"
+      },
+      {
+        "name": "onAdd",
+        "type": "((files: FileList) => void)"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onDelete",
+        "type": "((file: UploadFileItem, index: number) => void)"
+      },
+      {
+        "name": "onFooterCheckChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onFooterReset",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onInputChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((open: boolean) => void)"
+      },
+      {
+        "name": "onSearchChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onTemplateDownload",
+        "type": "(() => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean"
+      },
+      {
+        "name": "placement",
+        "type": "string",
+        "defaultValue": "bottom-left"
+      },
+      {
+        "name": "searchInputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "searchValue",
+        "type": "string"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showConfirm",
+        "type": "boolean"
+      },
+      {
+        "name": "showCount",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "templateDownloadText",
+        "type": "string"
+      },
+      {
+        "name": "topArea",
+        "type": "enum"
+      },
+      {
+        "name": "triggerText",
+        "type": "string",
+        "defaultValue": "파일 업로드"
+      },
+      {
+        "name": "uploadText",
+        "type": "string"
+      }
+    ],
+    "FileUploadMenu": [
+      {
+        "name": "accept",
+        "type": "string"
+      },
+      {
+        "name": "cancelIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum"
+      },
+      {
+        "name": "files",
+        "type": "UploadFileItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "findText",
+        "type": "string",
+        "defaultValue": "파일 찾기"
+      },
+      {
+        "name": "footer",
+        "type": "boolean"
+      },
+      {
+        "name": "footerButtonsFill",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckbox",
+        "type": "boolean"
+      },
+      {
+        "name": "footerChecked",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerReset",
+        "type": "boolean"
+      },
+      {
+        "name": "footerResetIcon",
+        "type": "LucideIcon"
+      },
+      {
+        "name": "footerResetLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "guide",
+        "type": "string"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "inputValue",
+        "type": "string"
+      },
+      {
+        "name": "loading",
+        "type": "boolean"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "maxCount",
+        "type": "number",
+        "defaultValue": "5"
+      },
+      {
+        "name": "maxText",
+        "type": "string"
+      },
+      {
+        "name": "multiple",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "onAdd",
+        "type": "((files: FileList) => void)"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onDelete",
+        "type": "((file: UploadFileItem, index: number) => void)"
+      },
+      {
+        "name": "onFooterCheckChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onFooterReset",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onInputChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onSearchChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onTemplateDownload",
+        "type": "(() => void)"
+      },
+      {
+        "name": "searchInputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "searchValue",
+        "type": "string"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showConfirm",
+        "type": "boolean"
+      },
+      {
+        "name": "templateDownloadText",
+        "type": "string",
+        "defaultValue": "양식 다운로드"
+      },
+      {
+        "name": "topArea",
+        "type": "enum"
+      },
+      {
+        "name": "uploadText",
+        "type": "string",
+        "defaultValue": "엑셀 업로드"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "420"
+      }
+    ],
+    "FormModal": [
+      {
+        "name": "bodyClassName",
+        "type": "string"
+      },
+      {
+        "name": "bodyLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "bodyLoadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "bodyMaxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "bodyPadding",
+        "type": "string"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode",
+        "defaultValue": "취소"
+      },
+      {
+        "name": "closeOnEsc",
+        "type": "boolean"
+      },
+      {
+        "name": "closeOnOverlayClick",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum"
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerFullWidth",
+        "type": "boolean"
+      },
+      {
+        "name": "footerPadding",
+        "type": "string | null"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStartType",
+        "type": "enum"
+      },
+      {
+        "name": "initialFocus",
+        "type": "enum"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onClose",
+        "type": "() => void",
+        "required": true
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSubmit",
+        "type": "((e: FormEvent<HTMLFormElement>) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "required": true
+      },
+      {
+        "name": "placement",
+        "type": "enum"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showClose",
+        "type": "boolean"
+      },
+      {
+        "name": "showFooter",
+        "type": "boolean"
+      },
+      {
+        "name": "showHeader",
+        "type": "boolean"
+      },
+      {
+        "name": "size",
+        "type": "enum"
+      },
+      {
+        "name": "submitDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "submitText",
+        "type": "ReactNode",
+        "defaultValue": "저장"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "FormTemplateA": [
+      {
+        "name": "columnGap",
+        "type": "enum",
+        "defaultValue": "16"
+      },
+      {
+        "name": "columns",
+        "type": "enum",
+        "defaultValue": "1"
+      },
+      {
+        "name": "fields",
+        "type": "FormTemplateAField[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "labelSize",
+        "type": "enum"
+      },
+      {
+        "name": "rowGap",
+        "type": "enum",
+        "defaultValue": "16"
+      }
+    ],
+    "FormTemplateB": [
+      {
+        "name": "cellPaddingBottom",
+        "type": "enum",
+        "defaultValue": "12"
+      },
+      {
+        "name": "cellPaddingTop",
+        "type": "enum",
+        "defaultValue": "12"
+      },
+      {
+        "name": "cells",
+        "type": "FormTemplateBCell[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "columns",
+        "type": "enum",
+        "defaultValue": "1"
+      },
+      {
+        "name": "labelWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "round",
+        "type": "enum",
+        "defaultValue": "6"
+      },
+      {
+        "name": "shadow",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "subtitle",
+        "type": "ReactNode"
+      },
+      {
+        "name": "subtitleTrailing",
+        "type": "ReactNode"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "Gnb": [
+      {
+        "name": "bar",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "GnbGroup": [
+      {
+        "name": "fill",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "gap",
+        "type": "enum",
+        "defaultValue": "6"
+      },
+      {
+        "name": "justify",
+        "type": "enum",
+        "defaultValue": "start"
+      }
+    ],
+    "ImageUploadButton": [
+      {
+        "name": "accept",
+        "type": "string"
+      },
+      {
+        "name": "buttonProps",
+        "type": "UploadTriggerButtonProps",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "cancelIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "findText",
+        "type": "string"
+      },
+      {
+        "name": "footer",
+        "type": "boolean"
+      },
+      {
+        "name": "footerButtonsFill",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckbox",
+        "type": "boolean"
+      },
+      {
+        "name": "footerChecked",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerReset",
+        "type": "boolean"
+      },
+      {
+        "name": "footerResetIcon",
+        "type": "LucideIcon"
+      },
+      {
+        "name": "footerResetLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "guide",
+        "type": "string"
+      },
+      {
+        "name": "image",
+        "type": "string"
+      },
+      {
+        "name": "imageAlt",
+        "type": "string"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "inputValue",
+        "type": "string"
+      },
+      {
+        "name": "loading",
+        "type": "boolean"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number",
+        "defaultValue": "320"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onFooterCheckChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onFooterReset",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onInputChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((open: boolean) => void)"
+      },
+      {
+        "name": "onRemove",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSearchChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onSelect",
+        "type": "((file: File) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean"
+      },
+      {
+        "name": "placement",
+        "type": "string",
+        "defaultValue": "bottom-left"
+      },
+      {
+        "name": "removeText",
+        "type": "string"
+      },
+      {
+        "name": "searchInputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "searchValue",
+        "type": "string"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showConfirm",
+        "type": "boolean"
+      },
+      {
+        "name": "topArea",
+        "type": "enum"
+      },
+      {
+        "name": "triggerText",
+        "type": "string",
+        "defaultValue": "이미지 등록"
+      }
+    ],
+    "ImageUploadMenu": [
+      {
+        "name": "accept",
+        "type": "string"
+      },
+      {
+        "name": "cancelIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmIcon",
+        "type": "ElementType | null"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum"
+      },
+      {
+        "name": "findText",
+        "type": "string",
+        "defaultValue": "파일 찾기"
+      },
+      {
+        "name": "footer",
+        "type": "boolean"
+      },
+      {
+        "name": "footerButtonsFill",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckbox",
+        "type": "boolean"
+      },
+      {
+        "name": "footerChecked",
+        "type": "boolean"
+      },
+      {
+        "name": "footerCheckLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerReset",
+        "type": "boolean"
+      },
+      {
+        "name": "footerResetIcon",
+        "type": "LucideIcon"
+      },
+      {
+        "name": "footerResetLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "guide",
+        "type": "string"
+      },
+      {
+        "name": "image",
+        "type": "string"
+      },
+      {
+        "name": "imageAlt",
+        "type": "string",
+        "defaultValue": "업로드 이미지 미리보기"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "inputValue",
+        "type": "string"
+      },
+      {
+        "name": "loading",
+        "type": "boolean"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onFooterCheckChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onFooterReset",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onInputChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onRemove",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSearchChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onSelect",
+        "type": "((file: File) => void)"
+      },
+      {
+        "name": "removeText",
+        "type": "string",
+        "defaultValue": "파일 삭제"
+      },
+      {
+        "name": "searchInputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "searchValue",
+        "type": "string"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showConfirm",
+        "type": "boolean"
+      },
+      {
+        "name": "topArea",
+        "type": "enum"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "320"
+      }
+    ],
+    "InlineFieldTrigger": [
+      {
+        "name": "chevron",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "error",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "fill",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "hoverGrayText",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "hoverUnderline",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "icon",
+        "type": "IconComponent | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "interactive",
+        "type": "boolean"
+      },
+      {
+        "name": "maxWidth",
+        "type": "MaxWidth<string | number>"
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "24"
+      }
+    ],
+    "Input": [
+      {
+        "name": "comma",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "decimal",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "defaultValue",
+        "type": "string | number"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "error",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string",
+        "defaultValue": "필수 입력사항입니다."
+      },
+      {
+        "name": "formatErrorMessage",
+        "type": "string",
+        "defaultValue": "잘못된 양식입니다."
+      },
+      {
+        "name": "inputProps",
+        "type": "DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "onChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "defaultValue": "텍스트를 입력하세요"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showPasswordToggle",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "32"
+      },
+      {
+        "name": "type",
+        "type": "enum",
+        "defaultValue": "text"
+      },
+      {
+        "name": "unit",
+        "type": "string"
+      },
+      {
+        "name": "value",
+        "type": "string | number"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "solid"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "200"
+      }
+    ],
+    "JobPositionTemplate": [
+      {
+        "name": "conditionCount",
+        "type": "number",
+        "defaultValue": "4"
+      },
+      {
+        "name": "criteriaOptions",
+        "type": "JobOption[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "defaultRows",
+        "type": "JobRow[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "emptyCriteriaMessage",
+        "type": "string",
+        "defaultValue": "필수 선택사항입니다."
+      },
+      {
+        "name": "emptyJobdaDutyMessage",
+        "type": "string",
+        "defaultValue": "필수 선택사항입니다."
+      },
+      {
+        "name": "emptyJobdaGroupMessage",
+        "type": "string",
+        "defaultValue": "필수 선택사항입니다."
+      },
+      {
+        "name": "emptyMessage",
+        "type": "ReactNode",
+        "defaultValue": "(\n    <>\n      추가된 채용 분야가 없습니다\n      <br />\n      상단의 기준 및 선택값을 선택해주세요.\n    </>\n  )"
+      },
+      {
+        "name": "emptyValueMessage",
+        "type": "string",
+        "defaultValue": "필수 선택사항입니다."
+      },
+      {
+        "name": "excelUploadGuide",
+        "type": "string",
+        "defaultValue": "엑셀 양식을 다운받아 내용을 수정 후 업로드하세요.\n지원 형식: .xlsx, .xls"
+      },
+      {
+        "name": "excelUploadLabel",
+        "type": "string",
+        "defaultValue": "엑셀 대량 등록"
+      },
+      {
+        "name": "jobdaDutyOptions",
+        "type": "Record<string, JobOption[]>",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "jobdaDutyPlaceholder",
+        "type": "string",
+        "defaultValue": "직무 선택"
+      },
+      {
+        "name": "jobdaGroupOptions",
+        "type": "JobOption[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "jobdaGroupPlaceholder",
+        "type": "string",
+        "defaultValue": "직군 선택"
+      },
+      {
+        "name": "jobdaLabel",
+        "type": "string",
+        "defaultValue": "Jobda 직군/직무 매칭"
+      },
+      {
+        "name": "jobdaSameLabel",
+        "type": "string",
+        "defaultValue": "상동"
+      },
+      {
+        "name": "jobLabel",
+        "type": "string",
+        "defaultValue": "채용 분야"
+      },
+      {
+        "name": "loadLabel",
+        "type": "string",
+        "defaultValue": "채용 분야 불러오기"
+      },
+      {
+        "name": "manageLabel",
+        "type": "string",
+        "defaultValue": "관리"
+      },
+      {
+        "name": "onChange",
+        "type": "((rows: JobRow[]) => void)"
+      },
+      {
+        "name": "onExcelUpload",
+        "type": "((file: File) => void)"
+      },
+      {
+        "name": "onLoadPositions",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onRegisterCode",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onReset",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onTemplateDownload",
+        "type": "(() => void)"
+      },
+      {
+        "name": "orderLabel",
+        "type": "string",
+        "defaultValue": "순서"
+      },
+      {
+        "name": "pageTitle",
+        "type": "string",
+        "defaultValue": "채용 분야 설정"
+      },
+      {
+        "name": "ref",
+        "type": "Ref<JobPositionTemplateHandle>"
+      },
+      {
+        "name": "registerCodeLabel",
+        "type": "string",
+        "defaultValue": "채용 분야 코드 등록"
+      },
+      {
+        "name": "resetLabel",
+        "type": "string",
+        "defaultValue": "리셋"
+      },
+      {
+        "name": "showReset",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "tableHeight",
+        "type": "number | \"fill\"",
+        "defaultValue": "fill"
+      },
+      {
+        "name": "valueOptions",
+        "type": "Record<string, JobOption[]>",
+        "defaultValue": "{}"
+      }
+    ],
+    "JobPostingTemplate": [
+      {
+        "name": "addPostingLabel",
+        "type": "ReactNode",
+        "defaultValue": "공고 추가"
+      },
+      {
+        "name": "criteriaOptions",
+        "type": "JobOption[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "defaultPostings",
+        "type": "JobPosting[]"
+      },
+      {
+        "name": "jobdaDutyOptions",
+        "type": "Record<string, JobOption[]>",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "jobdaGroupOptions",
+        "type": "JobOption[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "jobTypeOptions",
+        "type": "JobOption[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "loadPostingLabel",
+        "type": "ReactNode",
+        "defaultValue": "생성된 공고 불러오기"
+      },
+      {
+        "name": "modalSize",
+        "type": "enum",
+        "defaultValue": "3xl"
+      },
+      {
+        "name": "modalTitle",
+        "type": "ReactNode",
+        "defaultValue": "채용 분야 등록"
+      },
+      {
+        "name": "onAddPosting",
+        "type": "((id: string) => void)"
+      },
+      {
+        "name": "onChange",
+        "type": "((postings: JobPosting[]) => void)"
+      },
+      {
+        "name": "onDeletePosting",
+        "type": "((id: string) => void)"
+      },
+      {
+        "name": "onLoadPosting",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onRegisterCode",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onTemplateDownload",
+        "type": "(() => void)"
+      },
+      {
+        "name": "postings",
+        "type": "JobPosting[]"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "defaultValue": "채용 공고 설정"
+      },
+      {
+        "name": "valueOptions",
+        "type": "Record<string, JobOption[]>",
+        "defaultValue": "{}"
+      }
+    ],
+    "Label": [
+      {
+        "name": "color",
+        "type": "enum",
+        "defaultValue": "default"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "required",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "14"
+      }
+    ],
+    "List": [
+      {
+        "name": "checkbox",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "checked",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "endIcon",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "highlighted",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "icon",
+        "type": "LucideIcon | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "onButtonClick",
+        "type": "((e: MouseEvent<HTMLButtonElement, MouseEvent>) => void)"
+      },
+      {
+        "name": "onCheckChange",
+        "type": "((e: CheckChangeEvent) => void)"
+      },
+      {
+        "name": "onSwitchChange",
+        "type": "((e: CheckChangeEvent) => void)"
+      },
+      {
+        "name": "radio",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "rightButton",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "rightButtonAriaLabel",
+        "type": "string",
+        "defaultValue": "더보기"
+      },
+      {
+        "name": "rightButtonIcon",
+        "type": "LucideIcon"
+      },
+      {
+        "name": "rightSlot",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "selected",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showSwitch",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "switchChecked",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "tag",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "tagText",
+        "type": "ReactNode",
+        "defaultValue": "태그"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "defaultValue": "list"
+      }
+    ],
+    "ListEmpty": [
+      {
+        "name": "message",
+        "type": "ReactNode",
+        "defaultValue": "검색 결과가 없습니다."
+      }
+    ],
+    "ListGroup": [
+      {
+        "name": "empty",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "emptyMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "gap",
+        "type": "enum"
+      },
+      {
+        "name": "maxVisible",
+        "type": "number",
+        "defaultValue": "6"
+      }
+    ],
+    "Lnb": [
+      {
+        "name": "defaultExpanded",
+        "type": "string[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "defaultValue",
+        "type": "string"
+      },
+      {
+        "name": "groups",
+        "type": "LnbGroup[]"
+      },
+      {
+        "name": "height",
+        "type": "string | number"
+      },
+      {
+        "name": "menuWrap",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: string) => void)"
+      },
+      {
+        "name": "onToggleExpand",
+        "type": "((value: string, open: boolean) => void)"
+      },
+      {
+        "name": "siteTitle",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "value",
+        "type": "string | null"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "138"
+      }
+    ],
+    "LnbMenu": [
+      {
+        "name": "depth",
+        "type": "enum",
+        "defaultValue": "1"
+      },
+      {
+        "name": "icon",
+        "type": "LucideIcon | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "iconArea",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "label",
+        "type": "ReactNode"
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "selected",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "wrap",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "LnbMenuGroup": [
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      }
+    ],
+    "LoadingIndicator": [
+      {
+        "name": "center",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "message",
+        "type": "ReactNode",
+        "defaultValue": "불러오는 중…"
+      }
+    ],
+    "MarkdownDoc": [
+      {
+        "name": "source",
+        "type": "string"
+      }
+    ],
+    "Modal": [
+      {
+        "name": "bodyClassName",
+        "type": "string"
+      },
+      {
+        "name": "bodyLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "bodyLoadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "bodyMaxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "bodyPadding",
+        "type": "string"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "closeOnEsc",
+        "type": "boolean"
+      },
+      {
+        "name": "closeOnOverlayClick",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum"
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerFullWidth",
+        "type": "boolean"
+      },
+      {
+        "name": "footerPadding",
+        "type": "string | null"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode"
+      },
+      {
+        "name": "footerStartType",
+        "type": "enum"
+      },
+      {
+        "name": "initialFocus",
+        "type": "enum"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onClose",
+        "type": "() => void",
+        "required": true
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSubmit",
+        "type": "((e: FormEvent<HTMLFormElement>) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "required": true
+      },
+      {
+        "name": "placement",
+        "type": "enum"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean"
+      },
+      {
+        "name": "showClose",
+        "type": "boolean"
+      },
+      {
+        "name": "showFooter",
+        "type": "boolean"
+      },
+      {
+        "name": "showHeader",
+        "type": "boolean"
+      },
+      {
+        "name": "size",
+        "type": "enum"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "ModalBody": [
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "padding",
+        "type": "string",
+        "defaultValue": "p-spacing-7"
+      }
+    ],
+    "ModalFooter": [
+      {
+        "name": "padding",
+        "type": "string | null",
+        "defaultValue": "null"
+      }
+    ],
+    "ModalHeader": [
+      {
+        "name": "showClose",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "ModalRoot": [
+      {
+        "name": "bodyMaxHeight",
+        "type": "string | number",
+        "defaultValue": "70vh"
+      },
+      {
+        "name": "closeOnEsc",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "closeOnOverlayClick",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "initialFocus",
+        "type": "enum",
+        "defaultValue": "container"
+      },
+      {
+        "name": "onClose",
+        "type": "() => void",
+        "required": true
+      },
+      {
+        "name": "onSubmit",
+        "type": "((e: FormEvent<HTMLFormElement>) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean",
+        "required": true
+      },
+      {
+        "name": "placement",
+        "type": "enum",
+        "defaultValue": "top"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "md"
+      }
+    ],
+    "MultiStepFormTemplate": [
+      {
+        "name": "clickableSteps",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "defaultValue",
+        "type": "string | number"
+      },
+      {
+        "name": "keepMounted",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: string | number, index: number) => void)"
+      },
+      {
+        "name": "steps",
+        "type": "MultiStepFormStep[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "value",
+        "type": "string | number"
+      }
+    ],
+    "NewTag": [
+      {
+        "name": "color",
+        "type": "enum",
+        "defaultValue": "blue"
+      }
+    ],
+    "NoticeWritingTemplate": [
+      {
+        "name": "attachAccept",
+        "type": "string"
+      },
+      {
+        "name": "attachGuide",
+        "type": "string",
+        "defaultValue": "파일을 첨부하세요 (파일당 최대 10MB)."
+      },
+      {
+        "name": "channel",
+        "type": "enum"
+      },
+      {
+        "name": "defaultBodies",
+        "type": "Partial<Record<NoticeChannel, string>>"
+      },
+      {
+        "name": "defaultChannel",
+        "type": "enum",
+        "defaultValue": "site"
+      },
+      {
+        "name": "editorMaxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "editorMinHeight",
+        "type": "string | number",
+        "defaultValue": "360"
+      },
+      {
+        "name": "editorPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "editorReadOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "enabledChannels",
+        "type": "NoticeChannel[]"
+      },
+      {
+        "name": "maxAttachments",
+        "type": "number",
+        "defaultValue": "5"
+      },
+      {
+        "name": "mergeFields",
+        "type": "(string | { label: string; value: string; })[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "onChange",
+        "type": "((values: NoticeWritingValues) => void)"
+      },
+      {
+        "name": "onChannelChange",
+        "type": "((channel: NoticeChannel) => void)"
+      },
+      {
+        "name": "showAttach",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showTabs",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "tabVariant",
+        "type": "enum",
+        "defaultValue": "fill"
+      }
+    ],
+    "Page": [
+      {
+        "name": "actions",
+        "type": "ReactNode"
+      },
+      {
+        "name": "description",
+        "type": "ReactNode"
+      },
+      {
+        "name": "descriptionActions",
+        "type": "ReactNode"
+      },
+      {
+        "name": "header",
+        "type": "ReactNode"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "paddingTop",
+        "type": "enum",
+        "defaultValue": "32"
+      },
+      {
+        "name": "stickyHeader",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "PageHeader": [
+      {
+        "name": "actions",
+        "type": "ReactNode"
+      },
+      {
+        "name": "description",
+        "type": "ReactNode"
+      },
+      {
+        "name": "descriptionActions",
+        "type": "ReactNode"
+      },
+      {
+        "name": "sticky",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "required": true
+      }
+    ],
+    "Pagination": [
+      {
+        "name": "defaultPage",
+        "type": "number",
+        "defaultValue": "1"
+      },
+      {
+        "name": "defaultPageSize",
+        "type": "number",
+        "defaultValue": "10"
+      },
+      {
+        "name": "maxButtons",
+        "type": "number",
+        "defaultValue": "10"
+      },
+      {
+        "name": "onChange",
+        "type": "((page: number) => void)"
+      },
+      {
+        "name": "onPageSizeChange",
+        "type": "((size: number) => void)"
+      },
+      {
+        "name": "page",
+        "type": "number"
+      },
+      {
+        "name": "pageSize",
+        "type": "number"
+      },
+      {
+        "name": "pageSizeOptions",
+        "type": "number[]",
+        "defaultValue": "[5, 10, 20, 50]"
+      },
+      {
+        "name": "showPageSize",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showTotal",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "totalCount",
+        "type": "number",
+        "defaultValue": "0"
+      },
+      {
+        "name": "totalPages",
+        "type": "number"
+      }
+    ],
+    "PhoneField": [
+      {
+        "name": "defaultValue",
+        "type": "string"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean"
+      },
+      {
+        "name": "error",
+        "type": "boolean"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string"
+      },
+      {
+        "name": "formatInput",
+        "type": "((raw: string) => string) | null"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string",
+        "defaultValue": "전화번호를 직접 입력하세요"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "onChange",
+        "type": "((e: { target: { value: string; source: SelectOrInputSource; }; }) => void)"
+      },
+      {
+        "name": "options",
+        "type": "(string | OptionItem)[]"
+      },
+      {
+        "name": "placement",
+        "type": "enum"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean"
+      },
+      {
+        "name": "searchable",
+        "type": "boolean"
+      },
+      {
+        "name": "selectPlaceholder",
+        "type": "string",
+        "defaultValue": "전화번호 선택"
+      },
+      {
+        "name": "selectWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "showInput",
+        "type": "boolean"
+      },
+      {
+        "name": "showSelect",
+        "type": "boolean"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "name": "width",
+        "type": "string | number"
+      }
+    ],
+    "Popover": [
+      {
+        "name": "children",
+        "type": "ReactNode | ((close: () => void) => ReactNode)"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "onOpenChange",
+        "type": "((open: boolean) => void)"
+      },
+      {
+        "name": "open",
+        "type": "boolean"
+      },
+      {
+        "name": "placement",
+        "type": "string",
+        "defaultValue": "auto"
+      },
+      {
+        "name": "trigger",
+        "type": "ReactNode"
+      }
+    ],
+    "PopoverMenu": [
+      {
+        "name": "cancelIcon",
+        "type": "ElementType | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "cancelText",
+        "type": "ReactNode",
+        "defaultValue": "취소"
+      },
+      {
+        "name": "confirmDisabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "confirmIcon",
+        "type": "ElementType | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "confirmLoading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "confirmText",
+        "type": "ReactNode",
+        "defaultValue": "확인"
+      },
+      {
+        "name": "confirmVariant",
+        "type": "enum",
+        "defaultValue": "fill"
+      },
+      {
+        "name": "footer",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "footerButtonsFill",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "footerCheckbox",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "footerChecked",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "footerCheckLabel",
+        "type": "ReactNode",
+        "defaultValue": "전체 선택"
+      },
+      {
+        "name": "footerReset",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "footerResetIcon",
+        "type": "LucideIcon"
+      },
+      {
+        "name": "footerResetLabel",
+        "type": "ReactNode",
+        "defaultValue": "초기화"
+      },
+      {
+        "name": "footerStart",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "footerText",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string",
+        "defaultValue": "텍스트를 입력하세요"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "inputValue",
+        "type": "string"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onConfirm",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onFooterCheckChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onFooterReset",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onInputChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onSearchChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "searchInputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string",
+        "defaultValue": "검색어를 입력하세요"
+      },
+      {
+        "name": "searchValue",
+        "type": "string"
+      },
+      {
+        "name": "showCancel",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showConfirm",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "topArea",
+        "type": "enum",
+        "defaultValue": "none"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "304"
+      }
+    ],
+    "PopoverMenuSection": [
+      {
+        "name": "grow",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode"
+      }
+    ],
+    "PortalProvider": [
+      {
+        "name": "container",
+        "type": "HTMLElement | null",
+        "required": true
+      }
+    ],
+    "Radio": [
+      {
+        "name": "label",
+        "type": "ReactNode"
+      }
+    ],
+    "RadioGroup": [
+      {
+        "name": "defaultValue",
+        "type": "string"
+      },
+      {
+        "name": "direction",
+        "type": "enum",
+        "defaultValue": "vertical"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "gap",
+        "type": "enum",
+        "defaultValue": "7"
+      },
+      {
+        "name": "items",
+        "type": "OptionItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: string) => void)"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      }
+    ],
+    "RightPanel": [
+      {
+        "name": "bodyPadding",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "footer",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "onClose",
+        "type": "(() => void)"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "width",
+        "type": "enum",
+        "defaultValue": "360"
+      }
+    ],
+    "ScoreSettingMenu": [
+      {
+        "name": "disablePoints",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "initialPoints",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "initialType",
+        "type": "string | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "onCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onSave",
+        "type": "((v: { type: string; points?: string; }) => void)"
+      },
+      {
+        "name": "onSkip",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onTabNext",
+        "type": "(() => void)"
+      }
+    ],
+    "ScreeningBuilderTemplate": [
+      {
+        "name": "boxHeight",
+        "type": "number",
+        "defaultValue": "800"
+      },
+      {
+        "name": "cardMenu",
+        "type": "ScreeningCardMenuSection[][]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "cardWidth",
+        "type": "string | number",
+        "defaultValue": "375"
+      },
+      {
+        "name": "defaultCards",
+        "type": "ScreeningCard[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "formulaArea",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "onAddCard",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onChange",
+        "type": "((cards: ScreeningCardSnapshot[]) => void)"
+      },
+      {
+        "name": "onFormulaChange",
+        "type": "((formulas: ScreeningZone[]) => void)"
+      }
+    ],
+    "ScreeningConditionCard": [
+      {
+        "name": "cardName",
+        "type": "string",
+        "defaultValue": "조건"
+      },
+      {
+        "name": "conditionOptions",
+        "type": "OptionItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "conditionOptionsByTab",
+        "type": "Record<string, OptionItem[]>",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "conditionPlaceholder",
+        "type": "string",
+        "defaultValue": "조건을 선택하세요"
+      },
+      {
+        "name": "conditionTabs",
+        "type": "ConditionTab[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "conditionValue",
+        "type": "ScreeningConditionValue | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "dragging",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "dragHandleProps",
+        "type": "HTMLAttributes<HTMLSpanElement>",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "onConditionChange",
+        "type": "((value: ScreeningConditionValue) => void)"
+      },
+      {
+        "name": "onDelete",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onScoreChange",
+        "type": "((value: ScreeningScoreValue) => void)"
+      },
+      {
+        "name": "scorePlaceholder",
+        "type": "string",
+        "defaultValue": "가/감점"
+      },
+      {
+        "name": "scoreValue",
+        "type": "ScreeningScoreValue | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "375"
+      }
+    ],
+    "ScreeningFormula": [
+      {
+        "name": "catalog",
+        "type": "FormulaCatalog | null"
+      },
+      {
+        "name": "checked",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "getDropLeaf",
+        "type": "(() => FormulaNode | null)"
+      },
+      {
+        "name": "inIf",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "node",
+        "type": "FormulaNode",
+        "required": true
+      },
+      {
+        "name": "onChange",
+        "type": "((nextNode: FormulaNode) => void)"
+      },
+      {
+        "name": "onCheckChange",
+        "type": "((checked: boolean) => void)"
+      },
+      {
+        "name": "onDelete",
+        "type": "(() => void)"
+      },
+      {
+        "name": "root",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "formula"
+      }
+    ],
+    "ScreeningIndividualSettingModal": [
+      {
+        "name": "fitnessOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "items",
+        "type": "OptionItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "onClose",
+        "type": "() => void",
+        "required": true
+      },
+      {
+        "name": "onConfirm",
+        "type": "((payload: IndividualSetting) => void)"
+      },
+      {
+        "name": "value",
+        "type": "IndividualSetting | null",
+        "defaultValue": "null"
+      }
+    ],
+    "ScrollArea": [
+      {
+        "name": "contentClassName",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "horizontal",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "maxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "onScroll",
+        "type": "((e: UIEvent<HTMLDivElement, UIEvent>) => void)"
+      },
+      {
+        "name": "onViewport",
+        "type": "((el: HTMLDivElement | null) => void)"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "default"
+      },
+      {
+        "name": "vScrollEl",
+        "type": "HTMLElement | null",
+        "defaultValue": "null"
+      }
+    ],
+    "SearchBar": [
+      {
+        "name": "defaultValue",
+        "type": "string"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "onChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onSubmit",
+        "type": "((value: string) => void)"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "defaultValue": "검색어를 입력하세요"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "200"
+      }
+    ],
+    "SegmentControlButton": [
+      {
+        "name": "icon",
+        "type": "LucideIcon | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "leftIcon",
+        "type": "LucideIcon | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "rightIcon",
+        "type": "LucideIcon | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "selected",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "32"
+      }
+    ],
+    "SegmentControlGroup": [
+      {
+        "name": "defaultValue",
+        "type": "string | number"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "gap",
+        "type": "enum",
+        "defaultValue": "5"
+      },
+      {
+        "name": "items",
+        "type": "SegmentControlItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: string | number) => void)"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "32"
+      },
+      {
+        "name": "value",
+        "type": "string | number"
+      }
+    ],
+    "SegmentedTabs": [
+      {
+        "name": "defaultValue",
+        "type": "string | number"
+      },
+      {
+        "name": "items",
+        "type": "SegmentedTabItem<V>[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: V) => void)"
+      },
+      {
+        "name": "value",
+        "type": "string | number | null"
+      },
+      {
+        "name": "width",
+        "type": "string | number"
+      }
+    ],
+    "Select": [
+      {
+        "name": "ariaLabel",
+        "type": "string"
+      },
+      {
+        "name": "color",
+        "type": "enum",
+        "defaultValue": "gray"
+      },
+      {
+        "name": "confirm",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "confirmSeed",
+        "type": "string[]"
+      },
+      {
+        "name": "defaultOpen",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "defaultValue",
+        "type": "string | string[]",
+        "defaultValue": ""
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "emptyMessage",
+        "type": "string",
+        "defaultValue": "옵션이 없습니다."
+      },
+      {
+        "name": "error",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string",
+        "defaultValue": "필수 선택사항입니다."
+      },
+      {
+        "name": "label",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "maxWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "multiple",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "noResultMessage",
+        "type": "string",
+        "defaultValue": "검색 결과가 없습니다."
+      },
+      {
+        "name": "onChange",
+        "type": "((e: { target: { value: string; }; }) => void) | ((e: { target: { value: string[]; }; }) => void)"
+      },
+      {
+        "name": "options",
+        "type": "OptionItem[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "defaultValue": "선택하세요"
+      },
+      {
+        "name": "placement",
+        "type": "enum",
+        "defaultValue": "auto"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "searchable",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string",
+        "defaultValue": "검색어를 입력하세요"
+      },
+      {
+        "name": "selectAllLabel",
+        "type": "ReactNode",
+        "defaultValue": "전체 선택"
+      },
+      {
+        "name": "size",
+        "type": "enum",
+        "defaultValue": "24"
+      },
+      {
+        "name": "tabOpens",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "string | string[] | null"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "box"
+      },
+      {
+        "name": "weight",
+        "type": "enum",
+        "defaultValue": "normal"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "200"
+      }
+    ],
+    "SelectChip": [
+      {
+        "name": "ariaLabel",
+        "type": "string"
+      },
+      {
+        "name": "color",
+        "type": "enum"
+      },
+      {
+        "name": "confirm",
+        "type": "boolean"
+      },
+      {
+        "name": "confirmSeed",
+        "type": "string[]"
+      },
+      {
+        "name": "defaultOpen",
+        "type": "boolean"
+      },
+      {
+        "name": "defaultValue",
+        "type": "string | string[]"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean"
+      },
+      {
+        "name": "emptyMessage",
+        "type": "string"
+      },
+      {
+        "name": "error",
+        "type": "boolean"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string"
+      },
+      {
+        "name": "label",
+        "type": "ReactNode"
+      },
+      {
+        "name": "maxWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "multiple",
+        "type": "boolean"
+      },
+      {
+        "name": "noResultMessage",
+        "type": "string"
+      },
+      {
+        "name": "onChange",
+        "type": "((e: { target: { value: string; }; }) => void) | ((e: { target: { value: string[]; }; }) => void)"
+      },
+      {
+        "name": "options",
+        "type": "OptionItem[]"
+      },
+      {
+        "name": "placeholder",
+        "type": "string"
+      },
+      {
+        "name": "placement",
+        "type": "enum"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean"
+      },
+      {
+        "name": "searchable",
+        "type": "boolean"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string"
+      },
+      {
+        "name": "selectAllLabel",
+        "type": "ReactNode"
+      },
+      {
+        "name": "size",
+        "type": "enum"
+      },
+      {
+        "name": "tabOpens",
+        "type": "boolean"
+      },
+      {
+        "name": "value",
+        "type": "string | string[] | null"
+      },
+      {
+        "name": "variant",
+        "type": "enum"
+      },
+      {
+        "name": "weight",
+        "type": "enum"
+      },
+      {
+        "name": "width",
+        "type": "string | number"
+      }
+    ],
+    "SelectGroup": [
+      {
+        "name": "direction",
+        "type": "enum",
+        "defaultValue": "horizontal"
+      },
+      {
+        "name": "gap",
+        "type": "enum",
+        "defaultValue": "5"
+      },
+      {
+        "name": "width",
+        "type": "enum",
+        "defaultValue": "hug"
+      }
+    ],
+    "SelectOrInput": [
+      {
+        "name": "defaultValue",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "error",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string"
+      },
+      {
+        "name": "formatInput",
+        "type": "((raw: string) => string)"
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string",
+        "defaultValue": "직접 입력하세요"
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "menuWidth",
+        "type": "string | number"
+      },
+      {
+        "name": "onChange",
+        "type": "((e: { target: { value: string; source: SelectOrInputSource; }; }) => void)"
+      },
+      {
+        "name": "options",
+        "type": "(string | OptionItem)[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "placement",
+        "type": "enum",
+        "defaultValue": "auto"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "searchable",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "selectPlaceholder",
+        "type": "string",
+        "defaultValue": "선택하세요"
+      },
+      {
+        "name": "selectWidth",
+        "type": "string | number",
+        "defaultValue": "160"
+      },
+      {
+        "name": "showInput",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showSelect",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "400"
+      }
+    ],
+    "SideNavigation": [
+      {
+        "name": "addLabel",
+        "type": "ReactNode",
+        "defaultValue": "add menu"
+      },
+      {
+        "name": "addPosition",
+        "type": "enum",
+        "defaultValue": "bottom"
+      },
+      {
+        "name": "line",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "onAdd",
+        "type": "(() => void)"
+      },
+      {
+        "name": "showAdd",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "180"
+      }
+    ],
+    "SideNavigationButton": [
+      {
+        "name": "actions",
+        "type": "ReactNode"
+      },
+      {
+        "name": "icon",
+        "type": "ElementType"
+      },
+      {
+        "name": "line",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "newTagColor",
+        "type": "enum",
+        "defaultValue": "blue"
+      },
+      {
+        "name": "overflow",
+        "type": "enum",
+        "defaultValue": "ellipsis"
+      },
+      {
+        "name": "selected",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "showArrow",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showNewTag",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "SideNavigationTemplate": [
+      {
+        "name": "adding",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "addLabel",
+        "type": "string",
+        "defaultValue": "add menu"
+      },
+      {
+        "name": "addPlaceholder",
+        "type": "string",
+        "defaultValue": "이름 입력"
+      },
+      {
+        "name": "addPosition",
+        "type": "enum",
+        "defaultValue": "top"
+      },
+      {
+        "name": "defaultSelectedId",
+        "type": "string"
+      },
+      {
+        "name": "deleteLabel",
+        "type": "string",
+        "defaultValue": "삭제"
+      },
+      {
+        "name": "editable",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "height",
+        "type": "string | number"
+      },
+      {
+        "name": "line",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "menus",
+        "type": "SideNavigationMenu[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "navWidth",
+        "type": "number",
+        "defaultValue": "180"
+      },
+      {
+        "name": "onAdd",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onAddCancel",
+        "type": "(() => void)"
+      },
+      {
+        "name": "onAddSubmit",
+        "type": "((label: string) => void)"
+      },
+      {
+        "name": "onDeleteMenu",
+        "type": "((id: string) => void)"
+      },
+      {
+        "name": "onRenameMenu",
+        "type": "((id: string, label: string) => void)"
+      },
+      {
+        "name": "onSelect",
+        "type": "((id: string) => void)"
+      },
+      {
+        "name": "overflow",
+        "type": "enum",
+        "defaultValue": "ellipsis"
+      },
+      {
+        "name": "renameLabel",
+        "type": "string",
+        "defaultValue": "이름 수정"
+      },
+      {
+        "name": "selectedId",
+        "type": "string"
+      },
+      {
+        "name": "showAdd",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showArrow",
+        "type": "boolean",
+        "defaultValue": "true"
+      }
+    ],
+    "Slot": [
+      {
+        "name": "children",
+        "type": "ReactNode",
+        "required": true
+      },
+      {
+        "name": "content",
+        "type": "ReactNode"
+      },
+      {
+        "name": "ref",
+        "type": "Ref<unknown>"
+      }
+    ],
+    "Stepper": [
+      {
+        "name": "items",
+        "type": "StepperItem[]",
+        "required": true
+      },
+      {
+        "name": "onStepClick",
+        "type": "((value: string | number, index: number) => void)"
+      },
+      {
+        "name": "value",
+        "type": "string | number"
+      }
+    ],
+    "Switch": [
+      {
+        "name": "label",
+        "type": "ReactNode"
+      }
+    ],
+    "Table": [
+      {
+        "name": "bordered",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "columns",
+        "type": "TableColumn[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "draggableRows",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "dragHandleColKey",
+        "type": "string"
+      },
+      {
+        "name": "emptyMessage",
+        "type": "ReactNode",
+        "defaultValue": "데이터가 없습니다."
+      },
+      {
+        "name": "filters",
+        "type": "Record<string, unknown>"
+      },
+      {
+        "name": "getRowSelectionAriaLabel",
+        "type": "((row: TableRowData) => string)"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "loadingMessage",
+        "type": "ReactNode",
+        "defaultValue": "불러오는 중…"
+      },
+      {
+        "name": "maxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "minHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "minWidth",
+        "type": "number"
+      },
+      {
+        "name": "onFilterChange",
+        "type": "((filters: Record<string, unknown>) => void)"
+      },
+      {
+        "name": "onRowClick",
+        "type": "((row: TableRowData) => void)"
+      },
+      {
+        "name": "onRowsReorder",
+        "type": "((rows: TableRowData[]) => void)"
+      },
+      {
+        "name": "onSelectChange",
+        "type": "((selectedIds: TableRowKey[]) => void)"
+      },
+      {
+        "name": "onSortChange",
+        "type": "((sort: TableSort | null) => void)"
+      },
+      {
+        "name": "rowDragLabel",
+        "type": "((row: TableRowData) => ReactNode)"
+      },
+      {
+        "name": "rowKey",
+        "type": "string",
+        "defaultValue": "id"
+      },
+      {
+        "name": "rows",
+        "type": "TableRowData[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "scrollX",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "selectable",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "selectedIds",
+        "type": "TableRowKey[]"
+      },
+      {
+        "name": "sort",
+        "type": "TableSort | null"
+      },
+      {
+        "name": "wrap",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "TableTemplate": [
+      {
+        "name": "actions",
+        "type": "TableTemplateSlot",
+        "defaultValue": "null"
+      },
+      {
+        "name": "bordered",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "buttonGroupGap",
+        "type": "enum",
+        "defaultValue": "5"
+      },
+      {
+        "name": "columns",
+        "type": "TableTemplateColumn[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "defaultPageSize",
+        "type": "number",
+        "defaultValue": "10"
+      },
+      {
+        "name": "draggableRows",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "dragHandleColKey",
+        "type": "string"
+      },
+      {
+        "name": "emptyMessage",
+        "type": "ReactNode"
+      },
+      {
+        "name": "loading",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "maxButtons",
+        "type": "number"
+      },
+      {
+        "name": "maxHeight",
+        "type": "string | number"
+      },
+      {
+        "name": "minWidth",
+        "type": "number",
+        "defaultValue": "720"
+      },
+      {
+        "name": "onPageChange",
+        "type": "((page: number) => void)"
+      },
+      {
+        "name": "onPageSizeChange",
+        "type": "((size: number) => void)"
+      },
+      {
+        "name": "onRowClick",
+        "type": "((row: TableRowData) => void)"
+      },
+      {
+        "name": "onRowsReorder",
+        "type": "((rows: TableRowData[]) => void)"
+      },
+      {
+        "name": "onSelectChange",
+        "type": "((ids: (string | number)[]) => void)"
+      },
+      {
+        "name": "page",
+        "type": "number"
+      },
+      {
+        "name": "pageSize",
+        "type": "number"
+      },
+      {
+        "name": "pageSizeOptions",
+        "type": "number[]"
+      },
+      {
+        "name": "pagination",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "paginationClassName",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "rightActions",
+        "type": "TableTemplateSlot",
+        "defaultValue": "null"
+      },
+      {
+        "name": "rightSelects",
+        "type": "TableTemplateSlot",
+        "defaultValue": "null"
+      },
+      {
+        "name": "rowDragLabel",
+        "type": "((row: TableRowData) => ReactNode)"
+      },
+      {
+        "name": "rowKey",
+        "type": "string",
+        "defaultValue": "id"
+      },
+      {
+        "name": "rows",
+        "type": "TableRowData[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "searchable",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "searchKeys",
+        "type": "string[]"
+      },
+      {
+        "name": "searchPlaceholder",
+        "type": "string",
+        "defaultValue": "검색어를 입력하세요"
+      },
+      {
+        "name": "searchWidth",
+        "type": "string | number",
+        "defaultValue": "200"
+      },
+      {
+        "name": "selectable",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "selectedIds",
+        "type": "(string | number)[]"
+      },
+      {
+        "name": "selectGroupGap",
+        "type": "enum",
+        "defaultValue": "5"
+      },
+      {
+        "name": "selects",
+        "type": "TableTemplateSlot",
+        "defaultValue": "null"
+      },
+      {
+        "name": "showPageSize",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "showTotal",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "title",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "wrap",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "TabMenu": [
+      {
+        "name": "icon",
+        "type": "LucideIcon | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "selected",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "tag",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "tagText",
+        "type": "ReactNode",
+        "defaultValue": "태그"
+      },
+      {
+        "name": "tagType",
+        "type": "enum",
+        "defaultValue": "blue"
+      }
+    ],
+    "Tabs": [
+      {
+        "name": "defaultValue",
+        "type": "TabValue"
+      },
+      {
+        "name": "items",
+        "type": "(Omit<TabItem, \"value\"> & { value: V; })[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "onChange",
+        "type": "((value: V) => void)"
+      },
+      {
+        "name": "rightSlot",
+        "type": "ReactNode",
+        "defaultValue": "null"
+      },
+      {
+        "name": "value",
+        "type": "TabValue"
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "hug"
+      }
+    ],
+    "Tag": [
+      {
+        "name": "color",
+        "type": "enum",
+        "defaultValue": "blue"
+      },
+      {
+        "name": "width",
+        "type": "enum",
+        "defaultValue": "hug"
+      }
+    ],
+    "TextArea": [
+      {
+        "name": "autoGrow",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "defaultValue",
+        "type": "string"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "error",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string",
+        "defaultValue": "필수 입력사항입니다."
+      },
+      {
+        "name": "maxLength",
+        "type": "number"
+      },
+      {
+        "name": "maxRows",
+        "type": "number"
+      },
+      {
+        "name": "onChange",
+        "type": "((e: ChangeEvent<HTMLTextAreaElement, Element>) => void)"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "defaultValue": "텍스트를 입력하세요"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "rows",
+        "type": "number",
+        "defaultValue": "4"
+      },
+      {
+        "name": "showCount",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "textareaProps",
+        "type": "DetailedHTMLProps<TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "value",
+        "type": "string"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "320"
+      }
+    ],
+    "TimeField": [
+      {
+        "name": "className",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "defaultValue",
+        "type": "string | null",
+        "defaultValue": "null"
+      },
+      {
+        "name": "disabled",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "error",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string",
+        "defaultValue": "필수 선택사항입니다."
+      },
+      {
+        "name": "formatErrorMessage",
+        "type": "string",
+        "defaultValue": "잘못된 양식입니다."
+      },
+      {
+        "name": "onChange",
+        "type": "((value: string | null) => void)"
+      },
+      {
+        "name": "placeholder",
+        "type": "string",
+        "defaultValue": "시간을 선택하세요"
+      },
+      {
+        "name": "readOnly",
+        "type": "boolean",
+        "defaultValue": "false"
+      },
+      {
+        "name": "value",
+        "type": "string | null"
+      },
+      {
+        "name": "width",
+        "type": "string | number"
+      }
+    ],
+    "Tooltip": [
+      {
+        "name": "beak",
+        "type": "enum",
+        "defaultValue": "top"
+      },
+      {
+        "name": "className",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "variant",
+        "type": "enum",
+        "defaultValue": "error"
+      }
+    ],
+    "TruncatingText": [
+      {
+        "name": "as",
+        "type": "ElementType",
+        "defaultValue": "p"
+      },
+      {
+        "name": "helpCursor",
+        "type": "boolean",
+        "defaultValue": "false"
+      }
+    ],
+    "TwoDepthList": [
+      {
+        "name": "allowedChars",
+        "type": "RegExp | null",
+        "defaultValue": "/\\d/"
+      },
+      {
+        "name": "editable",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "errorMessage",
+        "type": "string",
+        "defaultValue": "잘못된 양식입니다."
+      },
+      {
+        "name": "inputPlaceholder",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "inputProps",
+        "type": "Omit<DetailedHTMLProps<InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>, \"ref\">",
+        "defaultValue": "{}"
+      },
+      {
+        "name": "inputValue",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "leftOptions",
+        "type": "TwoDepthOption[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "leftValue",
+        "type": "string | number"
+      },
+      {
+        "name": "maxVisible",
+        "type": "number",
+        "defaultValue": "5"
+      },
+      {
+        "name": "onInputApply",
+        "type": "((text: string) => string | boolean | TwoDepthApplyError | null)"
+      },
+      {
+        "name": "onInputChange",
+        "type": "((e: ChangeEvent<HTMLInputElement, Element>) => void)"
+      },
+      {
+        "name": "onLeftChange",
+        "type": "((value: string | number) => void)"
+      },
+      {
+        "name": "onRightChange",
+        "type": "((value: string | number) => void)"
+      },
+      {
+        "name": "rightOptions",
+        "type": "TwoDepthOption[]",
+        "defaultValue": "[]"
+      },
+      {
+        "name": "rightValue",
+        "type": "string | number"
+      },
+      {
+        "name": "separator",
+        "type": "string",
+        "defaultValue": ":"
+      },
+      {
+        "name": "showInput",
+        "type": "boolean",
+        "defaultValue": "true"
+      },
+      {
+        "name": "width",
+        "type": "string | number",
+        "defaultValue": "160"
+      }
+    ],
+    "UsageExample": [
+      {
+        "name": "className",
+        "type": "string",
+        "defaultValue": ""
+      },
+      {
+        "name": "code",
+        "type": "string",
+        "required": true
+      },
+      {
+        "name": "note",
+        "type": "ReactNode"
+      },
+      {
+        "name": "props",
+        "type": "UsagePropRow[]"
+      },
+      {
+        "name": "title",
+        "type": "string",
+        "defaultValue": "사용 예시"
+      }
+    ]
+  }
+}

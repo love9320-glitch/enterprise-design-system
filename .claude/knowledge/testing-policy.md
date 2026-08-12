@@ -8,6 +8,7 @@
 |---|---|---|---|
 | PR 게이트 | Vitest + RTL + axe (jsdom) | 모든 PR (CI `verify`) | 로직·상태·키보드 흐름·ARIA 계약·axe 위반 0 |
 | 소비자 스모크 | npm pack → 설치 → tsc·vite build | 모든 PR (CI `verify`) | 배럴 누락·엔트리 의존 오염(tiptap 등)·타입 산출물 |
+| API 변경 감지 | `check:api` — export·props 스냅샷 비교(`api-surface.json`) | 모든 PR (CI `verify`) | 의도치 않은 breaking(export/prop 제거·필수화) 차단, 의도한 변경은 `update:api` 커밋 diff가 semver 판정 근거 |
 | 배포 스모크 | Playwright Chromium | main 머지 → Pages 배포 후 (deploy.yml `smoke`) | 실배포본 생존 확인 — 버전 배지(전파 바운디드 재시도)·핵심 페이지 렌더·콘솔 에러 0·리소스 실패 0 |
 
 - 뷰포트는 **1440px 데스크톱만**(ATS=데스크톱 관리자 제품, 모바일 보류).
