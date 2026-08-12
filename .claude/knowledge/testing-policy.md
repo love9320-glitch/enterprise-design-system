@@ -7,7 +7,7 @@
 | 층 | 도구 | 실행 시점 | 담당 |
 |---|---|---|---|
 | PR 게이트 | Vitest + RTL + axe (jsdom) | 모든 PR (CI `verify`) | 로직·상태·키보드 흐름·ARIA 계약·axe 위반 0 |
-| 소비자 스모크 | npm pack → 설치 → tsc·vite build | 모든 PR (CI `verify`) | 배럴 누락·엔트리 의존 오염(tiptap 등)·타입 산출물 |
+| 소비자 스모크 | npm pack → 설치 → tsc·vite build (픽스처 2종: 본체=tiptap 미설치·editor=tiptap 설치) | 모든 PR (CI `verify`) | 배럴 누락·엔트리 의존 오염·./editor 서브패스·타입 산출물 |
 | API 변경 감지 | `check:api` — export·props 스냅샷 비교(`api-surface.json`) | 모든 PR (CI `verify`) | 의도치 않은 breaking(export/prop 제거·필수화) 차단, 의도한 변경은 `update:api` 커밋 diff가 semver 판정 근거 |
 | 배포 스모크 | Playwright Chromium | main 머지 → Pages 배포 후 (deploy.yml `smoke`) | 실배포본 생존 확인 — 버전 배지(전파 바운디드 재시도)·핵심 페이지 렌더·콘솔 에러 0·리소스 실패 0 |
 
@@ -38,3 +38,4 @@ jsdom으로 재현 불가한 버그가 아래 유형으로 실제 발생하면 �
 - 테스트 87개(단위 49 + a11y 17 + 키보드 흐름 23 중 경계 15 포함) / 컴포넌트 하네스 axe 17대상
 - DatePicker 캘린더 그리드 방향키 내비게이션은 미구현 backlog(테스트 파일 주석 참조)
 - API 감사 리포트: `api-audit-2026-08.md`
+- 접근성 계약: `design-system/ACCESSIBILITY.md`(Modal·Select·DatePicker·Table — components.json accessibility 필드 원본, 동작 변경 시 문서·테스트 동시 갱신)
