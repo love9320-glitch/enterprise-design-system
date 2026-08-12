@@ -74,8 +74,11 @@ export default {
 | `@gusun/design-system/tokens` | 디자인 토큰 값(색·간격·라운드·타이포) | |
 | `@gusun/design-system/preset` | Tailwind preset(토큰 theme + safelist) | |
 | `@gusun/design-system/styles.css` | 컴파일된 전체 스타일 한 장 | Tailwind 불필요 |
+| `@gusun/design-system/components.json` | **AI가 읽는 컴포넌트 매니페스트** — 98개 컴포넌트의 props·기본값·사용 규칙·데모 위치 | AI 코딩 도구에 컨텍스트로 제공 |
 
 동작 훅(`usePopoverPosition`·`useOutsideDismiss`·`useFocusTrap`·`usePanelKeyboard` 등)도 메인 엔트리에서 export됩니다 — 디자인은 직접 만들되 동작만 재사용할 수 있습니다(자세한 건 커스텀 가이드 3단계).
+
+**AI 코딩 도구와 함께 쓰기** — `components.json`은 이 패키지의 모든 컴포넌트를 기계가 읽는 형태(이름·props·타입·기본값·사용 규칙·표준 카피·조립 순서)로 담고 있습니다. Claude Code·Copilot 등 AI 도구에게 `node_modules/@gusun/design-system/dist-lib/components.json`을 읽게 하면, 이 시스템의 규칙에 맞는 코드를 처음부터 정확히 생성합니다. TypeScript 소스와 규칙서에서 배포 시점에 자동 생성되므로 항상 코드와 일치합니다.
 
 ## 컴포넌트 API
 
@@ -177,6 +180,18 @@ export default {
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
 ## 변경 내역
+
+### v1.7.0 (2026-08-12)
+
+**Input 입력 타입(type) — 지원서 폼 대응**
+- `type` 옵션 신설: `number`(숫자만 + `decimal` 소수점·`comma` 천단위 자동) · `password`(마스킹+눈 토글, 점은 크고 중앙에 렌더) · `email`/`url`(blur 시 형식 검증 → "잘못된 양식입니다." 툴팁) · `tel`(하이픈 자동) · `korean`/`english`(허용 문자 필터, IME 조합 안전)
+- `unit` 옵션: 우측 단위 suffix("원"·"점"·"년") — 회색 고정
+- Figma `input unit`/`input password` 계열 4세트 Code Connect 연결
+
+**components.json — AI가 읽는 컴포넌트 매니페스트 (신규 엔트리)**
+- 98개 컴포넌트의 props·타입·기본값·사용 규칙·표준 카피·조립 순서를 기계가 읽는 JSON으로 동봉
+- AI 코딩 도구(Claude Code·Copilot 등)에 `dist-lib/components.json`을 읽히면 이 시스템 규칙에 맞는 코드를 정확히 생성합니다
+- TypeScript 소스 + 규칙서 카탈로그에서 배포 시점에 자동 생성 — 항상 코드와 일치
 
 ### v1.6.0 (2026-08-11)
 
