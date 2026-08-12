@@ -32,6 +32,7 @@ import {
   createContext,
   useContext,
   useEffect,
+  useId,
   useLayoutEffect,
   useMemo,
   useRef,
@@ -83,6 +84,9 @@ const SIZE_WIDTH = {
 //  - injectedFooterStart: 본문 자식이 ModalFooterStartContext로 주입한 푸터 좌측 콘텐츠
 interface ModalRootContextValue {
   onClose: () => void;
+  /** 헤더 타이틀(h2)의 id — ModalHeader가 h2에 달고, Root가 aria-labelledby로 연결(접근성) */
+  titleId: string;
+  setTitleEl: (el: HTMLElement | null) => void;
   setHeaderEl: (el: HTMLElement | null) => void;
   setFooterEl: (el: HTMLElement | null) => void;
   setContentEl: (el: HTMLElement | null) => void;
@@ -118,6 +122,8 @@ export interface ModalRootProps
   bodyMaxHeight?: number | string;
   /** 주면 헤더~푸터를 <form>으로 감싸고, Easy API 주동작 버튼이 type=submit이 된다 */
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void;
+  /** 열릴 때 포커스 진입 대상 — 'container'(기본, 박스 자체) | 'first'(첫 포커스 가능 요소) */
+  initialFocus?: 'container' | 'first';
 }
 
 export function ModalRoot({
@@ -130,11 +136,15 @@ export function ModalRoot({
   closeOnEsc = true,
   bodyMaxHeight = '70vh',
   onSubmit,
+  initialFocus = 'container',
   className = '',
   ...props
 }: ModalRootProps) {
   const portalContainer = usePortalContainer();
   const boxRef = useRef<HTMLDivElement | null>(null);
+  const titleId = useId();
+  // 헤더 타이틀 등록 — 있으면 박스에 aria-labelledby 연결(없으면 aria-label 폴백 유지)
+  const [titleEl, setTitleEl] = useState<HTMLElement | null>(null);
   // 슬롯 등록 — Header/Footer/Body(content)가 callback ref로 자기 DOM을 등록한다.
   // ref 객체 대신 state를 쓰는 이유: 등록 시점에 측정 effect가 다시 돌아야 하기 때문.
   const [headerEl, setHeaderEl] = useState<HTMLElement | null>(null);
@@ -197,7 +207,7 @@ export function ModalRoot({
 
   // 포커스 트랩 + 복원(접근성) — 열릴 때 박스로 진입, Tab을 박스 안에 가두고, 닫힐 때 원래 포커스 복원.
   // 중첩 모달은 각자 자기 박스에 트랩(스택 조율 불필요), 내부 위젯이 처리한 Tab은 존중한다.
-  useFocusTrap(open, boxRef);
+  useFocusTrap(open, boxRef, { initialFocus });
 
   // 레이아웃 계산 — header/footer/본문 자연 높이를 측정해 top 여백과 ModalBody maxHeight를 정한다.
   // 슬롯 등록(headerEl 등)이 바뀌면 다시 돈다 — 조립형에서 Header/Footer 유무가 자유이기 때문.
@@ -263,6 +273,8 @@ export function ModalRoot({
   const ctxValue = useMemo<ModalRootContextValue>(
     () => ({
       onClose,
+      titleId,
+      setTitleEl,
       setHeaderEl,
       setFooterEl,
       setContentEl,
@@ -272,7 +284,7 @@ export function ModalRoot({
       injectedFooterStart,
       setInjectedFooterStart,
     }),
-    [onClose, layout, bodyMaxHeight, onSubmit, injectedFooterStart],
+    [onClose, titleId, layout, bodyMaxHeight, onSubmit, injectedFooterStart],
   );
 
   if (!open) return null;
@@ -318,6 +330,7 @@ export function ModalRoot({
           tabIndex={-1}
           role="dialog"
           aria-modal="true"
+          aria-labelledby={titleEl ? titleId : undefined}
           className={`flex ${minWClass} max-w-[calc(100vw-32px)] flex-col gap-spacing-1 overflow-hidden rounded-round-6 bg-modal-inline shadow-[0px_4px_6px_0px_rgba(0,0,0,0.08)] outline-none ring-1 ring-modal-outline ${SIZE_WIDTH[size]} ${className}`}
           style={boxMaxHStyle}
           {...props}
@@ -349,7 +362,7 @@ export function ModalHeader({
   className = '',
   ...props
 }: ModalHeaderProps) {
-  const { setHeaderEl, onClose } = useModalRootContext('Modal.Header');
+  const { setHeaderEl, setTitleEl, titleId, onClose } = useModalRootContext('Modal.Header');
   return (
     <header
       ref={setHeaderEl}
@@ -357,7 +370,11 @@ export function ModalHeader({
       {...props}
     >
       <div className="flex min-w-0 flex-1 items-center gap-spacing-5">
-        {title != null && <h2 className="text-15 font-semibold text-font-icon-5">{title}</h2>}
+        {title != null && (
+          <h2 ref={setTitleEl} id={titleId} className="text-15 font-semibold text-font-icon-5">
+            {title}
+          </h2>
+        )}
         {children}
       </div>
       {showClose && (
@@ -553,6 +570,8 @@ export interface ModalProps
   bodyLoadingMessage?: ReactNode;
   /** 주면 본문+푸터를 <form>으로 감싸고 주동작 버튼 type=submit */
   onSubmit?: (e: FormEvent<HTMLFormElement>) => void;
+  /** 열릴 때 포커스 진입 대상 — 'container'(기본) | 'first'(첫 포커스 가능 요소) */
+  initialFocus?: 'container' | 'first';
 }
 
 // Easy API — 정해진 UX를 props로 빠르게 조립(90% 케이스). 내부는 조립형(Root/Header/Body/Footer)
@@ -588,6 +607,7 @@ function ModalBase({
   bodyLoading = false,
   bodyLoadingMessage,
   onSubmit,
+  initialFocus = 'container',
   className = '',
   ...props
 }: ModalProps) {
@@ -601,6 +621,7 @@ function ModalBase({
       closeOnEsc={closeOnEsc}
       bodyMaxHeight={bodyMaxHeight}
       onSubmit={onSubmit}
+      initialFocus={initialFocus}
       aria-label={typeof title === 'string' ? title : undefined}
       className={className}
       {...props}
