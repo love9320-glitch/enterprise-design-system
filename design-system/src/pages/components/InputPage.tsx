@@ -18,7 +18,15 @@ const [name, setName] = useState('');
 
 // transparent — 박스·배경·링 없이 텍스트만(가로 패딩 0). 플레이스홀더도 filled와 같은 진한색,
 // 포커스에도 링이 없다. 셀·구획 안에 인풋을 플러시하게 얹을 때 사용(에러 툴팁은 동일).
-<Input variant="transparent" placeholder="텍스트를 입력하세요" />`;
+<Input variant="transparent" placeholder="텍스트를 입력하세요" />
+
+// 입력 타입(type) — 필터·자동 포맷·형식 검증
+<Input type="number" comma unit="원" placeholder="희망 연봉" />   // 숫자만+천단위 콤마+단위
+<Input type="password" placeholder="비밀번호" />                  // 마스킹+눈 토글
+<Input type="email" placeholder="이메일" />                       // blur 시 형식 검증(잘못된 양식입니다.)
+<Input type="tel" placeholder="전화번호" />                       // 하이픈 자동(010-9358-9320)
+<Input type="url" placeholder="포트폴리오 링크" />                 // blur 시 형식 검증
+<Input type="korean" placeholder="이름(한글)" />                  // 한글만 입력`;
 
 const USAGE_PROPS = [
   { name: 'value', type: 'string', default: '—', desc: '입력값 (제어 컴포넌트로 쓸 때)' },
@@ -27,6 +35,11 @@ const USAGE_PROPS = [
   { name: 'placeholder', type: 'string', default: "'텍스트를 입력하세요'", desc: '플레이스홀더 문구' },
   { name: 'size', type: "'32' | '22'", default: "'32'", desc: "높이 — 32(text-14) / 22(작게, text-12·leading-18 핏, 좁은 셀·인라인용)" },
   { name: 'variant', type: "'solid' | 'transparent'", default: "'solid'", desc: "'transparent'=박스·배경·링 없이 텍스트만(가로 패딩 0, 플레이스홀더도 진한색, hover·포커스 시 플레이스홀더만 gray 300, 포커스 링 없음)" },
+  { name: 'type', type: "'text'|'number'|'password'|'email'|'tel'|'url'|'korean'|'english'", default: "'text'", desc: '입력 타입 — number=숫자만 / password=마스킹+눈 토글 / email·url=blur 시 형식 검증(표준 카피 툴팁) / tel=하이픈 자동 / korean·english=허용 문자 필터(IME 조합 안전)' },
+  { name: 'decimal / comma', type: 'boolean', default: 'true / false', desc: 'number 전용 — 소수점 1개 허용 / 천 단위 콤마 자동(값도 콤마 포함 문자열)' },
+  { name: 'unit', type: 'string', default: '—', desc: '우측 단위 suffix("원"·"점"·"년") — 값과 무관하게 회색(default-text) 고정, disabled 시 비활성 색' },
+  { name: 'showPasswordToggle', type: 'boolean', default: 'true', desc: 'password 전용 — 우측 눈(보기/숨김) 토글 표시' },
+  { name: 'formatErrorMessage', type: 'string', default: "'잘못된 양식입니다.'", desc: 'email/url 형식 검증 실패 툴팁 문구(표준 카피 자동 적용, 필요 시만 덮어쓰기)' },
   { name: 'disabled', type: 'boolean', default: 'false', desc: '비활성 — 입력 차단(회색)' },
   { name: 'readOnly', type: 'boolean', default: 'false', desc: '읽기 전용 — 값은 보이되 편집 불가' },
   { name: 'error', type: 'boolean', default: 'false', desc: '에러 상태 — errorMessage 툴팁 표시 + 텍스트 red 400' },
@@ -34,7 +47,7 @@ const USAGE_PROPS = [
   { name: 'width', type: 'number | string', default: '200', desc: '너비 — 숫자=px, 문자열=CSS 길이' },
   { name: 'inputProps', type: 'object', default: '{}', desc: '내부 <input>에 전달할 속성' },
   { name: 'className', type: 'string', default: "''", desc: '컨테이너 추가 클래스' },
-  { name: '(DOM 상태 꼬리표)', type: 'data-state · data-variant · data-size', default: '자동', desc: '래퍼에 자동 부착(규칙 23) — data-state는 배타 상태 하나(error > disabled > readonly > default 우선순위). 테스트 셀렉터([data-state=error])·DevTools 상태 확인용, prop 아님' },
+  { name: '(DOM 상태 꼬리표)', type: 'data-state · data-variant · data-size · data-type', default: '자동', desc: '래퍼에 자동 부착(규칙 23) — data-state는 배타 상태 하나(error > disabled > readonly > default 우선순위). 테스트 셀렉터([data-state=error])·DevTools 상태 확인용, prop 아님' },
 ];
 
 const ROWS = [
@@ -160,6 +173,52 @@ export function InputPage() {
           <div className="grid grid-cols-[120px_1fr] items-center gap-x-spacing-6">
             <p className="text-12 text-font-icon-3">width="100%"</p>
             <Input width="100%" defaultValue="가로 100%" />
+          </div>
+        </div>
+      </div>
+
+      {/* 입력 타입·단위 — Figma input unit 9275:316 / input password 9275:519 */}
+      <Divider className="mt-spacing-9 mb-spacing-8" />
+      <div>
+        <h3 className="mb-spacing-3 text-15 font-semibold text-font-icon-5">입력 타입 (type) · 단위 (unit)</h3>
+        <p className="mb-spacing-7 text-12 text-font-icon-4">
+          한 축의 <code className="text-font-icon-5">type</code> 옵션으로 허용 문자 필터·자동 포맷·형식
+          검증을 제공합니다. 직접 타이핑해 보세요 — 숫자는 콤마가 자동으로 찍히고, 전화번호는 하이픈이
+          붙고, 이메일·URL은 <span className="text-font-icon-5">포커스를 벗어날 때</span> 형식을 검사해
+          표준 카피(잘못된 양식입니다.) 툴팁을 띄웁니다.
+        </p>
+        <div className="space-y-spacing-7">
+          <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">number+unit</p>
+            <Input type="number" comma unit="원" placeholder="희망 연봉" width={240} />
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">number(점수)</p>
+            <Input type="number" decimal={false} unit="점" placeholder="점수" width={160} />
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">password</p>
+            <Input type="password" placeholder="비밀번호를 입력하세요" width={240} />
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-8">
+            <p className="pt-spacing-4 text-12 text-font-icon-3">email</p>
+            <Input type="email" placeholder="이메일 주소" width={240} />
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">tel</p>
+            <Input type="tel" placeholder="전화번호" width={240} />
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-start gap-x-spacing-6 pb-spacing-8">
+            <p className="pt-spacing-4 text-12 text-font-icon-3">url</p>
+            <Input type="url" placeholder="포트폴리오 링크" width={280} />
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">korean</p>
+            <Input type="korean" placeholder="이름(한글만)" width={200} />
+          </div>
+          <div className="grid grid-cols-[100px_1fr] items-center gap-x-spacing-6">
+            <p className="text-12 text-font-icon-3">english</p>
+            <Input type="english" placeholder="Name (English only)" width={200} />
           </div>
         </div>
       </div>

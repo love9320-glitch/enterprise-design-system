@@ -102,3 +102,169 @@ figma.connect(
     ),
   },
 );
+
+// ── input unit(9275:316) — 우측 단위 suffix(solid). 단위 텍스트는 코드 unit prop(2026-08-12) ──
+figma.connect(
+  Input,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=9275-316',
+  {
+    props: {
+      size: figma.enum('size', { '32': '32', '22': '22' }),
+      error: figma.enum('state', {
+        'Default error': true,
+        'Default hover error': true,
+        'Default focused error': true,
+        'Filled error': true,
+        'Filled hover error': true,
+        'Filled focused error': true,
+      }),
+      disabled: figma.enum('state', { Disabled: true }),
+      readOnly: figma.enum('state', { 'Read only': true }),
+      defaultValue: figma.enum('state', {
+        Filled: '텍스트 입력 완료',
+        'Filled hover': '텍스트 입력 완료',
+        'Filled focused': '텍스트 입력 완료',
+        'Filled error': '텍스트 입력 완료',
+        'Filled hover error': '텍스트 입력 완료',
+        'Filled focused error': '텍스트 입력 완료',
+        'Read only': '텍스트 입력 완료',
+      }),
+    },
+    example: ({ size, error, disabled, readOnly, defaultValue }) => (
+      <Input
+        type="number"
+        comma
+        unit="만원"
+        size={size}
+        placeholder="텍스트를 입력하세요"
+        defaultValue={defaultValue}
+        error={error}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    ),
+  },
+);
+
+// ── input transparent unit(9275:364) — 단위 suffix(transparent, 32 단일) ──
+figma.connect(
+  Input,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=9275-364',
+  {
+    props: {
+      error: figma.enum('state', {
+        'Default error': true,
+        'Default hover error': true,
+        'Default focused error': true,
+        'Filled error': true,
+        'Filled hover error': true,
+        'Filled focused error': true,
+      }),
+      disabled: figma.enum('state', { Disabled: true }),
+      readOnly: figma.enum('state', { 'Read only': true }),
+      defaultValue: figma.enum('state', {
+        Filled: '텍스트 입력 완료',
+        'Filled hover': '텍스트 입력 완료',
+        'Filled focused': '텍스트 입력 완료',
+        'Filled error': '텍스트 입력 완료',
+        'Filled hover error': '텍스트 입력 완료',
+        'Filled focused error': '텍스트 입력 완료',
+        'Read only': '텍스트 입력 완료',
+      }),
+    },
+    example: ({ error, disabled, readOnly, defaultValue }) => (
+      <Input
+        variant="transparent"
+        type="number"
+        comma
+        unit="만원"
+        placeholder="텍스트를 입력하세요"
+        defaultValue={defaultValue}
+        error={error}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    ),
+  },
+);
+
+// ── input password(9275:519) — 마스킹+눈 토글(solid). 점 색=default-text 회색(2026-08-12) ──
+figma.connect(
+  Input,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=9275-519',
+  {
+    props: {
+      size: figma.enum('size', { '32': '32', '22': '22' }),
+      error: figma.enum('state', {
+        'Default error': true,
+        'Default hover error': true,
+        'Default focused error': true,
+        'Filled error': true,
+        'Filled hover error': true,
+        'Filled focused error': true,
+      }),
+      disabled: figma.enum('state', { Disabled: true }),
+      readOnly: figma.enum('state', { 'Read only': true }),
+      defaultValue: figma.enum('state', {
+        Filled: 'password1234',
+        'Filled hover': 'password1234',
+        'Filled focused': 'password1234',
+        'Filled error': 'password1234',
+        'Filled hover error': 'password1234',
+        'Filled focused error': 'password1234',
+        'Read only': 'password1234',
+      }),
+    },
+    example: ({ size, error, disabled, readOnly, defaultValue }) => (
+      <Input
+        type="password"
+        size={size}
+        placeholder="비밀번호를 입력하세요"
+        defaultValue={defaultValue}
+        error={error}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    ),
+  },
+);
+
+// ── input transparent password(9275:589) — 마스킹+눈 토글(transparent, 32 단일) ──
+figma.connect(
+  Input,
+  'https://www.figma.com/design/h9jZFkEHfcHUGok1TZjjlP/?node-id=9275-589',
+  {
+    props: {
+      error: figma.enum('state', {
+        'Default error': true,
+        'Default hover error': true,
+        'Default focused error': true,
+        'Filled error': true,
+        'Filled hover error': true,
+        'Filled focused error': true,
+      }),
+      disabled: figma.enum('state', { Disabled: true }),
+      readOnly: figma.enum('state', { 'Read only': true }),
+      defaultValue: figma.enum('state', {
+        Filled: 'password1234',
+        'Filled hover': 'password1234',
+        'Filled focused': 'password1234',
+        'Filled error': 'password1234',
+        'Filled hover error': 'password1234',
+        'Filled focused error': 'password1234',
+        'Read only': 'password1234',
+      }),
+    },
+    example: ({ error, disabled, readOnly, defaultValue }) => (
+      <Input
+        variant="transparent"
+        type="password"
+        placeholder="비밀번호를 입력하세요"
+        defaultValue={defaultValue}
+        error={error}
+        disabled={disabled}
+        readOnly={readOnly}
+      />
+    ),
+  },
+);

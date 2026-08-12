@@ -29,6 +29,7 @@ Figma 작도 시 매번 조사하지 말고 이 ID를 바로 사용한다 (2026-
 ## 인풋·테이블·페이지네이션
 - `table` **(신) COMPONENT_SET 8187:48556 — 2026-07-03 재제작·Code Connect 재연결(SET+4변형 모두 매핑)**: state=table=**8187:48557** / table outline=8187:49672 / table outline empty=8187:50512 / table empty=8187:49252. 구 table은 사용자가 삭제. ※ table template(7725:54157) 내부 table 인스턴스는 별도 구컴포넌트 7679:6835(state=table)를 참조하며 생존 — 템플릿 정상
 - `input` SET **7202:8720** (페이지 09_input 7967:6157) — props: `placeholder#7202:7`(TEXT) · `input text#7202:22`(TEXT) · state 14종 · type=solid
+- **input 파생 4세트(2026-08-12 신설·Code Connect 연결)**: `input unit` SET **9275:316**(state 14종×size 32/22, 우측 단위 suffix — 단위 텍스트 색=solid/default text #878787) / `input transparent unit` SET **9275:364**(32 단일) / `input password` SET **9275:519**(마스킹 점 색=입력 텍스트와 동일(2026-08-12 사용자 지시 — Figma 픽셀은 회색이나 코드 기준 확정), 점 렌더=Verdana(.input-password-mask, 크고 중앙), 눈 아이콘=font_icon 5 #0d0d0d·ghost hover) / `input transparent password` SET **9275:589**(32 단일). 코드 매핑=Input(type/unit props, Input.figma.tsx)
 - `table template` SET **7725:55014** / 유일 variant **7725:54157** — 자식: table control(툴바) / table 인스턴스 / pagination 인스턴스. slot 삽입 후 `layoutSizingHorizontal="FILL"` 필수(잘림 방지)
   - table 셀 구성: 헤더 [check44, select85, textFILL, text280, text+icon100 ×2] / 데이터 [check44, tag85, textFILL, text280, text100 ×2]
 - pagination 자식: `numer list`(0,1=«‹ 아이콘, 2~11=페이지 1~10, 12,13=›») / `row count`(페이지 행 select) / `total count`(TEXT). 페이지 버튼 `setProperties({state:"selected"/"default"})`
