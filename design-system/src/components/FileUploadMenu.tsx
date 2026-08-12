@@ -106,10 +106,12 @@ export function FileUploadMenu({
         </div>
       )}
 
+      {/* 파일 행은 선택 옵션이 아니라 액션 있는 목록 — list/listitem(중첩 버튼 허용, ARIA) */}
       {files.length > 0 && (
-        <ListGroup>
+        <ListGroup role="list">
           {files.map((f, i) => (
             <List
+              role="listitem"
               key={f.id ?? `${f.name}-${i}`}
               title={`${prefix(f.size)}${f.name}`}
               rightButton

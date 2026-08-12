@@ -61,6 +61,7 @@ export function List({
   rightSlot = null,       // 우측 임의 콘텐츠(입력칸+단위 등) — 행 클릭과 분리(자체 stopPropagation은 사용처가)
   selected = false,
   highlighted = false, // 키보드 내비게이션 강조 (hover 색)
+  role = 'option', // 'option'(기본, ListGroup listbox와 세트) | 'listitem'(액션 있는 목록 — 중첩 버튼 허용)
   disabled = false,
   onClick,
   onButtonClick,
@@ -109,8 +110,8 @@ export function List({
 
   return (
     <div
-      role="option"
-      aria-selected={selected || undefined}
+      role={role}
+      aria-selected={role === 'option' ? !!selected : undefined}
       aria-disabled={disabled || undefined}
       data-state={disabled ? 'disabled' : selected ? 'selected' : highlighted ? 'highlighted' : 'default'}
       onClick={interactive ? handleRowClick : undefined}

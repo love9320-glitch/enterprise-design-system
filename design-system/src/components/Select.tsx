@@ -253,6 +253,8 @@ interface SelectBaseProps extends Omit<ComponentPropsWithoutRef<'div'>, 'onChang
   placeholder?: string;
   disabled?: boolean;
   readOnly?: boolean;
+  /** 트리거의 접근 가능한 이름(combobox는 내부 텍스트가 이름이 되지 않음) — 미지정 시 label→placeholder 문자열 폴백 */
+  ariaLabel?: string;
   error?: boolean;
   errorMessage?: string;
   width?: number | string; // 트리거 너비: 숫자(px) | CSS 길이 | 'hug'(콘텐츠 맞춤). 미지정 시 200px
@@ -305,6 +307,7 @@ export function Select({
   disabled = false,
   readOnly = false,
   error = false,
+  ariaLabel,
   errorMessage = REQUIRED_SELECT_MESSAGE, // 표준 카피 자동 적용(규칙 21)
   width = 200,             // 트리거 너비: 숫자(px) | CSS 길이 | 'hug'(콘텐츠 맞춤). 미지정 시 200px
   maxWidth,                // 트리거 최대 너비(숫자 px/CSS 길이). hug일 때 제한용 — 넘으면 말줄임
@@ -612,6 +615,13 @@ export function Select({
           ? 'text-text-field-default-text'
           : 'text-text-field-filled-text';
 
+  // combobox 필수 속성(ARIA 1.2): aria-controls가 열린 listbox를 참조해야 한다
+  const listboxId = useId();
+
+  // 접근 가능한 이름 — combobox role은 내부 텍스트를 이름으로 삼지 않는다(axe aria-input-field-name)
+  const effAriaLabel =
+    ariaLabel ?? (typeof label === 'string' ? label : typeof placeholder === 'string' ? placeholder : undefined);
+
   const iconColor = disabled
     ? 'text-text-field-disabled-icon'
     : 'text-text-field-default-text group-focus-within:text-text-field-filled-text';
@@ -638,7 +648,9 @@ export function Select({
         <InlineFieldTrigger
           ref={triggerRef as RefObject<HTMLSpanElement | null>}
           role="combobox"
+          aria-label={effAriaLabel}
           aria-haspopup="listbox"
+          aria-controls={open ? listboxId : undefined}
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
@@ -663,7 +675,9 @@ export function Select({
         <div
           ref={triggerRef as RefObject<HTMLDivElement | null>}
           role="combobox"
+          aria-label={effAriaLabel}
           aria-haspopup="listbox"
+          aria-controls={open ? listboxId : undefined}
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
@@ -693,7 +707,9 @@ export function Select({
         <div
           ref={triggerRef as RefObject<HTMLDivElement | null>}
           role="combobox"
+          aria-label={effAriaLabel}
           aria-haspopup="listbox"
+          aria-controls={open ? listboxId : undefined}
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
@@ -782,7 +798,7 @@ export function Select({
                 : {})}
             >
               {filtered.length > 0 ? (
-                <ListGroup>
+                <ListGroup id={listboxId} aria-label={effAriaLabel ?? '옵션 목록'}>
                   {filtered.map((opt, i) =>
                     multiple ? (
                       // 체크박스 행 — List가 행 전체를 체크 토글 영역으로 처리(메뉴 유지)

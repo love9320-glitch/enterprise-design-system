@@ -107,8 +107,6 @@ export function Popover({
         ref={anchorRef}
         {...props}
         className={`inline-flex ${className}`}
-        aria-haspopup="menu"
-        aria-expanded={open}
         onClick={(e) => {
           // 소비자 onClick(클릭 계측 등)과 합성 — 스프레드로 덮어써 무시되지 않게
           props.onClick?.(e);

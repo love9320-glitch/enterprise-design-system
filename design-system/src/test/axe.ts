@@ -6,7 +6,12 @@ import { axe } from 'vitest-axe';
 
 export async function expectNoA11yViolations(target: Element | Document) {
   const el = target instanceof Document ? target.documentElement : target;
-  const { violations } = await axe(el);
+  const { violations } = await axe(el, {
+    rules: {
+      // 컴포넌트 단위 렌더에는 페이지 랜드마크(main 등)가 없다 — 페이지 수준 규칙 제외
+      region: { enabled: false },
+    },
+  });
   const summary = violations.map((v) => ({
     rule: v.id,
     impact: v.impact,

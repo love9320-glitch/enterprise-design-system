@@ -31,8 +31,10 @@ export function ListGroup({ children, maxVisible = 6, gap, empty = false, emptyM
   const maxHeight = maxVisible * ITEM_HEIGHT + gapPx * (maxVisible - 1) + PADDING_Y * 2;
   const isEmpty = empty || Children.count(children) === 0;
 
+  // role 기본 listbox — List(role=option)의 필수 부모(axe aria-required-parent).
+  // 메뉴·파일 목록 등 옵션이 아닌 행 컨테이너는 role="list"로 덮어쓴다(props가 뒤라 override 가능).
   return (
-    <div className={`w-full bg-list-group-bg ${className}`} {...props}>
+    <div role="listbox" aria-label="목록" className={`w-full bg-list-group-bg ${className}`} {...props}>
       {/* 상하 패딩을 스크롤 영역 안(contentClassName)에 두어, 스크롤 시 패딩까지 함께 움직인다 */}
       <ScrollArea maxHeight={maxHeight} contentClassName={`py-spacing-4 ${gap ? `flex flex-col ${GAP_STYLE[gap]}` : ''}`}>
         {isEmpty ? <ListEmpty message={emptyMessage} /> : children}
