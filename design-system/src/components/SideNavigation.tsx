@@ -184,6 +184,7 @@ export function SideNavigation({
   const widthStyle = typeof width === 'number' ? `${width}px` : width;
   return (
     <nav
+      aria-label="사이드 메뉴"
       style={{ width: widthStyle }}
       className={`relative flex flex-col gap-spacing-2 ${className}`}
       {...props}

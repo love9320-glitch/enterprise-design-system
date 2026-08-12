@@ -207,6 +207,7 @@ export function Pagination({
           <>
             <span className="whitespace-nowrap text-14 text-font-icon-5">페이지 행</span>
             <Select
+          ariaLabel="페이지당 행 수"
               variant="text"
               size="24"
               placement="auto-right"

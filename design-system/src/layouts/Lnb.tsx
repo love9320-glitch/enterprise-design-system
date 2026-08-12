@@ -222,6 +222,7 @@ export function Lnb({
   // 내용(nav) — 패딩·간격 포함. height 지정 시 이 nav '상위'에 ScrollArea를 둔다(슬롯 내부 스크롤 아님)
   const nav = (
     <nav
+      aria-label="로컬 내비게이션"
       style={height != null ? undefined : { width: widthStyle }}
       className={`flex ${height != null ? 'w-full' : 'shrink-0'} flex-col gap-spacing-9 px-spacing-6 py-spacing-8 ${height == null ? className : ''}`}
       {...props}

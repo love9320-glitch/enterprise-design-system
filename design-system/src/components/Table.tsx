@@ -425,7 +425,7 @@ export function Table({
               style={{ width: CHECKBOX_COL_WIDTH, ...headDivider }}
             >
               <div className="flex items-center justify-center">
-                <Checkbox checked={allChecked} onChange={toggleAll} />
+                <Checkbox checked={allChecked} onChange={toggleAll} aria-label="전체 선택" />
               </div>
             </th>
           )}
@@ -563,6 +563,7 @@ export function Table({
                     <div className="flex items-center justify-center">
                       <Checkbox
                         checked={selectedSet.has(key)}
+                        aria-label="행 선택"
                         onChange={() => toggleRow(key)}
                         onClick={(e) => e.stopPropagation()}
                       />
