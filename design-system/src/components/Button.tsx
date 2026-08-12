@@ -205,6 +205,7 @@ export function Button({
         data-variant={variant}
         data-size={size}
         data-loading={loading || undefined}
+        aria-busy={loading || undefined}
         aria-disabled={inactive || undefined}
         onClick={!inactive ? onClick : undefined}
         onMouseEnter={handleMouseEnter}
@@ -220,6 +221,7 @@ export function Button({
         data-variant={variant}
         data-size={size}
         data-loading={loading || undefined}
+        aria-busy={loading || undefined}
         disabled={inactive}
         onClick={!inactive ? onClick : undefined}
         onMouseEnter={handleMouseEnter}

@@ -32,6 +32,10 @@ jobs:
         working-directory: design-system
         run: npm run check:types
 
+      - name: Unit tests (vitest + RTL + axe)
+        working-directory: design-system
+        run: npm test
+
       - name: Build (demo SPA)
         working-directory: design-system
         run: npm run build
