@@ -179,6 +179,8 @@ export default {
 
 컴포넌트 사용 규칙과 설계 원칙(토큰 경유·완전 옵션화 등)은 패키지에 동봉되지 않고 **문서 사이트의 "디자인시스템 규칙" 섹션**에서 항상 최신 버전으로 제공합니다.
 
+복합 위젯(Modal·Select·DatePicker·Table)의 **접근성 계약**(역할·키보드·포커스·ARIA)은 [ACCESSIBILITY.md](./ACCESSIBILITY.md)에 명문화돼 있고 패키지에 동봉되며, `components.json`의 `accessibility` 필드로도 제공됩니다(AI 도구용).
+
 ## 릴리스·호환 정책
 
 **버전 규칙 (semver)**

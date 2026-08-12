@@ -70,7 +70,26 @@ function componentFiles() {
   return files;
 }
 
+// ── 1.5) 접근성 계약(ACCESSIBILITY.md) 파싱 — "## 컴포넌트명" 절 → accessibility 필드 ──
+function parseA11yContracts() {
+  const map = new Map();
+  let md;
+  try {
+    md = readFileSync(join(ROOT, 'ACCESSIBILITY.md'), 'utf8');
+  } catch {
+    return map;
+  }
+  const sections = md.split(/^## /m).slice(1); // 첫 조각은 머리말
+  for (const sec of sections) {
+    const nl = sec.indexOf('\n');
+    const name = sec.slice(0, nl).trim();
+    if (/^[A-Z][A-Za-z]+$/.test(name)) map.set(name, sec.slice(nl + 1).trim());
+  }
+  return map;
+}
+
 const catalog = parseCatalog();
+const a11y = parseA11yContracts();
 const docs = parser.parse(componentFiles());
 
 const components = docs
@@ -83,6 +102,8 @@ const components = docs
       // 카탈로그의 운영 지식(한국어 프로즈) — 언제/어떻게 쓰는지, 규칙, 판례
       usageNotes: cat?.notes,
       demoPage: cat?.demoPage,
+      // 접근성 계약(역할·키보드·포커스·ARIA — ACCESSIBILITY.md가 원본, 마크다운 프로즈)
+      accessibility: a11y.get(d.displayName),
       props: Object.values(d.props ?? {}).map((p) => ({
         name: p.name,
         type: p.type?.name,
