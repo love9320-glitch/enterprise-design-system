@@ -181,6 +181,18 @@ export default {
 
 ## 변경 내역
 
+### v1.8.0 (2026-08-12)
+
+**접근성(스크린리더·키보드) 보강**
+- Select: 트리거에 접근 이름(`ariaLabel` 옵션, 미지정 시 label/placeholder 자동) + `aria-controls`·`aria-activedescendant` 연결(ARIA 1.2 콤보박스 계약), **방향키 이동이 disabled 옵션을 건너뜁니다**
+- Table: 정렬 컬럼 헤더에 `aria-sort`(ascending/descending) 자동 표기, 행 선택 체크박스 접근 이름 커스텀 `getRowSelectionAriaLabel`(예: "김서연 행 선택"), 전체 선택 = "전체 선택"
+- Modal: `aria-labelledby` 제목 연결 + `initialFocus` 옵션(열릴 때 첫 포커스 지정) / Button: `aria-busy`(loading 시)
+- List/ListGroup: listbox·option 역할 계약 정비(`aria-selected` 등), FileUpload 파일 행은 list/listitem, 내비 landmark 이름 중복 해소, Pagination 행 수 Select 접근 이름
+
+**품질 게이트(소비자 영향 없음)**
+- Vitest+RTL+axe 테스트 72개가 PR 게이트로 상시 실행(키보드 흐름·ARIA 계약·axe 위반 0 검사)
+- 배포 후 실제 사이트를 브라우저로 열어 검사하는 자동 스모크 추가
+
 ### v1.7.0 (2026-08-12)
 
 **Input 입력 타입(type) — 지원서 폼 대응**
