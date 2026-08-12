@@ -528,6 +528,13 @@ export function Select({
     deps: [filtered.length, query],
   });
 
+  // 방향키 이동 시 disabled 옵션 건너뛰기 — 진행 방향으로 계속 스캔, 없으면 제자리
+  const moveHighlight = (h: number, dir: 1 | -1) => {
+    let i = h + dir;
+    while (i >= 0 && i < filtered.length && filtered[i]?.disabled) i += dir;
+    return i >= 0 && i < filtered.length ? i : h;
+  };
+
   // 목록 키보드 네비게이션 — 트리거/검색바 공용, filtered 기준
   const handleListNav = (e: ReactKeyboardEvent<HTMLElement>) => {
     switch (e.key) {
@@ -538,11 +545,11 @@ export function Select({
         break;
       case 'ArrowDown':
         e.preventDefault();
-        setHighlight((h) => Math.min(h + 1, filtered.length - 1));
+        setHighlight((h) => moveHighlight(h, 1));
         break;
       case 'ArrowUp':
         e.preventDefault();
-        setHighlight((h) => Math.max(h - 1, 0));
+        setHighlight((h) => moveHighlight(h, -1));
         break;
       case 'Enter': {
         e.preventDefault();
@@ -651,6 +658,9 @@ export function Select({
           aria-label={effAriaLabel}
           aria-haspopup="listbox"
           aria-controls={open ? listboxId : undefined}
+          aria-activedescendant={
+            open && filtered[highlight] ? `${listboxId}-opt-${highlight}` : undefined
+          }
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
@@ -678,6 +688,9 @@ export function Select({
           aria-label={effAriaLabel}
           aria-haspopup="listbox"
           aria-controls={open ? listboxId : undefined}
+          aria-activedescendant={
+            open && filtered[highlight] ? `${listboxId}-opt-${highlight}` : undefined
+          }
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
@@ -710,6 +723,9 @@ export function Select({
           aria-label={effAriaLabel}
           aria-haspopup="listbox"
           aria-controls={open ? listboxId : undefined}
+          aria-activedescendant={
+            open && filtered[highlight] ? `${listboxId}-opt-${highlight}` : undefined
+          }
           aria-expanded={open}
           aria-disabled={disabled || undefined}
           aria-invalid={error || undefined}
@@ -812,6 +828,7 @@ export function Select({
                         onCheckChange={opt.disabled ? undefined : () => toggleValue(opt.value)}
                         highlighted={!opt.disabled && i === highlight}
                         onMouseEnter={() => !opt.disabled && setHighlight(i)}
+                        id={`${listboxId}-opt-${i}`}
                         data-option-index={i}
                       />
                     ) : (
@@ -824,6 +841,7 @@ export function Select({
                         highlighted={!opt.disabled && i === highlight}
                         onClick={opt.disabled ? undefined : () => selectValue(opt.value)}
                         onMouseEnter={() => !opt.disabled && setHighlight(i)}
+                        id={`${listboxId}-opt-${i}`}
                         data-option-index={i}
                       />
                     ),
