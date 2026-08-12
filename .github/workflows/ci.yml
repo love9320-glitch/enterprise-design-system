@@ -51,3 +51,9 @@ jobs:
       - name: Focus trap (jsdom)
         working-directory: design-system
         run: npm run check:focus
+
+      # npm pack 산출물을 실제 소비자 앱(consumer-smoke/)에 설치해 tsc+vite build.
+      # 배럴 미등록(1.2.1)·메인 엔트리 tiptap 오염(0.1.0) 유형을 기계가 잡는다.
+      - name: Consumer smoke (npm pack → install → build)
+        working-directory: design-system
+        run: npm run check:consumer

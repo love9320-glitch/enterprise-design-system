@@ -1,0 +1,19 @@
+{
+  "name": "consumer-smoke",
+  "private": true,
+  "version": "0.0.0",
+  "description": "npm pack 산출물을 실제 소비자처럼 설치·빌드하는 검증 앱 — 저장소 alias가 아닌 tarball 설치라 배럴 누락·엔트리 의존 오염(tiptap 등)을 배포 전에 잡는다",
+  "type": "module",
+  "scripts": {
+    "check": "tsc --noEmit && vite build"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "typescript": "^5.7.0",
+    "vite": "^6.0.0"
+  }
+}

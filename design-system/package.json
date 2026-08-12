@@ -20,7 +20,8 @@
     "build:manifest": "node scripts/generate-manifest.mjs",
     "check:manifest": "node scripts/generate-manifest.mjs node_modules/.cache/components.json",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "check:consumer": "node scripts/consumer-smoke.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.27.0"
