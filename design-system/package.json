@@ -1,6 +1,6 @@
 {
   "name": "@gusun/design-system",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,10 +13,12 @@
     "build:lib": "vite build --config vite.lib.config.ts",
     "build:css": "tailwindcss -c tailwind.config.js -i ./src/index.css -o ./dist-lib/styles.css --minify",
     "build:preset": "npx esbuild tailwind.preset.js --bundle --format=esm --platform=neutral --outfile=dist-lib/tailwind-preset.mjs --log-level=error && npx esbuild tailwind.preset.js --bundle --format=cjs --platform=neutral --outfile=dist-lib/tailwind-preset.cjs --log-level=error",
-    "build:package": "npm run build:lib && npm run build:css && npm run build:preset",
+    "build:package": "npm run build:lib && npm run build:css && npm run build:preset && npm run build:manifest",
     "prepublishOnly": "npm run check:types && npm run build:package",
     "check:focus": "npx esbuild scripts/focus-trap-test.mjs --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.cache/focus-trap-test.mjs --log-level=error && node node_modules/.cache/focus-trap-test.mjs",
-    "check:shadow": "npx esbuild scripts/shadow-portal-test.mjs --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.cache/shadow-portal-test.mjs --log-level=error && node node_modules/.cache/shadow-portal-test.mjs"
+    "check:shadow": "npx esbuild scripts/shadow-portal-test.mjs --bundle --format=esm --platform=node --packages=external --outfile=node_modules/.cache/shadow-portal-test.mjs --log-level=error && node node_modules/.cache/shadow-portal-test.mjs",
+    "build:manifest": "node scripts/generate-manifest.mjs",
+    "check:manifest": "node scripts/generate-manifest.mjs node_modules/.cache/components.json"
   },
   "dependencies": {
     "lucide-react": "^1.27.0"
@@ -50,6 +52,7 @@
     "jsdom": "^29.1.1",
     "postcss": "^8.5.15",
     "react": "^19.2.6",
+    "react-docgen-typescript": "^2.4.0",
     "react-dom": "^19.2.6",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
@@ -91,7 +94,8 @@
       "import": "./dist-lib/tailwind-preset.mjs",
       "require": "./dist-lib/tailwind-preset.cjs"
     },
-    "./styles.css": "./dist-lib/styles.css"
+    "./styles.css": "./dist-lib/styles.css",
+    "./components.json": "./dist-lib/components.json"
   },
   "publishConfig": {
     "access": "public"
