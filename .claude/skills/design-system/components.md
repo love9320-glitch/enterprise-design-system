@@ -18,6 +18,7 @@
 4. 최종 `className`은 `` `${base} ${sizeStyle} ${colorStyle} ${className}` `` 형태로 합성
 5. 나머지 속성은 `...props`로 전달, `onClick` 등 핸들러는 비활성 상태 가드
 6. **상태 꼬리표(규칙 23)**: 상태 소유 요소에 `data-state`(배타 상태 하나, 우선순위 순)+독립 축(`data-variant`/`data-size`/`data-open`/`data-loading`)을 노출 — DOM 가시성·테스트 셀렉터용. **스타일 분기가 아님**(클래스 분기는 3~4번 방식 그대로)
+7. **prop 명명은 감사 규칙 준수**(2026-08-12 API 감사 — 상세 `.claude/knowledge/api-audit-2026-08.md`): hug/fill 폭은 `width`(variant 금지) · size=픽셀 문자열 enum · 부위별 세부 옵션 3개 이상 겹치면 평평한 `부위+속성` 나열 대신 그룹 객체 prop · 높이는 "부위+Height" 패턴 · controlled=`value/defaultValue/onChange`(집합 `~Ids`)
 
 ## 말줄임(truncate) 텍스트는 hover 툴팁 필수 (코드 전용 원칙 상세)
 
